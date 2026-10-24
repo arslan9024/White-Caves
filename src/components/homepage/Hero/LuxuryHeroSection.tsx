@@ -8,13 +8,21 @@
  * Parallax Dubai skyline · Animated gold counters · Premium search bar
  */
 
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion, type Variants } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { ArrowRight, Search, Phone, Star, Shield, Award } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import type { MarketStats } from '../../../store/slices/homepageSlice';
-import { trackHomepageEvent } from '../../../utils/homepageTracking';
-import './LuxuryHeroSection.css';
+import type { HeroMarketStats } from './data/HERO.data';
+import {
+  heroContainerVariants,
+  heroItemVariants,
+  heroOrbVariants,
+  heroStatCardVariants,
+  heroStatsContainerVariants,
+  useAnimatedCounter,
+  useHeroSectionLogic,
+} from './logic/HERO.logic';
+import { HERO_COUNTER_DURATION } from './data/HERO.data';
+import { heroLayerStyle } from './styles/HERO.style';
 
 // --- Types -------------------------------------------------------------------
 
@@ -23,6 +31,8 @@ interface AnimatedRedCounterProps {
   duration?: number;
   suffix?: string;
   prefix?: string;
+  language: string;
+  reducedMotion: boolean;
 }
 
 interface LuxuryStatCard {
@@ -31,119 +41,41 @@ interface LuxuryStatCard {
   prefix?: string;
   label: string;
   sublabel?: string;
-  icon: React.ReactNode;
+  icon: 'star' | 'award' | 'shield' | 'search';
 }
 
 export interface LuxuryHeroSectionProps {
-  marketStats?: MarketStats;
+  marketStats?: HeroMarketStats;
   isLoading?: boolean;
   onSearchClick?: () => void;
 }
+
+const StatIcon: React.FC<{ icon: LuxuryStatCard['icon'] }> = ({ icon }) => {
+  if (icon === 'award') return <Award size={16} aria-hidden="true" />;
+  if (icon === 'shield') return <Shield size={16} aria-hidden="true" />;
+  if (icon === 'search') return <Search size={16} aria-hidden="true" />;
+  return <Star size={16} aria-hidden="true" />;
+};
 
 // --- Animated Gold Counter ---------------------------------------------------
 
 const AnimatedRedCounter: React.FC<AnimatedRedCounterProps> = ({
   end,
-  duration = 2200,
+  duration = HERO_COUNTER_DURATION,
   suffix = '',
   prefix = '',
+  language,
+  reducedMotion,
 }) => {
-  const [count, setCount] = useState<number>(0);
-  const [hasStarted, setHasStarted] = useState<boolean>(false);
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setHasStarted(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.4 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!hasStarted) return;
-    let startTime: number | undefined;
-    let animationFrame: number;
-
-    // Ease-out cubic for luxurious deceleration feel
-    const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
-
-    const animate = (timestamp: number): void => {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      setCount(Math.floor(easeOutCubic(progress) * end));
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
-      }
-    };
-
-    animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration, hasStarted]);
+  const { count, ref } = useAnimatedCounter(end, duration, reducedMotion);
 
   return (
-    <span ref={ref} aria-live="polite" aria-atomic="true">
+    <span ref={ref}>
       {prefix}
-      {count.toLocaleString()}
+      {new Intl.NumberFormat(language === 'ar' ? 'ar-AE' : 'en-AE').format(count)}
       {suffix}
     </span>
   );
-};
-
-// --- Animation Variants ------------------------------------------------------
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.25,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 36 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
-  },
-};
-
-const statCardVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.88, y: 20 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] },
-  },
-};
-
-const statsContainerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.1, delayChildren: 0.9 },
-  },
-};
-
-const orbVariants: Variants = {
-  animate: {
-    y: [0, -24, 0],
-    x: [0, 12, 0],
-    transition: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
-  },
 };
 
 // --- Main Component ----------------------------------------------------------
@@ -153,85 +85,35 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
   isLoading = false,
   onSearchClick,
 }) => {
-  const navigate = useNavigate();
-  const { scrollY } = useScroll();
-  const prefersReducedMotion = useReducedMotion();
-
-  // Parallax transforms â€” disabled on reduced motion
-  const skylineY = useTransform(scrollY, [0, 600], [0, prefersReducedMotion ? 0 : 160]);
-  const contentOpacity = useTransform(scrollY, [0, 380], [1, 0]);
-  const contentY = useTransform(scrollY, [0, 380], [0, prefersReducedMotion ? 0 : -40]);
-
-  // Stat cards data
-  const stats: LuxuryStatCard[] = [
-    {
-      number: marketStats?.totalProperties ?? 500,
-      suffix: '+',
-      label: 'Premium Properties',
-      sublabel: 'Across Dubai Emirates',
-      icon: <Star size={16} aria-hidden="true" />,
-    },
-    {
-      number: 1000,
-      suffix: '+',
-      label: 'Satisfied Clients',
-      sublabel: 'Global Investor Network',
-      icon: <Award size={16} aria-hidden="true" />,
-    },
-    {
-      number: 15,
-      suffix: '+',
-      label: 'Years of Excellence',
-      sublabel: 'Since 2009, Dubai',
-      icon: <Shield size={16} aria-hidden="true" />,
-    },
-    {
-      number: marketStats?.activeAgents ?? 50,
-      suffix: '+',
-      label: 'Expert Consultants',
-      sublabel: 'RERA Certified Agents',
-      icon: <Search size={16} aria-hidden="true" />,
-    },
-  ];
-
-  const handleFindRentals = (): void => {
-    trackHomepageEvent('homepage_hero_cta_click', {
-      ctaId: 'find-rentals',
-      ctaLabel: 'Find Rentals',
-      ctaVariant: 'primary',
-      destination: '/properties?mode=rent',
-      section: 'luxury_hero',
-    });
-    navigate('/properties?mode=rent');
-  };
-
-  const handleBrowseProperties = (): void => {
-    trackHomepageEvent('homepage_hero_cta_click', {
-      ctaId: 'browse-properties',
-      ctaLabel: 'Browse Properties',
-      ctaVariant: 'secondary',
-      destination: '/properties',
-      section: 'luxury_hero',
-    });
-    navigate('/properties');
-  };
-
-  const handleBookConsultation = (): void => {
-    trackHomepageEvent('homepage_hero_cta_click', {
-      ctaId: 'book-consultation',
-      ctaLabel: 'Book Consultation',
-      ctaVariant: 'secondary',
-      destination: '/contact',
-      section: 'luxury_hero',
-    });
-    navigate('/contact');
-  };
+  const {
+    availabilityText,
+    copy,
+    contentOpacity,
+    contentY,
+    developers,
+    handleBookConsultation,
+    handleBrowseProperties,
+    handleDeveloperClick,
+    handleFindRentals,
+    isRTL,
+    language,
+    marketAreas,
+    onSearchClick: openSearch,
+    prefersReducedMotion,
+    skylineY,
+    stats,
+    scrollToContent,
+  } = useHeroSectionLogic({ marketStats, onSearchClick });
 
   return (
     <section
       className="luxury-hero"
       id="home"
-      aria-label="White Caves Real Estate — Dubai Luxury Properties Hero"
+      data-testid="hero-section"
+      dir={isRTL ? 'rtl' : 'ltr'}
+      lang={language}
+      style={heroLayerStyle}
+      aria-labelledby="luxury-hero-title"
     >
       {/* -- Background Layer ------------------------------- */}
       <div className="luxury-hero__background" aria-hidden="true">
@@ -254,12 +136,12 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         {/* Animated gold orbs */}
         <motion.div
           className="luxury-hero__orb luxury-hero__orb--1"
-          variants={orbVariants}
+          variants={heroOrbVariants}
           animate={prefersReducedMotion ? {} : 'animate'}
         />
         <motion.div
           className="luxury-hero__orb luxury-hero__orb--2"
-          variants={orbVariants}
+          variants={heroOrbVariants}
           animate={
             prefersReducedMotion
               ? {}
@@ -295,177 +177,90 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
       <motion.div
         className="luxury-hero__content container"
         style={{ opacity: contentOpacity, y: contentY }}
-        variants={containerVariants}
-        initial="hidden"
+        variants={heroContainerVariants}
+        initial={prefersReducedMotion ? false : 'hidden'}
         animate="visible"
       >
         {/* -- Top Pill Badge -- */}
-        <motion.div
-          className="luxury-hero__pill"
-          variants={itemVariants}
-          aria-label="Property availability badge"
-        >
+        <motion.div className="luxury-hero__pill" variants={heroItemVariants} role="status">
           <span className="luxury-hero__pill-dot" aria-hidden="true" />
-          <span className="luxury-hero__pill-text">
-            {marketStats?.totalProperties
-              ? `${marketStats.totalProperties}+ Exclusive Properties Available`
-              : 'Exclusive Dubai Properties · Verified & Trusted'}
-          </span>
+          <span className="luxury-hero__pill-text">{availabilityText}</span>
           <span className="luxury-hero__pill-arrow" aria-hidden="true">
             ›
           </span>
         </motion.div>
 
         {/* -- Hero Headline -- */}
-        <motion.h1 className="luxury-hero__title" variants={itemVariants}>
+        <motion.h1
+          id="luxury-hero-title"
+          className="luxury-hero__title"
+          variants={heroItemVariants}
+        >
           <span className="luxury-hero__title-line luxury-hero__title-line--light">
-            Discover Your
+            {copy.titleLineOne}
           </span>
           <span className="luxury-hero__title-line luxury-hero__title-line--red">
-            Dream Property
+            {copy.titleLineTwo}
           </span>
-          <span className="luxury-hero__title-line luxury-hero__title-line--light">in Dubai</span>
+          <span className="luxury-hero__title-line luxury-hero__title-line--light">
+            {copy.titleLineThree}
+          </span>
         </motion.h1>
 
         {/* -- Market Price Ribbon -- */}
         <motion.div
           className="luxury-hero__market-ribbon"
-          variants={itemVariants}
-          aria-label="Dubai market statistics ribbon"
+          variants={heroItemVariants}
+          aria-label={copy.marketLabel}
         >
-          <div className="luxury-hero__ribbon-item">
-            <span className="luxury-hero__ribbon-label">Dubai Marina</span>
-            <span className="luxury-hero__ribbon-separator" aria-hidden="true">
-              |
-            </span>
-            <span className="luxury-hero__ribbon-value">
-              {marketStats?.averagePrice
-                ? `AED ${(marketStats.averagePrice / 1_000_000).toFixed(1)}M avg`
-                : 'From AED 1.2M'}
-            </span>
-          </div>
-          <span className="luxury-hero__ribbon-divider" aria-hidden="true">
-            ·
-          </span>
-          <div className="luxury-hero__ribbon-item">
-            <span className="luxury-hero__ribbon-label">Downtown Dubai</span>
-            <span className="luxury-hero__ribbon-separator" aria-hidden="true">
-              |
-            </span>
-            <span className="luxury-hero__ribbon-value">From AED 2.5M</span>
-          </div>
-          <span className="luxury-hero__ribbon-divider" aria-hidden="true">
-            ·
-          </span>
-          <div className="luxury-hero__ribbon-item">
-            <span className="luxury-hero__ribbon-label">Palm Jumeirah</span>
-            <span className="luxury-hero__ribbon-separator" aria-hidden="true">
-              |
-            </span>
-            <span className="luxury-hero__ribbon-value">From AED 8M</span>
-          </div>
+          {marketAreas.map((area, index) => (
+            <React.Fragment key={area.label}>
+              {index > 0 && (
+                <span className="luxury-hero__ribbon-divider" aria-hidden="true">
+                  ·
+                </span>
+              )}
+              <div className="luxury-hero__ribbon-item">
+                <span className="luxury-hero__ribbon-label">{area.label}</span>
+                <span className="luxury-hero__ribbon-separator" aria-hidden="true">
+                  |
+                </span>
+                <span className="luxury-hero__ribbon-value">{area.price}</span>
+              </div>
+            </React.Fragment>
+          ))}
         </motion.div>
 
         {/* -- Tagline -- */}
-        <motion.p className="luxury-hero__tagline" variants={itemVariants}>
-          White Caves Real Estate — where Dubai&apos;s most coveted residences meet world-class
-          expertise. Explore penthouses, villas, and off-plan investments crafted for the discerning
-          few.
+        <motion.p className="luxury-hero__tagline" variants={heroItemVariants}>
+          {copy.tagline}
         </motion.p>
 
         {/* -- Search Bar -- */}
         <motion.div
           className="luxury-hero__search-wrapper"
-          variants={itemVariants}
-          aria-label="Property search section"
-          onClick={onSearchClick}
-          style={{ cursor: 'pointer' }}
+          variants={heroItemVariants}
+          aria-label={copy.searchAction}
         >
-          <div
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '2px solid rgba(239, 68, 68, 0.4)',
-              borderRadius: '9999px',
-              padding: '14px 32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
-              color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: '1rem',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-              margin: '0 auto',
-              maxWidth: '500px',
-            }}
+          <button
+            type="button"
+            className="luxury-hero__search-action"
+            onClick={openSearch}
+            aria-label={copy.searchAction}
           >
-            <span
-              style={{
-                background: '#EF4444',
-                color: '#FFFFFF',
-                padding: '6px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Search size={16} />
-            </span>
-            <span>Click to Search Dubai Luxury Properties...</span>
-          </div>
+            <Search size={16} aria-hidden="true" />
+            <span>{copy.searchAction}</span>
+          </button>
 
           {/* -- Luxury Branded Developer Filter Chips (T-009) -- */}
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              gap: '8px',
-              marginTop: '12px',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <span
-              style={{
-                fontSize: '0.75rem',
-                color: '#94A3B8',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                marginRight: '4px',
-              }}
-            >
-              Top Developers:
-            </span>
-            {['Emaar', 'DAMAC', 'Nakheel', 'Meraas', 'Sobha', 'Ellington'].map(dev => (
+          <div className="luxury-hero__developer-list">
+            <span className="luxury-hero__developer-label">{copy.developerHeading}</span>
+            {developers.map(dev => (
               <button
+                type="button"
                 key={dev}
-                onClick={e => {
-                  e.stopPropagation();
-                  navigate(`/properties?developer=${encodeURIComponent(dev)}`);
-                }}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  borderRadius: '20px',
-                  padding: '4px 12px',
-                  color: '#F8FAFC',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  backdropFilter: 'blur(6px)',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = '#EF4444';
-                  e.currentTarget.style.borderColor = '#EF4444';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                }}
+                className="luxury-hero__developer-chip"
+                onClick={() => handleDeveloperClick(dev)}
               >
                 {dev}
               </button>
@@ -474,78 +269,67 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         </motion.div>
 
         {/* -- CTA Buttons -- */}
-        <motion.div className="luxury-hero__cta-group" variants={itemVariants}>
+        <motion.div className="luxury-hero__cta-group" variants={heroItemVariants}>
           <motion.button
-            className="luxury-hero__btn luxury-hero__btn--gold"
+            className="luxury-hero__btn luxury-hero__btn--red"
             onClick={handleFindRentals}
-            whileHover={
-              prefersReducedMotion
-                ? {}
-                : { scale: 1.04, boxShadow: '0 12px 36px rgba(196,30,58,0.45)' }
-            }
-            whileTap={{ scale: 0.97 }}
-            aria-label="Find rental properties in Dubai"
+            whileHover={prefersReducedMotion ? undefined : { scale: 1.04 }}
+            whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
+            aria-label={copy.rentalsLabel}
           >
-            <span>Find Rentals</span>
+            <span>{copy.rentals}</span>
             <ArrowRight size={18} aria-hidden="true" />
           </motion.button>
 
           <motion.button
             className="luxury-hero__btn luxury-hero__btn--ghost"
             onClick={handleBrowseProperties}
-            whileHover={
-              prefersReducedMotion ? {} : { scale: 1.04, borderColor: 'rgba(196,30,58,0.7)' }
-            }
-            whileTap={{ scale: 0.97 }}
-            aria-label="Browse all premium Dubai properties"
+            whileHover={prefersReducedMotion ? undefined : { scale: 1.04 }}
+            whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
+            aria-label={copy.browseLabel}
           >
             <Phone size={18} aria-hidden="true" />
-            <span>Browse Properties</span>
+            <span>{copy.browse}</span>
           </motion.button>
 
           <motion.button
             className="luxury-hero__btn luxury-hero__btn--ghost"
             onClick={handleBookConsultation}
-            whileHover={
-              prefersReducedMotion ? {} : { scale: 1.04, borderColor: 'rgba(196,30,58,0.7)' }
-            }
-            whileTap={{ scale: 0.97 }}
-            aria-label="Book a consultation with our Dubai property experts"
+            whileHover={prefersReducedMotion ? undefined : { scale: 1.04 }}
+            whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
+            aria-label={copy.consultationLabel}
           >
             <Phone size={18} aria-hidden="true" />
-            <span>Book Consultation</span>
+            <span>{copy.consultation}</span>
           </motion.button>
         </motion.div>
 
         {/* -- Gold Stat Cards -- */}
         <motion.div
           className="luxury-hero__stats"
-          variants={statsContainerVariants}
-          initial="hidden"
+          variants={heroStatsContainerVariants}
+          initial={prefersReducedMotion ? false : 'hidden'}
           animate="visible"
           role="list"
-          aria-label="Key performance statistics"
+          aria-label={copy.statsLabel}
         >
           {stats.map(stat => (
             <motion.div
               key={stat.label}
               className="luxury-hero__stat-card"
-              variants={statCardVariants}
+              variants={heroStatCardVariants}
               whileHover={
                 prefersReducedMotion
                   ? {}
                   : {
                       y: -6,
                       scale: 1.03,
-                      borderColor: 'rgba(196,30,58,0.6)',
-                      boxShadow: '0 16px 40px rgba(0,0,0,0.45), 0 0 20px rgba(196,30,58,0.2)',
                     }
               }
-              transition={{ duration: 0.25 }}
               role="listitem"
             >
               <div className="luxury-hero__stat-icon" aria-hidden="true">
-                {stat.icon}
+                <StatIcon icon={stat.icon} />
               </div>
               <div
                 className="luxury-hero__stat-number"
@@ -556,9 +340,10 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
                 ) : (
                   <AnimatedRedCounter
                     end={stat.number}
-                    duration={2200}
+                    duration={HERO_COUNTER_DURATION}
                     suffix={stat.suffix}
-                    prefix={stat.prefix}
+                    language={language}
+                    reducedMotion={Boolean(prefersReducedMotion)}
                   />
                 )}
               </div>
@@ -575,27 +360,27 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         {/* -- Trust Badges -- */}
         <motion.div
           className="luxury-hero__trust-strip"
-          variants={itemVariants}
-          aria-label="Trust and certification badges"
+          variants={heroItemVariants}
+          aria-label={copy.trustLabel}
         >
           <div className="luxury-hero__trust-badge">
             <Shield size={14} aria-hidden="true" />
-            <span>RERA Licensed</span>
+            <span>{copy.reraLicensed}</span>
           </div>
           <div className="luxury-hero__trust-divider" aria-hidden="true" />
           <div className="luxury-hero__trust-badge">
             <Award size={14} aria-hidden="true" />
-            <span>Verified Properties</span>
+            <span>{copy.verifiedProperties}</span>
           </div>
           <div className="luxury-hero__trust-divider" aria-hidden="true" />
           <div className="luxury-hero__trust-badge">
             <Star size={14} aria-hidden="true" />
-            <span>5-Star Rated</span>
+            <span>{copy.fiveStarRated}</span>
           </div>
           <div className="luxury-hero__trust-divider" aria-hidden="true" />
           <div className="luxury-hero__trust-badge">
             <Phone size={14} aria-hidden="true" />
-            <span>24/7 Support</span>
+            <span>{copy.support247}</span>
           </div>
         </motion.div>
       </motion.div>
@@ -603,15 +388,15 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
       {/* -- Scroll Indicator ------------------------------- */}
       <motion.button
         className="luxury-hero__scroll-cue"
-        onClick={() => {
-          document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-        }}
-        initial={{ opacity: 0, y: 10 }}
-        animate={prefersReducedMotion ? {} : { opacity: [0, 1, 0.7], y: [10, 0, 4] }}
+        onClick={scrollToContent}
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+        animate={
+          prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: [0, 1, 0.7], y: [10, 0, 4] }
+        }
         transition={{ duration: 2, repeat: Infinity, delay: 2.5 }}
-        aria-label="Scroll down to explore features"
+        aria-label={copy.scrollLabel}
       >
-        <span className="luxury-hero__scroll-text">Scroll to Explore</span>
+        <span className="luxury-hero__scroll-text">{copy.scrollText}</span>
         <span className="luxury-hero__scroll-line" aria-hidden="true" />
       </motion.button>
     </section>
