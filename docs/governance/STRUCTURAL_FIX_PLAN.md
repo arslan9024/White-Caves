@@ -1,6 +1,6 @@
 # Structural Problems — Solutions (MD-approved constraints)
 
-**Date:** 2026-10-24  
+**Date:** 2026-10-24 (updated end of session)  
 **Constraints:** Keep AEGIS full power; keep ≥121 agents; sibling repos for future; 4-way mandatory; 12×9 supervisors fixed.
 
 ---
@@ -9,36 +9,48 @@
 
 **Solution:** Organise generation rules (see `AEGIS_ORGANISATION.md`). Cap bulk issue bots unless Level 5 runs them. Deduplicate by title+department. Progress docs must show live counts.
 
+**Status:** Policy documented; enforcement still in progress.
+
 ## 2. Docs vs code drift
 
-**Solution:** Single source of truth: GitHub open issues/PRs + CI. Update `PROJECT_PROGRESS_REPORT.md` and `DAILY_MILESTONE_TRACKER.md` on this revision to match reality. Ban “0 open issues” claims unless API confirms.
+**Solution:** Single source of truth: GitHub open issues/PRs + CI. Update progress trackers when merges land. Ban “0 open issues” claims unless API confirms.
+
+**Status:** ✅ Progress + daily tracker + this plan refreshed 2026-10-24 after merge wave.
 
 ## 3. Mixed-era code (JSX/CSS vs 4-way TS)
 
-**Solution:** On-touch migration + scheduled consolidation waves. Dedup before convert. Track remaining legacy files in a living inventory under `plans/LEGACY_COMPONENT_INVENTORY.md` (create when wave starts).
+**Solution:** On-touch migration + scheduled consolidation waves. Dedup before convert. Inventory: `node scripts/check-four-way.mjs`.
+
+**Status:** Hero + CRM news strip are four-way examples on `main`. Legacy wave still open.
 
 ## 4. AEGIS complexity
 
-**Solution:** Lane map + department ownership — **no trim**. Document when each script is safe.
+**Solution:** Lane map + department ownership — **no trim**. See `aegis/README.md` and `AEGIS_ORGANISATION.md`.
+
+**Status:** ✅ Index on `main`.
 
 ## 5. `.agents/` scale
 
 **Solution:** Organise into 12 department folders + shared/orchestrator. Keep all agents; fill 1–12–108 slots to ≥121.
 
+**Status:** 📋 Planned (do not trim).
+
 ## 6. Logging
 
-**Solution:** Prefer `src/utils/logger` and `server/utils/logger`; treat remaining `console.*` in services as tech debt fixed on touch.
+**Solution:** Prefer `src/utils/logger` and `server/utils/logger`; fix remaining `console.*` on touch.
 
 ## 7. Sibling repos
 
-**Solution:** Retain `White-Caves-DB` and `white-caves-real-estate` for future milestones; do not merge or delete in this phase.
+**Solution:** Retain for future milestones; do not merge or delete in this phase.
 
-## 8. Open draft PRs (unblock)
+## 8. Product PRs (wave status)
 
-| PR | Topic | State |
+| PR | Topic | Outcome |
 |----|--------|--------|
-| #2524 | CRM UAE market intelligence strip | Draft, unstable |
-| #2525 | Hero dark/light + bilingual | Draft, unstable |
-| #2526 | Hero cinematic + RTL 4-way | Draft, unstable |
+| #2527 | Governance | ✅ Merged |
+| #2526 | Hero 4-way + RTL | ✅ Merged |
+| #2528 / #2529 | Hero theme toggle | ✅ Merged |
+| #2524 | CRM DLD UAE strip | ✅ Merged |
+| #2525 | Old hero theme rewrite | ❌ **Close only** — dirty conflicts; superseded |
 
-**Solution path:** Mark ready for review when CI is green; resolve conflicts with `main`; merge in order **2526 → 2525 → 2524** (or rebase 2525 onto 2526 if both touch Hero). Do not force-merge while `mergeable_state` is unstable.
+**Do not force-merge #2525.**
