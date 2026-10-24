@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReducedMotion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { useLanguage } from '../../../../context/LanguageContext';
+import { useTheme } from '../../../../context/ThemeContext';
 import { trackHomepageEvent } from '../../../../utils/homepageTracking';
 import {
   HERO_COPY,
@@ -108,6 +109,7 @@ interface UseHeroSectionLogicParams {
 export function useHeroSectionLogic({ marketStats, onSearchClick }: UseHeroSectionLogicParams) {
   const navigate = useNavigate();
   const { language, isRTL, formatNumber } = useLanguage();
+  const { isDark, setThemeMode } = useTheme();
   const { scrollY } = useScroll();
   const prefersReducedMotion = useReducedMotion();
   const copy = HERO_COPY[language === 'ar' ? 'ar' : 'en'];
@@ -191,6 +193,10 @@ export function useHeroSectionLogic({ marketStats, onSearchClick }: UseHeroSecti
     });
   }, [prefersReducedMotion]);
 
+  const handleThemeToggle = useCallback(() => {
+    setThemeMode(isDark ? 'light' : 'dark');
+  }, [isDark, setThemeMode]);
+
   return {
     availabilityText,
     copy,
@@ -201,6 +207,8 @@ export function useHeroSectionLogic({ marketStats, onSearchClick }: UseHeroSecti
     handleBrowseProperties,
     handleDeveloperClick,
     handleFindRentals,
+    handleThemeToggle,
+    isDark,
     isRTL,
     language,
     marketAreas,
