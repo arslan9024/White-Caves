@@ -694,6 +694,7 @@ export const MD_SUITE_DEPT: BuildingTier = {
   summary: 'Reserved exclusively for Arslan Malik. Controls global corporate strategy, high-stakes joint ventures, investment allocations, and unilateral override permissions across all lower operational tiers.',
   items: [
     { id: 'overview', label: '1.1 Executive Overview & Live Audit', icon: '👑' },
+    { id: 'command_center', label: '1.1B Executive Command Center (Live BI)', icon: '📊' },
     { id: 'ai-command', label: '1.2 1-12-108 AI Command Center', icon: '🤖' },
     { id: 'off-plan-tracker', label: '1.3 DH2 & Off-Plan Escrow Matrix', icon: '🏰' },
     { id: 'theodora', label: '1.4 Treasury & VAT Accounting', icon: '💰' },
