@@ -16,12 +16,13 @@ import {
   ALL_AI_ASSISTANTS,
   TWELVE_CORPORATE_DEPARTMENTS,
   MD_SUITE_DEPT,
+  AI_TEAMS_STRUCTURE,
 } from './CRMHubPage.registries';
-import type { BuildingTier, AIAssistantOption } from './CRMHubPage.registries';
+import type { BuildingTier, AIAssistantOption, AITeamSquad } from './CRMHubPage.registries';
 
 export { MD_SOVEREIGN_EMAILS, isMdSovereignEmail, resolveIsManagingDirector };
-export { ALL_AI_ASSISTANTS, TWELVE_CORPORATE_DEPARTMENTS, MD_SUITE_DEPT };
-export type { BuildingTier, AIAssistantOption };
+export { ALL_AI_ASSISTANTS, TWELVE_CORPORATE_DEPARTMENTS, MD_SUITE_DEPT, AI_TEAMS_STRUCTURE };
+export type { BuildingTier, AIAssistantOption, AITeamSquad };
 
 export function useCRMHubPageLogic() {
   const { user } = useCRMHubData();

@@ -17,6 +17,7 @@ import { CurrencyProvider } from '../../context/CurrencyContext';
 const mockNavigate = vi.fn();
 const mockSetSearchParams = vi.fn();
 let mockSearchParamTab = 'dept_summary';
+let mockSearchParamTile: string | null = null;
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -24,7 +25,13 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: () => mockNavigate,
     useSearchParams: () => [
-      { get: (key: string) => (key === 'tab' ? mockSearchParamTab : null) },
+      {
+        get: (key: string) => {
+          if (key === 'tab') return mockSearchParamTab;
+          if (key === 'tile') return mockSearchParamTile;
+          return null;
+        },
+      },
       mockSetSearchParams,
     ],
   };
@@ -143,6 +150,7 @@ describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
     mockSearchParamTab = 'dept_summary';
+    mockSearchParamTile = null;
   });
 
   afterEach(() => {
@@ -166,6 +174,7 @@ describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
   });
 
   it('renders Department Executive Overview with mission scope cards and launchpad', () => {
+    mockSearchParamTile = 'corporate';
     renderPage();
 
     expect(screen.getByText(/Executive Summary/i)).toBeInTheDocument();
@@ -200,6 +209,7 @@ describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
   });
 
   it('opens and switches to Tile 1 (MD Sovereign Suite)', () => {
+    mockSearchParamTile = 'corporate';
     renderPage();
 
     const mdTile = screen.getByText(/1. MD Office \(MD Suite\)/i);

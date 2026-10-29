@@ -54,6 +54,21 @@ Always align implementations with these concrete technologies and existing scrip
 - Do not create duplicate abstractions for store, logging, error handling, routing, or validation.
 - Extend existing modules before creating new parallel systems.
 
+### 2.4 The 5-Way File Category Standard & Single Purpose File Law (MANDATORY)
+
+Every feature, page, and domain module MUST adhere to the **5-Way File Category Division**:
+1. **View (`*.view.tsx` / `Component.tsx`):** Pure presentation and JSX rendering only. Zero inline business logic or heavy math.
+2. **Logic (`*.logic.ts`):** Custom hooks, state management, event handlers, and pure domain rules.
+3. **Styles (`*.styles.ts`):** Styled-components, design tokens, responsive breakpoints, and layout styles.
+4. **Data (`*.data.ts` / `*.registries.ts`):** Static datasets, lists, options registries, and seed constants.
+5. **Config (`*.config.ts`):** TypeScript interfaces, types, schemas (Zod), environment bindings, and feature flags.
+
+#### The Single Purpose File Law:
+- **One functionality per file:** Every file must have a single, well-defined responsibility.
+- **Minimum file size:** Large files (> 300–400 lines) must be broken down into cohesive, single-purpose sub-modules.
+- **Shared UI Component Reuse:** All components must maximize reuse of shared design-system components (`Button`, `Badge`, `Card`, `Modal`, `SearchableSelect`).
+- **Zero code duplication:** Duplicate handlers, overlapping services, and redundant abstractions are strictly prohibited.
+
 ---
 
 ## 3) Type Safety Rules (MANDATORY)

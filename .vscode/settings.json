@@ -10,5 +10,7 @@
         "markdown": true,
         "scminput": true
     },
-    "github.copilot.chat.newWorkspace.useContext7": true
+    "github.copilot.chat.newWorkspace.useContext7": true,
+    "standard.enable": false,
+    "cmake.sourceDirectory": "C:/Users/Dell/Documents/WC/White-Caves/docs/plans"
 }
