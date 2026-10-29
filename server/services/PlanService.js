@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import matter from 'gray-matter';
 import { v4 as uuidv4 } from 'uuid';
-import logger from '../lib/logger.js';
+import logger from '../utils/logger.js';
 
 const SAFE_PLAN_FILENAME_REGEX = /^[a-zA-Z0-9._-]+\.md$/;
 const SAFE_PLAN_ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;

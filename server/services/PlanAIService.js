@@ -1,4 +1,4 @@
-import logger from '../lib/logger.js';
+import logger from '../utils/logger.js';
 
 /**
  * PlanAIService - Integrates with free open-source AI models

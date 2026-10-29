@@ -81,6 +81,7 @@ import valuationRoutes from './routes/valuation.js';
 import marketRoutes from './routes/market.js';
 import departmentsRoutes from './routes/departments.js';
 import homepageRoutes from './routes/homepage.js';
+import graphqlRoutes from './routes/graphql.js';
 import contactRoutes from './routes/contact.js';
 import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
@@ -471,13 +472,26 @@ app.use('/api/ai/chat', aiChatRoutes);
 // Write endpoints (POST/PUT/DELETE) within the router enforce their own authMiddleware.
 app.use('/api/assistants', assistantsRoutes);
 
-// Protected routes (require authentication in production, optional in development)
-if (process.env.NODE_ENV === 'production') {
+// Homepage Aggregate API (public — no auth required)
+app.use('/api/homepage', homepageRoutes);
+
+// Contact / Lead-from-homepage API (public — no auth required)
+app.use('/api/contact', contactRoutes);
+
+// GraphQL compatibility endpoints
+app.use('/graphql', graphqlRoutes);
+app.use('/api/graphql', graphqlRoutes);
+
+// Protected routes (require authentication in production or when DEV_AUTH_BYPASS=false)
+if (process.env.NODE_ENV === 'production' || process.env.DEV_AUTH_BYPASS === 'false') {
   app.use('/api', authMiddleware);
-  logger.info('🔒 Production auth middleware enabled — all /api routes require JWT');
+  logger.info(
+    `🔒 Auth middleware enabled — all protected /api routes require JWT (${
+      process.env.NODE_ENV === 'production' ? 'production mode' : 'DEV_AUTH_BYPASS=false'
+    })`
+  );
 } else if (process.env.NODE_ENV === 'development') {
-  logger.warn('⚠️  DEV AUTH BYPASS ACTIVE — Do NOT use in production!');
-  logger.warn('   Set NODE_ENV=production to enforce JWT authentication');
+  logger.info('ℹ️  Dev auth fallback active (DEV_AUTH_BYPASS enabled) — unauthenticated /api requests inherit Lion superuser');
 
   // Lion Superuser: stable dev identity when DB is unreachable
   const LION_SUPERUSER = {
@@ -564,11 +578,6 @@ app.use('/api/follow-ups', followUpsRoutes);
 // Documents API (Phase 2C - Document Generation)
 app.use('/api/documents', documentsRoutes);
 
-// Homepage Aggregate API (public — no auth required)
-app.use('/api/homepage', homepageRoutes);
-
-// Contact / Lead-from-homepage API (public)
-app.use('/api/contact', contactRoutes);
 
 // Market Analytics API (Phase 4C - Market Analyst Bot)
 app.use('/api/analytics', analyticsRoutes);

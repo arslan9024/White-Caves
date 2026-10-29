@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import PlanService from '../../src/server/services/PlanService.js';
+import PlanService from './PlanService.js';
 
 const testPlansDir = path.resolve('.tmp-plan-service-tests');
 

@@ -270,7 +270,7 @@ import ServiceRecommendationEngine from '../src/services/ServiceRecommendationEn
 import AIOrchestrationEngine from '../src/services/LeadScoringEngine.js'; // Appended to file
 import AITaskRouterService from '../src/services/LeadScoringEngine.js'; // Appended to file
 import ContextPreservationEngine from '../src/services/DynamicPricingEngine.js'; // Appended to file
-import ServiceBooking from '../src/server/models/ServiceBooking.js';
+import ServiceBooking from '../server/models/ServiceBooking.js';
 
 // ============================================================
 // DYNAMIC PRICING API
