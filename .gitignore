@@ -172,3 +172,13 @@ build-*.txt
 # Henry local test uploads
 henry-test-uploads/
 
+
+# Local secrets and credential keys (Strictly local - do not push to git)
+secrets/
+!secrets/.env.example
+!secrets/README.md
+
+# WhatsApp multi-device profiles and White Caves user login sessions
+sessions/
+.linda-sessions/
+
