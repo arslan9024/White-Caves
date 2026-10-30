@@ -67,3 +67,4 @@ describe('chequeCalculator', () => {
     expect(breakdown.totalDue).toBe(5250);
   });
 });
+

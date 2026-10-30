@@ -95,3 +95,4 @@ export const normalizeJsonRecord = (
   }
   return null;
 };
+

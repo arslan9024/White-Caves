@@ -51,3 +51,4 @@ export const ESCROW_ACCOUNTS_DATA: EscrowAccountItem[] = [
     amountFormatted: 'AED 430.0M',
   },
 ];
+

@@ -73,3 +73,4 @@ export const SellerListings: React.FC = () => {
     </div>
   );
 };
+

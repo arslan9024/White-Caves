@@ -60,3 +60,4 @@ export const PriceAlerts: React.FC = () => {
     </div>
   );
 };
+

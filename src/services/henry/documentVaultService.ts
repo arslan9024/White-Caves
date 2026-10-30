@@ -108,3 +108,4 @@ export const deleteDocumentFromVault = async (id: string): Promise<boolean> => {
     req.onerror = () => reject(req.error);
   });
 };
+

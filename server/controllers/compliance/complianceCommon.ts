@@ -21,3 +21,4 @@ export function normalizeMetadata(metadata: unknown): Record<string, unknown> {
   }
   return {};
 }
+

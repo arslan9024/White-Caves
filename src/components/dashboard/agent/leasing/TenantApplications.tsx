@@ -85,3 +85,4 @@ export const TenantApplications: React.FC = () => {
     </div>
   );
 };
+

@@ -76,3 +76,4 @@ export const BuyerOffers: React.FC = () => {
     </div>
   );
 };
+

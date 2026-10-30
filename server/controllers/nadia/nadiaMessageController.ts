@@ -225,3 +225,4 @@ export async function convertConversationToLead(req: Request, res: Response): Pr
 
   res.status(201).json({ success: true, data: lead, alreadyConverted: false });
 }
+

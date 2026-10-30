@@ -175,7 +175,11 @@ export const DeptHeader = styled.div<{ $active: boolean }>`
   }
 `;
 
-export const SubGroupHeader = styled.div<{ $open: boolean }>`
+export const SubGroupHeader = styled.button<{ $open: boolean }>`
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
   padding: 6px 10px;
   border-radius: 6px;
   background: ${props => (props.$open ? '#F1F5F9' : 'transparent')};

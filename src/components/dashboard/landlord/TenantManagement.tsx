@@ -79,3 +79,4 @@ export const TenantManagement: React.FC = () => {
     </div>
   );
 };
+

@@ -304,3 +304,4 @@ export async function updatePropertyPermit(req: Request, res: Response): Promise
 
   res.status(200).json({ success: true, data: updated });
 }
+

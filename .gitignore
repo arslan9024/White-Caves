@@ -169,3 +169,6 @@ build-*.txt
 # WhatsApp session data (secrets)
 .wwebjs_auth/
 .wwebjs_cache/
+# Henry local test uploads
+henry-test-uploads/
+

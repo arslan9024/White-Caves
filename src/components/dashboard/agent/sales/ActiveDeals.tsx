@@ -80,3 +80,4 @@ export const ActiveDeals: React.FC = () => {
     </div>
   );
 };
+

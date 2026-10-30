@@ -107,3 +107,4 @@ export const FounderDepartmentGrid: FC<FounderDepartmentGridProps> = ({ onNaviga
 };
 
 export default FounderDepartmentGrid;
+

@@ -160,3 +160,4 @@ export const getExpenseCatalog = asyncHandler(async (_req: Request, res: Respons
     throw new AppError('Could not load expense master catalog: ' + message, 500);
   }
 });
+

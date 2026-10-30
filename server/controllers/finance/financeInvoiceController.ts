@@ -177,3 +177,4 @@ export const getInvoicePdf = asyncHandler(async (req: Request, res: Response) =>
 
   res.redirect(invoice.pdfUrl);
 });
+

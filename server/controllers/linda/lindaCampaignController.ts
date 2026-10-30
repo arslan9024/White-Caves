@@ -144,3 +144,4 @@ export const inventoryBroadcast = async (req: Request, res: Response) => {
       .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
   }
 };
+

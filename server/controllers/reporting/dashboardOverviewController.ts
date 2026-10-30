@@ -219,3 +219,4 @@ export async function getCacheStats(_req: Request, res: Response): Promise<void>
   const stats = cacheService.getStats();
   res.status(200).json({ success: true, data: stats });
 }
+

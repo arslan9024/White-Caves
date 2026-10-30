@@ -47,3 +47,4 @@ describe('mrzExtractorService', () => {
     expect(parsed?.firstName).toBe('AHMED');
   });
 });
+

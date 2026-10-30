@@ -74,3 +74,4 @@ export const WhatsAppDashboard: React.FC = () => {
     </div>
   );
 };
+

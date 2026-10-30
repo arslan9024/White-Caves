@@ -68,3 +68,4 @@ export const SellerInquiries: React.FC = () => {
     </div>
   );
 };
+

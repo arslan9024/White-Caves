@@ -74,3 +74,4 @@ export const LeaseRenewals: React.FC = () => {
     </div>
   );
 };
+

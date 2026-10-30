@@ -231,3 +231,4 @@ export async function reviewKycDocument(req: Request, res: Response): Promise<vo
     },
   });
 }
+

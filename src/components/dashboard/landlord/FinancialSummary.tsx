@@ -88,3 +88,4 @@ export const FinancialSummary: React.FC = () => {
     </div>
   );
 };
+

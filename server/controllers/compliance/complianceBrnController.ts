@@ -118,3 +118,4 @@ export async function getBrnCheckHistory(req: Request, res: Response): Promise<v
     },
   });
 }
+

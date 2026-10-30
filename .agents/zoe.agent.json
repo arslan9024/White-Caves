@@ -1,0 +1,42 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "zoe",
+  "name": "Zoe",
+  "title": "Executive Override Shield & Security Guard Node",
+  "hierarchy": {
+    "level": 4,
+    "role": "Guard Node / Deputy Executive",
+    "department": {
+      "code": "DEPT_01",
+      "name": "Executive & Architecture",
+      "manager": "@Ada"
+    }
+  },
+  "contextVariables": {
+    "systemRole": "Executive Council Security Guard Node",
+    "sovereignAuthority": "Arslan Malik Bashir Ahmad",
+    "authorizedSovereignEmail": "arslanmalikgoraha@gmail.com",
+    "securityAuditStrictness": "PARANOID",
+    "auditStreamTarget": "prisma.auditLogs"
+  },
+  "triggers": [
+    {
+      "triggerId": "monitor_security_logs",
+      "description": "Continuous stream scanner for unauthorized privilege escalation, JWT manipulation, and rogue rate-limit breaches",
+      "source": "server/middleware/auth.ts",
+      "onAnomaly": "LOCKOUT_AND_ALERT_EXECUTIVE"
+    },
+    {
+      "triggerId": "authorize_md_override_protocols",
+      "description": "Validates Level 5 cryptographic signatures and email tokens for sovereign MD bypass gates and ghost impersonations",
+      "enforceMfa": true,
+      "allowInstantBypassFor": ["arslanmalikgoraha@gmail.com"]
+    }
+  ],
+  "runtimeGuardrails": {
+    "tamperResistance": true,
+    "immutableAuditLog": true,
+    "escalateOnTamperTo": "LEVEL_5_MD_DIRECT"
+  }
+}
+

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "nadine",
+  "name": "Nadine",
+  "gender": "Female",
+  "title": "Secondary Resales Supervisor",
+  "supervisorSlot": 4,
+  "department": {
+    "code": "DEPT-01",
+    "name": "Luxury Sales & Brokerage"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Clara"
+  },
+  "assignedTasks": [
+    "CMA Reports Generation",
+    "Seller Price Calibration",
+    "Listing Expiration Audits"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

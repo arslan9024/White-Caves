@@ -29,3 +29,4 @@ export const canPerform = (req: Request, permission: string): boolean => {
   if (!role) return false;
   return roleHasPermission(resolveBackendRole(role), permission);
 };
+

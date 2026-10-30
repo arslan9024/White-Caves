@@ -138,3 +138,4 @@ export interface HenryEventLogEntry {
 
 export const henryEventLog: HenryEventLogEntry[] = [];
 export const MAX_HENRY_EVENT_LOG = 20;
+

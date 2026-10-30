@@ -60,3 +60,4 @@ export const SavedProperties: React.FC = () => {
     </div>
   );
 };
+

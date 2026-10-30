@@ -229,3 +229,4 @@ export async function getTrends(req: Request, res: Response): Promise<void> {
     data,
   });
 }
+

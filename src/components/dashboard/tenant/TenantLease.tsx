@@ -108,3 +108,4 @@ export const TenantLease: React.FC = () => {
     </div>
   );
 };
+

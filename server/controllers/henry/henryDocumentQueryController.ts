@@ -239,3 +239,4 @@ export const serveDocumentOrDownload = asyncHandler(async (req: AuthRequest, res
   }
   res.json({ success: true, data: decodeDocument(row) });
 });
+

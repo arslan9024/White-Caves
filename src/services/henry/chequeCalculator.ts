@@ -200,3 +200,4 @@ export const calculateAgencyCommissionBreakdown = ({
     totalFormatted: formatAed(totalDue),
   };
 };
+

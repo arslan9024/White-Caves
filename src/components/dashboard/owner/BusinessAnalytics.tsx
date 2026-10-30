@@ -59,3 +59,4 @@ export const BusinessAnalytics: React.FC = () => {
     </div>
   );
 };
+

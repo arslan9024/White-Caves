@@ -304,3 +304,4 @@ export async function createLeadActivity(req: RouteRequest, res: Response): Prom
 
   res.status(201).json({ success: true, data: activity });
 }
+

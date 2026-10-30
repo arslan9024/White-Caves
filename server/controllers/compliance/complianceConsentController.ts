@@ -209,3 +209,4 @@ export async function deleteConsentRecord(req: Request, res: Response): Promise<
 
   res.json({ success: true, data: { id: consentId, status: 'deleted' } });
 }
+

@@ -268,3 +268,4 @@ export async function deleteLease(req: AuthRequest, res: Response): Promise<void
   logger.info('Lease deleted', { userId, leaseId: id });
   res.json({ success: true, message: 'Lease deleted' });
 }
+

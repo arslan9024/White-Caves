@@ -83,3 +83,4 @@ export const SalesPipeline: React.FC = () => {
     </div>
   );
 };
+

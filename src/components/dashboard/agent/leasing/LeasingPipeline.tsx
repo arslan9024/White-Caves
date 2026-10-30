@@ -100,3 +100,4 @@ export const LeasingPipeline: FC<LeasingPipelineProps> = () => {
     </div>
   );
 };
+

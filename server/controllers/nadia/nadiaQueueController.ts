@@ -61,3 +61,4 @@ export async function assignQueueEntry(req: Request, res: Response): Promise<voi
     data: assigned,
   });
 }
+

@@ -116,3 +116,4 @@ export const LeaseManagement: React.FC = () => {
     </div>
   );
 };
+

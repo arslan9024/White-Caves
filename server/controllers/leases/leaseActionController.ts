@@ -202,3 +202,4 @@ export async function recordKeyHandover(req: AuthRequest, res: Response): Promis
   logger.info('Key handover recorded', { userId, leaseId: id, handoverDate: handover });
   res.json({ success: true, data: updated, message: 'Key handover recorded' });
 }
+

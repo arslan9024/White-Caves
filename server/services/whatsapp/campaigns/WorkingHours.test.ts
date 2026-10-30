@@ -17,3 +17,4 @@ describe('WorkingHours', () => {
     expect(isCurrentTimeWithinWorkingHours('09:00', '20:00', 'Asia/Dubai', midnight)).toBe(false);
   });
 });
+

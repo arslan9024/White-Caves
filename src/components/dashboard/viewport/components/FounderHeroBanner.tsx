@@ -114,3 +114,4 @@ export const FounderHeroBanner: FC = () => {
 };
 
 export default FounderHeroBanner;
+

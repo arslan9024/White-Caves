@@ -34,3 +34,4 @@ describe('renewalDateCalculator', () => {
     expect(result.contractDate).toMatch(/^\d{2}-\d{2}-\d{4}$/);
   });
 });
+

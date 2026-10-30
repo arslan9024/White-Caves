@@ -16,3 +16,4 @@ export type OptionalReportGenerator = {
     jobId: string;
   }) => Promise<unknown>;
 };
+

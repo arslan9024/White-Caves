@@ -74,3 +74,4 @@ export function advanceRenewalDates(
     contractDate: formatUaeDate(new Date()),
   };
 }
+

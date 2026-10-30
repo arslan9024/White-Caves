@@ -145,3 +145,4 @@ export const deleteDocumentHandler = asyncHandler(async (req: AuthRequest, res: 
   );
   res.json({ success: true });
 });
+

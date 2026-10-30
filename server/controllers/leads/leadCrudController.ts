@@ -281,3 +281,4 @@ export async function deleteLead(req: RouteRequest, res: Response): Promise<void
 
   res.status(200).json({ success: true, message: `Lead "${existing.name}" deleted` });
 }
+

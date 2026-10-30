@@ -81,3 +81,4 @@ export const LeaseContracts: React.FC = () => {
     </div>
   );
 };
+

@@ -133,3 +133,4 @@ export const FounderTelemetryDeck: FC<FounderTelemetryDeckProps> = ({ onOpenEscr
 };
 
 export default FounderTelemetryDeck;
+
