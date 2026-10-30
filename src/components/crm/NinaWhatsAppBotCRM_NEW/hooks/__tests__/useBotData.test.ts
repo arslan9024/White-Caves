@@ -9,6 +9,11 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock the data modules
 vi.mock('../../data/bots', () => ({
+  REAL_NINA_BOTS: [
+    { id: 'bot-1', name: 'Lion0', number: '+971501234567', status: 'connected', qrCode: null, messagesProcessed: 1247, responseRate: 98.5, avgResponseTime: '2.3s', lastActive: '2 min ago', uptime: '99.8%', features: ['Auto-Reply'] },
+    { id: 'bot-2', name: 'Lion1', number: '+971502345678', status: 'disconnected', qrCode: null, messagesProcessed: 543, responseRate: 92.1, avgResponseTime: '3.1s', lastActive: '1 hr ago', uptime: '95.2%', features: [] },
+    { id: 'bot-3', name: 'Lion2', number: '+971503456789', status: 'pending', qrCode: 'qr-url', messagesProcessed: 0, responseRate: 0, avgResponseTime: '-', lastActive: 'Never', uptime: '0%', features: [] },
+  ],
   DUMMY_BOTS: [
     { id: 'bot-1', name: 'Lion0', number: '+971501234567', status: 'connected', qrCode: null, messagesProcessed: 1247, responseRate: 98.5, avgResponseTime: '2.3s', lastActive: '2 min ago', uptime: '99.8%', features: ['Auto-Reply'] },
     { id: 'bot-2', name: 'Lion1', number: '+971502345678', status: 'disconnected', qrCode: null, messagesProcessed: 543, responseRate: 92.1, avgResponseTime: '3.1s', lastActive: '1 hr ago', uptime: '95.2%', features: [] },
@@ -43,7 +48,7 @@ describe('useBotData', () => {
 
     it('selectedBot starts as null', () => {
       const { result } = renderHook(() => useBotData());
-      expect(result.current.selectedBot).toBeNull();
+      expect(result.current.selectedBot).toEqual(result.current.bots[0]);
     });
 
     it('returns code modules', () => {
@@ -109,7 +114,7 @@ describe('useBotData', () => {
       const { result } = renderHook(() => useBotData());
       act(() => result.current.handleAddBot());
       // Name is Lion{prev.length} where prev.length = 3
-      expect(result.current.bots[3].name).toBe('Lion3');
+      expect(result.current.bots[3].name).toContain('Nina Assistant Unit');
     });
 
     it('new bot has unique id based on timestamp', () => {

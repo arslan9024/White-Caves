@@ -6,6 +6,7 @@
  */
 
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
 export const HubContainer = styled.div`
   min-height: 100vh;
@@ -15,6 +16,23 @@ export const HubContainer = styled.div`
 
   @media (max-width: 768px) {
     padding: 0.5rem;
+  }
+`;
+
+export const ExecutiveTelemetryDeck = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  padding: 0.55rem 0.85rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+
+  @media (max-width: 768px) {
+    padding: 0.45rem;
+    gap: 0.3rem;
   }
 `;
 
@@ -132,12 +150,9 @@ export const TopLevelTileButton = styled.button<{ $open: boolean; $accentColor?:
   }
 `;
 
-export const DeptHeader = styled.button<{ $active: boolean }>`
-  width: 100%;
+export const DeptHeader = styled.div<{ $active: boolean }>`
   padding: 8px 12px;
   border-radius: 8px;
-  font: inherit;
-  text-align: left;
   background: ${props => (props.$active ? '#EF4444' : '#F8FAFC')};
   color: ${props => (props.$active ? '#FFFFFF' : '#1E293B')};
   display: flex;
@@ -146,11 +161,6 @@ export const DeptHeader = styled.button<{ $active: boolean }>`
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid ${props => (props.$active ? '#DC2626' : '#E2E8F0')};
-
-  &:focus-visible {
-    outline: 2px solid #EF4444;
-    outline-offset: 2px;
-  }
 
   .left {
     display: flex;
@@ -166,12 +176,12 @@ export const DeptHeader = styled.button<{ $active: boolean }>`
 `;
 
 export const SubGroupHeader = styled.button<{ $open: boolean }>`
+  border: none;
   width: 100%;
+  text-align: left;
+  font-family: inherit;
   padding: 6px 10px;
   border-radius: 6px;
-  border: none;
-  font: inherit;
-  text-align: left;
   background: ${props => (props.$open ? '#F1F5F9' : 'transparent')};
   color: #475569;
   font-size: 0.76rem;
@@ -182,11 +192,6 @@ export const SubGroupHeader = styled.button<{ $open: boolean }>`
   cursor: pointer;
   margin-top: 4px;
   transition: all 0.15s ease;
-
-  &:focus-visible {
-    outline: 2px solid #EF4444;
-    outline-offset: 2px;
-  }
 
   &:hover {
     background: #F1F5F9;
@@ -248,6 +253,58 @@ export const ContentHeader = styled.div`
   background: #F8FAFC;
   flex-wrap: wrap;
   gap: 0.75rem;
+`;
+
+export const DepartmentLaunchpadActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+`;
+
+export const DepartmentLaunchpadAction = styled(motion.button)`
+  min-height: 44px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  background: #FFFFFF;
+  color: #EF4444;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.08);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    background: #FEF2F2;
+    border-color: #EF4444;
+  }
+
+  &:focus-visible {
+    outline: 3px solid #EF4444;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    justify-content: flex-start;
+  }
+`;
+
+export const DepartmentLaunchpadEmptyState = styled.p`
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed #CBD5E1;
+  border-radius: 10px;
+  background: #F8FAFC;
+  color: #475569;
+  font-size: 0.88rem;
 `;
 
 export const LiveCorporateTicker = styled.div`

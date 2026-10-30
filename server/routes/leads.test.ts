@@ -77,6 +77,7 @@ const { triggerLeadRescore } = vi.hoisted(() => ({
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 vi.mock('../utils/logger.js', () => ({
+  default: mockLogger,
   createLogger: mockLogger.createLogger,
   logger: mockLogger,
 }));

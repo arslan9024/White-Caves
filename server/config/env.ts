@@ -3,14 +3,22 @@
  * Single source of truth for all server environment variables
  */
 
+import fs from 'fs';
+import path from 'path';
 import dotenv from 'dotenv';
 
 // Load environment variables as early as possible to prevent import-order issues.
-// In production, load .env.production on top of .env for local production-like runs.
+// Checks secrets/.env first (if present), then .env, then .env.production.
 const runtimeEnv = process.env.NODE_ENV;
 const isTestRuntime = runtimeEnv === 'test' || process.env.VITEST === 'true';
 
 if (!isTestRuntime) {
+  const customPath = process.env.DOTENV_CONFIG_PATH;
+  if (customPath && fs.existsSync(customPath)) {
+    dotenv.config({ path: customPath, quiet: true });
+  } else if (fs.existsSync(path.resolve(process.cwd(), 'secrets/.env'))) {
+    dotenv.config({ path: path.resolve(process.cwd(), 'secrets/.env'), quiet: true });
+  }
   dotenv.config({ quiet: true });
 }
 if (!isTestRuntime && runtimeEnv === 'production') {
@@ -108,7 +116,7 @@ export const WHATSAPP_WEBHOOK_SECRET = _whatsappSecret || '';
 
 // ─── Linda LocalAuth WhatsApp ─────────────────────────────────────────────
 export const LINDA_ENABLED = process.env.LINDA_ENABLED !== 'false'; // opt-out flag
-export const LINDA_SESSIONS_PATH = process.env.LINDA_SESSIONS_PATH || './.linda-sessions';
+export const LINDA_SESSIONS_PATH = process.env.LINDA_SESSIONS_PATH || './sessions';
 export const LINDA_BOT_MASTER_NUMBER = process.env.LINDA_BOT_MASTER_NUMBER || '';
 export const LINDA_HEADLESS = process.env.LINDA_HEADLESS !== 'false';
 export const LINDA_RECONNECT_DELAY = parseInt(process.env.LINDA_RECONNECT_DELAY || '5000', 10);

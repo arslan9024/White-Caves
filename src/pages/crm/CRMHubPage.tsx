@@ -5,7 +5,7 @@
 
 import React, { FC, memo } from 'react';
 import PublicLayout from '../../components/layout/PublicLayout';
-import { HubContainer, MainLayout } from './CRMHubPage.styles';
+import { HubContainer, MainLayout, ExecutiveTelemetryDeck } from './CRMHubPage.styles';
 import { useCRMHubPageLogic, MD_SUITE_DEPT } from './CRMHubPage.logic';
 import DashboardGlobalHeader from '../../components/dashboard/header/DashboardGlobalHeader';
 import DashboardLiveTicker from '../../components/dashboard/header/DashboardLiveTicker';

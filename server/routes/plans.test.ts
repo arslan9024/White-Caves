@@ -48,15 +48,15 @@ const { mockPlanService, mockPlanAIService } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../../src/server/services/PlanService.js', () => ({
+vi.mock('../services/PlanService.js', () => ({
   getPlanService: vi.fn().mockResolvedValue(mockPlanService),
 }));
 
-vi.mock('../../src/server/services/PlanAIService.js', () => ({
+vi.mock('../services/PlanAIService.js', () => ({
   getPlanAIService: vi.fn().mockReturnValue(mockPlanAIService),
 }));
 
-vi.mock('../../src/server/lib/logger.js', () => ({
+vi.mock('../utils/logger.js', () => ({
   default: {
     info: vi.fn(),
     error: vi.fn(),

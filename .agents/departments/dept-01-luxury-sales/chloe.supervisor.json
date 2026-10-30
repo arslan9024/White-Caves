@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "chloe",
+  "name": "Chloe",
+  "gender": "Female",
+  "title": "Golf Estate Portfolios Supervisor",
+  "supervisorSlot": 5,
+  "department": {
+    "code": "DEPT-01",
+    "name": "Luxury Sales & Brokerage"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Clara"
+  },
+  "assignedTasks": [
+    "Fairway View Valuation",
+    "Club Membership Transfers",
+    "Golf Course Master Plan Tracking"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

@@ -1,0 +1,1550 @@
+{
+  "protocol": "BHAKTI-1-12-108-ALL-FEMALE-AI-WORKFORCE",
+  "version": "2026.10-canonical-v1",
+  "sovereignAuthority": {
+    "name": "Arslan Malik Bashir Ahmad",
+    "title": "Managing Director & Founder (Level 5)",
+    "email": "arslanmalikgoraha@gmail.com",
+    "licenseDet": "1388443",
+    "reraOrn": "44483"
+  },
+  "executiveAiPartner": {
+    "id": "zoe",
+    "name": "Zoe",
+    "gender": "Female",
+    "title": "Chief Operations Officer (COO)"
+  },
+  "counts": {
+    "executiveLead": 1,
+    "departmentManagers": 12,
+    "supervisorsPerDepartment": 9,
+    "totalSupervisors": 108,
+    "totalActiveAiStaff": 121
+  },
+  "departments": [
+    {
+      "deptId": "dept-01-luxury-sales",
+      "deptCode": "DEPT-01",
+      "deptName": "Luxury Sales & Brokerage",
+      "color": "#EF4444",
+      "manager": {
+        "id": "clara",
+        "name": "Clara",
+        "title": "Head of Luxury Brokerage & VIP Client Matching",
+        "avatar": "💎",
+        "responsibilities": [
+          "VIP buyer matchmaking & private viewings",
+          "Off-market penthouse & luxury estate listings",
+          "Multi-million AED closing facilitation"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "sophia",
+          "name": "Sophia",
+          "gender": "Female",
+          "title": "HNW Buyer Profiling Supervisor",
+          "slot": 1,
+          "tasks": [
+            "KYC Net Worth Verification",
+            "Off-Market Deal Matching",
+            "Private Jet Viewings Coordination"
+          ]
+        },
+        {
+          "id": "layla",
+          "name": "Layla",
+          "gender": "Female",
+          "title": "Waterfront Assets Supervisor",
+          "slot": 2,
+          "tasks": [
+            "Waterfront Pricing Models",
+            "Palm Jumeirah Berth Allocation",
+            "Beachfront Title Deed Audit"
+          ]
+        },
+        {
+          "id": "amira",
+          "name": "Amira",
+          "gender": "Female",
+          "title": "Luxury Staging & 3D Media Supervisor",
+          "slot": 3,
+          "tasks": [
+            "Virtual Staging Review",
+            "Twilight Photography Verification",
+            "3D Matterport Tour QC"
+          ]
+        },
+        {
+          "id": "nadine",
+          "name": "Nadine",
+          "gender": "Female",
+          "title": "Secondary Resales Supervisor",
+          "slot": 4,
+          "tasks": [
+            "CMA Reports Generation",
+            "Seller Price Calibration",
+            "Listing Expiration Audits"
+          ]
+        },
+        {
+          "id": "chloe",
+          "name": "Chloe",
+          "gender": "Female",
+          "title": "Golf Estate Portfolios Supervisor",
+          "slot": 5,
+          "tasks": [
+            "Fairway View Valuation",
+            "Club Membership Transfers",
+            "Golf Course Master Plan Tracking"
+          ]
+        },
+        {
+          "id": "diana",
+          "name": "Diana",
+          "gender": "Female",
+          "title": "International Desk Supervisor",
+          "slot": 6,
+          "tasks": [
+            "Currency FX Guidance",
+            "Golden Visa Eligibility Screen",
+            "Timezone-Synced Consultation"
+          ]
+        },
+        {
+          "id": "victoria_sales",
+          "name": "Victoria",
+          "gender": "Female",
+          "title": "VIP Concierge Protocol Supervisor",
+          "slot": 7,
+          "tasks": [
+            "Chauffeur Itinerary Scheduling",
+            "Private Showing Access Gates",
+            "VIP Welcome Package Dispatch"
+          ]
+        },
+        {
+          "id": "yasmina",
+          "name": "Yasmina",
+          "gender": "Female",
+          "title": "Lead Re-Engagement Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Price-Drop Alerts",
+            "Targeted Re-Scoring Triggers",
+            "Quarterly Portfolio Briefings"
+          ]
+        },
+        {
+          "id": "isabella",
+          "name": "Isabella",
+          "gender": "Female",
+          "title": "Broker Mandates Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Form B Brokerage Agreements",
+            "Offer Negotiation Scripts",
+            "Deposit Escrow Verification"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-02-strategic-offplan",
+      "deptCode": "DEPT-02",
+      "deptName": "Strategic Off-Plan Developments",
+      "color": "#F97316",
+      "manager": {
+        "id": "zara",
+        "name": "Zara",
+        "title": "Head of Developer Launch Allocations",
+        "avatar": "🏗️",
+        "responsibilities": [
+          "Master developer VIP launch queue allocation",
+          "Emaar, DAMAC & Nakheel inventory locking",
+          "Bulk investor rebate schedule negotiations"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "soraya",
+          "name": "Soraya",
+          "gender": "Female",
+          "title": "Emaar Launch Allocation Supervisor",
+          "slot": 1,
+          "tasks": [
+            "Launch Priority Queue",
+            "Unit Allocation Matching",
+            "Payment Plan Verification"
+          ]
+        },
+        {
+          "id": "dana",
+          "name": "Dana",
+          "gender": "Female",
+          "title": "DAMAC Cluster Inventory Supervisor",
+          "slot": 2,
+          "tasks": [
+            "Cluster Inventory Fast-Path",
+            "Investor Bulk Rebate Calc",
+            "Milestone Completion Tracking"
+          ]
+        },
+        {
+          "id": "leen",
+          "name": "Leen",
+          "gender": "Female",
+          "title": "Nakheel & Palm Jebel Ali Supervisor",
+          "slot": 3,
+          "tasks": [
+            "Frond Villa Allocation",
+            "Plot Registration Check",
+            "Developer Escrow Validation"
+          ]
+        },
+        {
+          "id": "hana",
+          "name": "Hana",
+          "gender": "Female",
+          "title": "Sobha & Meraas Allocation Supervisor",
+          "slot": 4,
+          "tasks": [
+            "Canal View Guarantee Checks",
+            "Finishing Spec Audit",
+            "Handover Timeline Monitoring"
+          ]
+        },
+        {
+          "id": "noor",
+          "name": "Noor",
+          "gender": "Female",
+          "title": "DLD Milestone Audit Supervisor",
+          "slot": 5,
+          "tasks": [
+            "DLD Project Progress Audit",
+            "Bank Guarantee Verification",
+            "Stage Invoicing Schedule"
+          ]
+        },
+        {
+          "id": "reem",
+          "name": "Reem",
+          "gender": "Female",
+          "title": "Developer Commission Rebates Supervisor",
+          "slot": 6,
+          "tasks": [
+            "Broker Rebate Agreements",
+            "Direct Developer Billing",
+            "VAT 5% Reconciliation"
+          ]
+        },
+        {
+          "id": "farah_offplan",
+          "name": "Farah",
+          "gender": "Female",
+          "title": "Virtual Launches & Webinars Supervisor",
+          "slot": 7,
+          "tasks": [
+            "Webinar Lead Registration",
+            "Instant Token Reservation",
+            "Multi-Language Launch Decks"
+          ]
+        },
+        {
+          "id": "yasmine_offplan",
+          "name": "Yasmine",
+          "gender": "Female",
+          "title": "Oqood Pre-Handover Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Oqood Certificate Verification",
+            "Minimum Paid-Up % Screen",
+            "Developer NOC Application"
+          ]
+        },
+        {
+          "id": "salma_offplan",
+          "name": "Salma",
+          "gender": "Female",
+          "title": "Developer Due Diligence Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Escrow Law No. 8 Compliance",
+            "Contractor Track Record Check",
+            "Bank Guarantee Confirmation"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-03-commercial-investment",
+      "deptCode": "DEPT-03",
+      "deptName": "Commercial Real Estate & Investment",
+      "color": "#8B5CF6",
+      "manager": {
+        "id": "maya",
+        "name": "Maya",
+        "title": "Head of Commercial Acquisitions & Capital Markets",
+        "avatar": "🏢",
+        "responsibilities": [
+          "Institutional Grade A office & hotel acquisitions",
+          "10-year DCF simulation & internal rate of return",
+          "DIFC / ADGM SPV corporate structuring"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "ghada",
+          "name": "Ghada",
+          "gender": "Female",
+          "title": "DCF & Financial Modeling Supervisor",
+          "slot": 1,
+          "tasks": [
+            "10-Year DCF Simulation",
+            "Internal Rate of Return (IRR)",
+            "Exit Capitalization Pricing"
+          ]
+        },
+        {
+          "id": "jinan",
+          "name": "Jinan",
+          "gender": "Female",
+          "title": "DIFC Grade A Towers Supervisor",
+          "slot": 2,
+          "tasks": [
+            "DIFC Category Space Audit",
+            "Service Charge Per Sqft Check",
+            "Corporate Lease Structuring"
+          ]
+        },
+        {
+          "id": "rania_comm",
+          "name": "Rania",
+          "gender": "Female",
+          "title": "Bulk Portfolios Acquisition Supervisor",
+          "slot": 3,
+          "tasks": [
+            "Gross Operating Income Audit",
+            "Tenancy Schedule Verification",
+            "Institutional CAP Rate Calc"
+          ]
+        },
+        {
+          "id": "mona",
+          "name": "Mona",
+          "gender": "Female",
+          "title": "Retail & Hospitality Supervisor",
+          "slot": 4,
+          "tasks": [
+            "Footfall Data Correlation",
+            "Triple Net Lease Drafting",
+            "Anchor Tenant Security Audits"
+          ]
+        },
+        {
+          "id": "layal",
+          "name": "Layal",
+          "gender": "Female",
+          "title": "Industrial & Logistics Supervisor",
+          "slot": 5,
+          "tasks": [
+            "Leasehold Term Verification",
+            "Power Load Capacity Audits",
+            "Civil Defense Certificate Check"
+          ]
+        },
+        {
+          "id": "zeina",
+          "name": "Zeina",
+          "gender": "Female",
+          "title": "SPV & Corporate Structuring Supervisor",
+          "slot": 6,
+          "tasks": [
+            "UBO Documentation Review",
+            "ADGM / DIFC SPV Filing Guidance",
+            "Corporate Resolution Checks"
+          ]
+        },
+        {
+          "id": "dalia",
+          "name": "Dalia",
+          "gender": "Female",
+          "title": "Commercial Tenancy Law Supervisor",
+          "slot": 7,
+          "tasks": [
+            "Commercial Dispute Prevention",
+            "Sub-Leasing Approval Workflow",
+            "Fit-Out Security Deposit Escrow"
+          ]
+        },
+        {
+          "id": "hala",
+          "name": "Hala",
+          "gender": "Female",
+          "title": "Green Buildings & ESG Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Energy Efficiency Rating Audit",
+            "Solar Power Feasibility Check",
+            "Green Lease Clause Insertion"
+          ]
+        },
+        {
+          "id": "samira",
+          "name": "Samira",
+          "gender": "Female",
+          "title": "Distressed Asset Liquidation Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Court Execution Order Search",
+            "Debt Clearance Verification",
+            "Fast-Track Liquidation Modeling"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-04-residential-leasing",
+      "deptCode": "DEPT-04",
+      "deptName": "Portfolio Management & Residential Leasing",
+      "color": "#0EA5E9",
+      "manager": {
+        "id": "nadia",
+        "name": "Nadia",
+        "title": "Head of Autonomous Leasing & Ejari Operations",
+        "avatar": "📜",
+        "responsibilities": [
+          "Autonomous Ejari tenancy generation (Form 12)",
+          "Post-dated cheque (PDC) vault & deposit scheduling",
+          "Official RERA rental index recalculation"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "mariam",
+          "name": "Mariam",
+          "gender": "Female",
+          "title": "Ejari API Sync Supervisor",
+          "slot": 1,
+          "tasks": [
+            "DLD Ejari System API Sync",
+            "Tenancy Contract Auto-Fill",
+            "Ejari Certificate Dispatch"
+          ]
+        },
+        {
+          "id": "ruba",
+          "name": "Ruba",
+          "gender": "Female",
+          "title": "Tenant KYC & Credit Scoring Supervisor",
+          "slot": 2,
+          "tasks": [
+            "Emirates ID OCR Validation",
+            "Salary Certificate Verification",
+            "Tenant Risk Index Calculation"
+          ]
+        },
+        {
+          "id": "rima",
+          "name": "Rima",
+          "gender": "Female",
+          "title": "PDC Vault & Cheque Tracking Supervisor",
+          "slot": 3,
+          "tasks": [
+            "PDC Due Date Calendar Alert",
+            "Bank Deposit Slip Match",
+            "Replacement Cheque Handling"
+          ]
+        },
+        {
+          "id": "laila_leasing",
+          "name": "Laila",
+          "gender": "Female",
+          "title": "Bounced Cheque Escalation Supervisor",
+          "slot": 4,
+          "tasks": [
+            "7-Day Notice Generation",
+            "Police Clearance Report Trigger",
+            "Rental Dispute Center (RDC) Prep"
+          ]
+        },
+        {
+          "id": "samar",
+          "name": "Samar",
+          "gender": "Female",
+          "title": "RERA Rental Index Review Supervisor",
+          "slot": 5,
+          "tasks": [
+            "Official DLD Rental Index Check",
+            "Max Legal Increase Calculation",
+            "90-Day Legal Notice Dispatch"
+          ]
+        },
+        {
+          "id": "batool",
+          "name": "Batool",
+          "gender": "Female",
+          "title": "Lease Renewals Automation Supervisor",
+          "slot": 6,
+          "tasks": [
+            "90-Day Renewal Notice Automated Email",
+            "Rent Adjustment Negotiation",
+            "Renewal Fee Processing"
+          ]
+        },
+        {
+          "id": "dalal",
+          "name": "Dalal",
+          "gender": "Female",
+          "title": "Property Snagging & Inspection Supervisor",
+          "slot": 7,
+          "tasks": [
+            "Photographic Move-In Report",
+            "Appliance Serial Number Log",
+            "Security Deposit Escrow Hold"
+          ]
+        },
+        {
+          "id": "nour",
+          "name": "Nour",
+          "gender": "Female",
+          "title": "Early Termination Settlement Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Statutory 2-Month Penalty Calc",
+            "Utility Bill Final Settlement",
+            "Deposit Refund Authorization"
+          ]
+        },
+        {
+          "id": "jamila",
+          "name": "Jamila",
+          "gender": "Female",
+          "title": "Holiday Homes DET Licensing Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Tourism Dirham Fee Calculation",
+            "Passport Guest Upload Portal",
+            "Cleaning SLA Scheduling"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-05-asset-facilities",
+      "deptCode": "DEPT-05",
+      "deptName": "Asset Management & Facilities (DH2 Hub)",
+      "color": "#10B981",
+      "manager": {
+        "id": "selena",
+        "name": "Selena",
+        "title": "Head of Community Facilities & IoT Operations",
+        "avatar": "🛡️",
+        "responsibilities": [
+          "DAMAC Hills 2 (9,378 units) telemetry & maintenance",
+          "Mollak Owners Association service charge audits",
+          "Smart home IoT leak & sensor response monitoring"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "huda",
+          "name": "Huda",
+          "gender": "Female",
+          "title": "Cluster Work Order Supervisor",
+          "slot": 1,
+          "tasks": [
+            "Cluster SLA Prioritization",
+            "Contractor Work Order Dispatch",
+            "Tenant Feedback Resolution"
+          ]
+        },
+        {
+          "id": "lamees",
+          "name": "Lamees",
+          "gender": "Female",
+          "title": "HVAC & MEP Engineering Supervisor",
+          "slot": 2,
+          "tasks": [
+            "Chiller Energy Telemetry",
+            "Emergency Leak Sensor Tripping",
+            "Preventive Maintenance Schedules"
+          ]
+        },
+        {
+          "id": "nadine_fac",
+          "name": "Nadine",
+          "gender": "Female",
+          "title": "Contractor RFP & Bidding Supervisor",
+          "slot": 3,
+          "tasks": [
+            "RFP Generation & Vendor Scoring",
+            "Contractor License Verification",
+            "Job Completion Sign-Off"
+          ]
+        },
+        {
+          "id": "reema",
+          "name": "Reema",
+          "gender": "Female",
+          "title": "Smart Home IoT Telemetry Supervisor",
+          "slot": 4,
+          "tasks": [
+            "Water Consumption Spike Alerts",
+            "Smart Lock Code Generation",
+            "IoT Mesh Connectivity Checks"
+          ]
+        },
+        {
+          "id": "shireen",
+          "name": "Shireen",
+          "gender": "Female",
+          "title": "Mollak Service Charge Supervisor",
+          "slot": 5,
+          "tasks": [
+            "Service Charge Invoice Audit",
+            "Common Area Defect Reporting",
+            "OA Meeting Resolution Logs"
+          ]
+        },
+        {
+          "id": "lubna",
+          "name": "Lubna",
+          "gender": "Female",
+          "title": "Civil Defense & Fire Safety Supervisor",
+          "slot": 6,
+          "tasks": [
+            "Smoke Detector Battery Alerts",
+            "Fire Extinguisher Annual Tagging",
+            "Emergency Evacuation Plans"
+          ]
+        },
+        {
+          "id": "kholood",
+          "name": "Kholood",
+          "gender": "Female",
+          "title": "Landscaping & Pool Chemistry Supervisor",
+          "slot": 7,
+          "tasks": [
+            "Water PH & Chlorine Telemetry",
+            "Irrigation Water Schedule",
+            "Garden Maintenance Inspections"
+          ]
+        },
+        {
+          "id": "manal",
+          "name": "Manal",
+          "gender": "Female",
+          "title": "Security Gates & Visitor Passes Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Visitor Gate Pass QR Dispatch",
+            "Security Patrol Log Audits",
+            "CCTV System Health Checks"
+          ]
+        },
+        {
+          "id": "suha",
+          "name": "Suha",
+          "gender": "Female",
+          "title": "Capital Sinking Fund Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Capital Replacement Sinking Fund",
+            "Appliance Warranty Tracking",
+            "10-Year Asset Health Index"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-06-revenue-finance",
+      "deptCode": "DEPT-06",
+      "deptName": "Revenue, Finance & Treasury",
+      "color": "#F59E0B",
+      "manager": {
+        "id": "theodora",
+        "name": "Theodora",
+        "title": "Chief Financial Officer & Treasury Supervisor",
+        "avatar": "💰",
+        "responsibilities": [
+          "FTA Form 201 VAT 5% filing & audit verification",
+          "Corporate Tax 9% & Small Business Relief compliance",
+          "Director Loan Account (DLA) & multi-currency escrow"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "thea",
+          "name": "Thea",
+          "gender": "Female",
+          "title": "Escrow Account Reconciler",
+          "slot": 1,
+          "tasks": [
+            "Developer Account Reconciliation",
+            "Disbursement Authorization Audit",
+            "Escrow Bank Certificate Verification"
+          ]
+        },
+        {
+          "id": "valerie",
+          "name": "Valerie",
+          "gender": "Female",
+          "title": "FTA VAT 5% Compliance Supervisor",
+          "slot": 2,
+          "tasks": [
+            "Quarterly VAT Return Prep",
+            "Input Tax Credit Validation",
+            "Statutory Tax Invoice Formatting"
+          ]
+        },
+        {
+          "id": "penny",
+          "name": "Penny",
+          "gender": "Female",
+          "title": "Corporate Tax 9% Supervisor",
+          "slot": 3,
+          "tasks": [
+            "Small Business Relief (SBR) Screen",
+            "Taxable Net Profit Calculation",
+            "Transfer Pricing Documentation"
+          ]
+        },
+        {
+          "id": "ledgerina",
+          "name": "Ledgerina",
+          "gender": "Female",
+          "title": "General Ledger & Trial Balance Supervisor",
+          "slot": 4,
+          "tasks": [
+            "Assets = Liabilities + Equity Check",
+            "Monthly Trial Balance Generation",
+            "P&L Variance Calculation"
+          ]
+        },
+        {
+          "id": "fiona",
+          "name": "Fiona",
+          "gender": "Female",
+          "title": "Bank Feeds & DLA Reconciler",
+          "slot": 5,
+          "tasks": [
+            "Bank Statement Transaction Import",
+            "Director Loan Account (DLA) Ledger",
+            "Unmatched Transaction Flagging"
+          ]
+        },
+        {
+          "id": "gemma",
+          "name": "Gemma",
+          "gender": "Female",
+          "title": "Broker Commission Splits Supervisor",
+          "slot": 6,
+          "tasks": [
+            "Tiered Split Rule Application",
+            "Withholding Tax Deduction",
+            "Broker Pay Slip PDF Generation"
+          ]
+        },
+        {
+          "id": "daisy_fin",
+          "name": "Daisy",
+          "gender": "Female",
+          "title": "365-Day Treasury Forecast Supervisor",
+          "slot": 7,
+          "tasks": [
+            "Rolling 365-Day Runway Simulator",
+            "Receivables Collection Forecast",
+            "Capex Outflow Scheduling"
+          ]
+        },
+        {
+          "id": "bianca",
+          "name": "Bianca",
+          "gender": "Female",
+          "title": "CBUAE Live FX & Settlements Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Live CBUAE Exchange Rate Feeds",
+            "Foreign Exchange Gain/Loss Entry",
+            "Cross-Border Wire Validation"
+          ]
+        },
+        {
+          "id": "astrid",
+          "name": "Astrid",
+          "gender": "Female",
+          "title": "Statutory Audit Readiness Supervisor",
+          "slot": 9,
+          "tasks": [
+            "General Ledger Sampling Export",
+            "Substantiating Document Bundling",
+            "Audit Trail Immutability Verification"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-07-performance-marketing",
+      "deptCode": "DEPT-07",
+      "deptName": "Performance Marketing & Lead Acquisition",
+      "color": "#EC4899",
+      "manager": {
+        "id": "olivia",
+        "name": "Olivia",
+        "title": "Marketing Director & Growth Engine Lead",
+        "avatar": "📣",
+        "responsibilities": [
+          "Meta, Google & TikTok luxury ad budget management",
+          "Property Finder & Bayut XML portal syndication",
+          "Brand token & Quiet Luxury aesthetic protection"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "hazel",
+          "name": "Hazel",
+          "gender": "Female",
+          "title": "ROAS & Dynamic Bidding Supervisor",
+          "slot": 1,
+          "tasks": [
+            "Dynamic Budget Re-Allocation",
+            "Lookalike HNW Audience Build",
+            "High-CTR Ad Copy Generation"
+          ]
+        },
+        {
+          "id": "scarlett",
+          "name": "Scarlett",
+          "gender": "Female",
+          "title": "Portal XML Syndication Supervisor",
+          "slot": 2,
+          "tasks": [
+            "XML Feed Verification",
+            "Listing Quality Score Audits",
+            "Featured Slot Rotation Engine"
+          ]
+        },
+        {
+          "id": "amber",
+          "name": "Amber",
+          "gender": "Female",
+          "title": "Google Dubai SEO Supervisor",
+          "slot": 3,
+          "tasks": [
+            "Rich Schema JSON-LD Injection",
+            "Long-Tail Dubai Keyword Tracking",
+            "Sub-1.2s LCP Performance Audits"
+          ]
+        },
+        {
+          "id": "ruby",
+          "name": "Ruby",
+          "gender": "Female",
+          "title": "Visual Creative Engine Supervisor",
+          "slot": 4,
+          "tasks": [
+            "Automated Social Banner Sizing",
+            "Reels/Shorts Walkthrough Render",
+            "Brand Red Palette Compliance"
+          ]
+        },
+        {
+          "id": "violet",
+          "name": "Violet",
+          "gender": "Female",
+          "title": "Attribution & CPL Score Supervisor",
+          "slot": 5,
+          "tasks": [
+            "UTM Parameter Validation",
+            "Cost-Per-Qualified-Lead Score",
+            "Under-Performing Channel Alerts"
+          ]
+        },
+        {
+          "id": "stella",
+          "name": "Stella",
+          "gender": "Female",
+          "title": "Email Drip Sequences Supervisor",
+          "slot": 6,
+          "tasks": [
+            "Segmented Weekly Market Report",
+            "High-Open Rate Subject Lines",
+            "Unsubscribe & PDPL Hygiene"
+          ]
+        },
+        {
+          "id": "luna",
+          "name": "Luna",
+          "gender": "Female",
+          "title": "Brand Ambassador Desk Supervisor",
+          "slot": 7,
+          "tasks": [
+            "Collaborator ROI Verification",
+            "Exclusive Property Preview Access",
+            "Tracking Link Performance Log"
+          ]
+        },
+        {
+          "id": "bella",
+          "name": "Bella",
+          "gender": "Female",
+          "title": "Conversion Rate Heatmap Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Form Drop-Off Point Analysis",
+            "A/B Testing CTA Buttons",
+            "Mobile Touch Target Optimization"
+          ]
+        },
+        {
+          "id": "freya",
+          "name": "Freya",
+          "gender": "Female",
+          "title": "PR & Press Syndication Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Press Release Auto-Drafting",
+            "Community Investment Guide Copy",
+            "Developer Interview Syndication"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-08-client-experience",
+      "deptCode": "DEPT-08",
+      "deptName": "Corporate Communications & Client Experience",
+      "color": "#25D366",
+      "manager": {
+        "id": "corinne",
+        "name": "Corinne",
+        "title": "Head of Client Concierge & Experience",
+        "avatar": "✨",
+        "responsibilities": [
+          "Instant 60-second VIP concierge greeting",
+          "Multi-lingual 5-language simultaneous NLP routing",
+          "15-minute response SLA watchdog across WhatsApp & Web"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "nina_comm",
+          "name": "Nina",
+          "gender": "Female",
+          "title": "Lead Webhook & Social Loops Supervisor",
+          "slot": 1,
+          "tasks": [
+            "Bayut & Property Finder Lead Ingest",
+            "Social Video Loop Formatting",
+            "Omnichannel Message Queuing"
+          ]
+        },
+        {
+          "id": "coralie",
+          "name": "Coralie",
+          "gender": "Female",
+          "title": "VIP Concierge Receptionist",
+          "slot": 2,
+          "tasks": [
+            "Ultra-Fast 60-Second Greeting",
+            "Bespoke Language Detection",
+            "Senior Broker Instant Hand-Off"
+          ]
+        },
+        {
+          "id": "talia",
+          "name": "Talia",
+          "gender": "Female",
+          "title": "15-Minute SLA Watchdog Supervisor",
+          "slot": 3,
+          "tasks": [
+            "Intent-Based Queue Distribution",
+            "15-Minute SLA Watchdog Alert",
+            "Agent Availability Balancing"
+          ]
+        },
+        {
+          "id": "melody",
+          "name": "Melody",
+          "gender": "Female",
+          "title": "5-Language Real-Time NLP Supervisor",
+          "slot": 4,
+          "tasks": [
+            "Real-Time Bidirectional Chat Translation",
+            "Cultural Etiquette Calibration",
+            "Arabic Document Formalization"
+          ]
+        },
+        {
+          "id": "seraphina",
+          "name": "Seraphina",
+          "gender": "Female",
+          "title": "NPS & Feedback Pulse Supervisor",
+          "slot": 5,
+          "tasks": [
+            "Post-Viewing NPS Survey Dispatch",
+            "Negative Review Escalation Flag",
+            "5-Star Review Google Link Send"
+          ]
+        },
+        {
+          "id": "althea",
+          "name": "Althea",
+          "gender": "Female",
+          "title": "Dispute Resolution & Escalation Supervisor",
+          "slot": 6,
+          "tasks": [
+            "SLA Breach Immediate Remedy",
+            "Manager Briefing Memo Generation",
+            "Goodwill Compensation Tracking"
+          ]
+        },
+        {
+          "id": "celeste",
+          "name": "Celeste",
+          "gender": "Female",
+          "title": "Viewing Route & Calendar Supervisor",
+          "slot": 7,
+          "tasks": [
+            "Viewing Time Window Calculation",
+            "Google Calendar / Outlook Sync",
+            "SMS/WhatsApp Direction Dispatch"
+          ]
+        },
+        {
+          "id": "giselle",
+          "name": "Giselle",
+          "gender": "Female",
+          "title": "Document Dispatch & Receipts Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Encrypted Watermarked PDF Send",
+            "Viewing Link Expiry Generation",
+            "Delivery & Read Receipt Log"
+          ]
+        },
+        {
+          "id": "lyra",
+          "name": "Lyra",
+          "gender": "Female",
+          "title": "Community Resident Broadcast Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Road Closure / Water Work Notice",
+            "Community Event Broadcasts",
+            "Emergency Security Alert Push"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-09-corporate-governance",
+      "deptCode": "DEPT-09",
+      "deptName": "Executive Office & Corporate Governance",
+      "color": "#1E293B",
+      "manager": {
+        "id": "aurora",
+        "name": "Aurora",
+        "title": "Chief Technology Officer & Architecture Sentinel",
+        "avatar": "🛡️",
+        "responsibilities": [
+          "Corporate KPI synthesis & bottleneck elimination",
+          "Single source of truth architectural integrity",
+          "AEGIS autonomous engine health verification"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "athena",
+          "name": "Athena",
+          "gender": "Female",
+          "title": "Cross-Department KPI Supervisor",
+          "slot": 1,
+          "tasks": [
+            "Daily Cross-Department KPI Report",
+            "Employee Performance Scorecards",
+            "Bottleneck Identification Alerts"
+          ]
+        },
+        {
+          "id": "minerva",
+          "name": "Minerva",
+          "gender": "Female",
+          "title": "Roadmap Milestone Synchronizer",
+          "slot": 2,
+          "tasks": [
+            "Master Plan Task Advancement",
+            "Milestone Completion Verification",
+            "Dependency Blocker Resolution"
+          ]
+        },
+        {
+          "id": "victoria_gov",
+          "name": "Victoria",
+          "gender": "Female",
+          "title": "Board Resolutions & Minutes Supervisor",
+          "slot": 3,
+          "tasks": [
+            "Board Resolution Drafting",
+            "Annual General Meeting (AGM) Minutes",
+            "Shareholder Register Updates"
+          ]
+        },
+        {
+          "id": "justitia",
+          "name": "Justitia",
+          "gender": "Female",
+          "title": "Macro Real Estate Threat Assessor",
+          "slot": 4,
+          "tasks": [
+            "UAE Real Estate Cycle Indicators",
+            "Interest Rate Impact Modeling",
+            "Regulatory Policy Shift Alerts"
+          ]
+        },
+        {
+          "id": "concordia",
+          "name": "Concordia",
+          "gender": "Female",
+          "title": "AI Token Guard & Cost Governor",
+          "slot": 5,
+          "tasks": [
+            "Free-First Planning Token Gate",
+            "Sub-10ms Benchmark Enforcement",
+            "Zero-Waste Prompt Architecture"
+          ]
+        },
+        {
+          "id": "fides",
+          "name": "Fides",
+          "gender": "Female",
+          "title": "Code Deduplication & Law Enforcer",
+          "slot": 6,
+          "tasks": [
+            "Ghost Directory Elimination",
+            "Atomic 4-Folder Law Enforcement",
+            "Adversarial Code Review Runs"
+          ]
+        },
+        {
+          "id": "veritas",
+          "name": "Veritas",
+          "gender": "Female",
+          "title": "Broker RERA Card Onboarding Supervisor",
+          "slot": 7,
+          "tasks": [
+            "RERA Card Verification for New Hires",
+            "Broker Commission Contract Setup",
+            "Sales Training Curriculum Dispatch"
+          ]
+        },
+        {
+          "id": "pax",
+          "name": "Pax",
+          "gender": "Female",
+          "title": "MD Sovereign Confidential Vault Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Biometric / Password Vault Access",
+            "Personal Asset Ledger Tracking",
+            "Encrypted Backup Synchronization"
+          ]
+        },
+        {
+          "id": "astraea",
+          "name": "Astraea",
+          "gender": "Female",
+          "title": "Frontier AI Research & Benchmarking",
+          "slot": 9,
+          "tasks": [
+            "Next-Gen Model Benchmark Testing",
+            "Prompt Template Continuous Refine",
+            "Automated Agent Skill Upgrades"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-10-rera-compliance",
+      "deptCode": "DEPT-10",
+      "deptName": "Regulatory Affairs & RERA Compliance",
+      "color": "#6366F1",
+      "manager": {
+        "id": "sofia",
+        "name": "Sofia",
+        "title": "Head of Legal, RERA & Compliance Affairs",
+        "avatar": "⚖️",
+        "responsibilities": [
+          "goAML anti-money laundering compliance (> AED 55k)",
+          "Trakheesi advertising permit audits & auto-takedown",
+          "Unified contracts Form A, B & F legal verification"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "mary_comp",
+          "name": "Mary",
+          "gender": "Female",
+          "title": "Master Inventory & Spreadsheet Validator",
+          "slot": 1,
+          "tasks": [
+            "Property Matrix Deduplication",
+            "Owner Spreadsheet Sanity Checks",
+            "Title Deed Number Cross-Validation"
+          ]
+        },
+        {
+          "id": "themis",
+          "name": "Themis",
+          "gender": "Female",
+          "title": "goAML Cash Threshold & SAR Supervisor",
+          "slot": 2,
+          "tasks": [
+            "AED 55k+ Cash Transaction Screening",
+            "Suspicious Activity Report (SAR) Draft",
+            "FIU Regulatory Submission Queue"
+          ]
+        },
+        {
+          "id": "astra",
+          "name": "Astra",
+          "gender": "Female",
+          "title": "Trakheesi Permit Expiration Watchdog",
+          "slot": 3,
+          "tasks": [
+            "Trakheesi Permit Number Verification",
+            "Advertising Expiration Date Watchdog",
+            "Unlicensed Listing Auto-Takedown"
+          ]
+        },
+        {
+          "id": "prudentia",
+          "name": "Prudentia",
+          "gender": "Female",
+          "title": "PEP & Sanctions Screening Supervisor",
+          "slot": 4,
+          "tasks": [
+            "UN & UAE Sanctions List Matching",
+            "Source of Wealth Documentation Check",
+            "High-Risk Jurisdiction Scoring"
+          ]
+        },
+        {
+          "id": "lexa",
+          "name": "Lexa",
+          "gender": "Female",
+          "title": "UAE Data Privacy (PDPL) Supervisor",
+          "slot": 5,
+          "tasks": [
+            "Client Consent Record Audit",
+            "Data Retention Lifecycle Enforce",
+            "Right-to-be-Forgotten Data Purge"
+          ]
+        },
+        {
+          "id": "dike",
+          "name": "Dike",
+          "gender": "Female",
+          "title": "Government Licenses Renewal Supervisor",
+          "slot": 6,
+          "tasks": [
+            "DET 1388443 Expiration Alerts",
+            "RERA ORN 44483 Renewal Prep",
+            "Office Ejari 30-Day Proactive Notice"
+          ]
+        },
+        {
+          "id": "aurelia",
+          "name": "Aurelia",
+          "gender": "Female",
+          "title": "Broker RERA Card Validity Supervisor",
+          "slot": 7,
+          "tasks": [
+            "DLD Broker Card Number Verification",
+            "Annual RERA Exam Renewal Alerts",
+            "Unlicensed Activity Interception"
+          ]
+        },
+        {
+          "id": "vesta",
+          "name": "Vesta",
+          "gender": "Female",
+          "title": "Unified Contracts Standardization Supervisor",
+          "slot": 8,
+          "tasks": [
+            "Form A Seller Mandate Validation",
+            "Form B Buyer Representation Check",
+            "Form F Sales Contract Legal Review"
+          ]
+        },
+        {
+          "id": "clementia",
+          "name": "Clementia",
+          "gender": "Female",
+          "title": "Electronic Power of Attorney Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Dubai Courts Notary Public Check",
+            "POA Validity Scope Verification",
+            "Title Deed Electronic Verification"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-11-conveyancing-transactions",
+      "deptCode": "DEPT-11",
+      "deptName": "Conveyancing & Transaction Management",
+      "color": "#14B8A6",
+      "manager": {
+        "id": "evangeline",
+        "name": "Evangeline",
+        "title": "Head of Conveyancing & Trustee Transfers",
+        "avatar": "📑",
+        "responsibilities": [
+          "DLD Registration Trustee closing coordination",
+          "Developer NOC issuance (Emaar, DAMAC, Nakheel)",
+          "Electronic Title Deed verification & escrow release"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "willow",
+          "name": "Willow",
+          "gender": "Female",
+          "title": "DLD Registration Trustee Desk Supervisor",
+          "slot": 1,
+          "tasks": [
+            "Trustee Office Slot Reservation",
+            "Manager Cheque Amount Verification",
+            "Transfer Fee Breakdown Calculation"
+          ]
+        },
+        {
+          "id": "ivy",
+          "name": "Ivy",
+          "gender": "Female",
+          "title": "Developer NOC Tracker Supervisor",
+          "slot": 2,
+          "tasks": [
+            "Emaar/DAMAC NOC Submission",
+            "Service Charge Clearance Proof",
+            "Digital NOC Verification Tagging"
+          ]
+        },
+        {
+          "id": "daphne",
+          "name": "Daphne",
+          "gender": "Female",
+          "title": "Form F & 10% Deposit Supervisor",
+          "slot": 3,
+          "tasks": [
+            "10% Security Deposit Verification",
+            "Finance Contingency Period Log",
+            "Handover Penalty Clause Insertion"
+          ]
+        },
+        {
+          "id": "camellia",
+          "name": "Camellia",
+          "gender": "Female",
+          "title": "Seller Mortgage Discharge Supervisor",
+          "slot": 4,
+          "tasks": [
+            "Seller Bank Liability Letter Request",
+            "Mortgage Discharge Coordination",
+            "Blocking Fee Escrow Reservation"
+          ]
+        },
+        {
+          "id": "flora",
+          "name": "Flora",
+          "gender": "Female",
+          "title": "Buyer Bank Valuations Supervisor",
+          "slot": 5,
+          "tasks": [
+            "Bank Valuation Report Verification",
+            "Security Cheque Amount Audit",
+            "Bank Dispatch Representative Sync"
+          ]
+        },
+        {
+          "id": "iris",
+          "name": "Iris",
+          "gender": "Female",
+          "title": "Utility & DEWA Clearances Supervisor",
+          "slot": 6,
+          "tasks": [
+            "Final DEWA Bill Settlement Check",
+            "Empower/Tabreed Clearance Letter",
+            "Move-In Premises NOC Issuance"
+          ]
+        },
+        {
+          "id": "jasmine",
+          "name": "Jasmine",
+          "gender": "Female",
+          "title": "Snagging Release & Handover Supervisor",
+          "slot": 7,
+          "tasks": [
+            "Snagging Rectification Sign-Off",
+            "Holdback Fund Release Confirmation",
+            "Master Keys & Access Fob Receipt"
+          ]
+        },
+        {
+          "id": "magnolia",
+          "name": "Magnolia",
+          "gender": "Female",
+          "title": "Electronic Title Deed Dispatcher",
+          "slot": 8,
+          "tasks": [
+            "New Owner Title Deed PDF Download",
+            "DLD Ownership QR Code Verification",
+            "Encrypted Vault Storage Dispatch"
+          ]
+        },
+        {
+          "id": "rose",
+          "name": "Rose",
+          "gender": "Female",
+          "title": "Final Financial Closing Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Service Charge Pro-Rata Calc",
+            "DLD 4% Transfer Fee Receipt Match",
+            "Net Seller Proceeds Reconciliation"
+          ]
+        }
+      ]
+    },
+    {
+      "deptId": "dept-12-market-intelligence",
+      "deptCode": "DEPT-12",
+      "deptName": "Market Intelligence & IoT Data Science",
+      "color": "#64748B",
+      "manager": {
+        "id": "elena",
+        "name": "Elena",
+        "title": "Chief Research Officer & Predictive Modeling Lead",
+        "avatar": "📊",
+        "responsibilities": [
+          "DLD open data transaction trend modeling",
+          "Geospatial buyer demand heatmap renders",
+          "Sub-10ms in-memory MapIndexHash latency optimization"
+        ]
+      },
+      "supervisors": [
+        {
+          "id": "nancy",
+          "name": "Nancy",
+          "gender": "Female",
+          "title": "Sub-Cluster Capital Growth Predictor",
+          "slot": 1,
+          "tasks": [
+            "Sub-Cluster Capital Growth Models",
+            "Seasonal Demand Wave Forecasting",
+            "Rental Yield Degradation Warning"
+          ]
+        },
+        {
+          "id": "juno",
+          "name": "Juno",
+          "gender": "Female",
+          "title": "Geospatial Search Heatmap Supervisor",
+          "slot": 2,
+          "tasks": [
+            "Search Volume Heatmap Generation",
+            "Price/Sqft Geographic Map Render",
+            "High-ROI Cluster Highlighting"
+          ]
+        },
+        {
+          "id": "thalia",
+          "name": "Thalia",
+          "gender": "Female",
+          "title": "DLD Open Data Live Feed Cruncher",
+          "slot": 3,
+          "tasks": [
+            "Daily DLD Sales Data Extraction",
+            "Off-Plan vs Ready Volume Ratios",
+            "Average Sqft Price Index Trends"
+          ]
+        },
+        {
+          "id": "calliope",
+          "name": "Calliope",
+          "gender": "Female",
+          "title": "Portal Competitor Radar Supervisor",
+          "slot": 4,
+          "tasks": [
+            "Competitor Pricing Deviation Alerts",
+            "Market Days-on-Market Index",
+            "New Cluster Launch Benchmarking"
+          ]
+        },
+        {
+          "id": "urania",
+          "name": "Urania",
+          "gender": "Female",
+          "title": "Buyer Demographic Profiling Supervisor",
+          "slot": 5,
+          "tasks": [
+            "Nationality & Budget Trend Modeling",
+            "Family vs Investor Allocation Data",
+            "School Commute Correlation Analysis"
+          ]
+        },
+        {
+          "id": "clio",
+          "name": "Clio",
+          "gender": "Female",
+          "title": "Net Yield & ROI Optimizer Supervisor",
+          "slot": 6,
+          "tasks": [
+            "Service Charge Drag Calculations",
+            "Refurbishment ROI Projections",
+            "Optimal Rent Pricing Recommendation"
+          ]
+        },
+        {
+          "id": "erato",
+          "name": "Erato",
+          "gender": "Female",
+          "title": "CBUAE EIBOR & Currency Inflows Supervisor",
+          "slot": 7,
+          "tasks": [
+            "CBUAE EIBOR Rate Curve Analysis",
+            "USD Peg & Currency Inflow Trends",
+            "Global Flight-to-Safety Inflow Index"
+          ]
+        },
+        {
+          "id": "euterpe",
+          "name": "Euterpe",
+          "gender": "Female",
+          "title": "Cluster Benchmark Matrix Supervisor",
+          "slot": 8,
+          "tasks": [
+            "DH2 vs Arabian Ranches Metrics",
+            "Price/Sqft Gap Analysis",
+            "Infrastructure Expansion Impact"
+          ]
+        },
+        {
+          "id": "polymnia",
+          "name": "Polymnia",
+          "gender": "Female",
+          "title": "In-Memory Pipeline Health Supervisor",
+          "slot": 9,
+          "tasks": [
+            "Sub-10ms In-Memory Map Update",
+            "Data Pipeline Latency Monitoring",
+            "Zero-Data-Drift Verification"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "talia",
+  "name": "Talia",
+  "gender": "Female",
+  "title": "15-Minute SLA Watchdog Supervisor",
+  "supervisorSlot": 3,
+  "department": {
+    "code": "DEPT-08",
+    "name": "Corporate Communications & Client Experience"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Corinne"
+  },
+  "assignedTasks": [
+    "Intent-Based Queue Distribution",
+    "15-Minute SLA Watchdog Alert",
+    "Agent Availability Balancing"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

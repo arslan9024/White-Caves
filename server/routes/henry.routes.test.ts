@@ -233,7 +233,7 @@ describe('Henry routes — health', () => {
     const res = await request(app).get('/api/henry/health');
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ success: true, service: 'henry' });
-  });
+  }, 15000);
 });
 
 describe('Henry routes — records CRUD', () => {

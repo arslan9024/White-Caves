@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "White-Caves"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"github.copilot.enable": {
+			"plaintext": true,
+			"markdown": true,
+			"scminput": true
+		},
+		"standard.enable": false
+	}
+}

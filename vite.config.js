@@ -180,6 +180,21 @@ export default defineConfig(async ({ command }) => {
         '/api': {
           target: 'http://localhost:5001',
           changeOrigin: true,
+          configure: (proxy) => {
+            proxy.on('error', (err, _req, res) => {
+              if (err && err.code === 'ECONNREFUSED') {
+                if (res && res.writeHead && !res.headersSent) {
+                  res.writeHead(503, { 'Content-Type': 'application/json' });
+                  res.end(JSON.stringify({
+                    success: false,
+                    message: 'Backend server is starting up. Please wait a few moments...',
+                    code: 'BACKEND_INITIALIZING',
+                  }));
+                }
+              }
+            });
+          },
+          
         },
       },
     },

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "dalal",
+  "name": "Dalal",
+  "gender": "Female",
+  "title": "Property Snagging & Inspection Supervisor",
+  "supervisorSlot": 7,
+  "department": {
+    "code": "DEPT-04",
+    "name": "Portfolio Management & Residential Leasing"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Nadia"
+  },
+  "assignedTasks": [
+    "Photographic Move-In Report",
+    "Appliance Serial Number Log",
+    "Security Deposit Escrow Hold"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

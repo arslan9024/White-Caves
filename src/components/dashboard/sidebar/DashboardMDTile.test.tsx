@@ -13,7 +13,7 @@ describe('DashboardMDTile', () => {
   };
 
   it('renders Tile 1 MD Office Sovereign Suite with executive overview', () => {
-    render(<DashboardMDTile {...defaultProps} />);
+    render(<DashboardMDTile {...defaultProps} isManagingDirector={true} />);
 
     expect(screen.getByText(/1\. MD Office \(MD Suite\)/i)).toBeInTheDocument();
     expect(screen.getByText('MD Suite')).toBeInTheDocument();

@@ -302,13 +302,13 @@ jobs:
       - name: Detect premium wave commit
         id: detect
         run: |
-          node scripts/orchestrator/detect-big-premium-commit.js > premium-detect.json
+          node aegis/scripts/orchestrator/detect-big-premium-commit.js > premium-detect.json
           cat premium-detect.json
           node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('premium-detect.json','utf8'));fs.appendFileSync(process.env.GITHUB_OUTPUT, 'shouldRun=' + d.shouldRun + '\\n');"
 
       - name: Run premium runtime guard checks
         if: steps.detect.outputs.shouldRun == 'true'
-        run: node scripts/orchestrator/post-premium-runtime-check.js
+        run: node aegis/scripts/orchestrator/post-premium-runtime-check.js
 
       - name: Skip notice
         if: steps.detect.outputs.shouldRun != 'true'
@@ -333,7 +333,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Check queue integrity (9-group health check)
-        run: powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI
+        run: powershell -ExecutionPolicy Bypass -File aegis/scripts/orchestrator/queue-health.ps1 -CI
 
       - name: Upload queue file on failure
         if: failure()

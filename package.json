@@ -328,7 +328,14 @@
     "aegis:context:status": "node aegis/scripts/orchestrator/context-manager.js --status",
     "aegis:context:validate": "node aegis/orchestrator/governance-audit.js --strict",
     "dead-code-sweep": "node scripts/dead-code-sweep.js",
-    "aegis:skills-sync": "powershell -ExecutionPolicy Bypass -Command \"& { Copy-Item -Path '~/.gemini/config/plugins/*/skills/*', '~/.gemini/antigravity/builtin/skills/*' -Destination '.agents/skills' -Recurse -Force -ErrorAction SilentlyContinue }\""
+    "aegis:skills-sync": "powershell -ExecutionPolicy Bypass -Command \"& { Copy-Item -Path '~/.gemini/config/plugins/*/skills/*', '~/.gemini/antigravity/builtin/skills/*' -Destination '.agents/skills' -Recurse -Force -ErrorAction SilentlyContinue }\"",
+    "start:24-7": "cross-env NODE_ENV=production node --expose-gc --no-warnings --import tsx server/index.ts",
+    "dev:24-7": "nodemon --exec tsx --expose-gc server/index.ts --ignore sessions/ --ignore outputs/ --ignore logs/ --delay 3000 --max-restarts 999 --signal SIGTERM",
+    "verify:24-7": "npm run test:run",
+    "run:24-7": "npm run verify:24-7 && npm run dev:24-7",
+    "plans:validate:full": "npm run plans:validate",
+    "test:ops": "npm run test:run -- server/__tests__/generate-seo-assets.script.test.ts",
+    "test:runtime-stability:full": "playwright test src/e2e/dashboard.spec.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

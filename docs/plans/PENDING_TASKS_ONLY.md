@@ -3,9 +3,9 @@
 > **⚠️ REFERENCE COPY** — Canonical active version is at [`plans/PENDING_TASKS_ONLY.md`](../../plans/PENDING_TASKS_ONLY.md). Update that file, not this one.
 
 > **System Version:** 2.0.26  
-> **Last Updated:** 2026-09-03  
+> **Last Updated:** 2026-10-30
 > **Active Stream:** `MASTER_PLAN.md`  
-> **Active Wave Bundle:** Wave 46 (Deduplication & Canonicalization Program)  
+> **Active Wave Bundle:** Wave 53 (CRM Dashboard News Strip)
 > **Engineering Model:** Rational Unified Process (RUP)  
 > **Hierarchy:** 1 Managing Director (Arsalan Malik) | 12 Department Managers | 108 Supervisors  
 > **Brand Palette:** Red (`#EF4444`) | White (`#FFFFFF`) | Slate (`#1E293B`)  

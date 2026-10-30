@@ -94,12 +94,18 @@ const LeadTimeline = lazy(() => import('../components/crm/LeadTimeline'));
 
 // Sovereign Founder & Managing Director Suite
 const FounderExecutiveDashboard = lazy(() => import('../components/dashboard/viewport/FounderExecutiveDashboard'));
+const CommandCenter = lazy(() => import('../components/dashboard/command-center/CommandCenter'));
 
 export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
   overview: {
     id: 'overview', label: '1.1 Executive Overview & Live Audit', icon: '👑',
     description: 'Managing Director Arslan Malik Bashir Ahmad sovereign command podium & 1-12-108 corporate telemetry',
     color: '#EF4444', zone: 'executive', Component: FounderExecutiveDashboard,
+  },
+  command_center: {
+    id: 'command_center', label: '1.1B Executive Command Center (Live BI)', icon: '📊',
+    description: 'Real-time operating picture across pipeline, inventory, revenue, and agent execution',
+    color: '#EF4444', zone: 'executive', Component: CommandCenter,
   },
   journeys: {
     id: 'journeys', label: '20 Life Cycle Journeys Hub', icon: '🗺️',

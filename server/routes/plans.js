@@ -1,7 +1,7 @@
 import express from 'express';
-import { getPlanService } from '../../src/server/services/PlanService.js';
-import { getPlanAIService } from '../../src/server/services/PlanAIService.js';
-import logger from '../../src/server/lib/logger.js';
+import { getPlanService } from '../services/PlanService.js';
+import { getPlanAIService } from '../services/PlanAIService.js';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 const SAFE_PLAN_ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;

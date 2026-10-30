@@ -96,7 +96,7 @@ The explicit Aegis control plane is now:
 - **300% Acceleration Protocol** — Enforces sub-10ms query execution via `MapIndexHash` indexing and client/server cache pools
 - **Express & REST API Consolidation** — Automated deduplication of redundant API route pipelines and database models
 - **Zero-Backlog Law** — Strict verification of 0 open sprint blockers and real-time synchronization with `plans/AEGIS_200_PROJECT_AUDIT_UPGRADE_CATALOG.md`
-- **Atomic 4-Folder Component Standard** — Pure view (`.tsx`), logic (`logic/`), styles (`styles/`), and translation data (`data/`)
+- **Canonical 5-Way File Category Standard & Single Purpose File Law** — Pure view (`*.view.tsx`/`*.tsx`), logic (`*.logic.ts`), styles (`*.styles.ts`), static data (`*.data.ts`), and config/types (`*.config.ts`) with single-responsibility modularity (< 350 lines)
 - **Single Monolith Single Source of Truth** — Permanent elimination of ghost mirror directories (`business/`, `codebase/`, `scratch/`)
 
 **POLICY SOURCE:** `aegis/orchestrator/policy.json` v`2026.08.29-aegis-v4-supercharged-opt-v1`  

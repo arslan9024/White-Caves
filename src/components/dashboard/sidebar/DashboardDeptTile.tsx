@@ -93,7 +93,7 @@ export const DashboardDeptTile: FC<DashboardDeptTileProps> = ({
             style={{ marginTop: '0.25rem', display: 'flex', flexDirection: 'column', gap: '3px' }}
           >
             <DeptHeader
-              type="button"
+              role="button"
               $active={activeTab === 'dept_summary'}
               onClick={() => onSubItemClick('dept_summary')}
               aria-current={activeTab === 'dept_summary' ? 'page' : undefined}

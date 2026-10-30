@@ -1,6 +1,6 @@
 # Wave Bundle Index
 
-**Last Updated:** 2026-09-03
+**Last Updated:** 2026-10-30
 
 Use this index after reviewing [`../MASTER_PLAN.md`](../MASTER_PLAN.md) and [`../PENDING_TASKS_ONLY.md`](../PENDING_TASKS_ONLY.md).
 Each wave should be executed only in roadmap order.
@@ -48,6 +48,7 @@ Each wave should be executed only in roadmap order.
 | 44   | Landlord Portal + Advanced Analytics                                        | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_44_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 45   | Arabic RTL Language Support + PWA Completion (Final SRS Milestone)          | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_45_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 46   | Deduplication & canonicalization program (plans/docs/code convergence)      | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_46_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 53   | CRM Dashboard News Strip                                                    | ✅ Complete | —                         | —                                            | [Status](./WAVE_53_CRM_DASH_NEWS_STATUS.md)       | —                                    |
 
 ## Notes
 
@@ -61,3 +62,5 @@ Each wave should be executed only in roadmap order.
 - Wave 17 (Full UI/UX Luxury Upgrade) is implemented and validated; see the Wave 17 bundle docs for closeout details.
 - **Waves 20–22 added June 2026:** Full leasing & tenancy lifecycle (Wave 20), UAE VAT + commission engine (Wave 21), and market intelligence + off-plan + advanced analytics (Wave 22). Each has SDD, readiness packet, and full implementation backlog. Entry gates follow standard approval phrase sequence.
 - **Waves 23–25 added June 2026:** Mobile CRM + PWA offline + push (Wave 23), WhatsApp automation + AI chat + notification centre (Wave 24), and portal syndication + careers + community management + advanced SEO (Wave 25). All three waves have full four-artifact bundles (SDD, readiness, backlog, test rollout). Entry gates follow the standard approval phrase sequence. Wave 23 readiness is 72%, Wave 24 is 78%, Wave 25 is 75% — all above the 60% unlock threshold.
+
+- Wave 53 is complete (CRM Dashboard News Strip): [`WAVE_53_CRM_DASH_NEWS_STATUS.md`](./WAVE_53_CRM_DASH_NEWS_STATUS.md).

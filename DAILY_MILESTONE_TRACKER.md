@@ -1,8 +1,10 @@
 # AEGIS Daily Milestone Tracker & Release Log
 
-> **Last updated:** 2026-10-24 (MD Suite merged)  
+> **Last updated:** 2026-10-30 (MD Suite merged)  
 > **Status:** Governance + Hero + CRM DLD + **MD Suite** on `main`  
 > **Truth rule:** Never claim zero backlog unless GitHub API confirms
+> **Canonical Roadmap:** [docs/plans/MASTER_PLAN.md](docs/plans/MASTER_PLAN.md) (MASTER_PLAN.md)
+> **Active Queue:** [docs/plans/PENDING_TASKS_ONLY.md](docs/plans/PENDING_TASKS_ONLY.md) (PENDING_TASKS_ONLY.md)
 
 ---
 
