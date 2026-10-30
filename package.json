@@ -334,7 +334,8 @@
     "verify:24-7": "npm run test:run",
     "run:24-7": "npm run verify:24-7 && npm run dev:24-7",
     "plans:validate:full": "npm run plans:validate",
-    "test:ops": "npm run test:run -- server/__tests__/generate-seo-assets.script.test.ts"
+    "test:ops": "npm run test:run -- server/__tests__/generate-seo-assets.script.test.ts",
+    "test:runtime-stability:full": "playwright test src/e2e/dashboard.spec.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
