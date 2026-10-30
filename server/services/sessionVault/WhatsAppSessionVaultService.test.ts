@@ -46,3 +46,4 @@ describe('WhatsAppSessionVaultService', () => {
     expect(fs.existsSync(lock)).toBe(false);
   });
 });
+
