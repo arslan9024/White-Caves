@@ -5,8 +5,8 @@
 > **Framework:** Rational Unified Process (RUP) 4-Tier Software Docs Isolation  
 > **Brand Palette Lockdown:** White Caves Red (`#EF4444`) | Crisp White (`#FFFFFF`) | Deep Slate Gray (`#1E293B`)  
 > **Architecture Pattern:** View-Logic-Style 3-Folder Component Isolation (`*.tsx`, `*.logic.ts`, `*.style.ts`)  
-> **Active Wave Backlog:** [WAVE_46_IMPLEMENTATION_BACKLOG.md](../docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md) (Deduplication & Canonicalization Program)  
-> **Last Updated:** 2026-09-03
+> **Active Wave Backlog:** [WAVE_53_CRM_DASH_NEWS_STATUS.md](waves/WAVE_53_CRM_DASH_NEWS_STATUS.md) (Wave 53 — CRM Dashboard News Strip)
+> **Last Updated:** 2026-10-30
 
 ---
 

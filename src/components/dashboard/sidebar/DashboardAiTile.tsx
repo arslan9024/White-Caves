@@ -42,7 +42,7 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
     if (selectedTeamId === 'all') return ALL_AI_ASSISTANTS;
     const team = AI_TEAMS_STRUCTURE.find(t => t.id === selectedTeamId);
     if (!team) return ALL_AI_ASSISTANTS;
-    return ALL_AI_ASSISTANTS.filter(ai => team.assistantIds.includes(ai.id));
+    return ALL_AI_ASSISTANTS.filter(ai => (team.assistantIds ?? []).includes(ai.id));
   }, [selectedTeamId]);
 
   const aiOptions = useMemo<SearchableOption[]>(() => {
@@ -61,7 +61,7 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
 
     const team = AI_TEAMS_STRUCTURE.find(candidate => candidate.id === teamId);
     const teamAssistants = team
-      ? ALL_AI_ASSISTANTS.filter(assistant => team.assistantIds.includes(assistant.id))
+      ? ALL_AI_ASSISTANTS.filter(assistant => (team.assistantIds ?? []).includes(assistant.id))
       : [];
     if (teamAssistants.length === 0) return;
 
@@ -180,7 +180,7 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{team.name}</span>
                   </div>
                   <span style={{ fontSize: '0.65rem', opacity: 0.8, marginLeft: '4px' }}>
-                    {team.assistantIds.length}
+                    {(team.assistantIds ?? []).length}
                   </span>
                 </button>
               ))}

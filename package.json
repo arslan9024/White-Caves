@@ -332,7 +332,9 @@
     "start:24-7": "cross-env NODE_ENV=production node --expose-gc --no-warnings --import tsx server/index.ts",
     "dev:24-7": "nodemon --exec tsx --expose-gc server/index.ts --ignore sessions/ --ignore outputs/ --ignore logs/ --delay 3000 --max-restarts 999 --signal SIGTERM",
     "verify:24-7": "npm run test:run",
-    "run:24-7": "npm run verify:24-7 && npm run dev:24-7"
+    "run:24-7": "npm run verify:24-7 && npm run dev:24-7",
+    "plans:validate:full": "npm run plans:validate",
+    "test:ops": "npm run test:run -- server/__tests__/generate-seo-assets.script.test.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -61,7 +61,7 @@ export const DashboardMDTile: FC<DashboardMDTileProps> = ({
           }}
         >
           <DeptHeader
-            type="button"
+            role="button"
             $active={activeTab === 'dept_summary'}
             onClick={() => onSubItemClick('dept_summary')}
             aria-current={activeTab === 'dept_summary' ? 'page' : undefined}

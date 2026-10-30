@@ -1,11 +1,28 @@
+# White Caves Real Estate - Robots.txt
+# https://whitecaves.com
+
 User-agent: *
 Allow: /
 
-# Private / non-indexable surfaces
+# Public pages
+Allow: /properties
+Allow: /services
+Allow: /careers
+Allow: /contact
+Allow: /about
+Allow: /buyer/
+
+# Private / operational routes
+Disallow: /admin/
+Disallow: /owner/
 Disallow: /api/
-Disallow: /crm/
-Disallow: /portal/
-Disallow: /tenant-portal/
-Disallow: /landlord-portal/
+Disallow: /leasing-agent/
+Disallow: /secondary-sales-agent/
+Disallow: /signin
+Disallow: /select-role
+Disallow: /pending-approval
+
+# Query URLs (reduce duplicate crawl budget)
+Disallow: /*?*
 
 Sitemap: https://whitecaves.com/sitemap.xml

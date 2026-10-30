@@ -3,7 +3,7 @@
 **Version:** 2026.09-AEGIS-V4.1-token-preservation  
 **Control Plane Policy:** `aegis/orchestrator/policy.json`  
 **Governance Authority:** Executive Council (@Ada, @Margaret, @Grace, @Elena, @Zoe)  
-**Last Updated:** 2026-09-11
+**Last Updated:** 2026-10-30
 
 ---
 
