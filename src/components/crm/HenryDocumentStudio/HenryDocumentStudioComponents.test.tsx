@@ -20,6 +20,7 @@ import deed from '../../../services/HenryTitleDeedScannerService';
 import passport from '../../../services/HenryPassportScannerService';
 import contract from '../../../services/HenryTenancyContractScannerService';
 import { canUseScan } from '../../../services/henryScanReview';
+import { getButtonByVisibleTextInActionGroup } from '../../../test/getButtonByName';
 
 describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () => {
   beforeEach(() => {
@@ -73,7 +74,7 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     // Navigate to Stage 4
     fireEvent.click(screen.getByText(/4. Signatures & Final Actions/i));
     expect(screen.getByText(/Stage 4: Endorsement Signatures & Session Draft/i)).toBeDefined();
-    fireEvent.click(screen.getByRole('button', { name: /Keep for this session only/i }));
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Keep for this session only/i));
     expect(screen.getByText(/Not saved to the encrypted vault; it will be lost on reload/i)).toBeInTheDocument();
   });
 
@@ -85,20 +86,20 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByText(/1. Identity & Card Numbers/i)).toBeDefined();
 
     // Toggle Back Side preview
-    fireEvent.click(screen.getByRole('button', { name: /Back Side \(MRZ\)/i }));
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Back Side \(MRZ\)/i));
     expect(screen.getByText(/SMART CHIP & ICAO TD1 MRZ SPECIFICATION/i)).toBeDefined();
 
     // Toggle Front Side preview
-    fireEvent.click(screen.getByRole('button', { name: /Front Side/i }));
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Front Side/i));
     expect(screen.getByText(/UNITED ARAB EMIRATES · RESIDENT IDENTITY CARD/i)).toBeDefined();
 
     // Load benchmark demo
-    fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Load Demo Benchmark/i));
     expect(screen.getByDisplayValue('784-1993-1805733-0')).toBeDefined();
     expect(screen.getByDisplayValue('Arslan Malik Bashir Ahmad')).toBeDefined();
 
-    expect(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /Confirm & Save to KYC Vault/i })).toBeDisabled();
+    expect(getButtonByVisibleTextInActionGroup(/Auto-Fill Tenancy \(as Tenant\)/i)).toBeDisabled();
+    expect(getButtonByVisibleTextInActionGroup(/Confirm & Save to KYC Vault/i)).toBeDisabled();
     expect(screen.getByLabelText('Confirm document review')).toBeDisabled();
     expect(eid.getCachedEmiratesId()).toBeNull();
   });
@@ -109,13 +110,13 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByText(/3.19.3 Scan Title Deed/i)).toBeDefined();
 
     // Load benchmark demo
-    fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Load Demo Benchmark/i));
     expect(screen.getByText(/Extracted Title Deed Variables Form/i)).toBeDefined();
     expect(screen.getByDisplayValue('VIRIDIS A')).toBeDefined();
     expect(screen.getByDisplayValue('AKRAM DIB NEHME')).toBeDefined();
 
-    expect(screen.getByRole('button', { name: /Auto-Fill Tenancy Lease/i })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /Save to Property Vault/i })).toBeDisabled();
+    expect(getButtonByVisibleTextInActionGroup(/Auto-Fill Tenancy Lease/i)).toBeDisabled();
+    expect(getButtonByVisibleTextInActionGroup(/Save to Property Vault/i)).toBeDisabled();
     expect(screen.getByLabelText('Confirm document review')).toBeDisabled();
     expect(deed.getCachedTitleDeed()).toBeNull();
   });
@@ -126,19 +127,19 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByText(/3.19.4 Scan International Passport/i)).toBeDefined();
 
     // Load benchmark demo
-    fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Load Demo Benchmark/i));
     expect(screen.getByText(/Extracted Passport Variables Form/i)).toBeDefined();
     expect(screen.getByDisplayValue('DR0760143')).toBeDefined();
     expect(screen.getByDisplayValue('Arslan Malik')).toBeDefined();
 
     // Test 1-click Auto-Fill Tenancy (as Tenant)
-    fireEvent.click(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i }));
-    expect(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i })).toBeDisabled();
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Auto-Fill Tenancy \(as Tenant\)/i));
+    expect(getButtonByVisibleTextInActionGroup(/Auto-Fill Tenancy \(as Tenant\)/i)).toBeDisabled();
     expect(screen.getByText(/Demo only — cannot save or autofill/)).toBeInTheDocument();
 
     // Test Save to KYC Vault
-    fireEvent.click(screen.getByRole('button', { name: /Save to KYC Vault/i }));
-    expect(screen.getByRole('button', { name: /Save to KYC Vault/i })).toBeDisabled();
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Save to KYC Vault/i));
+    expect(getButtonByVisibleTextInActionGroup(/Save to KYC Vault/i)).toBeDisabled();
     expect(passport.getCachedPassport()).toBeNull();
     expect(canUseScan(passport.getCachedPassport() || {})).toBe(false);
   });
@@ -149,17 +150,17 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByText(/3.19.5 Scan & Extract Tenancy Agreement/i)).toBeDefined();
 
     // Load benchmark demo
-    fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Load Demo Benchmark/i));
     expect(screen.getByText(/Extracted Agreement Variables Form/i)).toBeDefined();
 
     // Test 1-click Load into 3.19.1 Preparation Studio
-    fireEvent.click(screen.getByRole('button', { name: /Load into 3.19.1 Preparation Studio/i }));
-    expect(screen.getByRole('button', { name: /Load into 3.19.1 Preparation Studio/i })).toBeDisabled();
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Load into 3.19.1 Preparation Studio/i));
+    expect(getButtonByVisibleTextInActionGroup(/Load into 3.19.1 Preparation Studio/i)).toBeDisabled();
     expect(screen.getByText(/Demo only — cannot save or autofill/)).toBeInTheDocument();
     expect(henryTenancyContractTemplateService.loadActiveDraft().tenantName).toBe('');
 
-    fireEvent.click(screen.getByRole('button', { name: /Save to encrypted vault/i }));
-    expect(screen.getByRole('button', { name: /Save to encrypted vault/i })).toBeDisabled();
+    fireEvent.click(getButtonByVisibleTextInActionGroup(/Save to encrypted vault/i));
+    expect(getButtonByVisibleTextInActionGroup(/Save to encrypted vault/i)).toBeDisabled();
     expect(contract.getCachedContract()).toBeNull();
 
     expect(screen.getByText(/1. Property Specifications/i)).toBeDefined();
