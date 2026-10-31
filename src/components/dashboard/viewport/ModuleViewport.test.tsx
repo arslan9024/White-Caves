@@ -16,4 +16,28 @@ describe('ModuleViewport', () => {
     expect(screen.getByText(/Module Not Found: "non_existent_module_xyz"/i)).toBeInTheDocument();
     expect(screen.getByText(/Return to Executive Overview/i)).toBeInTheDocument();
   });
+
+  it('fails closed when an agent directly opens an executive module', () => {
+    render(
+      <ModuleViewport
+        moduleId="mary"
+        user={{ name: 'Assigned Agent', role: 'sales_agent' }}
+        onBackToOverview={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(/Module access denied/i);
+  });
+
+  it('fails closed when the server role is missing', () => {
+    render(
+      <ModuleViewport
+        moduleId="leads"
+        user={{ name: 'Unknown User' }}
+        onBackToOverview={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(/Module access denied/i);
+  });
 });

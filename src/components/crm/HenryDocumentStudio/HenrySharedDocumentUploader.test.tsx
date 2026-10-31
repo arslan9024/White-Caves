@@ -6,6 +6,7 @@ import HenryEmiratesIdScannerView from './HenryEmiratesIdScannerView';
 import HenryTitleDeedScannerView from './HenryTitleDeedScannerView';
 import eid from '../../../services/HenryEmiratesIdScannerService';
 import deed from '../../../services/HenryTitleDeedScannerService';
+import { getButtonByVisibleTextInActionGroup } from '../../../test/getButtonByName';
 
 const editor = vi.hoisted(() => ({
   callbacks: [] as { onConfirm: (corrected: File, original: File) => void; onCancel: () => void }[],
@@ -41,7 +42,7 @@ describe('HenrySharedDocumentUploader', () => {
         fireEvent.change(screen.getByLabelText('Upload document'), { target: { files: [original] } });
         const stale = editor.callbacks.at(-1)!;
         expect(screen.getByLabelText('Manual perspective correction')).toBeInTheDocument();
-        fireEvent.click(screen.getByRole('button', { name: isId ? 'Clear & Reset' : 'Discard & Clear' }));
+        fireEvent.click(getButtonByVisibleTextInActionGroup(isId ? 'Clear & Reset' : 'Discard & Clear'));
         expect(screen.queryByLabelText('Manual perspective correction')).not.toBeInTheDocument();
         fireEvent.change(screen.getByLabelText('Upload document'), { target: { files: [original] } });
         act(() => { stale.onCancel(); stale.onConfirm(corrected, original); });
@@ -50,7 +51,7 @@ describe('HenrySharedDocumentUploader', () => {
         expect(dualScan).not.toHaveBeenCalled();
         expect(deedScan).not.toHaveBeenCalled();
         expect(screen.getByLabelText('Confirm document review')).toBeDisabled();
-        fireEvent.click(screen.getByRole('button', { name: isId ? 'Clear & Reset' : 'Discard & Clear' }));
+        fireEvent.click(getButtonByVisibleTextInActionGroup(isId ? 'Clear & Reset' : 'Discard & Clear'));
       }
     }
   );

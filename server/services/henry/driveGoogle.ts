@@ -1,4 +1,4 @@
-import { google, type drive_v3 } from 'googleapis';
+import { auth as googleAuth, drive, type drive_v3 } from 'googleapis/build/src/apis/drive/index.js';
 import type { Credentials, OAuth2Client } from 'google-auth-library';
 import { AppError } from '../../middleware/errorHandler.js';
 import { maxSourceBytes } from './documentVault.js';
@@ -19,12 +19,12 @@ export function driveOAuth(): OAuth2Client {
   if (redirect.pathname !== '/henry-drive-callback' || redirect.search || redirect.hash ||
     (redirect.protocol !== 'https:' && !(redirect.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(redirect.hostname))))
     throw new AppError('Drive redirect must be the application /henry-drive-callback URL (HTTPS in production)', 503);
-  return new google.auth.OAuth2(process.env.GOOGLE_DRIVE_CLIENT_ID, process.env.GOOGLE_DRIVE_CLIENT_SECRET, redirect.href);
+  return new googleAuth.OAuth2(process.env.GOOGLE_DRIVE_CLIENT_ID, process.env.GOOGLE_DRIVE_CLIENT_SECRET, redirect.href);
 }
 export class DriveGoogle {
   private readonly api;
   constructor(auth: OAuth2Client) {
-    this.api = google.drive({ version: 'v3', auth });
+    this.api = drive({ version: 'v3', auth });
   }
   async identity(): Promise<string> {
     const response = await this.api.about.get({ fields: 'user(permissionId,emailAddress)' }, { timeout: 15000, retry: false });

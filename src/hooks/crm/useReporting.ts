@@ -107,7 +107,10 @@ export function useReporting() {
         if (agingRes.status === 'fulfilled') setPropertyAging(agingRes.value as unknown as PropertyAging);
         if (agentsRes.status === 'fulfilled') setAgentPerformance(agentsRes.value as unknown as AgentPerformance);
         if (execRes.status === 'fulfilled') setExecutive(execRes.value as unknown as ExecutiveReport);
-        if (kpisRes.status === 'fulfilled') setKpis(kpisRes.value as unknown as KPIs);
+        if (kpisRes.status === 'fulfilled') {
+          const payload = kpisRes.value as { kpis?: KPIs };
+          setKpis(payload.kpis ?? (kpisRes.value as unknown as KPIs));
+        }
 
         // Check for any failures
         const failures = [funnelRes, trendsRes, agingRes, agentsRes, execRes, kpisRes]
