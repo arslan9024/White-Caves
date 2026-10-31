@@ -17,6 +17,14 @@ import { test, expect } from '@playwright/test';
 test.setTimeout(90000);
 
 test.describe('LAYER 5: PERFORMANCE TESTING', () => {
+  test.beforeEach(async ({ context }) => {
+    await context.addInitScript(() => {
+      localStorage.setItem('wc_cookie_consent', 'accepted');
+      localStorage.setItem('cookieConsent', 'accepted');
+      localStorage.setItem('whitecaves_cookie_consent', 'accepted');
+    });
+  });
+
   // ==================== BASELINE METRICS ====================
   test.describe('Dashboard Load Performance', () => {
     test('P5-001: Owner Dashboard load time', async ({ page }) => {
