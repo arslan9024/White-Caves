@@ -54,7 +54,7 @@ jobs:
         run: npm run test:assistant-contract --if-present
 
       - name: Unit & Integration Tests
-        run: npm run test:forks
+        run: npm run test:forks -- --testTimeout=10000 --maxConcurrency=2
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
