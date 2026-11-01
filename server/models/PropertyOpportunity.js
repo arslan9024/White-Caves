@@ -240,7 +240,6 @@ const PropertyOpportunitySchema = new mongoose.Schema(
 );
 
 // Indexes for efficient querying
-PropertyOpportunitySchema.index({ opportunityId: 1 });
 PropertyOpportunitySchema.index({ 'sourceReference.conversationId': 1 });
 PropertyOpportunitySchema.index({ 'ownerInfo.whatsappNumber': 1 });
 PropertyOpportunitySchema.index({ 'propertyDetails.location.area': 1 });

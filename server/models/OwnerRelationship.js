@@ -207,8 +207,6 @@ const OwnerRelationshipSchema = new mongoose.Schema(
 );
 
 // Indexes for efficient querying
-OwnerRelationshipSchema.index({ relationshipId: 1 });
-OwnerRelationshipSchema.index({ 'ownerProfile.whatsappNumber': 1 });
 OwnerRelationshipSchema.index({ 'engagementStatus.status': 1 });
 OwnerRelationshipSchema.index({ 'metrics.totalPropertiesListed': -1 });
 OwnerRelationshipSchema.index({ 'reliabilityRating.overallScore': -1 });
