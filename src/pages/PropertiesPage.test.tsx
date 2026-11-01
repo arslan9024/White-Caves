@@ -74,7 +74,7 @@ vi.mock('../shared/components/property', () => ({
       <span>{property.location as string}</span>
       <span>{String(property.beds ?? property.bedrooms)} Beds</span>
       <span>{String(property.baths ?? property.bathrooms)} Baths</span>
-      <span>{String(property.sqft)} sqft</span>
+      <span>{Number(property.sqft).toLocaleString()} sqft</span>
     </article>
   ),
   PropertyImageSlider: ({ images }: { images: string[] }) => (
