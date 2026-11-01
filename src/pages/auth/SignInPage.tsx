@@ -726,6 +726,8 @@ const SignInPage: React.FC = () => {
           <form onSubmit={handleEmailSubmit} className="auth-form">
             <div className="form-group">
               <input
+                id="signin-email"
+                aria-label="Email address"
                 type="email"
                 placeholder="Enter your email"
                 value={email}
@@ -737,6 +739,8 @@ const SignInPage: React.FC = () => {
 
             <div className="form-group">
               <input
+                id="signin-password"
+                aria-label="Password"
                 type="password"
                 placeholder="Enter your password"
                 value={password}
@@ -749,6 +753,8 @@ const SignInPage: React.FC = () => {
             {isSignup && (
               <div className="form-group">
                 <input
+                  id="signin-confirm-password"
+                  aria-label="Confirm password"
                   type="password"
                   placeholder="Confirm your password"
                   value={confirmPassword}
@@ -782,6 +788,8 @@ const SignInPage: React.FC = () => {
           <form className="auth-form">
             <div className="form-group">
               <input
+                id="signin-phone"
+                aria-label="Phone number"
                 type="tel"
                 placeholder="+971 50 123 4567"
                 value={phone}
