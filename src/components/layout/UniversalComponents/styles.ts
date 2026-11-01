@@ -52,20 +52,20 @@ export const ConnectionStatus = styled.span<{ $isOnline?: boolean }>`
 
   ${props => props.$isOnline ? `
     background: rgba(34, 197, 94, 0.15);
-    color: #22c55e;
+    color: #15803d;
     border: 1px solid rgba(34, 197, 94, 0.3);
     
     &::before {
-      background: #22c55e;
+      background: #15803d;
       box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
     }
   ` : `
     background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
+    color: #b91c1c;
     border: 1px solid rgba(239, 68, 68, 0.3);
     
     &::before {
-      background: #ef4444;
+      background: #b91c1c;
       box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
       animation: none;
     }
