@@ -5,7 +5,9 @@ import PDCPaymentsTab from '../PDCPaymentsTab';
 
 describe('PDCPaymentsTab Component', () => {
   it('renders PDCPaymentsTab component without crashing', () => {
-    const { container } = render(<PDCPaymentsTab cheques={[]} />);
+    const { container } = render(
+      <PDCPaymentsTab pdcCheques={[]} onUpdateStatus={() => undefined} />
+    );
     expect(container).toBeDefined();
   });
 });

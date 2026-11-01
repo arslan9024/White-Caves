@@ -5,7 +5,7 @@ import PipelineTab from '../PipelineTab';
 
 describe('PipelineTab Component', () => {
   it('renders PipelineTab component without crashing', () => {
-    const { container } = render(<PipelineTab leases={[]} />);
+    const { container } = render(<PipelineTab inquiries={[]} />);
     expect(container).toBeDefined();
   });
 });

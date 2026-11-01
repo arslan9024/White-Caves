@@ -8,7 +8,7 @@ describe('GET /api/health', () => {
 
     expect([200, 206]).toContain(res.status);
     expect(json.status).toMatch(/healthy|degraded/);
-    expect(json.version).toBe('1.0.0');
+    expect(json.version).toBe(process.env.npm_package_version ?? '1.0.0');
     expect(json.environment).toBeDefined();
     expect(json.timestamp).toBeDefined();
   });

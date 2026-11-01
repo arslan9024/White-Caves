@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import assistantFeatures from '../assistantFeatures';
+import { NINA_FEATURES } from '../assistantFeatures';
 
 describe('assistantFeatures data module', () => {
-  it('exports assistantFeatures object or array', () => {
-    expect(assistantFeatures).toBeDefined();
+  it('exports assistant feature data', () => {
+    expect(NINA_FEATURES.length).toBeGreaterThan(0);
   });
 });

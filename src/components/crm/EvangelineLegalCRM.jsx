@@ -41,7 +41,7 @@ export const EvangelineLegalCRM = ({ moduleId, role, user }) => {
   }, [moduleId]);
 
   // Feature 1: Form A/B/F Unified Clause Assembler
-  const [selectedForm, setSelectedForm] = (useState < 'Form A') | 'Form B' | ('Form F' > 'Form F');
+  const [selectedForm, setSelectedForm] = useState('Form F');
   const [partyA, setPartyA] = useState('White Caves Real Estate LLC');
   const [partyB, setPartyB] = useState('Emaar Properties PJSC');
   const [propertyRef, setPropertyRef] = useState('Downtown Heights Penthouse 5201');
