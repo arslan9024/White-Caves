@@ -1336,12 +1336,15 @@ app.use(errorHandler);
 // ============================================================================
 
 const startServer = async () => {
-  // Try to connect to MongoDB (non-blocking — server starts even if DB fails)
+  // Corporate-department routes use Mongoose models, so do not serve requests until it is ready.
+  logger.info('Connecting to MongoDB with Mongoose...');
+  await connectDB(DATABASE_URL);
+  logger.info('Mongoose connected successfully');
+
+  // Prisma-backed services remain available on a best-effort basis.
   try {
-    logger.info('Connecting to MongoDB...');
     await connectDatabase();
-    await connectDB(DATABASE_URL);
-    logger.info('MongoDB connected successfully');
+    logger.info('Prisma connected successfully');
 
     // Start background services
     startFollowUpScheduler();
@@ -1393,7 +1396,7 @@ const startServer = async () => {
       .map(line => line.trim())
       .find(Boolean);
     logger.warn(`Database connection failed: ${firstLine ?? message}`);
-    logger.warn('Server will start without database — API calls will return errors');
+    logger.warn('Server will start without Prisma — Prisma-backed API calls may return errors');
   }
 
   // Start listening regardless of DB status
