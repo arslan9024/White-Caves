@@ -155,4 +155,12 @@ export const Config = {
   },
 };
 
+export const getApiUrl = (resourcePath: string): string => {
+  const configuredBase = Config.API_URL.replace(/\/+$/, '');
+  const apiBase = configuredBase.endsWith('/api') ? configuredBase : `${configuredBase}/api`;
+  const resource = resourcePath.replace(/^\/+/, '');
+
+  return resource ? `${apiBase}/${resource}` : apiBase;
+};
+
 export default Config;

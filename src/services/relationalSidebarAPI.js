@@ -7,9 +7,9 @@
  */
 
 import { authFetch } from '../utils/authFetch';
+import { getApiUrl } from '../config/constants';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000';
-const SIDEBAR_API = `${API_BASE}/api/relational-sidebar`;
+const SIDEBAR_API = getApiUrl('relational-sidebar');
 
 // Response interceptor
 const handleResponse = async response => {
@@ -205,7 +205,6 @@ export const initializeSidebarData = async () => {
       },
     };
   } catch (error) {
-    
     return {
       success: false,
       error: error.message,
@@ -259,7 +258,6 @@ export const loadContextFull = async (assistantId, context) => {
       },
     };
   } catch (error) {
-    
     return {
       success: false,
       error: error.message,
@@ -285,7 +283,6 @@ export const healthCheck = async () => {
       status: response.status,
     };
   } catch (error) {
-    
     return {
       success: false,
       status: 0,

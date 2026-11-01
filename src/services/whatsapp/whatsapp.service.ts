@@ -6,8 +6,9 @@
  */
 
 import { authFetch } from '../../utils/authFetch';
+import { getApiUrl } from '../../config/constants';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/whatsapp';
+const API_BASE = getApiUrl('whatsapp');
 
 export interface LinkDeviceRequest {
   accountId: string;
