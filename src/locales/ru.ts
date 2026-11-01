@@ -102,6 +102,7 @@ export const ru = {
     shortTerm: 'Посуточная аренда',
     price: 'Цена',
     pricePerSqft: 'Цена за кв. фут',
+    selectCurrency: 'Валюта отображения',
     aed: 'AED (Дирхам)',
     perYear: '/год',
     perMonth: '/месяц',

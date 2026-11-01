@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
 import LuxuryPropertyCard from './LuxuryPropertyCard';
 import { PropertyType } from '../../../hooks/usePropertyBrowser';
+import { CurrencyProvider, useGlobalCurrency } from '../../../context/CurrencyContext';
 
 const mockProperty: PropertyType = {
   id: 'prop-123',
@@ -25,20 +26,32 @@ const mockProperty: PropertyType = {
   yearBuilt: 2024
 };
 
+const CurrencyControls = () => {
+  const { setCurrency } = useGlobalCurrency();
+  return (
+    <>
+      <button onClick={() => setCurrency('INR')}>Show INR</button>
+      <button onClick={() => setCurrency('CNY')}>Show CNY</button>
+    </>
+  );
+};
+
 describe('LuxuryPropertyCard', () => {
   it('renders property details correctly', () => {
     const handleFavoriteToggle = vi.fn();
     const handleClick = vi.fn();
 
     render(
-      <BrowserRouter>
+      <CurrencyProvider>
+        <BrowserRouter>
         <LuxuryPropertyCard 
           property={mockProperty}
           isFavorite={false}
           onFavoriteToggle={handleFavoriteToggle}
           onClick={handleClick}
         />
-      </BrowserRouter>
+        </BrowserRouter>
+      </CurrencyProvider>
     );
 
     expect(screen.getByText('Luxury Villa with Sea View')).toBeInTheDocument();
@@ -49,19 +62,43 @@ describe('LuxuryPropertyCard', () => {
     expect(screen.getByText('For Sale')).toBeInTheDocument();
   });
 
+  it('formats listing prices in the selected global currency', () => {
+    render(
+      <CurrencyProvider>
+        <BrowserRouter>
+          <CurrencyControls />
+          <LuxuryPropertyCard
+            property={mockProperty}
+            isFavorite={false}
+            onFavoriteToggle={vi.fn()}
+            onClick={vi.fn()}
+          />
+        </BrowserRouter>
+      </CurrencyProvider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show INR' }));
+    expect(screen.getByText(/₹/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show CNY' }));
+    expect(screen.getByText(/¥/)).toBeInTheDocument();
+  });
+
   it('calls onClick when clicked', () => {
     const handleFavoriteToggle = vi.fn();
     const handleClick = vi.fn();
 
     render(
-      <BrowserRouter>
+      <CurrencyProvider>
+        <BrowserRouter>
         <LuxuryPropertyCard 
           property={mockProperty}
           isFavorite={false}
           onFavoriteToggle={handleFavoriteToggle}
           onClick={handleClick}
         />
-      </BrowserRouter>
+        </BrowserRouter>
+      </CurrencyProvider>
     );
 
     fireEvent.click(screen.getByRole('button', { name: /View Luxury Villa with Sea View/i }));

@@ -102,6 +102,7 @@ export const en = {
     shortTerm: 'Short Term',
     price: 'Price',
     pricePerSqft: 'Price per sq.ft',
+    selectCurrency: 'Display currency',
     aed: 'AED',
     perYear: '/year',
     perMonth: '/month',

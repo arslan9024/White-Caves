@@ -102,6 +102,7 @@ export const ar = {
     shortTerm: 'إيجار قصير المدى',
     price: 'السعر',
     pricePerSqft: 'السعر للقدم المربع',
+    selectCurrency: 'عملة العرض',
     aed: 'درهم',
     perYear: '/سنوياً',
     perMonth: '/شهرياً',

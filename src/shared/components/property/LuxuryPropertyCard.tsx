@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MapPin, Bed, Bath, Maximize, Share2, ChevronRight } from 'lucide-react';
 import PropertyImageSlider from './PropertyImageSlider';
 import { PropertyType } from '../../../hooks/usePropertyBrowser';
+import { useGlobalCurrency } from '../../../context/CurrencyContext';
 import { createLogger } from '../../../utils/logger';
 import './LuxuryPropertyCard.css';
 
@@ -21,7 +22,8 @@ export default function LuxuryPropertyCard({
   onFavoriteToggle,
   onClick,
 }: LuxuryPropertyCardProps): React.ReactElement {
-  
+  const { formatPrice } = useGlobalCurrency();
+
   const handleShare = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     const url = `${window.location.origin}/property/${property.id}`;
@@ -98,7 +100,7 @@ export default function LuxuryPropertyCard({
 
         <div className="lpc-footer">
           <span className="lpc-price">
-            AED {property.price.toLocaleString()}
+            {formatPrice(property.price)}
             {property.purpose === 'rent' && <span className="lpc-price-period">/yr</span>}
           </span>
           

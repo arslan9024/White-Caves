@@ -2,6 +2,7 @@ import React, { FC, lazy, Suspense } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { usePropertyBrowser } from '../hooks/usePropertyBrowser';
 import { useSearchParams } from 'react-router-dom';
+import { useGridCurrency } from './properties/logic/GRID.logic';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
 import PageMeta from '../components/seo/PageMeta';
@@ -72,6 +73,7 @@ const PropertiesPage: FC = () => {
     handleFavoriteToggle,
     isFavorite,
   } = usePropertyBrowser();
+  const { currency, currencies, currencyLabel, direction, handleCurrencyChange } = useGridCurrency();
 
   return (
     <PublicLayout>
@@ -106,6 +108,20 @@ const PropertiesPage: FC = () => {
             {/* View toggle */}
             <div className="results-header">
               <div className="results-controls">
+                <label className="currency-toggle" dir={direction}>
+                  <span>{currencyLabel}</span>
+                  <select
+                    aria-label={currencyLabel}
+                    value={currency}
+                    onChange={handleCurrencyChange}
+                  >
+                    {currencies.map(code => (
+                      <option key={code} value={code}>
+                        {code}
+                      </option>
+                    ))}
+                  </select>
+                </label>
                 <div className="view-toggle">
                   <button
                     className={`view-btn ${view === 'grid' ? 'active' : ''}`}
