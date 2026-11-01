@@ -5,16 +5,8 @@
   "framework": "vite",
   "installCommand": "npm install",
   "functions": {
-    "api/**/*.js": {
+    "api/index.js": {
       "maxDuration": 30
-    }
-  },
-  "env": {
-    "NODE_VERSION": "20.x"
-  },
-  "build": {
-    "env": {
-      "NODE_VERSION": "20.x"
     }
   },
   "redirects": [
