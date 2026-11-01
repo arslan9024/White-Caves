@@ -58,8 +58,9 @@ router.get(
   requirePermission('manage_hr', 'manage_agents'),
   asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
     const baseFields = '_id employeeId fullName role employmentType isVirtual title status';
-    const isSuperUser =
-      req.user?.email?.toLowerCase() === process.env.SUPER_USER_EMAIL?.toLowerCase();
+    const userEmail = req.user?.email.trim().toLowerCase();
+    const superUserEmail = process.env.SUPER_USER_EMAIL?.trim().toLowerCase();
+    const isSuperUser = Boolean(userEmail && superUserEmail && userEmail === superUserEmail);
     const fields = isSuperUser ? `${baseFields} systemPrompt` : baseFields;
     const standbyList = await Personnel.find({ status: 'STANDBY' })
       .select(fields)

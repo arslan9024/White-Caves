@@ -53,6 +53,13 @@ describe('corporate departments access control', () => {
       '_id employeeId fullName role employmentType isVirtual title status'
     );
 
+    vi.stubEnv('SUPER_USER_EMAIL', '');
+    personnelFind.mockReturnValue({ select, sort });
+    await request(createApp('hr_staff', '')).get('/api/corporate-departments/standby').expect(200);
+    expect(select).toHaveBeenLastCalledWith(
+      '_id employeeId fullName role employmentType isVirtual title status'
+    );
+
     personnelFind.mockReturnValue({ select, sort });
     vi.stubEnv('SUPER_USER_EMAIL', 'owner@example.com');
     await request(createApp('owner', 'owner@example.com'))
