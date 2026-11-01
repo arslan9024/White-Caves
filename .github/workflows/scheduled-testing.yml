@@ -7,7 +7,7 @@ on:
 
 jobs:
   comprehensive-test-suite:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     
     steps:
@@ -89,7 +89,7 @@ jobs:
           webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 
   performance-benchmark:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     
     steps:
@@ -176,7 +176,7 @@ jobs:
           webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 
   accessibility-audit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     
     steps:

@@ -87,7 +87,7 @@ jobs:
             });
 
   e2e-on-pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     timeout-minutes: 45
     
