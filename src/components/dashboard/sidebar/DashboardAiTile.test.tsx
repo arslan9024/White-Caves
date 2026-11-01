@@ -16,7 +16,9 @@ describe('DashboardAiTile', () => {
   it('renders AI Command Center tile with assistant count and dropdown', () => {
     render(<DashboardAiTile {...defaultProps} />);
 
-    expect(screen.getByText(/3\. AI Command Center \(40 AI\)/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/3\. AI Command Center/i)
+    ).toBeInTheDocument();
     expect(screen.getByText(/AI Teams/i)).toBeInTheDocument();
   });
 

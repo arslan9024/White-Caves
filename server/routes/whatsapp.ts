@@ -16,8 +16,13 @@ router.param('agentId', (_req, _res, next, value: unknown) => {
 /** Helper to get engine from URL param */
 function getEngine(req: Request) {
   const parameter = req.params.agentId;
-  const agentId = Array.isArray(parameter) ? parameter[0] : parameter;
-  return getWhatsAppEngine(agentId || 'nina-md-primary');
+  if (Array.isArray(parameter)) {
+    throw new AppError('agentId parameter must not be an array', 400);
+  }
+  if (typeof parameter !== 'string' || !parameter.trim()) {
+    throw new AppError('agentId must be a non-empty string', 400);
+  }
+  return getWhatsAppEngine(parameter);
 }
 
 /**

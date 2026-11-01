@@ -33,6 +33,42 @@ const { mockFirebaseAuthConfigured, mockFirebaseAuthUnavailableReason, mockFireb
     mockFirebaseAuthState: { value: { currentUser: null as unknown } },
   }));
 
+vi.mock('../../auth/firebaseInit', () => ({
+  get firebaseAuth() {
+    return mockFirebaseAuthState.value;
+  },
+  get isFirebaseConfigured() {
+    return mockFirebaseAuthConfigured.value;
+  },
+  get isFirebaseAuthConfigured() {
+    return mockFirebaseAuthConfigured.value;
+  },
+  get firebaseMissingReason() {
+    return mockFirebaseAuthUnavailableReason.value;
+  },
+  get firebaseAuthUnavailableReason() {
+    return mockFirebaseAuthUnavailableReason.value;
+  },
+  signInWithGoogle: (...args: unknown[]) =>
+    Promise.resolve(mockSignInWithGoogle(...args)).then(result => {
+      if (
+        typeof result === 'object' &&
+        result !== null &&
+        'user' in result &&
+        (result as { user?: unknown }).user
+      ) {
+        mockFirebaseAuthState.value.currentUser = (result as { user: unknown }).user;
+      }
+      return result;
+    }),
+  signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
+  signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
+  signOut: (...args: unknown[]) => mockSignOut(...args),
+  signInWithPhone: vi.fn(),
+  createRecaptchaVerifier: vi.fn(),
+  handleRedirectResult: vi.fn().mockResolvedValue(null),
+}));
+
 vi.mock('../../config/firebase', () => ({
   get auth() {
     return mockFirebaseAuthState.value;
@@ -643,8 +679,8 @@ describe('SignInPage', () => {
 
       let resolveRetrySync:
         | ((value: {
-            data: { user: { id: string; email: string; name: string; role: string } };
-          }) => void)
+          data: { user: { id: string; email: string; name: string; role: string } };
+        }) => void)
         | undefined;
 
       mockSyncFirebaseUser
@@ -698,8 +734,8 @@ describe('SignInPage', () => {
 
       let resolveRetrySync:
         | ((value: {
-            data: { user: { id: string; email: string; name: string; role: string } };
-          }) => void)
+          data: { user: { id: string; email: string; name: string; role: string } };
+        }) => void)
         | undefined;
 
       mockSyncFirebaseUser

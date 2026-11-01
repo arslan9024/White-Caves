@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
+import { safeStorage } from '../../../../utils/safeStorage';
 
 // Mock CSS
 vi.mock('./BiometricLogin.css', () => ({}));
@@ -172,14 +173,14 @@ describe('BiometricLoginButton', () => {
     });
 
     it('navigates to profile when existing role found', async () => {
-      (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'admin' });
+      mockAuthenticateWithBiometric.mockResolvedValueOnce({ success: true, user: { id: 'u1', email: 'test@test.com', name: 'Test User', role: 'user', profileCompleted: false }, token: 'jwt-token-123' });
       render(<BiometricLoginButton />);
       await waitFor(() => {
         expect(screen.getByLabelText('Sign in with Face ID or Touch ID')).toBeInTheDocument();
       });
       fireEvent.click(screen.getByLabelText('Sign in with Face ID or Touch ID'));
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/profile');
+        expect(mockNavigate).toHaveBeenCalledWith('/profile', { replace: true });
       });
     });
   });

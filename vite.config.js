@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -166,6 +167,7 @@ export default defineConfig(async ({ command }) => {
   }
 
   return {
+    envDir: fs.existsSync("./secrets/.env") ? "./secrets" : ".",
     plugins,
     base: '/',
     server: {

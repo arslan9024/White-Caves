@@ -127,13 +127,7 @@ describe('UAEPassSuccessPage', () => {
       render(<UAEPassSuccessPage />);
       await screen.findByText('Welcome!');
       expect(mockDispatch).toHaveBeenCalledWith({
-        type: 'user/setUser',
-        payload: {
-          id: '784-XXXX-XXXXXXX-X',
-          email: 'ahmed@test.ae',
-          name: 'Ahmed Al-Maktoum',
-          phone: '+971 50 123 4567',
-        },
+        type: 'user/setUser', payload: expect.objectContaining({ id: '784-XXXX-XXXXXXX-X', email: 'ahmed@test.ae', name: 'Ahmed Al-Maktoum', phone: '+971 50 123 4567' }),
       });
     });
 

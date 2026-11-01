@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "penny",
+  "name": "Penny",
+  "gender": "Female",
+  "title": "Corporate Tax 9% Supervisor",
+  "supervisorSlot": 3,
+  "department": {
+    "code": "DEPT-06",
+    "name": "Revenue, Finance & Treasury"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Theodora"
+  },
+  "assignedTasks": [
+    "Small Business Relief (SBR) Screen",
+    "Taxable Net Profit Calculation",
+    "Transfer Pricing Documentation"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

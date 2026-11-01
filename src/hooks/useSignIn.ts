@@ -15,13 +15,16 @@ import {
   signInWithFacebook,
   signInWithApple,
   signInWithPhone,
-  auth as firebaseAuth,
   createRecaptchaVerifier,
   signOut as signOutFirebase,
-  isFirebaseAuthConfigured,
-  firebaseAuthUnavailableReason,
-  handleRedirectResult,
+  handleRedirectResult
 } from '../config/firebase';
+import {
+  firebaseAuth as auth,
+  isFirebaseConfigured,
+  isFirebaseAuthConfigured,
+  firebaseMissingReason as firebaseAuthUnavailableReason
+} from '../auth/firebaseInit';
 import { TIMING } from '../constants';
 import {
   loginWithEmail as backendLogin,

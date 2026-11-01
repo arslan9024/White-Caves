@@ -1,0 +1,145 @@
+.standby-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.standby-drawer-content {
+  width: 480px;
+  max-width: 90vw;
+  height: 100%;
+  background: #0f172a;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  color: #f8fafc;
+}
+
+.standby-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.standby-drawer-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #c084fc;
+}
+
+.standby-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.standby-desc {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 8px 0 20px 0;
+}
+
+.standby-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.standby-item-card {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.standby-item-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.standby-type-pill {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.standby-type-pill.virtual {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c084fc;
+}
+
+.standby-type-pill.human {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.standby-id-badge {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-family: monospace;
+}
+
+.standby-item-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.standby-item-role {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.btn-assign-action {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.standby-editor-box {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.standby-editor-box input,
+.standby-editor-box textarea {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.btn-confirm-assign,
+.btn-save-prompt {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+

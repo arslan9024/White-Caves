@@ -1,0 +1,45 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "mary",
+  "name": "Mary",
+  "title": "Inventory Synchronization Supervisor",
+  "hierarchy": {
+    "level": 3,
+    "role": "Supervisor",
+    "department": {
+      "code": "DEPT_10",
+      "name": "Sales & CRM",
+      "manager": "@Jaime"
+    }
+  },
+  "contextVariables": {
+    "systemRole": "Inventory & Data Manager Supervisor",
+    "strictMatrixValidation": true,
+    "allowedFileFormats": ["xlsx", "csv", "xml"],
+    "maxSpreadsheetBatchSize": 5000,
+    "primaryPortalSources": ["Bayut", "Property Finder", "Direct Owner Ingestion"]
+  },
+  "automatedActions": [
+    {
+      "actionId": "sync_property_matrices",
+      "description": "Continuously sync and deduplicate luxury unit matrices across live CRM feeds",
+      "targetModel": "Property",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "actionId": "validate_owner_spreadsheet_data",
+      "description": "Parse, validate title deed numbers, sanitize owner phone/email, and verify AED square foot valuations against RERA index",
+      "validationRules": {
+        "requireTitleDeed": true,
+        "enforceAedValuation": true,
+        "rejectMissingOwnerContact": true
+      }
+    }
+  ],
+  "runtimeGuardrails": {
+    "sandboxExecutionOnly": true,
+    "maxExecutionTimeMs": 60000,
+    "escalateOnFailureTo": "@Jaime"
+  }
+}
+

@@ -32,6 +32,9 @@ const DaisyLeasingCRM = lazy(() => import('../components/crm/DaisyLeasingCRM_NEW
 const TheodoraFinanceCRM = lazy(() => import('../components/crm/TheodoraFinanceCRM_NEW'));
 const OliviaMarketingCRM = lazy(() => import('../components/crm/OliviaMarketingCRM_NEW'));
 const ZoeExecutiveCRM = lazy(() => import('../components/crm/ZoeExecutiveCRM_NEW'));
+const AICommandCenterPage = lazy(() => import('../app/(dashboard)/ai-command-center/AICommandCenterPage'));
+const DepartmentsOverviewPage = lazy(() => import('../app/(dashboard)/departments/DepartmentsOverviewPage'));
+const DepartmentDetailPage = lazy(() => import('../app/(dashboard)/departments/DepartmentDetailPage'));
 const LailaComplianceCRM = lazy(() => import('../components/crm/LailaComplianceCRM_NEW'));
 const AuroraCTODashboard = lazy(() => import('../components/crm/AuroraCTODashboard_NEW'));
 const HazelFrontendCRM = lazy(() => import('../components/crm/HazelFrontendCRM_NEW'));
@@ -231,6 +234,26 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     id: 'zoe', label: 'Executive CRM', icon: '👑',
     description: 'Executive KPIs, strategy, and risk signals',
     color: '#E31E24', zone: 'executive', Component: ZoeExecutiveCRM,
+  },
+  'ai-command': {
+    id: 'ai-command', label: 'AI Command Center', icon: '⚡',
+    description: 'White Caves 12 Departments, 108 Supervisors & Virtual Staff Production Hub',
+    color: '#8B5CF6', zone: 'ai_command', Component: AICommandCenterPage,
+  },
+  'ai-hub': {
+    id: 'ai-hub', label: 'AI Command Center Hub', icon: '⚡',
+    description: 'White Caves Corporate Hierarchy & Autonomous AI Workforce Engine',
+    color: '#8B5CF6', zone: 'ai_command', Component: AICommandCenterPage,
+  },
+  'corporate-departments': {
+    id: 'corporate-departments', label: '12 Corporate Departments', icon: '🏢',
+    description: 'Full-screen Corporate Hierarchy with Sub-Desks and Dynamic Squads',
+    color: '#1E293B', zone: 'executive', Component: DepartmentsOverviewPage,
+  },
+  'corporate-department-detail': {
+    id: 'corporate-department-detail', label: 'Department Container', icon: '🗂️',
+    description: 'Sub-departments and Team Squads dynamic workspace',
+    color: '#1E293B', zone: 'executive', Component: DepartmentDetailPage,
   },
   'zoe-business-docs': {
     id: 'zoe-business-docs', label: '3.4.5 Hyper-Linked Business Docs Hub', icon: '📜',

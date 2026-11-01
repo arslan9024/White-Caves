@@ -108,7 +108,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
       data-testid="hero-section"
       data-theme={isDark ? 'dark' : 'light'}
       dir={isRTL ? 'rtl' : 'ltr'}
-      lang={language}
+      lang={language === 'ar' ? 'ar' : 'en'}
       style={heroLayerStyle}
       aria-labelledby="luxury-hero-title"
     >

@@ -24,7 +24,6 @@ import {
 } from './authCommon.js';
 
 export const verify2faHandler =   asyncHandler(async (req: RouteRequest, res: Response) => {
-    const db = prisma as any;
     const { email, code, twoFactorToken: body2faToken } = req.body || {};
 
     if (!email || !code) {
