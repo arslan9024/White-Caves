@@ -39,7 +39,12 @@ export const StandbyRosterDrawer: React.FC<StandbyRosterDrawerProps> = ({
   const fetchStandby = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/corporate-departments/standby');
+      const token = localStorage.getItem('token') || '';
+      const res = await fetch('/api/corporate-departments/standby', {
+        headers: {
+          Authorization: ['Bearer', token].join(' '),
+        },
+      });
       const data = await res.json();
       if (data.success) {
         setStandbyList(data.data);
@@ -105,13 +110,16 @@ export const StandbyRosterDrawer: React.FC<StandbyRosterDrawerProps> = ({
 
   return (
     <div className="standby-drawer-overlay" onClick={onClose}>
-      <div className="standby-drawer-content" onClick={(e) => e.stopPropagation()}>
+      <div className="standby-drawer-content" onClick={e => e.stopPropagation()}>
         <div className="standby-drawer-header">
           <h3>Persistent Standby Roster ({standbyList.length})</h3>
-          <button className="standby-close-btn" onClick={onClose}>&times;</button>
+          <button className="standby-close-btn" onClick={onClose}>
+            &times;
+          </button>
         </div>
         <p className="standby-desc">
-          Universal unassigned personnel pool. Human staff, interns, and virtual assistants preserved under Zero-Data-Loss Law.
+          Universal unassigned personnel pool. Human staff, interns, and virtual assistants
+          preserved under Zero-Data-Loss Law.
         </p>
 
         {loading ? (
@@ -120,7 +128,7 @@ export const StandbyRosterDrawer: React.FC<StandbyRosterDrawerProps> = ({
           <div className="standby-empty">No personnel currently on standby.</div>
         ) : (
           <div className="standby-list">
-            {standbyList.map((m) => (
+            {standbyList.map(m => (
               <div key={m._id} className="standby-item-card">
                 <div className="standby-item-top">
                   <span className={`standby-type-pill ${m.isVirtual ? 'virtual' : 'human'}`}>
@@ -150,7 +158,7 @@ export const StandbyRosterDrawer: React.FC<StandbyRosterDrawerProps> = ({
                       type="text"
                       placeholder="Enter Target Squad ID"
                       value={targetSquadId}
-                      onChange={(e) => setTargetSquadId(e.target.value)}
+                      onChange={e => setTargetSquadId(e.target.value)}
                     />
                     <button
                       className="btn-confirm-assign"
@@ -166,7 +174,7 @@ export const StandbyRosterDrawer: React.FC<StandbyRosterDrawerProps> = ({
                         <textarea
                           rows={3}
                           value={promptInput}
-                          onChange={(e) => setPromptInput(e.target.value)}
+                          onChange={e => setPromptInput(e.target.value)}
                         />
                         <button
                           className="btn-save-prompt"
@@ -189,4 +197,3 @@ export const StandbyRosterDrawer: React.FC<StandbyRosterDrawerProps> = ({
 };
 
 export default StandbyRosterDrawer;
-
