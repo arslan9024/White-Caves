@@ -100,9 +100,30 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       const count = await buttons.count();
 
       if (count > 0) {
-        const startTime = Date.now();
-        await buttons.first().click();
-        const responseTime = Date.now() - startTime;
+        const button = buttons.first();
+        await button.evaluate(element => {
+          element.addEventListener(
+            'click',
+            () => {
+              const clickTime = performance.now();
+              requestAnimationFrame(() => {
+                document.documentElement.dataset.clickResponseTime = String(
+                  performance.now() - clickTime
+                );
+              });
+            },
+            { capture: true, once: true }
+          );
+        });
+        await button.click();
+        await page.waitForFunction(
+          () => document.documentElement.dataset.clickResponseTime !== undefined
+        );
+        const responseTimeAttribute = await page
+          .locator('html')
+          .getAttribute('data-click-response-time');
+        expect(responseTimeAttribute).not.toBeNull();
+        const responseTime = Number(responseTimeAttribute);
 
         console.log(`âœ… Button click response: ${responseTime}ms`);
 
