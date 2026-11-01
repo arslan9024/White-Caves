@@ -32,7 +32,11 @@ import type { Response, NextFunction } from 'express';
 // ─── Helpers ────────────────────────────────────────────────────────────
 const TEST_SECRET = 'test-secret-key-for-auth-tests';
 
-function createToken(payload: Record<string, unknown>, secret = TEST_SECRET, expiresIn = '1h'): string {
+function createToken(
+  payload: Record<string, unknown>,
+  secret = TEST_SECRET,
+  expiresIn = '1h'
+): string {
   return jwt.sign(payload, secret, { expiresIn });
 }
 
@@ -134,6 +138,22 @@ describe('authMiddleware', () => {
     });
   });
 
+  describe('not-before token', () => {
+    it('calls next with 401 "Token not yet active" error', () => {
+      const token = jwt.sign({ id: 'u1', email: 'e@t.com', role: 'admin' }, TEST_SECRET, {
+        notBefore: '1h',
+      });
+      const req = mockReq(token);
+
+      authMiddleware(req, mockRes(), next);
+
+      expect(next).toHaveBeenCalledTimes(1);
+      const error = next.mock.calls[0][0];
+      expect(error.message).toBe('Token not yet active');
+      expect(error.statusCode).toBe(401);
+    });
+  });
+
   describe('invalid token', () => {
     it('calls next with 401 for malformed token', () => {
       const req = mockReq('not-a-valid-jwt');
@@ -146,11 +166,9 @@ describe('authMiddleware', () => {
     });
 
     it('calls next with 401 for token signed with wrong secret', () => {
-      const token = jwt.sign(
-        { id: 'u1', email: 'e@t.com', role: 'admin' },
-        'wrong-secret-key',
-        { expiresIn: '1h' }
-      );
+      const token = jwt.sign({ id: 'u1', email: 'e@t.com', role: 'admin' }, 'wrong-secret-key', {
+        expiresIn: '1h',
+      });
       const req = mockReq(token);
       authMiddleware(req, mockRes(), next);
 
@@ -164,7 +182,9 @@ describe('authMiddleware', () => {
       const validToken = createToken({ id: 'u1', email: 'e@t.com', role: 'admin' });
       // Tamper with the payload section
       const parts = validToken.split('.');
-      parts[1] = Buffer.from(JSON.stringify({ id: 'HACKED', email: 'hacker@evil.com', role: 'owner' })).toString('base64url');
+      parts[1] = Buffer.from(
+        JSON.stringify({ id: 'HACKED', email: 'hacker@evil.com', role: 'owner' })
+      ).toString('base64url');
       const tamperedToken = parts.join('.');
 
       const req = mockReq(tamperedToken);
