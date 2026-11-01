@@ -166,7 +166,7 @@ async function run(): Promise<void> {
 
   // ── 1. Upsert 12 Core Departments ────────────────────────────────────────────
   console.log('[Migration] Seeding 12 Corporate Departments...');
-  const deptColl = db.collection('departmentnodes');
+  const deptColl = db.collection('department_nodes');
 
   for (const dept of CORE_DEPARTMENTS) {
     await deptColl.updateOne(
@@ -213,7 +213,7 @@ async function run(): Promise<void> {
 
   // ── 3. Migrate legacy VirtualStaff → Personnel (non-destructive) ──────────────
   console.log('[Migration] Migrating legacy VirtualStaff to Personnel...');
-  const staffColl = db.collection('virtualstaffs');
+  const staffColl = db.collection('virtual_staff');
   const personnelColl = db.collection('personnels');
 
   const legacyStaff = await staffColl.find({}).toArray();

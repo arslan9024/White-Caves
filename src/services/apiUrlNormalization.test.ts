@@ -37,6 +37,23 @@ describe('API base URL normalization regression', () => {
     expect(url).toContain('area=Dubai+Marina');
   });
 
+  it('PropertyQueryService appends detail and statistics paths to the API base once', async () => {
+    vi.stubEnv('VITE_API_URL', 'http://localhost:3001/api');
+    const fetchMock = vi.fn().mockResolvedValue(okResponse({ success: true }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { default: PropertyQueryService } = await import('./PropertyQueryService.js');
+    const service = new PropertyQueryService();
+
+    await service.getPropertyDetails('property-123');
+    await service.getInventoryStatistics();
+
+    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
+      'http://localhost:3001/api/inventory/property-123',
+      'http://localhost:3001/api/inventory/statistics',
+    ]);
+  });
+
   it('relationalSidebarAPI preserves a configured /api suffix exactly once', async () => {
     vi.stubEnv('VITE_API_URL', 'http://localhost:3001/api');
     const fetchMock = vi.fn().mockResolvedValue(okResponse({}));

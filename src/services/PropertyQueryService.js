@@ -286,7 +286,7 @@ class PropertyQueryService {
    */
   async getPropertyDetails(propertyId) {
     try {
-      const response = await fetch(`${this.baseUrl}/api/inventory/${propertyId}`, {
+      const response = await fetch(`${this.baseUrl}/inventory/${propertyId}`, {
         credentials: 'include',
       });
 
@@ -310,7 +310,7 @@ class PropertyQueryService {
    */
   async getInventoryStatistics() {
     try {
-      const response = await fetch(`${this.baseUrl}/api/inventory/statistics`, {
+      const response = await fetch(`${this.baseUrl}/inventory/statistics`, {
         credentials: 'include',
       });
 
