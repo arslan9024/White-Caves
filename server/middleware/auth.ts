@@ -107,11 +107,7 @@ function enrichFounderPayload(user: AuthUser): AuthUser {
   return user;
 }
 
-const authMiddleware = (
-  req: AuthRequest,
-  _res: Response,
-  next: NextFunction
-) => {
+const authMiddleware = (req: AuthRequest, _res: Response, next: NextFunction) => {
   try {
     const token = extractBearerToken(req.headers.authorization);
 
@@ -153,5 +149,8 @@ const authMiddleware = (
   }
 };
 
-export default authMiddleware;
+export const authenticateToken = authMiddleware;
+export const verifyToken = authMiddleware;
+export { requireRole } from './rbac.js';
 
+export default authMiddleware;
