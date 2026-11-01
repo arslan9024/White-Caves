@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
+import { requirePermission } from '../middleware/rbac.js';
 import { DepartmentNode } from '../../src/models/DepartmentNode.js';
 import { Personnel } from '../../src/models/Personnel.js';
 import { TeamSquad } from '../../src/models/TeamSquad.js';
@@ -22,10 +23,11 @@ type AuthCorporateRouteRequest = CorporateRouteRequest & Pick<AuthRequest, 'user
 // GET /api/corporate-departments - list all 12 corporate departments with subDepts count and headcount
 router.get(
   '/',
+  requirePermission('manage_hr', 'manage_agents'),
   asyncHandler(async (_req: Request, res: Response) => {
     const departments = await DepartmentNode.find({ level: 'DEPARTMENT' })
       .sort({ order: 1 })
-      .populate('directorOrManagerId');
+      .populate({ path: 'directorOrManagerId', select: 'fullName role' });
 
     const result = await Promise.all(
       departments.map(async dept => {
@@ -53,8 +55,15 @@ router.get(
 // GET /api/corporate-departments/standby - unassigned standby roster
 router.get(
   '/standby',
-  asyncHandler(async (_req: Request, res: Response) => {
-    const standbyList = await Personnel.find({ status: 'STANDBY' }).sort({ updatedAt: -1 });
+  requirePermission('manage_hr', 'manage_agents'),
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    const baseFields = '_id employeeId fullName role employmentType isVirtual title status';
+    const isSuperUser =
+      req.user?.email?.toLowerCase() === process.env.SUPER_USER_EMAIL?.toLowerCase();
+    const fields = isSuperUser ? `${baseFields} systemPrompt` : baseFields;
+    const standbyList = await Personnel.find({ status: 'STANDBY' })
+      .select(fields)
+      .sort({ updatedAt: -1 });
     res.json({ success: true, data: standbyList });
   })
 );
@@ -62,11 +71,12 @@ router.get(
 // GET /api/corporate-departments/:slug - get department container data with subDepts and squads
 router.get(
   '/:slug',
+  requirePermission('manage_hr', 'manage_agents'),
   asyncHandler(async (req: CorporateRouteRequest, res: Response) => {
     const dept = await DepartmentNode.findOne({
       slug: req.params.slug.toLowerCase().trim(),
       level: 'DEPARTMENT',
-    }).populate('directorOrManagerId');
+    }).populate({ path: 'directorOrManagerId', select: 'fullName role' });
 
     if (!dept) throw new AppError('Corporate department not found', 404);
 
@@ -74,10 +84,12 @@ router.get(
     const subDeptIds = subDepts.map(s => s._id);
     const squads = await TeamSquad.find({ subDepartmentId: { $in: subDeptIds } })
       .sort({ order: 1 })
-      .populate('supervisorId');
+      .populate({ path: 'supervisorId', select: 'employeeId fullName role isVirtual title' });
 
     const squadIds = squads.map(sq => sq._id);
-    const members = await Personnel.find({ teamSquadId: { $in: squadIds } });
+    const members = await Personnel.find({ teamSquadId: { $in: squadIds } }).select(
+      '_id employeeId fullName role employmentType isVirtual title status teamSquadId'
+    );
 
     res.json({
       success: true,

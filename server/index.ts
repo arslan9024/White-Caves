@@ -14,6 +14,7 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
+import { connectDB } from './lib/database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
@@ -24,7 +25,12 @@ import {
   createV1CompatibilityProxy,
   markLegacyApiDeprecated,
 } from './middleware/apiVersioning.js';
-import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/env.js';
+import {
+  CORS_ORIGINS,
+  WHATSAPP_WEBHOOK_SECRET,
+  IS_PRODUCTION,
+  DATABASE_URL,
+} from './config/env.js';
 import { buildAllowedCorsOrigins, inferRequestOrigin, isCorsOriginAllowed } from './config/cors.js';
 import {
   apiLimiter,
@@ -492,7 +498,9 @@ if (process.env.NODE_ENV === 'production' || process.env.DEV_AUTH_BYPASS === 'fa
     })`
   );
 } else if (process.env.NODE_ENV === 'development') {
-  logger.info('ℹ️  Dev auth fallback active (DEV_AUTH_BYPASS enabled) — unauthenticated /api requests inherit Lion superuser');
+  logger.info(
+    'ℹ️  Dev auth fallback active (DEV_AUTH_BYPASS enabled) — unauthenticated /api requests inherit Lion superuser'
+  );
 
   // Lion Superuser: stable dev identity when DB is unreachable
   const LION_SUPERUSER = {
@@ -578,7 +586,6 @@ app.use('/api/follow-ups', followUpsRoutes);
 
 // Documents API (Phase 2C - Document Generation)
 app.use('/api/documents', documentsRoutes);
-
 
 // Market Analytics API (Phase 4C - Market Analyst Bot)
 app.use('/api/analytics', analyticsRoutes);
@@ -1333,6 +1340,7 @@ const startServer = async () => {
   try {
     logger.info('Connecting to MongoDB...');
     await connectDatabase();
+    await connectDB(DATABASE_URL);
     logger.info('MongoDB connected successfully');
 
     // Start background services

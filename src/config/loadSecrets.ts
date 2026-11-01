@@ -1,5 +1,5 @@
-import path from 'path';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Load environment variables from the `secrets/.env` file.
@@ -9,10 +9,9 @@ import dotenv from 'dotenv';
  * in `process.env` for the rest of the application.
  */
 export function loadSecrets(): void {
-  const envPath = path.resolve(__dirname, '../../secrets/.env');
+  const envPath = fileURLToPath(new URL('../../secrets/.env', import.meta.url));
   dotenv.config({ path: envPath });
 }
 
 // Immediately load when this module is imported.
 loadSecrets();
-
