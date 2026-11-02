@@ -60,16 +60,12 @@ export const RegulatoryTrustStrip: FC = () => {
                 </div>
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-xs font-bold text-slate-100 truncate">
-                      {cred.title}
-                    </span>
+                    <span className="text-xs font-bold text-slate-100 truncate">{cred.title}</span>
                     <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
                       {cred.badge}
                     </span>
                   </div>
-                  <span className="text-[11px] text-slate-400 truncate">
-                    {cred.subtext}
-                  </span>
+                  <span className="text-[11px] text-slate-400 truncate">{cred.subtext}</span>
                 </div>
               </motion.div>
             );

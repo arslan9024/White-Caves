@@ -67,7 +67,15 @@ export const QuickSearchModal: FC<QuickSearchModalProps> = ({ isOpen, onClose })
                   Luxury Property Search
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
-                  Press <kbd className="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-slate-300 font-mono">ESC</kbd> to exit or <kbd className="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-slate-300 font-mono">Ctrl + K</kbd> to toggle
+                  Press{' '}
+                  <kbd className="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-slate-300 font-mono">
+                    ESC
+                  </kbd>{' '}
+                  to exit or{' '}
+                  <kbd className="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-slate-300 font-mono">
+                    Ctrl + K
+                  </kbd>{' '}
+                  to toggle
                 </p>
               </div>
               <button

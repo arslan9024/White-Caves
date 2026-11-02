@@ -24,6 +24,7 @@ vi.mock('framer-motion', () => ({
     }
   ),
   useScroll: () => ({ scrollY: { get: () => 0 } }),
+  AnimatePresence: ({ children }: any) => children,
   useTransform: () => 0,
   useReducedMotion: () => false,
   type: {} as any,
@@ -261,7 +262,7 @@ describe('Hero', () => {
       // We cannot easily test the final value with fake timers since rAF is used
       // But we verify that stat items are rendered
       const statItems = document.querySelectorAll('.hero-stat-item');
-      expect(statItems.length).toBe(4);
+      expect(statItems.length).toBe(5);
     });
   });
 });

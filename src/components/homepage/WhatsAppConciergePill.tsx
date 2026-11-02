@@ -14,17 +14,20 @@ const INQUIRY_OPTIONS: InquiryOption[] = [
   {
     icon: Calendar,
     title: 'Book Private Villa Viewing',
-    message: 'Hello White Caves! I would like to schedule a private VIP viewing for a luxury property.',
+    message:
+      'Hello White Caves! I would like to schedule a private VIP viewing for a luxury property.',
   },
   {
     icon: Sparkles,
     title: 'Off-Plan Investment Launches',
-    message: 'Hello! Please share latest developer off-plan launches (Emaar, Nakheel, Sobha) with payment plans.',
+    message:
+      'Hello! Please share latest developer off-plan launches (Emaar, Nakheel, Sobha) with payment plans.',
   },
   {
     icon: Building,
     title: 'List My Property for Sale/Rent',
-    message: 'Hello White Caves, I am a landlord interested in listing my property with your RERA-licensed agency.',
+    message:
+      'Hello White Caves, I am a landlord interested in listing my property with your RERA-licensed agency.',
   },
 ];
 
@@ -89,7 +92,11 @@ export const WhatsAppConciergePill: FC = () => {
 
             <button
               type="button"
-              onClick={() => openWhatsApp('Hello White Caves! I would like to speak directly with a luxury property advisor.')}
+              onClick={() =>
+                openWhatsApp(
+                  'Hello White Caves! I would like to speak directly with a luxury property advisor.'
+                )
+              }
               className="mt-1 w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-colors"
             >
               <MessageSquare className="w-4 h-4" />

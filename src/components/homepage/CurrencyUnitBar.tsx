@@ -61,8 +61,8 @@ export const CurrencyUnitBar: FC<CurrencyUnitBarProps> = ({
 
         {selectedCurrency !== 'AED' && (
           <span className="text-[11px] text-slate-400 flex items-center gap-1">
-            <TrendingUp className="w-3 h-3 text-emerald-400" />
-            1 {selectedCurrency} ≈ {(1 / FX_RATES_TO_AED[selectedCurrency]).toFixed(3)} AED
+            <TrendingUp className="w-3 h-3 text-emerald-400" />1 {selectedCurrency} ≈{' '}
+            {(1 / FX_RATES_TO_AED[selectedCurrency]).toFixed(3)} AED
           </span>
         )}
       </div>

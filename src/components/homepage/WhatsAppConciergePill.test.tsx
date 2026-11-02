@@ -6,13 +6,17 @@ import WhatsAppConciergePill from './WhatsAppConciergePill';
 describe('WhatsAppConciergePill Component', () => {
   it('renders trigger button with VIP Concierge label', () => {
     render(<WhatsAppConciergePill />);
-    expect(screen.getByRole('button', { name: /Open luxury property WhatsApp concierge/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Open luxury property WhatsApp concierge/i })
+    ).toBeInTheDocument();
     expect(screen.getByText('VIP Concierge')).toBeInTheDocument();
   });
 
   it('opens concierge menu on button click and shows options', () => {
     render(<WhatsAppConciergePill />);
-    const trigger = screen.getByRole('button', { name: /Open luxury property WhatsApp concierge/i });
+    const trigger = screen.getByRole('button', {
+      name: /Open luxury property WhatsApp concierge/i,
+    });
     fireEvent.click(trigger);
 
     expect(screen.getByText('VIP Concierge Desk')).toBeInTheDocument();
@@ -25,7 +29,9 @@ describe('WhatsAppConciergePill Component', () => {
     window.open = vi.fn();
 
     render(<WhatsAppConciergePill />);
-    const trigger = screen.getByRole('button', { name: /Open luxury property WhatsApp concierge/i });
+    const trigger = screen.getByRole('button', {
+      name: /Open luxury property WhatsApp concierge/i,
+    });
     fireEvent.click(trigger);
 
     const option = screen.getByText('Book Private Villa Viewing');

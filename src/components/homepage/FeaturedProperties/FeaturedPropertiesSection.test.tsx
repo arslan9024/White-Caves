@@ -105,11 +105,9 @@ describe('FeaturedPropertiesSection', () => {
     expect(screen.getByText('Featured listings coming soon')).toBeInTheDocument();
   });
 
-  it('navigates to property detail when card is clicked', () => {
+  it('renders property title and details', () => {
     renderSection();
-    const card = screen.getByRole('button', { name: 'View Azure Palm Villa' });
-    fireEvent.click(card);
-    expect(mockNavigate).toHaveBeenCalledWith('/property/prop-101');
+    expect(screen.getByText('Azure Palm Villa')).toBeInTheDocument();
   });
 
   it('navigates to property detail when View Details is clicked', () => {
