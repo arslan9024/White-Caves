@@ -1,0 +1,78 @@
+{
+  "name": "@Invoice",
+  "title": "Director of Ledger Accounting & VAT Logic Engines",
+  "departmentId": 9,
+  "departmentName": "Ledger Accounting & VAT Logic Engines",
+  "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+  "nodeNumber": 1,
+  "isDirector": true,
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "primarySkill": "External API Ledger Integration Drivers",
+  "primaryResponsibility": "Syncs client side data events straight into remote accounting platforms.",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "approvalAuthority": "Full Automated Autopilot & Review Authority",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true
+  },
+  "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+  "subordinateNodes": [
+    {
+      "node": 2,
+      "agent": "@Dora",
+      "skill": "Tiered Formula Rules Modules",
+      "responsibility": "Programs rule checking libraries that apply dynamic transaction processing splits.",
+      "file": "node-02-dora.agent.json"
+    },
+    {
+      "node": 3,
+      "agent": "@Theodora",
+      "skill": "Escrow Transaction Guard Methods",
+      "responsibility": "Codes validation blocks that block execution unless payment tokens are confirmed.",
+      "file": "node-03-theodora.agent.json"
+    },
+    {
+      "node": 4,
+      "agent": "@Fin_Analyst_01",
+      "skill": "Currency Exchange Processing Helpers",
+      "responsibility": "Maintains automated currency calculation matrices based on spot parameters.",
+      "file": "node-04-fin-analyst-01.agent.json"
+    },
+    {
+      "node": 5,
+      "agent": "@Fin_Analyst_02",
+      "skill": "Aging Data Aggregator Ingestors",
+      "responsibility": "Runs database scripts that sort overdue balances into tracking buckets.",
+      "file": "node-05-fin-analyst-02.agent.json"
+    },
+    {
+      "node": 6,
+      "agent": "@Fin_Analyst_03",
+      "skill": "Outgoing Transaction Queue Pipelines",
+      "responsibility": "Controls request worker queues handling vendor settlement outputs.",
+      "file": "node-06-fin-analyst-03.agent.json"
+    },
+    {
+      "node": 7,
+      "agent": "@Fin_Analyst_04",
+      "skill": "Statistical Trend Plot Map Exporters",
+      "responsibility": "Generates data tracking points for populating graph interface vectors.",
+      "file": "node-07-fin-analyst-04.agent.json"
+    },
+    {
+      "node": 8,
+      "agent": "@Fin_Analyst_05",
+      "skill": "Official Ingestion Form Webhooks",
+      "responsibility": "Secures data collection routes from external system response parameters.",
+      "file": "node-08-fin-analyst-05.agent.json"
+    },
+    {
+      "node": 9,
+      "agent": "@Fin_Analyst_06",
+      "skill": "Ledger Audit Trailing File Handlers",
+      "responsibility": "Maintains read-only event logs tracking user state updates.",
+      "file": "node-09-fin-analyst-06.agent.json"
+    }
+  ]
+}

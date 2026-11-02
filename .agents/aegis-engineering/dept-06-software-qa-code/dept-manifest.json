@@ -1,0 +1,250 @@
+{
+  "departmentId": 6,
+  "departmentName": "Software Quality Assurance & Code QA",
+  "departmentSlug": "dept-06-software-qa-code",
+  "director": "@Sofia",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [
+    ".agents/skills/security-audit",
+    ".agents/skills/pr-review-checklist",
+    ".agents/skills/ts-typecheck-triage",
+    ".agents/skills/release-readiness"
+  ],
+  "team": [
+    {
+      "name": "@Sofia",
+      "id": "aegis-eng-d6-n1-sofia",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Form Validation Rule Assertions",
+      "responsibility": "Writes client-side form checking routines to ensure strict string inputs.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Katherine",
+      "id": "aegis-eng-d6-n2-katherine",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Numeric Formula Integration Tests",
+      "responsibility": "Validates multi-tiered calculation formulas using automated testing blocks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Radia",
+      "id": "aegis-eng-d6-n3-radia",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Input Validation & Sanitization Guards",
+      "responsibility": "Scrubs form fields against cross-site scripting vulnerabilities.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ecem",
+      "id": "aegis-eng-d6-n4-ecem",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Automated Playwright End-to-End Tests",
+      "responsibility": "Maintains end-to-end regression scripts across key application paths.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Joy",
+      "id": "aegis-eng-d6-n5-joy",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Static Security Code Auditing",
+      "responsibility": "Scans package dependencies for vulnerabilities before main branch integration.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@QA_Audit_01",
+      "id": "aegis-eng-d6-n6-qa-audit-01",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Smoke Test Assembly Automation",
+      "responsibility": "Configures pre-merge validation checks before remote staging pushes.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@QA_Audit_02",
+      "id": "aegis-eng-d6-n7-qa-audit-02",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "JSON Contract Schema Tests",
+      "responsibility": "Verifies that API response shapes match expected TypeScript declarations.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@QA_Audit_03",
+      "id": "aegis-eng-d6-n8-qa-audit-03",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "SLA Ingestion Timeout Monitors",
+      "responsibility": "Tests server responses under stress to ensure network request compliance.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@QA_Audit_04",
+      "id": "aegis-eng-d6-n9-qa-audit-04",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Role-Based Component Guard Tests",
+      "responsibility": "Validates private route navigation behavior against user access tokens.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}

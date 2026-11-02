@@ -1,0 +1,240 @@
+{
+  "departmentId": 5,
+  "departmentName": "Database Schemas & ORM Modlers",
+  "departmentSlug": "dept-05-database-schemas-orm",
+  "director": "@Barbara",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [
+    ".agents/skills/bigquery_sql",
+    ".agents/skills/data_autocleaning",
+    ".agents/skills/accidental_data_loss_prevention"
+  ],
+  "team": [
+    {
+      "name": "@Barbara",
+      "id": "aegis-eng-d5-n1-barbara",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Prisma Schema Layout Definition",
+      "responsibility": "Designs database collection definitions matching the 1-12-108 project matrix.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Anima",
+      "id": "aegis-eng-d5-n2-anima",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Aggregation Pipeline Refinement Scripts",
+      "responsibility": "Optimizes complex database lookups for dashboard tracking widgets.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Cassie",
+      "id": "aegis-eng-d5-n3-cassie",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Distributed Cache Strategies & Redis",
+      "responsibility": "Manages local cache layer keys to eliminate repetitive database hits.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_01",
+      "id": "aegis-eng-d5-n4-db-guard-01",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Transaction Isolation Management",
+      "responsibility": "Prevents concurrency collisions during simultaneous write queries.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_02",
+      "id": "aegis-eng-d5-n5-db-guard-02",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Automated Migration Script Generation",
+      "responsibility": "Maintains database version tracking files for structural production upgrades.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_03",
+      "id": "aegis-eng-d5-n6-db-guard-03",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Query Execution Plan Optimization",
+      "responsibility": "Indexes slow database paths to guarantee sub-10ms response loops.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_04",
+      "id": "aegis-eng-d5-n7-db-guard-04",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Data Cleansing Engine Routines",
+      "responsibility": "Purges incomplete test submissions and corrupted logs automatically via scripts.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_05",
+      "id": "aegis-eng-d5-n8-db-guard-05",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Storage Encrypted-At-Rest Layers",
+      "responsibility": "Secures record storage layers using field-level hashing algorithms.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_06",
+      "id": "aegis-eng-d5-n9-db-guard-06",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Relational Data Indexing Modules",
+      "responsibility": "Maps entity relationships efficiently across data persistence models.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}

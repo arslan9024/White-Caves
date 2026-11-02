@@ -1,0 +1,21 @@
+{
+  "name": "@CRM_Ops_04",
+  "id": "aegis-eng-d10-n9-crm-ops-04",
+  "nodeNumber": 9,
+  "isDirector": false,
+  "departmentId": 10,
+  "departmentName": "CRM Framework & Pipeline Software",
+  "departmentSlug": "dept-10-crm-framework-pipeline",
+  "skill": "External Access Protocol Configuration",
+  "responsibility": "Manages endpoint access authentication tokens for linked network platforms.",
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true,
+    "typeScriptStrict": true
+  },
+  "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+  "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+}

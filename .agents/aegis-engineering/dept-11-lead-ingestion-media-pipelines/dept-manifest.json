@@ -1,0 +1,200 @@
+{
+  "departmentId": 11,
+  "departmentName": "Lead Ingestion & Asset Media Pipelines",
+  "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+  "director": "@Rachel",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+  "team": [
+    {
+      "name": "@Rachel",
+      "id": "aegis-eng-d11-n1-rachel",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Tracking Pixel Metadata Ingestors",
+      "responsibility": "Captures and parses input headers from tracking platform pixel webhooks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Corinne",
+      "id": "aegis-eng-d11-n2-corinne",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Webhook Entry Form Schema Receivers",
+      "responsibility": "Connects structural API ingest paths to catch external text submissions.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Olivia",
+      "id": "aegis-eng-d11-n3-olivia",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Dynamic Image Dimension Optimizers",
+      "responsibility": "Scripts automated image compression routines for rendering media elements.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Nina",
+      "id": "aegis-eng-d11-n4-nina",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Video Stream Asset Chunk File Parsers",
+      "responsibility": "Builds file handling layers to organize incoming media video streams.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Nadia",
+      "id": "aegis-eng-d11-n5-nadia",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Messaging API Gateway Webhook Hooks",
+      "responsibility": "Routes incoming text messaging API threads into application log states.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mkt_Prod_01",
+      "id": "aegis-eng-d11-n6-mkt-prod-01",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Media File Conversion Automators",
+      "responsibility": "Scripts tasks to transcode video resolution types for application canvas views.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mkt_Prod_02",
+      "id": "aegis-eng-d11-n7-mkt-prod-02",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "SEO Meta Tag Injection Controllers",
+      "responsibility": "Builds data injectors that update document index parameters automatically.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mkt_Prod_03",
+      "id": "aegis-eng-d11-n8-mkt-prod-03",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Source Performance Attribution Logic",
+      "responsibility": "Traces application landing paths to write telemetry attribution records.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mkt_Prod_04",
+      "id": "aegis-eng-d11-n9-mkt-prod-04",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Asynchronous User Greet Senders",
+      "responsibility": "Hooks into message loops to dispatch system event updates instantly.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}

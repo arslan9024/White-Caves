@@ -1,0 +1,81 @@
+{
+  "name": "@Rania",
+  "title": "Director of Asset Tracking & System File Operations",
+  "departmentId": 12,
+  "departmentName": "Asset Tracking & System File Operations",
+  "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+  "nodeNumber": 1,
+  "isDirector": true,
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "primarySkill": "Physical Token System Lifecycle Drivers",
+  "primaryResponsibility": "Writes state routers tracking item inventory check-out transactions.",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "approvalAuthority": "Full Automated Autopilot & Review Authority",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true
+  },
+  "attachedSkills": [
+    ".agents/skills/project-optimizer",
+    ".agents/skills/accidental_data_loss_prevention"
+  ],
+  "subordinateNodes": [
+    {
+      "node": 2,
+      "agent": "@Dina",
+      "skill": "Database Item Index Record Counters",
+      "responsibility": "Manages collection counters handling heavy tracking metrics across locations.",
+      "file": "node-02-dina.agent.json"
+    },
+    {
+      "node": 3,
+      "agent": "@Vesta",
+      "skill": "Incident Alert System Worker Queues",
+      "responsibility": "Orchestrates background worker pools to process emergent error events.",
+      "file": "node-03-vesta.agent.json"
+    },
+    {
+      "node": 4,
+      "agent": "@Henry",
+      "skill": "OCR Document Text Extraction Parsers",
+      "responsibility": "Integrates scanning code engines to process uploaded application PDFs into files.",
+      "file": "node-04-henry.agent.json"
+    },
+    {
+      "node": 5,
+      "agent": "@Ops_Fac_01",
+      "skill": "Recurrent Task Routine Scheduling Engine",
+      "responsibility": "Builds event timers that insert recurrent optimization tasks into storage.",
+      "file": "node-05-ops-fac-01.agent.json"
+    },
+    {
+      "node": 6,
+      "agent": "@Ops_Fac_02",
+      "skill": "External API Response Speed Monitors",
+      "responsibility": "Monitors response durations from outsourced tool endpoints.",
+      "file": "node-06-ops-fac-02.agent.json"
+    },
+    {
+      "node": 7,
+      "agent": "@Ops_Fac_03",
+      "skill": "Storage Stock Threshold Check Modules",
+      "responsibility": "Triggers alert logging actions when structural asset limits drop low.",
+      "file": "node-07-ops-fac-03.agent.json"
+    },
+    {
+      "node": 8,
+      "agent": "@Ops_Fac_04",
+      "skill": "Physical Placement Asset Tracker APIs",
+      "responsibility": "Exposes endpoints that handle state coordinates for structural signs.",
+      "file": "node-08-ops-fac-04.agent.json"
+    },
+    {
+      "node": 9,
+      "agent": "@Ops_Fac_05",
+      "skill": "Invoice Balance Sheet Ingestion Scripts",
+      "responsibility": "Parses operational bills to verify data shape prior to ledger commit.",
+      "file": "node-09-ops-fac-05.agent.json"
+    }
+  ]
+}

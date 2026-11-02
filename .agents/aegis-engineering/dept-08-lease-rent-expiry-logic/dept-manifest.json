@@ -1,0 +1,200 @@
+{
+  "departmentId": 8,
+  "departmentName": "Lease, Rent & Expiry System Logic",
+  "departmentSlug": "dept-08-lease-rent-expiry-logic",
+  "director": "@Victoria",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+  "team": [
+    {
+      "name": "@Victoria",
+      "id": "aegis-eng-d8-n1-victoria",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Temporal Expiry Cron Notification Logic",
+      "responsibility": "Writes background cron tasks that check expiration timestamp records.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Tara",
+      "id": "aegis-eng-d8-n2-tara",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Dynamic Formula Engine Calculators",
+      "responsibility": "Engineers math helpers to parse and calculate tiered indexing options.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Daisy",
+      "id": "aegis-eng-d8-n3-daisy",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "User Permissions State Reducers",
+      "responsibility": "Manages context lifecycle actions for user tier tracking panels.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_01",
+      "id": "aegis-eng-d8-n4-lease-desk-01",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Data Collection State Hydrators",
+      "responsibility": "Writes logic layers to load structural asset metrics into layout tables.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_02",
+      "id": "aegis-eng-d8-n5-lease-desk-02",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Structural Inspection Form Schemas",
+      "responsibility": "Constructs multi-step form schema frameworks for item validation states.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_03",
+      "id": "aegis-eng-d8-n6-lease-desk-03",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Error Log Incident Handlers",
+      "responsibility": "Codes backend data routers to log issue tickets into issue track dashboards.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_04",
+      "id": "aegis-eng-d8-n7-lease-desk-04",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Multi-Unit Data Array Handlers",
+      "responsibility": "Writes utility functions to manipulate nested arrays of complex data blocks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_05",
+      "id": "aegis-eng-d8-n8-lease-desk-05",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "External System Data Sync Ingestors",
+      "responsibility": "Maintains stream ingestion drivers to update local tables from external sources.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_06",
+      "id": "aegis-eng-d8-n9-lease-desk-06",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Precision Float Numeric Normalizers",
+      "responsibility": "Ensures decimal point calculations remain clear of float rounding errors.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}

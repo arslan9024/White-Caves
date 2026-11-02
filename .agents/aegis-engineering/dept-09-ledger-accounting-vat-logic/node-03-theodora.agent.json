@@ -1,0 +1,21 @@
+{
+  "name": "@Theodora",
+  "id": "aegis-eng-d9-n3-theodora",
+  "nodeNumber": 3,
+  "isDirector": false,
+  "departmentId": 9,
+  "departmentName": "Ledger Accounting & VAT Logic Engines",
+  "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+  "skill": "Escrow Transaction Guard Methods",
+  "responsibility": "Codes validation blocks that block execution unless payment tokens are confirmed.",
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true,
+    "typeScriptStrict": true
+  },
+  "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+  "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+}

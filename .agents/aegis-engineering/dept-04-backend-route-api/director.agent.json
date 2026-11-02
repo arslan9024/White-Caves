@@ -1,0 +1,83 @@
+{
+  "name": "@Mira",
+  "title": "Director of Backend, Route & API Engineers",
+  "departmentId": 4,
+  "departmentName": "Backend, Route & API Engineers",
+  "departmentSlug": "dept-04-backend-route-api",
+  "nodeNumber": 1,
+  "isDirector": true,
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "primarySkill": "High-Throughput Endpoint Optimization",
+  "primaryResponsibility": "Builds backend endpoint controllers for core application data actions.",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "approvalAuthority": "Full Automated Autopilot & Review Authority",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true
+  },
+  "attachedSkills": [
+    ".agents/skills/gemini-api-dev",
+    ".agents/skills/gemini-interactions-api",
+    ".agents/skills/gemini-live-api-dev",
+    ".agents/skills/gemini-omni-flash-api"
+  ],
+  "subordinateNodes": [
+    {
+      "node": 2,
+      "agent": "@Petra",
+      "skill": "Middleware Authentication Hook Integration",
+      "responsibility": "Secures data paths using authorization token validation checks.",
+      "file": "node-02-petra.agent.json"
+    },
+    {
+      "node": 3,
+      "agent": "@Ruchi",
+      "skill": "Third-Party Endpoint Connection Drivers",
+      "responsibility": "Architects synchronization hooks for processing incoming property data streams.",
+      "file": "node-03-ruchi.agent.json"
+    },
+    {
+      "node": 4,
+      "agent": "@Daniela",
+      "skill": "Asynchronous Queue Webhook Handlers",
+      "responsibility": "Processes heavy external server payloads without blocking main event threads.",
+      "file": "node-04-daniela.agent.json"
+    },
+    {
+      "node": 5,
+      "agent": "@Node_Eng_01",
+      "skill": "Microservice RPC Protocol Engineering",
+      "responsibility": "Manages communication layers between internal server microservices.",
+      "file": "node-05-node-eng-01.agent.json"
+    },
+    {
+      "node": 6,
+      "agent": "@Node_Eng_02",
+      "skill": "Error Interception Layer Architecture",
+      "responsibility": "Builds centralized logging layers to trap broken request pipelines.",
+      "file": "node-06-node-eng-02.agent.json"
+    },
+    {
+      "node": 7,
+      "agent": "@Node_Eng_03",
+      "skill": "Process Heap Footprint Profiling",
+      "responsibility": "Monitors Node server runtime memory to intercept execution memory leaks.",
+      "file": "node-07-node-eng-03.agent.json"
+    },
+    {
+      "node": 8,
+      "agent": "@Node_Eng_04",
+      "skill": "API Rate Limiting Shield Policy",
+      "responsibility": "Protects core backend routes against flood requests and infinite call abuse.",
+      "file": "node-08-node-eng-04.agent.json"
+    },
+    {
+      "node": 9,
+      "agent": "@Node_Eng_05",
+      "skill": "JSON Data Compression Streamers",
+      "responsibility": "Optimizes network transit payload sizes for fast mobile execution.",
+      "file": "node-09-node-eng-05.agent.json"
+    }
+  ]
+}

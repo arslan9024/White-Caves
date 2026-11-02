@@ -149,47 +149,23 @@
     },
     "riskProfiles": {
       "security": {
-        "requiredChecks": [
-          "test:run",
-          "verify:runtime:dry",
-          "audit"
-        ],
-        "optionalChecks": [
-          "test:e2e:accessibility"
-        ]
+        "requiredChecks": ["test:run", "verify:runtime:dry", "audit"],
+        "optionalChecks": ["test:e2e:accessibility"]
       },
       "auth": {
-        "requiredChecks": [
-          "test:run",
-          "verify:runtime:dry",
-          "test:assistant-contract"
-        ],
-        "optionalChecks": [
-          "test:e2e:smoke"
-        ]
+        "requiredChecks": ["test:run", "verify:runtime:dry", "test:assistant-contract"],
+        "optionalChecks": ["test:e2e:smoke"]
       },
       "database": {
-        "requiredChecks": [
-          "test:run",
-          "verify:runtime:dry",
-          "build"
-        ],
+        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
         "optionalChecks": []
       },
       "payment": {
-        "requiredChecks": [
-          "test:run",
-          "verify:runtime:dry",
-          "build"
-        ],
-        "optionalChecks": [
-          "audit"
-        ]
+        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
+        "optionalChecks": ["audit"]
       },
       "general": {
-        "requiredChecks": [
-          "test:run"
-        ],
+        "requiredChecks": ["test:run"],
         "optionalChecks": []
       }
     }
@@ -208,48 +184,27 @@
       "googleAIStudio": {
         "model": "Gemini 2.0 Flash",
         "cost": "0 USD (Free Tier)",
-        "assignedAgents": [
-          "@Victoria",
-          "@Sofia",
-          "@Nova",
-          "@Quark",
-          "@Margaret"
-        ]
+        "assignedAgents": ["@Victoria", "@Sofia", "@Nova", "@Quark", "@Margaret"]
       },
       "groqConsole": {
         "model": "Llama 3.1 70B",
         "cost": "0 USD (Free Tier)",
-        "assignedAgents": [
-          "@Invoice",
-          "@Joelle",
-          "@Orion",
-          "@Zara"
-        ]
+        "assignedAgents": ["@Invoice", "@Joelle", "@Orion", "@Zara"]
       },
       "deepSeekChat": {
         "model": "DeepSeek V3",
         "cost": "0 USD (Free Tier)",
-        "assignedAgents": [
-          "@Cassie",
-          "@Pulse"
-        ]
+        "assignedAgents": ["@Cassie", "@Pulse"]
       }
     },
     "premiumTier": {
       "anthropic": {
         "model": "Claude 3.5 Sonnet / Opus",
-        "assignedAgents": [
-          "@Ada",
-          "@Grace",
-          "@S5"
-        ]
+        "assignedAgents": ["@Ada", "@Grace", "@S5"]
       },
       "openAI": {
         "model": "GPT-4o",
-        "assignedAgents": [
-          "@Mira",
-          "@Katherine"
-        ]
+        "assignedAgents": ["@Mira", "@Katherine"]
       }
     }
   },
@@ -317,91 +272,95 @@
       "description": "Autonomous Software Engineering, Architecture, Testing, CI/CD, and Codebase Orchestration Mesh",
       "rootFolder": ".agents/aegis-engineering",
       "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
       "sovereignLeader": "AEGIS (Level 0 Orchestrator)",
-      "executiveCouncil": [
-        ".agents/executive/ada.agent.json",
-        ".agents/executive/margaret.agent.json",
-        ".agents/executive/grace.agent.json",
-        ".agents/executive/elena.agent.json",
-        ".agents/executive/gwynne.agent.json",
-        ".agents/executive/nova.agent.json"
-      ],
       "departmentsCount": 12,
-      "directorsCount": 12,
-      "subagentsCount": 108,
-      "totalEngineeringAgents": 120,
+      "nodesPerDepartment": 9,
+      "totalEngineeringNodes": 108,
       "departments": [
         {
-          "code": "ENG-01",
-          "name": "Frontend & UX Engineering",
+          "id": 1,
+          "name": "Core System Architects (Executive Council Cluster)",
+          "slug": "dept-01-core-system-architects",
+          "director": "@Ada",
+          "manifest": ".agents/aegis-engineering/dept-01-core-system-architects/dept-manifest.json"
+        },
+        {
+          "id": 2,
+          "name": "Data Engine & Vector Sorters (Research Cluster)",
+          "slug": "dept-02-data-engine-vector-sorters",
+          "director": "@Elena",
+          "manifest": ".agents/aegis-engineering/dept-02-data-engine-vector-sorters/dept-manifest.json"
+        },
+        {
+          "id": 3,
+          "name": "Frontend & UI Architecture Core",
+          "slug": "dept-03-frontend-ui-architecture",
           "director": "@Una",
-          "folder": ".agents/aegis-engineering/dept-01-frontend-ux"
+          "manifest": ".agents/aegis-engineering/dept-03-frontend-ui-architecture/dept-manifest.json"
         },
         {
-          "code": "ENG-02",
-          "name": "Backend & API Systems",
+          "id": 4,
+          "name": "Backend, Route & API Engineers",
+          "slug": "dept-04-backend-route-api",
           "director": "@Mira",
-          "folder": ".agents/aegis-engineering/dept-02-backend-api"
+          "manifest": ".agents/aegis-engineering/dept-04-backend-route-api/dept-manifest.json"
         },
         {
-          "code": "ENG-03",
-          "name": "Database & Data Architecture",
+          "id": 5,
+          "name": "Database Schemas & ORM Modlers",
+          "slug": "dept-05-database-schemas-orm",
           "director": "@Barbara",
-          "folder": ".agents/aegis-engineering/dept-03-database-data"
+          "manifest": ".agents/aegis-engineering/dept-05-database-schemas-orm/dept-manifest.json"
         },
         {
-          "code": "ENG-04",
-          "name": "Security, QA & Verification",
-          "director": "@Katherine",
-          "folder": ".agents/aegis-engineering/dept-04-security-qa"
-        },
-        {
-          "code": "ENG-05",
-          "name": "DevOps & Cloud Infrastructure",
-          "director": "@Gwynne",
-          "folder": ".agents/aegis-engineering/dept-05-devops-infra"
-        },
-        {
-          "code": "ENG-06",
-          "name": "Leasing & Tenancy Engineering",
-          "director": "@Victoria",
-          "folder": ".agents/aegis-engineering/dept-06-leasing-tenancy"
-        },
-        {
-          "code": "ENG-07",
-          "name": "Compliance & Legal Tech Engineering",
+          "id": 6,
+          "name": "Software Quality Assurance & Code QA",
+          "slug": "dept-06-software-qa-code",
           "director": "@Sofia",
-          "folder": ".agents/aegis-engineering/dept-07-compliance-legal-tech"
+          "manifest": ".agents/aegis-engineering/dept-06-software-qa-code/dept-manifest.json"
         },
         {
-          "code": "ENG-08",
-          "name": "Finance & Accounting Engine",
+          "id": 7,
+          "name": "DevOps & Infrastructure Gatekeepers",
+          "slug": "dept-07-devops-infrastructure",
+          "director": "@Gwynne",
+          "manifest": ".agents/aegis-engineering/dept-07-devops-infrastructure/dept-manifest.json"
+        },
+        {
+          "id": 8,
+          "name": "Lease, Rent & Expiry System Logic",
+          "slug": "dept-08-lease-rent-expiry-logic",
+          "director": "@Victoria",
+          "manifest": ".agents/aegis-engineering/dept-08-lease-rent-expiry-logic/dept-manifest.json"
+        },
+        {
+          "id": 9,
+          "name": "Ledger Accounting & VAT Logic Engines",
+          "slug": "dept-09-ledger-accounting-vat-logic",
           "director": "@Invoice",
-          "folder": ".agents/aegis-engineering/dept-08-finance-analytics-tech"
+          "manifest": ".agents/aegis-engineering/dept-09-ledger-accounting-vat-logic/dept-manifest.json"
         },
         {
-          "code": "ENG-09",
-          "name": "Sales Pipeline & CRM Automation",
+          "id": 10,
+          "name": "CRM Framework & Pipeline Software",
+          "slug": "dept-10-crm-framework-pipeline",
           "director": "@Jaime",
-          "folder": ".agents/aegis-engineering/dept-09-sales-crm-automation"
+          "manifest": ".agents/aegis-engineering/dept-10-crm-framework-pipeline/dept-manifest.json"
         },
         {
-          "code": "ENG-10",
-          "name": "Communications & Marketing Tech",
+          "id": 11,
+          "name": "Lead Ingestion & Asset Media Pipelines",
+          "slug": "dept-11-lead-ingestion-media-pipelines",
           "director": "@Rachel",
-          "folder": ".agents/aegis-engineering/dept-10-comms-marketing-tech"
+          "manifest": ".agents/aegis-engineering/dept-11-lead-ingestion-media-pipelines/dept-manifest.json"
         },
         {
-          "code": "ENG-11",
-          "name": "AI Models & Intelligent Integrations",
-          "director": "@Joelle",
-          "folder": ".agents/aegis-engineering/dept-11-ai-integrations"
-        },
-        {
-          "code": "ENG-12",
-          "name": "Operations & Diagnostic Engineering",
+          "id": 12,
+          "name": "Asset Tracking & System File Operations",
+          "slug": "dept-12-asset-tracking-system-file-ops",
           "director": "@Rania",
-          "folder": ".agents/aegis-engineering/dept-12-operations-maintenance-tech"
+          "manifest": ".agents/aegis-engineering/dept-12-asset-tracking-system-file-ops/dept-manifest.json"
         }
       ]
     },

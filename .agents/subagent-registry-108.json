@@ -1,0 +1,2696 @@
+{
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "totalDepartments": 12,
+  "nodesPerDepartment": 9,
+  "totalNodes": 108,
+  "generatedAt": "2026-11-02T01:16:57.139Z",
+  "departments": [
+    {
+      "id": 1,
+      "name": "Core System Architects (Executive Council Cluster)",
+      "slug": "dept-01-core-system-architects",
+      "director": "@Ada",
+      "nodeCount": 9
+    },
+    {
+      "id": 2,
+      "name": "Data Engine & Vector Sorters (Research Cluster)",
+      "slug": "dept-02-data-engine-vector-sorters",
+      "director": "@Elena",
+      "nodeCount": 9
+    },
+    {
+      "id": 3,
+      "name": "Frontend & UI Architecture Core",
+      "slug": "dept-03-frontend-ui-architecture",
+      "director": "@Una",
+      "nodeCount": 9
+    },
+    {
+      "id": 4,
+      "name": "Backend, Route & API Engineers",
+      "slug": "dept-04-backend-route-api",
+      "director": "@Mira",
+      "nodeCount": 9
+    },
+    {
+      "id": 5,
+      "name": "Database Schemas & ORM Modlers",
+      "slug": "dept-05-database-schemas-orm",
+      "director": "@Barbara",
+      "nodeCount": 9
+    },
+    {
+      "id": 6,
+      "name": "Software Quality Assurance & Code QA",
+      "slug": "dept-06-software-qa-code",
+      "director": "@Sofia",
+      "nodeCount": 9
+    },
+    {
+      "id": 7,
+      "name": "DevOps & Infrastructure Gatekeepers",
+      "slug": "dept-07-devops-infrastructure",
+      "director": "@Gwynne",
+      "nodeCount": 9
+    },
+    {
+      "id": 8,
+      "name": "Lease, Rent & Expiry System Logic",
+      "slug": "dept-08-lease-rent-expiry-logic",
+      "director": "@Victoria",
+      "nodeCount": 9
+    },
+    {
+      "id": 9,
+      "name": "Ledger Accounting & VAT Logic Engines",
+      "slug": "dept-09-ledger-accounting-vat-logic",
+      "director": "@Invoice",
+      "nodeCount": 9
+    },
+    {
+      "id": 10,
+      "name": "CRM Framework & Pipeline Software",
+      "slug": "dept-10-crm-framework-pipeline",
+      "director": "@Jaime",
+      "nodeCount": 9
+    },
+    {
+      "id": 11,
+      "name": "Lead Ingestion & Asset Media Pipelines",
+      "slug": "dept-11-lead-ingestion-media-pipelines",
+      "director": "@Rachel",
+      "nodeCount": 9
+    },
+    {
+      "id": 12,
+      "name": "Asset Tracking & System File Operations",
+      "slug": "dept-12-asset-tracking-system-file-ops",
+      "director": "@Rania",
+      "nodeCount": 9
+    }
+  ],
+  "nodes": [
+    {
+      "name": "@Ada",
+      "id": "aegis-eng-d1-n1-ada",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 1,
+      "departmentName": "Core System Architects (Executive Council Cluster)",
+      "departmentSlug": "dept-01-core-system-architects",
+      "skill": "System-Wide State Orchestration Design",
+      "responsibility": "Architects global state coordination frameworks and high-level cross-agent compiler pipelines.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Margaret",
+      "id": "aegis-eng-d1-n2-margaret",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Core System Architects (Executive Council Cluster)",
+      "departmentSlug": "dept-01-core-system-architects",
+      "skill": "Workspace Guardrails & Lint Configuration",
+      "responsibility": "Enforces global static compilation rules, project type-safety, and repository standards.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Grace",
+      "id": "aegis-eng-d1-n3-grace",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Core System Architects (Executive Council Cluster)",
+      "departmentSlug": "dept-01-core-system-architects",
+      "skill": "Multi-Agent Sync Hook Engineering",
+      "responsibility": "Binds parallel workspace processes to synchronize state transactions smoothly.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Elena",
+      "id": "aegis-eng-d1-n4-elena",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Core System Architects (Executive Council Cluster)",
+      "departmentSlug": "dept-01-core-system-architects",
+      "skill": "Runtime Performance Engine Auditing",
+      "responsibility": "Instruments telemetry layers to log memory footprints and engine execution speed.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Zoe",
+      "id": "aegis-eng-d1-n5-zoe",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Core System Architects (Executive Council Cluster)",
+      "departmentSlug": "dept-01-core-system-architects",
+      "skill": "Protected Variable Isolation Control",
+      "responsibility": "Configures environment permissions and isolated file read access layers.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Alpha_Exec",
+      "id": "aegis-eng-d1-n6-alpha-exec",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Core System Architects (Executive Council Cluster)",
+      "departmentSlug": "dept-01-core-system-architects",
+      "skill": "Submodule Dependency Mapping",
+      "responsibility": "Configures external module synchronization bridges for core application features.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Beta_Exec",
+      "id": "aegis-eng-d1-n7-beta-exec",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Core System Architects (Executive Council Cluster)",
+      "departmentSlug": "dept-01-core-system-architects",
+      "skill": "Asynchronous Race Condition Resolution",
+      "responsibility": "Tracks down execution bugs and unhandled exceptions in asynchronous operations.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Gamma_Exec",
+      "id": "aegis-eng-d1-n8-gamma-exec",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Core System Architects (Executive Council Cluster)",
+      "departmentSlug": "dept-01-core-system-architects",
+      "skill": "Memory Profile Balancing",
+      "responsibility": "Maintains server allocation guidelines and garbage collection optimization strategies.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Delta_Exec",
+      "id": "aegis-eng-d1-n9-delta-exec",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Core System Architects (Executive Council Cluster)",
+      "departmentSlug": "dept-01-core-system-architects",
+      "skill": "Hot Module Replacement Optimization",
+      "responsibility": "Optimizes dev server refresh processes to prevent state drops during local edits.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Elena",
+      "id": "aegis-eng-d2-n1-elena",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 2,
+      "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+      "departmentSlug": "dept-02-data-engine-vector-sorters",
+      "skill": "TypeScript Domain Model Synthesis",
+      "responsibility": "Declares base interfaces and complex mathematical type schemas.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_ai_ml",
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/bigquery_bigframes",
+        ".agents/skills/bigquery_graph",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/dataform_bigquery",
+        ".agents/skills/dbt_bigquery",
+        ".agents/skills/ml_best_practices"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Iris",
+      "id": "aegis-eng-d2-n2-iris",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 2,
+      "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+      "departmentSlug": "dept-02-data-engine-vector-sorters",
+      "skill": "Spatial Layout Coordinate Translators",
+      "responsibility": "Converts location data formats into structured geometric coordinate sets.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_ai_ml",
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/bigquery_bigframes",
+        ".agents/skills/bigquery_graph",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/dataform_bigquery",
+        ".agents/skills/dbt_bigquery",
+        ".agents/skills/ml_best_practices"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Cassie",
+      "id": "aegis-eng-d2-n3-cassie",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 2,
+      "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+      "departmentSlug": "dept-02-data-engine-vector-sorters",
+      "skill": "JSON Data Grid Parser Modules",
+      "responsibility": "Builds stream-parsing utilities to handle data array imports cleanly.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_ai_ml",
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/bigquery_bigframes",
+        ".agents/skills/bigquery_graph",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/dataform_bigquery",
+        ".agents/skills/dbt_bigquery",
+        ".agents/skills/ml_best_practices"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fei-Fei",
+      "id": "aegis-eng-d2-n4-fei-fei",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 2,
+      "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+      "departmentSlug": "dept-02-data-engine-vector-sorters",
+      "skill": "Mathematical Function Calculators",
+      "responsibility": "Scripts calculations for complex layout metrics and matrix calculations.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_ai_ml",
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/bigquery_bigframes",
+        ".agents/skills/bigquery_graph",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/dataform_bigquery",
+        ".agents/skills/dbt_bigquery",
+        ".agents/skills/ml_best_practices"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Anima",
+      "id": "aegis-eng-d2-n5-anima",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 2,
+      "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+      "departmentSlug": "dept-02-data-engine-vector-sorters",
+      "skill": "Schema Structural Testing Modules",
+      "responsibility": "Validates JSON structure rules to guarantee backward data compatibility.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_ai_ml",
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/bigquery_bigframes",
+        ".agents/skills/bigquery_graph",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/dataform_bigquery",
+        ".agents/skills/dbt_bigquery",
+        ".agents/skills/ml_best_practices"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Sigma_Intel",
+      "id": "aegis-eng-d2-n6-sigma-intel",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 2,
+      "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+      "departmentSlug": "dept-02-data-engine-vector-sorters",
+      "skill": "API Structure Translators",
+      "responsibility": "Normalizes variable structures from outer data endpoints into native types.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_ai_ml",
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/bigquery_bigframes",
+        ".agents/skills/bigquery_graph",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/dataform_bigquery",
+        ".agents/skills/dbt_bigquery",
+        ".agents/skills/ml_best_practices"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Omega_Intel",
+      "id": "aegis-eng-d2-n7-omega-intel",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 2,
+      "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+      "departmentSlug": "dept-02-data-engine-vector-sorters",
+      "skill": "Data Range Normalizer Helpers",
+      "responsibility": "Builds sorting helpers to clean up erratic date formats and currencies.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_ai_ml",
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/bigquery_bigframes",
+        ".agents/skills/bigquery_graph",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/dataform_bigquery",
+        ".agents/skills/dbt_bigquery",
+        ".agents/skills/ml_best_practices"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Zeta_Intel",
+      "id": "aegis-eng-d2-n8-zeta-intel",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 2,
+      "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+      "departmentSlug": "dept-02-data-engine-vector-sorters",
+      "skill": "Cluster Node Graph Structuring",
+      "responsibility": "Programs relational mapping files to connect layout groups dynamically.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_ai_ml",
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/bigquery_bigframes",
+        ".agents/skills/bigquery_graph",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/dataform_bigquery",
+        ".agents/skills/dbt_bigquery",
+        ".agents/skills/ml_best_practices"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Theta_Intel",
+      "id": "aegis-eng-d2-n9-theta-intel",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 2,
+      "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+      "departmentSlug": "dept-02-data-engine-vector-sorters",
+      "skill": "State Cache Diff Calculators",
+      "responsibility": "Isolates dataset change properties to trigger minor target re-renders.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_ai_ml",
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/bigquery_bigframes",
+        ".agents/skills/bigquery_graph",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/dataform_bigquery",
+        ".agents/skills/dbt_bigquery",
+        ".agents/skills/ml_best_practices"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Una",
+      "id": "aegis-eng-d3-n1-una",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Stateless Component Architecture Design",
+      "responsibility": "Drafts presentational View layout grids using strict 4-Way Co-Location standards.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lea",
+      "id": "aegis-eng-d3-n2-lea",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Responsive Container Scaffolding",
+      "responsibility": "Develops layout grids for multi-viewport dashboard navigation frames.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Marissa",
+      "id": "aegis-eng-d3-n3-marissa",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Luxury Design System Token Integration",
+      "responsibility": "Maintains CSS variables, layout variables, and exact brand red tokens (#EF4444).",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Tracy",
+      "id": "aegis-eng-d3-n4-tracy",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Hardware-Accelerated Animation Layouts",
+      "responsibility": "Scripts UI component transitions and smooth interactive modal flows.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Africa",
+      "id": "aegis-eng-d3-n5-africa",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Bilingual i18n Routing Modules",
+      "responsibility": "Handles localization routing, providing perfect native RTL layout support.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@UX_Design_01",
+      "id": "aegis-eng-d3-n6-ux-design-01",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Reactive Micro-Interaction States",
+      "responsibility": "Builds interactive element states and canvas dark theme toggles.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@UX_Design_02",
+      "id": "aegis-eng-d3-n7-ux-design-02",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "DOM Accessibility & ARIA Structuring",
+      "responsibility": "Optimizes keyboard layout navigation paths to pass accessibility checks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@UX_Design_03",
+      "id": "aegis-eng-d3-n8-ux-design-03",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Render Loop Cycle Profiling",
+      "responsibility": "Identifies and eliminates unnecessary sub-tree re-renders within the UI canvas.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@UX_Design_04",
+      "id": "aegis-eng-d3-n9-ux-design-04",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Symmetrical Floating Widget Positioning",
+      "responsibility": "Maintains alignment grids for floating tools like CavesFloatingSearch.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mira",
+      "id": "aegis-eng-d4-n1-mira",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "High-Throughput Endpoint Optimization",
+      "responsibility": "Builds backend endpoint controllers for core application data actions.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Petra",
+      "id": "aegis-eng-d4-n2-petra",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Middleware Authentication Hook Integration",
+      "responsibility": "Secures data paths using authorization token validation checks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ruchi",
+      "id": "aegis-eng-d4-n3-ruchi",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Third-Party Endpoint Connection Drivers",
+      "responsibility": "Architects synchronization hooks for processing incoming property data streams.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Daniela",
+      "id": "aegis-eng-d4-n4-daniela",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Asynchronous Queue Webhook Handlers",
+      "responsibility": "Processes heavy external server payloads without blocking main event threads.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_01",
+      "id": "aegis-eng-d4-n5-node-eng-01",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Microservice RPC Protocol Engineering",
+      "responsibility": "Manages communication layers between internal server microservices.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_02",
+      "id": "aegis-eng-d4-n6-node-eng-02",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Error Interception Layer Architecture",
+      "responsibility": "Builds centralized logging layers to trap broken request pipelines.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_03",
+      "id": "aegis-eng-d4-n7-node-eng-03",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Process Heap Footprint Profiling",
+      "responsibility": "Monitors Node server runtime memory to intercept execution memory leaks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_04",
+      "id": "aegis-eng-d4-n8-node-eng-04",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "API Rate Limiting Shield Policy",
+      "responsibility": "Protects core backend routes against flood requests and infinite call abuse.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_05",
+      "id": "aegis-eng-d4-n9-node-eng-05",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "JSON Data Compression Streamers",
+      "responsibility": "Optimizes network transit payload sizes for fast mobile execution.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Barbara",
+      "id": "aegis-eng-d5-n1-barbara",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Prisma Schema Layout Definition",
+      "responsibility": "Designs database collection definitions matching the 1-12-108 project matrix.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Anima",
+      "id": "aegis-eng-d5-n2-anima",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Aggregation Pipeline Refinement Scripts",
+      "responsibility": "Optimizes complex database lookups for dashboard tracking widgets.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Cassie",
+      "id": "aegis-eng-d5-n3-cassie",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Distributed Cache Strategies & Redis",
+      "responsibility": "Manages local cache layer keys to eliminate repetitive database hits.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_01",
+      "id": "aegis-eng-d5-n4-db-guard-01",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Transaction Isolation Management",
+      "responsibility": "Prevents concurrency collisions during simultaneous write queries.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_02",
+      "id": "aegis-eng-d5-n5-db-guard-02",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Automated Migration Script Generation",
+      "responsibility": "Maintains database version tracking files for structural production upgrades.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_03",
+      "id": "aegis-eng-d5-n6-db-guard-03",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Query Execution Plan Optimization",
+      "responsibility": "Indexes slow database paths to guarantee sub-10ms response loops.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_04",
+      "id": "aegis-eng-d5-n7-db-guard-04",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Data Cleansing Engine Routines",
+      "responsibility": "Purges incomplete test submissions and corrupted logs automatically via scripts.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_05",
+      "id": "aegis-eng-d5-n8-db-guard-05",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Storage Encrypted-At-Rest Layers",
+      "responsibility": "Secures record storage layers using field-level hashing algorithms.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@DB_Guard_06",
+      "id": "aegis-eng-d5-n9-db-guard-06",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Database Schemas & ORM Modlers",
+      "departmentSlug": "dept-05-database-schemas-orm",
+      "skill": "Relational Data Indexing Modules",
+      "responsibility": "Maps entity relationships efficiently across data persistence models.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Sofia",
+      "id": "aegis-eng-d6-n1-sofia",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Form Validation Rule Assertions",
+      "responsibility": "Writes client-side form checking routines to ensure strict string inputs.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Katherine",
+      "id": "aegis-eng-d6-n2-katherine",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Numeric Formula Integration Tests",
+      "responsibility": "Validates multi-tiered calculation formulas using automated testing blocks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Radia",
+      "id": "aegis-eng-d6-n3-radia",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Input Validation & Sanitization Guards",
+      "responsibility": "Scrubs form fields against cross-site scripting vulnerabilities.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ecem",
+      "id": "aegis-eng-d6-n4-ecem",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Automated Playwright End-to-End Tests",
+      "responsibility": "Maintains end-to-end regression scripts across key application paths.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Joy",
+      "id": "aegis-eng-d6-n5-joy",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Static Security Code Auditing",
+      "responsibility": "Scans package dependencies for vulnerabilities before main branch integration.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@QA_Audit_01",
+      "id": "aegis-eng-d6-n6-qa-audit-01",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Smoke Test Assembly Automation",
+      "responsibility": "Configures pre-merge validation checks before remote staging pushes.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@QA_Audit_02",
+      "id": "aegis-eng-d6-n7-qa-audit-02",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "JSON Contract Schema Tests",
+      "responsibility": "Verifies that API response shapes match expected TypeScript declarations.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@QA_Audit_03",
+      "id": "aegis-eng-d6-n8-qa-audit-03",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "SLA Ingestion Timeout Monitors",
+      "responsibility": "Tests server responses under stress to ensure network request compliance.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@QA_Audit_04",
+      "id": "aegis-eng-d6-n9-qa-audit-04",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Software Quality Assurance & Code QA",
+      "departmentSlug": "dept-06-software-qa-code",
+      "skill": "Role-Based Component Guard Tests",
+      "responsibility": "Validates private route navigation behavior against user access tokens.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/pr-review-checklist",
+        ".agents/skills/ts-typecheck-triage",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Gwynne",
+      "id": "aegis-eng-d7-n1-gwynne",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Continuous Integration Pipelines",
+      "responsibility": "Enforces automated type checking commands ('npm run typecheck') at compile doors.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lisa",
+      "id": "aegis-eng-d7-n2-lisa",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Edge Infrastructure Routing Configuration",
+      "responsibility": "Manages server deployment routing parameters inside cloud host pipelines.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Annie",
+      "id": "aegis-eng-d7-n3-annie",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Docker Container Scaffolding Layers",
+      "responsibility": "Containerizes the isolated application ecosystem files for target runtimes.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Corinne",
+      "id": "aegis-eng-d7-n4-corinne",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Local Environment Tooling Setup",
+      "responsibility": "Ensures environment file parameters remain unified across development platforms.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Rachel",
+      "id": "aegis-eng-d7-n5-rachel",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Credential Leak Prevention Hooks",
+      "responsibility": "Configures scanners to catch and block secret variables from entering code repos.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Infra_Ops_01",
+      "id": "aegis-eng-d7-n6-infra-ops-01",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Pre-Commit Husky Hook Configuration",
+      "responsibility": "Enforces formatting validation and code style rules before local commits.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Infra_Ops_02",
+      "id": "aegis-eng-d7-n7-infra-ops-02",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Cloud Monitor Dashboard Ingestion",
+      "responsibility": "Sets up system log metric collection across production clusters.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Infra_Ops_03",
+      "id": "aegis-eng-d7-n8-infra-ops-03",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Build Asset Chunk Cache Pruning",
+      "responsibility": "Splits code assets into optimal bundles to minimize initial load weight.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Infra_Ops_04",
+      "id": "aegis-eng-d7-n9-infra-ops-04",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Secret Configuration Encryption Crypts",
+      "responsibility": "Decrypts environment variables safely at runtime inside CI containers.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Victoria",
+      "id": "aegis-eng-d8-n1-victoria",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Temporal Expiry Cron Notification Logic",
+      "responsibility": "Writes background cron tasks that check expiration timestamp records.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Tara",
+      "id": "aegis-eng-d8-n2-tara",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Dynamic Formula Engine Calculators",
+      "responsibility": "Engineers math helpers to parse and calculate tiered indexing options.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Daisy",
+      "id": "aegis-eng-d8-n3-daisy",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "User Permissions State Reducers",
+      "responsibility": "Manages context lifecycle actions for user tier tracking panels.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_01",
+      "id": "aegis-eng-d8-n4-lease-desk-01",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Data Collection State Hydrators",
+      "responsibility": "Writes logic layers to load structural asset metrics into layout tables.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_02",
+      "id": "aegis-eng-d8-n5-lease-desk-02",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Structural Inspection Form Schemas",
+      "responsibility": "Constructs multi-step form schema frameworks for item validation states.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_03",
+      "id": "aegis-eng-d8-n6-lease-desk-03",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Error Log Incident Handlers",
+      "responsibility": "Codes backend data routers to log issue tickets into issue track dashboards.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_04",
+      "id": "aegis-eng-d8-n7-lease-desk-04",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Multi-Unit Data Array Handlers",
+      "responsibility": "Writes utility functions to manipulate nested arrays of complex data blocks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_05",
+      "id": "aegis-eng-d8-n8-lease-desk-05",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "External System Data Sync Ingestors",
+      "responsibility": "Maintains stream ingestion drivers to update local tables from external sources.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lease_Desk_06",
+      "id": "aegis-eng-d8-n9-lease-desk-06",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 8,
+      "departmentName": "Lease, Rent & Expiry System Logic",
+      "departmentSlug": "dept-08-lease-rent-expiry-logic",
+      "skill": "Precision Float Numeric Normalizers",
+      "responsibility": "Ensures decimal point calculations remain clear of float rounding errors.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Invoice",
+      "id": "aegis-eng-d9-n1-invoice",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "External API Ledger Integration Drivers",
+      "responsibility": "Syncs client side data events straight into remote accounting platforms.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Dora",
+      "id": "aegis-eng-d9-n2-dora",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Tiered Formula Rules Modules",
+      "responsibility": "Programs rule checking libraries that apply dynamic transaction processing splits.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Theodora",
+      "id": "aegis-eng-d9-n3-theodora",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Escrow Transaction Guard Methods",
+      "responsibility": "Codes validation blocks that block execution unless payment tokens are confirmed.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_01",
+      "id": "aegis-eng-d9-n4-fin-analyst-01",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Currency Exchange Processing Helpers",
+      "responsibility": "Maintains automated currency calculation matrices based on spot parameters.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_02",
+      "id": "aegis-eng-d9-n5-fin-analyst-02",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Aging Data Aggregator Ingestors",
+      "responsibility": "Runs database scripts that sort overdue balances into tracking buckets.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_03",
+      "id": "aegis-eng-d9-n6-fin-analyst-03",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Outgoing Transaction Queue Pipelines",
+      "responsibility": "Controls request worker queues handling vendor settlement outputs.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_04",
+      "id": "aegis-eng-d9-n7-fin-analyst-04",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Statistical Trend Plot Map Exporters",
+      "responsibility": "Generates data tracking points for populating graph interface vectors.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_05",
+      "id": "aegis-eng-d9-n8-fin-analyst-05",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Official Ingestion Form Webhooks",
+      "responsibility": "Secures data collection routes from external system response parameters.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_06",
+      "id": "aegis-eng-d9-n9-fin-analyst-06",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Ledger Audit Trailing File Handlers",
+      "responsibility": "Maintains read-only event logs tracking user state updates.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Jaime",
+      "id": "aegis-eng-d10-n1-jaime",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 10,
+      "departmentName": "CRM Framework & Pipeline Software",
+      "departmentSlug": "dept-10-crm-framework-pipeline",
+      "skill": "Allocation Engine Routing Modules",
+      "responsibility": "Builds assignment logic to route incoming layout data items dynamically.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mila",
+      "id": "aegis-eng-d10-n2-mila",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 10,
+      "departmentName": "CRM Framework & Pipeline Software",
+      "departmentSlug": "dept-10-crm-framework-pipeline",
+      "skill": "Pipeline Phase Transition Actions",
+      "responsibility": "Codes state machine triggers executing when pipeline step items move forward.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Sophia",
+      "id": "aegis-eng-d10-n3-sophia",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 10,
+      "departmentName": "CRM Framework & Pipeline Software",
+      "departmentSlug": "dept-10-crm-framework-pipeline",
+      "skill": "Document Generation & Assembly Engines",
+      "responsibility": "Assembles raw text strings into structured application layout templates.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Clara",
+      "id": "aegis-eng-d10-n4-clara",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 10,
+      "departmentName": "CRM Framework & Pipeline Software",
+      "departmentSlug": "dept-10-crm-framework-pipeline",
+      "skill": "Profile Vector Match Algorithms",
+      "responsibility": "Writes filter arrays that align database inventory items with user parameters.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mary",
+      "id": "aegis-eng-d10-n5-mary",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 10,
+      "departmentName": "CRM Framework & Pipeline Software",
+      "departmentSlug": "dept-10-crm-framework-pipeline",
+      "skill": "Inventory Cluster Sync Logic",
+      "responsibility": "Synchronizes real-time collection items between local memory and the database.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@CRM_Ops_01",
+      "id": "aegis-eng-d10-n6-crm-ops-01",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 10,
+      "departmentName": "CRM Framework & Pipeline Software",
+      "departmentSlug": "dept-10-crm-framework-pipeline",
+      "skill": "Pipeline Constraint Checker Filters",
+      "responsibility": "Blocks item step adjustments unless all compliance parameters are validated.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@CRM_Ops_02",
+      "id": "aegis-eng-d10-n7-crm-ops-02",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 10,
+      "departmentName": "CRM Framework & Pipeline Software",
+      "departmentSlug": "dept-10-crm-framework-pipeline",
+      "skill": "Calendar Scheduling Collision Checks",
+      "responsibility": "Codes validation filters that ensure booking entries do not overlap.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@CRM_Ops_03",
+      "id": "aegis-eng-d10-n8-crm-ops-03",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 10,
+      "departmentName": "CRM Framework & Pipeline Software",
+      "departmentSlug": "dept-10-crm-framework-pipeline",
+      "skill": "Asset Data Sanity Check Auditors",
+      "responsibility": "Scans current listings parameters to flag and drop incomplete items.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@CRM_Ops_04",
+      "id": "aegis-eng-d10-n9-crm-ops-04",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 10,
+      "departmentName": "CRM Framework & Pipeline Software",
+      "departmentSlug": "dept-10-crm-framework-pipeline",
+      "skill": "External Access Protocol Configuration",
+      "responsibility": "Manages endpoint access authentication tokens for linked network platforms.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Rachel",
+      "id": "aegis-eng-d11-n1-rachel",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Tracking Pixel Metadata Ingestors",
+      "responsibility": "Captures and parses input headers from tracking platform pixel webhooks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Corinne",
+      "id": "aegis-eng-d11-n2-corinne",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Webhook Entry Form Schema Receivers",
+      "responsibility": "Connects structural API ingest paths to catch external text submissions.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Olivia",
+      "id": "aegis-eng-d11-n3-olivia",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Dynamic Image Dimension Optimizers",
+      "responsibility": "Scripts automated image compression routines for rendering media elements.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Nina",
+      "id": "aegis-eng-d11-n4-nina",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Video Stream Asset Chunk File Parsers",
+      "responsibility": "Builds file handling layers to organize incoming media video streams.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Nadia",
+      "id": "aegis-eng-d11-n5-nadia",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Messaging API Gateway Webhook Hooks",
+      "responsibility": "Routes incoming text messaging API threads into application log states.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mkt_Prod_01",
+      "id": "aegis-eng-d11-n6-mkt-prod-01",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Media File Conversion Automators",
+      "responsibility": "Scripts tasks to transcode video resolution types for application canvas views.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mkt_Prod_02",
+      "id": "aegis-eng-d11-n7-mkt-prod-02",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "SEO Meta Tag Injection Controllers",
+      "responsibility": "Builds data injectors that update document index parameters automatically.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mkt_Prod_03",
+      "id": "aegis-eng-d11-n8-mkt-prod-03",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Source Performance Attribution Logic",
+      "responsibility": "Traces application landing paths to write telemetry attribution records.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Mkt_Prod_04",
+      "id": "aegis-eng-d11-n9-mkt-prod-04",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 11,
+      "departmentName": "Lead Ingestion & Asset Media Pipelines",
+      "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+      "skill": "Asynchronous User Greet Senders",
+      "responsibility": "Hooks into message loops to dispatch system event updates instantly.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Rania",
+      "id": "aegis-eng-d12-n1-rania",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Physical Token System Lifecycle Drivers",
+      "responsibility": "Writes state routers tracking item inventory check-out transactions.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Dina",
+      "id": "aegis-eng-d12-n2-dina",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Database Item Index Record Counters",
+      "responsibility": "Manages collection counters handling heavy tracking metrics across locations.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Vesta",
+      "id": "aegis-eng-d12-n3-vesta",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Incident Alert System Worker Queues",
+      "responsibility": "Orchestrates background worker pools to process emergent error events.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Henry",
+      "id": "aegis-eng-d12-n4-henry",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "OCR Document Text Extraction Parsers",
+      "responsibility": "Integrates scanning code engines to process uploaded application PDFs into files.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_01",
+      "id": "aegis-eng-d12-n5-ops-fac-01",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Recurrent Task Routine Scheduling Engine",
+      "responsibility": "Builds event timers that insert recurrent optimization tasks into storage.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_02",
+      "id": "aegis-eng-d12-n6-ops-fac-02",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "External API Response Speed Monitors",
+      "responsibility": "Monitors response durations from outsourced tool endpoints.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_03",
+      "id": "aegis-eng-d12-n7-ops-fac-03",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Storage Stock Threshold Check Modules",
+      "responsibility": "Triggers alert logging actions when structural asset limits drop low.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_04",
+      "id": "aegis-eng-d12-n8-ops-fac-04",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Physical Placement Asset Tracker APIs",
+      "responsibility": "Exposes endpoints that handle state coordinates for structural signs.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_05",
+      "id": "aegis-eng-d12-n9-ops-fac-05",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Invoice Balance Sheet Ingestion Scripts",
+      "responsibility": "Parses operational bills to verify data shape prior to ledger commit.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}

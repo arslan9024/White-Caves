@@ -1,0 +1,26 @@
+{
+  "name": "@Node_Eng_04",
+  "id": "aegis-eng-d4-n8-node-eng-04",
+  "nodeNumber": 8,
+  "isDirector": false,
+  "departmentId": 4,
+  "departmentName": "Backend, Route & API Engineers",
+  "departmentSlug": "dept-04-backend-route-api",
+  "skill": "API Rate Limiting Shield Policy",
+  "responsibility": "Protects core backend routes against flood requests and infinite call abuse.",
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true,
+    "typeScriptStrict": true
+  },
+  "attachedSkills": [
+    ".agents/skills/gemini-api-dev",
+    ".agents/skills/gemini-interactions-api",
+    ".agents/skills/gemini-live-api-dev",
+    ".agents/skills/gemini-omni-flash-api"
+  ],
+  "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+}

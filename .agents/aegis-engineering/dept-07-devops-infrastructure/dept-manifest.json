@@ -1,0 +1,240 @@
+{
+  "departmentId": 7,
+  "departmentName": "DevOps & Infrastructure Gatekeepers",
+  "departmentSlug": "dept-07-devops-infrastructure",
+  "director": "@Gwynne",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [
+    ".agents/skills/gwynne-git-lifecycle",
+    ".agents/skills/git-manager",
+    ".agents/skills/release-readiness"
+  ],
+  "team": [
+    {
+      "name": "@Gwynne",
+      "id": "aegis-eng-d7-n1-gwynne",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Continuous Integration Pipelines",
+      "responsibility": "Enforces automated type checking commands ('npm run typecheck') at compile doors.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lisa",
+      "id": "aegis-eng-d7-n2-lisa",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Edge Infrastructure Routing Configuration",
+      "responsibility": "Manages server deployment routing parameters inside cloud host pipelines.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Annie",
+      "id": "aegis-eng-d7-n3-annie",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Docker Container Scaffolding Layers",
+      "responsibility": "Containerizes the isolated application ecosystem files for target runtimes.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Corinne",
+      "id": "aegis-eng-d7-n4-corinne",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Local Environment Tooling Setup",
+      "responsibility": "Ensures environment file parameters remain unified across development platforms.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Rachel",
+      "id": "aegis-eng-d7-n5-rachel",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Credential Leak Prevention Hooks",
+      "responsibility": "Configures scanners to catch and block secret variables from entering code repos.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Infra_Ops_01",
+      "id": "aegis-eng-d7-n6-infra-ops-01",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Pre-Commit Husky Hook Configuration",
+      "responsibility": "Enforces formatting validation and code style rules before local commits.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Infra_Ops_02",
+      "id": "aegis-eng-d7-n7-infra-ops-02",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Cloud Monitor Dashboard Ingestion",
+      "responsibility": "Sets up system log metric collection across production clusters.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Infra_Ops_03",
+      "id": "aegis-eng-d7-n8-infra-ops-03",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Build Asset Chunk Cache Pruning",
+      "responsibility": "Splits code assets into optimal bundles to minimize initial load weight.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Infra_Ops_04",
+      "id": "aegis-eng-d7-n9-infra-ops-04",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 7,
+      "departmentName": "DevOps & Infrastructure Gatekeepers",
+      "departmentSlug": "dept-07-devops-infrastructure",
+      "skill": "Secret Configuration Encryption Crypts",
+      "responsibility": "Decrypts environment variables safely at runtime inside CI containers.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gwynne-git-lifecycle",
+        ".agents/skills/git-manager",
+        ".agents/skills/release-readiness"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}

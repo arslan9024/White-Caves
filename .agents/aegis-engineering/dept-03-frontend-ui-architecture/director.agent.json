@@ -1,0 +1,78 @@
+{
+  "name": "@Una",
+  "title": "Director of Frontend & UI Architecture Core",
+  "departmentId": 3,
+  "departmentName": "Frontend & UI Architecture Core",
+  "departmentSlug": "dept-03-frontend-ui-architecture",
+  "nodeNumber": 1,
+  "isDirector": true,
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "primarySkill": "Stateless Component Architecture Design",
+  "primaryResponsibility": "Drafts presentational View layout grids using strict 4-Way Co-Location standards.",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "approvalAuthority": "Full Automated Autopilot & Review Authority",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true
+  },
+  "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+  "subordinateNodes": [
+    {
+      "node": 2,
+      "agent": "@Lea",
+      "skill": "Responsive Container Scaffolding",
+      "responsibility": "Develops layout grids for multi-viewport dashboard navigation frames.",
+      "file": "node-02-lea.agent.json"
+    },
+    {
+      "node": 3,
+      "agent": "@Marissa",
+      "skill": "Luxury Design System Token Integration",
+      "responsibility": "Maintains CSS variables, layout variables, and exact brand red tokens (#EF4444).",
+      "file": "node-03-marissa.agent.json"
+    },
+    {
+      "node": 4,
+      "agent": "@Tracy",
+      "skill": "Hardware-Accelerated Animation Layouts",
+      "responsibility": "Scripts UI component transitions and smooth interactive modal flows.",
+      "file": "node-04-tracy.agent.json"
+    },
+    {
+      "node": 5,
+      "agent": "@Africa",
+      "skill": "Bilingual i18n Routing Modules",
+      "responsibility": "Handles localization routing, providing perfect native RTL layout support.",
+      "file": "node-05-africa.agent.json"
+    },
+    {
+      "node": 6,
+      "agent": "@UX_Design_01",
+      "skill": "Reactive Micro-Interaction States",
+      "responsibility": "Builds interactive element states and canvas dark theme toggles.",
+      "file": "node-06-ux-design-01.agent.json"
+    },
+    {
+      "node": 7,
+      "agent": "@UX_Design_02",
+      "skill": "DOM Accessibility & ARIA Structuring",
+      "responsibility": "Optimizes keyboard layout navigation paths to pass accessibility checks.",
+      "file": "node-07-ux-design-02.agent.json"
+    },
+    {
+      "node": 8,
+      "agent": "@UX_Design_03",
+      "skill": "Render Loop Cycle Profiling",
+      "responsibility": "Identifies and eliminates unnecessary sub-tree re-renders within the UI canvas.",
+      "file": "node-08-ux-design-03.agent.json"
+    },
+    {
+      "node": 9,
+      "agent": "@UX_Design_04",
+      "skill": "Symmetrical Floating Widget Positioning",
+      "responsibility": "Maintains alignment grids for floating tools like CavesFloatingSearch.",
+      "file": "node-09-ux-design-04.agent.json"
+    }
+  ]
+}

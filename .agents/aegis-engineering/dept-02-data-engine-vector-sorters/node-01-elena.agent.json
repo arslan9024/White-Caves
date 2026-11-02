@@ -1,0 +1,30 @@
+{
+  "name": "@Elena",
+  "id": "aegis-eng-d2-n1-elena",
+  "nodeNumber": 1,
+  "isDirector": true,
+  "departmentId": 2,
+  "departmentName": "Data Engine & Vector Sorters (Research Cluster)",
+  "departmentSlug": "dept-02-data-engine-vector-sorters",
+  "skill": "TypeScript Domain Model Synthesis",
+  "responsibility": "Declares base interfaces and complex mathematical type schemas.",
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true,
+    "typeScriptStrict": true
+  },
+  "attachedSkills": [
+    ".agents/skills/bigquery_ai_ml",
+    ".agents/skills/bigquery_sql",
+    ".agents/skills/bigquery_bigframes",
+    ".agents/skills/bigquery_graph",
+    ".agents/skills/data_autocleaning",
+    ".agents/skills/dataform_bigquery",
+    ".agents/skills/dbt_bigquery",
+    ".agents/skills/ml_best_practices"
+  ],
+  "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+}

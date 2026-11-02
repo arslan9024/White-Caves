@@ -1,0 +1,621 @@
+{
+  "frameworkCode": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "totalEngineeringDepartments": 12,
+  "nodesPerDepartment": 9,
+  "orchestrationEnvironment": "Antigravity IDE & VS Code Local Staging",
+  "departments": [
+    {
+      "id": 1,
+      "name": "Core System Architects (Executive Council Cluster)",
+      "team": [
+        {
+          "agent": "@Ada",
+          "skill": "System-Wide State Orchestration Design",
+          "responsibility": "Architects global state coordination frameworks and high-level cross-agent compiler pipelines."
+        },
+        {
+          "agent": "@Margaret",
+          "skill": "Workspace Guardrails & Lint Configuration",
+          "responsibility": "Enforces global static compilation rules, project type-safety, and repository standards."
+        },
+        {
+          "agent": "@Grace",
+          "skill": "Multi-Agent Sync Hook Engineering",
+          "responsibility": "Binds parallel workspace processes to synchronize state transactions smoothly."
+        },
+        {
+          "agent": "@Elena",
+          "skill": "Runtime Performance Engine Auditing",
+          "responsibility": "Instruments telemetry layers to log memory footprints and engine execution speed."
+        },
+        {
+          "agent": "@Zoe",
+          "skill": "Protected Variable Isolation Control",
+          "responsibility": "Configures environment permissions and isolated file read access layers."
+        },
+        {
+          "agent": "@Alpha_Exec",
+          "skill": "Submodule Dependency Mapping",
+          "responsibility": "Configures external module synchronization bridges for core application features."
+        },
+        {
+          "agent": "@Beta_Exec",
+          "skill": "Asynchronous Race Condition Resolution",
+          "responsibility": "Tracks down execution bugs and unhandled exceptions in asynchronous operations."
+        },
+        {
+          "agent": "@Gamma_Exec",
+          "skill": "Memory Profile Balancing",
+          "responsibility": "Maintains server allocation guidelines and garbage collection optimization strategies."
+        },
+        {
+          "agent": "@Delta_Exec",
+          "skill": "Hot Module Replacement Optimization",
+          "responsibility": "Optimizes dev server refresh processes to prevent state drops during local edits."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Data Engine & Vector Sorters (Research Cluster)",
+      "team": [
+        {
+          "agent": "@Elena",
+          "skill": "TypeScript Domain Model Synthesis",
+          "responsibility": "Declares base interfaces and complex mathematical type schemas."
+        },
+        {
+          "agent": "@Iris",
+          "skill": "Spatial Layout Coordinate Translators",
+          "responsibility": "Converts location data formats into structured geometric coordinate sets."
+        },
+        {
+          "agent": "@Cassie",
+          "skill": "JSON Data Grid Parser Modules",
+          "responsibility": "Builds stream-parsing utilities to handle data array imports cleanly."
+        },
+        {
+          "agent": "@Fei-Fei",
+          "skill": "Mathematical Function Calculators",
+          "responsibility": "Scripts calculations for complex layout metrics and matrix calculations."
+        },
+        {
+          "agent": "@Anima",
+          "skill": "Schema Structural Testing Modules",
+          "responsibility": "Validates JSON structure rules to guarantee backward data compatibility."
+        },
+        {
+          "agent": "@Sigma_Intel",
+          "skill": "API Structure Translators",
+          "responsibility": "Normalizes variable structures from outer data endpoints into native types."
+        },
+        {
+          "agent": "@Omega_Intel",
+          "skill": "Data Range Normalizer Helpers",
+          "responsibility": "Builds sorting helpers to clean up erratic date formats and currencies."
+        },
+        {
+          "agent": "@Zeta_Intel",
+          "skill": "Cluster Node Graph Structuring",
+          "responsibility": "Programs relational mapping files to connect layout groups dynamically."
+        },
+        {
+          "agent": "@Theta_Intel",
+          "skill": "State Cache Diff Calculators",
+          "responsibility": "Isolates dataset change properties to trigger minor target re-renders."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Frontend & UI Architecture Core",
+      "team": [
+        {
+          "agent": "@Una",
+          "skill": "Stateless Component Architecture Design",
+          "responsibility": "Drafts presentational View layout grids using strict 4-Way Co-Location standards."
+        },
+        {
+          "agent": "@Lea",
+          "skill": "Responsive Container Scaffolding",
+          "responsibility": "Develops layout grids for multi-viewport dashboard navigation frames."
+        },
+        {
+          "agent": "@Marissa",
+          "skill": "Luxury Design System Token Integration",
+          "responsibility": "Maintains CSS variables, layout variables, and exact brand red tokens (#EF4444)."
+        },
+        {
+          "agent": "@Tracy",
+          "skill": "Hardware-Accelerated Animation Layouts",
+          "responsibility": "Scripts UI component transitions and smooth interactive modal flows."
+        },
+        {
+          "agent": "@Africa",
+          "skill": "Bilingual i18n Routing Modules",
+          "responsibility": "Handles localization routing, providing perfect native RTL layout support."
+        },
+        {
+          "agent": "@UX_Design_01",
+          "skill": "Reactive Micro-Interaction States",
+          "responsibility": "Builds interactive element states and canvas dark theme toggles."
+        },
+        {
+          "agent": "@UX_Design_02",
+          "skill": "DOM Accessibility & ARIA Structuring",
+          "responsibility": "Optimizes keyboard layout navigation paths to pass accessibility checks."
+        },
+        {
+          "agent": "@UX_Design_03",
+          "skill": "Render Loop Cycle Profiling",
+          "responsibility": "Identifies and eliminates unnecessary sub-tree re-renders within the UI canvas."
+        },
+        {
+          "agent": "@UX_Design_04",
+          "skill": "Symmetrical Floating Widget Positioning",
+          "responsibility": "Maintains alignment grids for floating tools like CavesFloatingSearch."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Backend, Route & API Engineers",
+      "team": [
+        {
+          "agent": "@Mira",
+          "skill": "High-Throughput Endpoint Optimization",
+          "responsibility": "Builds backend endpoint controllers for core application data actions."
+        },
+        {
+          "agent": "@Petra",
+          "skill": "Middleware Authentication Hook Integration",
+          "responsibility": "Secures data paths using authorization token validation checks."
+        },
+        {
+          "agent": "@Ruchi",
+          "skill": "Third-Party Endpoint Connection Drivers",
+          "responsibility": "Architects synchronization hooks for processing incoming property data streams."
+        },
+        {
+          "agent": "@Daniela",
+          "skill": "Asynchronous Queue Webhook Handlers",
+          "responsibility": "Processes heavy external server payloads without blocking main event threads."
+        },
+        {
+          "agent": "@Node_Eng_01",
+          "skill": "Microservice RPC Protocol Engineering",
+          "responsibility": "Manages communication layers between internal server microservices."
+        },
+        {
+          "agent": "@Node_Eng_02",
+          "skill": "Error Interception Layer Architecture",
+          "responsibility": "Builds centralized logging layers to trap broken request pipelines."
+        },
+        {
+          "agent": "@Node_Eng_03",
+          "skill": "Process Heap Footprint Profiling",
+          "responsibility": "Monitors Node server runtime memory to intercept execution memory leaks."
+        },
+        {
+          "agent": "@Node_Eng_04",
+          "skill": "API Rate Limiting Shield Policy",
+          "responsibility": "Protects core backend routes against flood requests and infinite call abuse."
+        },
+        {
+          "agent": "@Node_Eng_05",
+          "skill": "JSON Data Compression Streamers",
+          "responsibility": "Optimizes network transit payload sizes for fast mobile execution."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Database Schemas & ORM Modlers",
+      "team": [
+        {
+          "agent": "@Barbara",
+          "skill": "Prisma Schema Layout Definition",
+          "responsibility": "Designs database collection definitions matching the 1-12-108 project matrix."
+        },
+        {
+          "agent": "@Anima",
+          "skill": "Aggregation Pipeline Refinement Scripts",
+          "responsibility": "Optimizes complex database lookups for dashboard tracking widgets."
+        },
+        {
+          "agent": "@Cassie",
+          "skill": "Distributed Cache Strategies & Redis",
+          "responsibility": "Manages local cache layer keys to eliminate repetitive database hits."
+        },
+        {
+          "agent": "@DB_Guard_01",
+          "skill": "Transaction Isolation Management",
+          "responsibility": "Prevents concurrency collisions during simultaneous write queries."
+        },
+        {
+          "agent": "@DB_Guard_02",
+          "skill": "Automated Migration Script Generation",
+          "responsibility": "Maintains database version tracking files for structural production upgrades."
+        },
+        {
+          "agent": "@DB_Guard_03",
+          "skill": "Query Execution Plan Optimization",
+          "responsibility": "Indexes slow database paths to guarantee sub-10ms response loops."
+        },
+        {
+          "agent": "@DB_Guard_04",
+          "skill": "Data Cleansing Engine Routines",
+          "responsibility": "Purges incomplete test submissions and corrupted logs automatically via scripts."
+        },
+        {
+          "agent": "@DB_Guard_05",
+          "skill": "Storage Encrypted-At-Rest Layers",
+          "responsibility": "Secures record storage layers using field-level hashing algorithms."
+        },
+        {
+          "agent": "@DB_Guard_06",
+          "skill": "Relational Data Indexing Modules",
+          "responsibility": "Maps entity relationships efficiently across data persistence models."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Software Quality Assurance & Code QA",
+      "team": [
+        {
+          "agent": "@Sofia",
+          "skill": "Form Validation Rule Assertions",
+          "responsibility": "Writes client-side form checking routines to ensure strict string inputs."
+        },
+        {
+          "agent": "@Katherine",
+          "skill": "Numeric Formula Integration Tests",
+          "responsibility": "Validates multi-tiered calculation formulas using automated testing blocks."
+        },
+        {
+          "agent": "@Radia",
+          "skill": "Input Validation & Sanitization Guards",
+          "responsibility": "Scrubs form fields against cross-site scripting vulnerabilities."
+        },
+        {
+          "agent": "@Ecem",
+          "skill": "Automated Playwright End-to-End Tests",
+          "responsibility": "Maintains end-to-end regression scripts across key application paths."
+        },
+        {
+          "agent": "@Joy",
+          "skill": "Static Security Code Auditing",
+          "responsibility": "Scans package dependencies for vulnerabilities before main branch integration."
+        },
+        {
+          "agent": "@QA_Audit_01",
+          "skill": "Smoke Test Assembly Automation",
+          "responsibility": "Configures pre-merge validation checks before remote staging pushes."
+        },
+        {
+          "agent": "@QA_Audit_02",
+          "skill": "JSON Contract Schema Tests",
+          "responsibility": "Verifies that API response shapes match expected TypeScript declarations."
+        },
+
+        {
+          "agent": "@QA_Audit_03",
+          "skill": "SLA Ingestion Timeout Monitors",
+          "responsibility": "Tests server responses under stress to ensure network request compliance."
+        },
+        {
+          "agent": "@QA_Audit_04",
+          "skill": "Role-Based Component Guard Tests",
+          "responsibility": "Validates private route navigation behavior against user access tokens."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "DevOps & Infrastructure Gatekeepers",
+      "team": [
+        {
+          "agent": "@Gwynne",
+          "skill": "Continuous Integration Pipelines",
+          "responsibility": "Enforces automated type checking commands ('npm run typecheck') at compile doors."
+        },
+        {
+          "agent": "@Lisa",
+          "skill": "Edge Infrastructure Routing Configuration",
+          "responsibility": "Manages server deployment routing parameters inside cloud host pipelines."
+        },
+        {
+          "agent": "@Annie",
+          "skill": "Docker Container Scaffolding Layers",
+          "responsibility": "Containerizes the isolated application ecosystem files for target runtimes."
+        },
+        {
+          "agent": "@Corinne",
+          "skill": "Local Environment Tooling Setup",
+          "responsibility": "Ensures environment file parameters remain unified across development platforms."
+        },
+        {
+          "agent": "@Rachel",
+          "skill": "Credential Leak Prevention Hooks",
+          "responsibility": "Configures scanners to catch and block secret variables from entering code repos."
+        },
+        {
+          "agent": "@Infra_Ops_01",
+          "skill": "Pre-Commit Husky Hook Configuration",
+          "responsibility": "Enforces formatting validation and code style rules before local commits."
+        },
+        {
+          "agent": "@Infra_Ops_02",
+          "skill": "Cloud Monitor Dashboard Ingestion",
+          "responsibility": "Sets up system log metric collection across production clusters."
+        },
+        {
+          "agent": "@Infra_Ops_03",
+          "skill": "Build Asset Chunk Cache Pruning",
+          "responsibility": "Splits code assets into optimal bundles to minimize initial load weight."
+        },
+        {
+          "agent": "@Infra_Ops_04",
+          "skill": "Secret Configuration Encryption Crypts",
+          "responsibility": "Decrypts environment variables safely at runtime inside CI containers."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Lease, Rent & Expiry System Logic",
+      "team": [
+        {
+          "agent": "@Victoria",
+          "skill": "Temporal Expiry Cron Notification Logic",
+          "responsibility": "Writes background cron tasks that check expiration timestamp records."
+        },
+        {
+          "agent": "@Tara",
+          "skill": "Dynamic Formula Engine Calculators",
+          "responsibility": "Engineers math helpers to parse and calculate tiered indexing options."
+        },
+        {
+          "agent": "@Daisy",
+          "skill": "User Permissions State Reducers",
+          "responsibility": "Manages context lifecycle actions for user tier tracking panels."
+        },
+        {
+          "agent": "@Lease_Desk_01",
+          "skill": "Data Collection State Hydrators",
+          "responsibility": "Writes logic layers to load structural asset metrics into layout tables."
+        },
+        {
+          "agent": "@Lease_Desk_02",
+          "skill": "Structural Inspection Form Schemas",
+          "responsibility": "Constructs multi-step form schema frameworks for item validation states."
+        },
+        {
+          "agent": "@Lease_Desk_03",
+          "skill": "Error Log Incident Handlers",
+          "responsibility": "Codes backend data routers to log issue tickets into issue track dashboards."
+        },
+        {
+          "agent": "@Lease_Desk_04",
+          "skill": "Multi-Unit Data Array Handlers",
+          "responsibility": "Writes utility functions to manipulate nested arrays of complex data blocks."
+        },
+        {
+          "agent": "@Lease_Desk_05",
+          "skill": "External System Data Sync Ingestors",
+          "responsibility": "Maintains stream ingestion drivers to update local tables from external sources."
+        },
+        {
+          "agent": "@Lease_Desk_06",
+          "skill": "Precision Float Numeric Normalizers",
+          "responsibility": "Ensures decimal point calculations remain clear of float rounding errors."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Ledger Accounting & VAT Logic Engines",
+      "team": [
+        {
+          "agent": "@Invoice",
+          "skill": "External API Ledger Integration Drivers",
+          "responsibility": "Syncs client side data events straight into remote accounting platforms."
+        },
+        {
+          "agent": "@Dora",
+          "skill": "Tiered Formula Rules Modules",
+          "responsibility": "Programs rule checking libraries that apply dynamic transaction processing splits."
+        },
+        {
+          "agent": "@Theodora",
+          "skill": "Escrow Transaction Guard Methods",
+          "responsibility": "Codes validation blocks that block execution unless payment tokens are confirmed."
+        },
+        {
+          "agent": "@Fin_Analyst_01",
+          "skill": "Currency Exchange Processing Helpers",
+          "responsibility": "Maintains automated currency calculation matrices based on spot parameters."
+        },
+        {
+          "agent": "@Fin_Analyst_02",
+          "skill": "Aging Data Aggregator Ingestors",
+          "responsibility": "Runs database scripts that sort overdue balances into tracking buckets."
+        },
+        {
+          "agent": "@Fin_Analyst_03",
+          "skill": "Outgoing Transaction Queue Pipelines",
+          "responsibility": "Controls request worker queues handling vendor settlement outputs."
+        },
+        {
+          "agent": "@Fin_Analyst_04",
+          "skill": "Statistical Trend Plot Map Exporters",
+          "responsibility": "Generates data tracking points for populating graph interface vectors."
+        },
+        {
+          "agent": "@Fin_Analyst_05",
+          "skill": "Official Ingestion Form Webhooks",
+          "responsibility": "Secures data collection routes from external system response parameters."
+        },
+        {
+          "agent": "@Fin_Analyst_06",
+          "skill": "Ledger Audit Trailing File Handlers",
+          "responsibility": "Maintains read-only event logs tracking user state updates."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "CRM Framework & Pipeline Software",
+      "team": [
+        {
+          "agent": "@Jaime",
+          "skill": "Allocation Engine Routing Modules",
+          "responsibility": "Builds assignment logic to route incoming layout data items dynamically."
+        },
+        {
+          "agent": "@Mila",
+          "skill": "Pipeline Phase Transition Actions",
+          "responsibility": "Codes state machine triggers executing when pipeline step items move forward."
+        },
+        {
+          "agent": "@Sophia",
+          "skill": "Document Generation & Assembly Engines",
+          "responsibility": "Assembles raw text strings into structured application layout templates."
+        },
+        {
+          "agent": "@Clara",
+          "skill": "Profile Vector Match Algorithms",
+          "responsibility": "Writes filter arrays that align database inventory items with user parameters."
+        },
+        {
+          "agent": "@Mary",
+          "skill": "Inventory Cluster Sync Logic",
+          "responsibility": "Synchronizes real-time collection items between local memory and the database."
+        },
+        {
+          "agent": "@CRM_Ops_01",
+          "skill": "Pipeline Constraint Checker Filters",
+          "responsibility": "Blocks item step adjustments unless all compliance parameters are validated."
+        },
+        {
+          "agent": "@CRM_Ops_02",
+          "skill": "Calendar Scheduling Collision Checks",
+          "responsibility": "Codes validation filters that ensure booking entries do not overlap."
+        },
+        {
+          "agent": "@CRM_Ops_03",
+          "skill": "Asset Data Sanity Check Auditors",
+          "responsibility": "Scans current listings parameters to flag and drop incomplete items."
+        },
+        {
+          "agent": "@CRM_Ops_04",
+          "skill": "External Access Protocol Configuration",
+          "responsibility": "Manages endpoint access authentication tokens for linked network platforms."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Lead Ingestion & Asset Media Pipelines",
+      "team": [
+        {
+          "agent": "@Rachel",
+          "skill": "Tracking Pixel Metadata Ingestors",
+          "responsibility": "Captures and parses input headers from tracking platform pixel webhooks."
+        },
+        {
+          "agent": "@Corinne",
+          "skill": "Webhook Entry Form Schema Receivers",
+          "responsibility": "Connects structural API ingest paths to catch external text submissions."
+        },
+        {
+          "agent": "@Olivia",
+          "skill": "Dynamic Image Dimension Optimizers",
+          "responsibility": "Scripts automated image compression routines for rendering media elements."
+        },
+        {
+          "agent": "@Nina",
+          "skill": "Video Stream Asset Chunk File Parsers",
+          "responsibility": "Builds file handling layers to organize incoming media video streams."
+        },
+        {
+          "agent": "@Nadia",
+          "skill": "Messaging API Gateway Webhook Hooks",
+          "responsibility": "Routes incoming text messaging API threads into application log states."
+        },
+        {
+          "agent": "@Mkt_Prod_01",
+          "skill": "Media File Conversion Automators",
+          "responsibility": "Scripts tasks to transcode video resolution types for application canvas views."
+        },
+        {
+          "agent": "@Mkt_Prod_02",
+          "skill": "SEO Meta Tag Injection Controllers",
+          "responsibility": "Builds data injectors that update document index parameters automatically."
+        },
+        {
+          "agent": "@Mkt_Prod_03",
+          "skill": "Source Performance Attribution Logic",
+          "responsibility": "Traces application landing paths to write telemetry attribution records."
+        },
+        {
+          "agent": "@Mkt_Prod_04",
+          "skill": "Asynchronous User Greet Senders",
+          "responsibility": "Hooks into message loops to dispatch system event updates instantly."
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Asset Tracking & System File Operations",
+      "team": [
+        {
+          "agent": "@Rania",
+          "skill": "Physical Token System Lifecycle Drivers",
+          "responsibility": "Writes state routers tracking item inventory check-out transactions."
+        },
+        {
+          "agent": "@Dina",
+          "skill": "Database Item Index Record Counters",
+          "responsibility": "Manages collection counters handling heavy tracking metrics across locations."
+        },
+        {
+          "agent": "@Vesta",
+          "skill": "Incident Alert System Worker Queues",
+          "responsibility": "Orchestrates background worker pools to process emergent error events."
+        },
+        {
+          "agent": "@Henry",
+          "skill": "OCR Document Text Extraction Parsers",
+          "responsibility": "Integrates scanning code engines to process uploaded application PDFs into files."
+        },
+        {
+          "agent": "@Ops_Fac_01",
+          "skill": "Recurrent Task Routine Scheduling Engine",
+          "responsibility": "Builds event timers that insert recurrent optimization tasks into storage."
+        },
+        {
+          "agent": "@Ops_Fac_02",
+          "skill": "External API Response Speed Monitors",
+          "responsibility": "Monitors response durations from outsourced tool endpoints."
+        },
+        {
+          "agent": "@Ops_Fac_03",
+          "skill": "Storage Stock Threshold Check Modules",
+          "responsibility": "Triggers alert logging actions when structural asset limits drop low."
+        },
+        {
+          "agent": "@Ops_Fac_04",
+          "skill": "Physical Placement Asset Tracker APIs",
+          "responsibility": "Exposes endpoints that handle state coordinates for structural signs."
+        },
+        {
+          "agent": "@Ops_Fac_05",
+          "skill": "Invoice Balance Sheet Ingestion Scripts",
+          "responsibility": "Parses operational bills to verify data shape prior to ledger commit."
+        }
+      ]
+    }
+  ]
+}

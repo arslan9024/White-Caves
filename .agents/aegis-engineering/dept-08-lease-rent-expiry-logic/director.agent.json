@@ -1,0 +1,78 @@
+{
+  "name": "@Victoria",
+  "title": "Director of Lease, Rent & Expiry System Logic",
+  "departmentId": 8,
+  "departmentName": "Lease, Rent & Expiry System Logic",
+  "departmentSlug": "dept-08-lease-rent-expiry-logic",
+  "nodeNumber": 1,
+  "isDirector": true,
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "primarySkill": "Temporal Expiry Cron Notification Logic",
+  "primaryResponsibility": "Writes background cron tasks that check expiration timestamp records.",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "approvalAuthority": "Full Automated Autopilot & Review Authority",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true
+  },
+  "attachedSkills": [".agents/skills/whitecaves-ejari-rules"],
+  "subordinateNodes": [
+    {
+      "node": 2,
+      "agent": "@Tara",
+      "skill": "Dynamic Formula Engine Calculators",
+      "responsibility": "Engineers math helpers to parse and calculate tiered indexing options.",
+      "file": "node-02-tara.agent.json"
+    },
+    {
+      "node": 3,
+      "agent": "@Daisy",
+      "skill": "User Permissions State Reducers",
+      "responsibility": "Manages context lifecycle actions for user tier tracking panels.",
+      "file": "node-03-daisy.agent.json"
+    },
+    {
+      "node": 4,
+      "agent": "@Lease_Desk_01",
+      "skill": "Data Collection State Hydrators",
+      "responsibility": "Writes logic layers to load structural asset metrics into layout tables.",
+      "file": "node-04-lease-desk-01.agent.json"
+    },
+    {
+      "node": 5,
+      "agent": "@Lease_Desk_02",
+      "skill": "Structural Inspection Form Schemas",
+      "responsibility": "Constructs multi-step form schema frameworks for item validation states.",
+      "file": "node-05-lease-desk-02.agent.json"
+    },
+    {
+      "node": 6,
+      "agent": "@Lease_Desk_03",
+      "skill": "Error Log Incident Handlers",
+      "responsibility": "Codes backend data routers to log issue tickets into issue track dashboards.",
+      "file": "node-06-lease-desk-03.agent.json"
+    },
+    {
+      "node": 7,
+      "agent": "@Lease_Desk_04",
+      "skill": "Multi-Unit Data Array Handlers",
+      "responsibility": "Writes utility functions to manipulate nested arrays of complex data blocks.",
+      "file": "node-07-lease-desk-04.agent.json"
+    },
+    {
+      "node": 8,
+      "agent": "@Lease_Desk_05",
+      "skill": "External System Data Sync Ingestors",
+      "responsibility": "Maintains stream ingestion drivers to update local tables from external sources.",
+      "file": "node-08-lease-desk-05.agent.json"
+    },
+    {
+      "node": 9,
+      "agent": "@Lease_Desk_06",
+      "skill": "Precision Float Numeric Normalizers",
+      "responsibility": "Ensures decimal point calculations remain clear of float rounding errors.",
+      "file": "node-09-lease-desk-06.agent.json"
+    }
+  ]
+}

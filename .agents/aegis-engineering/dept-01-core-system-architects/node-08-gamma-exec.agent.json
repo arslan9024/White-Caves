@@ -1,0 +1,28 @@
+{
+  "name": "@Gamma_Exec",
+  "id": "aegis-eng-d1-n8-gamma-exec",
+  "nodeNumber": 8,
+  "isDirector": false,
+  "departmentId": 1,
+  "departmentName": "Core System Architects (Executive Council Cluster)",
+  "departmentSlug": "dept-01-core-system-architects",
+  "skill": "Memory Profile Balancing",
+  "responsibility": "Maintains server allocation guidelines and garbage collection optimization strategies.",
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true,
+    "typeScriptStrict": true
+  },
+  "attachedSkills": [
+    ".agents/skills/agy-customizations",
+    ".agents/skills/antigravity_guide",
+    ".agents/skills/strategic-planner",
+    ".agents/skills/project-optimizer",
+    ".agents/skills/aegis-infinite-crucible",
+    ".agents/skills/orchestration-progress-intelligence"
+  ],
+  "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+}

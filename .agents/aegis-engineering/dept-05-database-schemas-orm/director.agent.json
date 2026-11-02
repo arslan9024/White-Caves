@@ -1,0 +1,82 @@
+{
+  "name": "@Barbara",
+  "title": "Director of Database Schemas & ORM Modlers",
+  "departmentId": 5,
+  "departmentName": "Database Schemas & ORM Modlers",
+  "departmentSlug": "dept-05-database-schemas-orm",
+  "nodeNumber": 1,
+  "isDirector": true,
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "primarySkill": "Prisma Schema Layout Definition",
+  "primaryResponsibility": "Designs database collection definitions matching the 1-12-108 project matrix.",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "approvalAuthority": "Full Automated Autopilot & Review Authority",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true
+  },
+  "attachedSkills": [
+    ".agents/skills/bigquery_sql",
+    ".agents/skills/data_autocleaning",
+    ".agents/skills/accidental_data_loss_prevention"
+  ],
+  "subordinateNodes": [
+    {
+      "node": 2,
+      "agent": "@Anima",
+      "skill": "Aggregation Pipeline Refinement Scripts",
+      "responsibility": "Optimizes complex database lookups for dashboard tracking widgets.",
+      "file": "node-02-anima.agent.json"
+    },
+    {
+      "node": 3,
+      "agent": "@Cassie",
+      "skill": "Distributed Cache Strategies & Redis",
+      "responsibility": "Manages local cache layer keys to eliminate repetitive database hits.",
+      "file": "node-03-cassie.agent.json"
+    },
+    {
+      "node": 4,
+      "agent": "@DB_Guard_01",
+      "skill": "Transaction Isolation Management",
+      "responsibility": "Prevents concurrency collisions during simultaneous write queries.",
+      "file": "node-04-db-guard-01.agent.json"
+    },
+    {
+      "node": 5,
+      "agent": "@DB_Guard_02",
+      "skill": "Automated Migration Script Generation",
+      "responsibility": "Maintains database version tracking files for structural production upgrades.",
+      "file": "node-05-db-guard-02.agent.json"
+    },
+    {
+      "node": 6,
+      "agent": "@DB_Guard_03",
+      "skill": "Query Execution Plan Optimization",
+      "responsibility": "Indexes slow database paths to guarantee sub-10ms response loops.",
+      "file": "node-06-db-guard-03.agent.json"
+    },
+    {
+      "node": 7,
+      "agent": "@DB_Guard_04",
+      "skill": "Data Cleansing Engine Routines",
+      "responsibility": "Purges incomplete test submissions and corrupted logs automatically via scripts.",
+      "file": "node-07-db-guard-04.agent.json"
+    },
+    {
+      "node": 8,
+      "agent": "@DB_Guard_05",
+      "skill": "Storage Encrypted-At-Rest Layers",
+      "responsibility": "Secures record storage layers using field-level hashing algorithms.",
+      "file": "node-08-db-guard-05.agent.json"
+    },
+    {
+      "node": 9,
+      "agent": "@DB_Guard_06",
+      "skill": "Relational Data Indexing Modules",
+      "responsibility": "Maps entity relationships efficiently across data persistence models.",
+      "file": "node-09-db-guard-06.agent.json"
+    }
+  ]
+}

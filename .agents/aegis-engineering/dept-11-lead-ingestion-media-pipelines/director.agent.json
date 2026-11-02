@@ -1,0 +1,78 @@
+{
+  "name": "@Rachel",
+  "title": "Director of Lead Ingestion & Asset Media Pipelines",
+  "departmentId": 11,
+  "departmentName": "Lead Ingestion & Asset Media Pipelines",
+  "departmentSlug": "dept-11-lead-ingestion-media-pipelines",
+  "nodeNumber": 1,
+  "isDirector": true,
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "primarySkill": "Tracking Pixel Metadata Ingestors",
+  "primaryResponsibility": "Captures and parses input headers from tracking platform pixel webhooks.",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "approvalAuthority": "Full Automated Autopilot & Review Authority",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true
+  },
+  "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+  "subordinateNodes": [
+    {
+      "node": 2,
+      "agent": "@Corinne",
+      "skill": "Webhook Entry Form Schema Receivers",
+      "responsibility": "Connects structural API ingest paths to catch external text submissions.",
+      "file": "node-02-corinne.agent.json"
+    },
+    {
+      "node": 3,
+      "agent": "@Olivia",
+      "skill": "Dynamic Image Dimension Optimizers",
+      "responsibility": "Scripts automated image compression routines for rendering media elements.",
+      "file": "node-03-olivia.agent.json"
+    },
+    {
+      "node": 4,
+      "agent": "@Nina",
+      "skill": "Video Stream Asset Chunk File Parsers",
+      "responsibility": "Builds file handling layers to organize incoming media video streams.",
+      "file": "node-04-nina.agent.json"
+    },
+    {
+      "node": 5,
+      "agent": "@Nadia",
+      "skill": "Messaging API Gateway Webhook Hooks",
+      "responsibility": "Routes incoming text messaging API threads into application log states.",
+      "file": "node-05-nadia.agent.json"
+    },
+    {
+      "node": 6,
+      "agent": "@Mkt_Prod_01",
+      "skill": "Media File Conversion Automators",
+      "responsibility": "Scripts tasks to transcode video resolution types for application canvas views.",
+      "file": "node-06-mkt-prod-01.agent.json"
+    },
+    {
+      "node": 7,
+      "agent": "@Mkt_Prod_02",
+      "skill": "SEO Meta Tag Injection Controllers",
+      "responsibility": "Builds data injectors that update document index parameters automatically.",
+      "file": "node-07-mkt-prod-02.agent.json"
+    },
+    {
+      "node": 8,
+      "agent": "@Mkt_Prod_03",
+      "skill": "Source Performance Attribution Logic",
+      "responsibility": "Traces application landing paths to write telemetry attribution records.",
+      "file": "node-08-mkt-prod-03.agent.json"
+    },
+    {
+      "node": 9,
+      "agent": "@Mkt_Prod_04",
+      "skill": "Asynchronous User Greet Senders",
+      "responsibility": "Hooks into message loops to dispatch system event updates instantly.",
+      "file": "node-09-mkt-prod-04.agent.json"
+    }
+  ]
+}

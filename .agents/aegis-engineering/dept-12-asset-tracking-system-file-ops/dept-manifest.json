@@ -1,0 +1,230 @@
+{
+  "departmentId": 12,
+  "departmentName": "Asset Tracking & System File Operations",
+  "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+  "director": "@Rania",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [
+    ".agents/skills/project-optimizer",
+    ".agents/skills/accidental_data_loss_prevention"
+  ],
+  "team": [
+    {
+      "name": "@Rania",
+      "id": "aegis-eng-d12-n1-rania",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Physical Token System Lifecycle Drivers",
+      "responsibility": "Writes state routers tracking item inventory check-out transactions.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Dina",
+      "id": "aegis-eng-d12-n2-dina",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Database Item Index Record Counters",
+      "responsibility": "Manages collection counters handling heavy tracking metrics across locations.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Vesta",
+      "id": "aegis-eng-d12-n3-vesta",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Incident Alert System Worker Queues",
+      "responsibility": "Orchestrates background worker pools to process emergent error events.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Henry",
+      "id": "aegis-eng-d12-n4-henry",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "OCR Document Text Extraction Parsers",
+      "responsibility": "Integrates scanning code engines to process uploaded application PDFs into files.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_01",
+      "id": "aegis-eng-d12-n5-ops-fac-01",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Recurrent Task Routine Scheduling Engine",
+      "responsibility": "Builds event timers that insert recurrent optimization tasks into storage.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_02",
+      "id": "aegis-eng-d12-n6-ops-fac-02",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "External API Response Speed Monitors",
+      "responsibility": "Monitors response durations from outsourced tool endpoints.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_03",
+      "id": "aegis-eng-d12-n7-ops-fac-03",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Storage Stock Threshold Check Modules",
+      "responsibility": "Triggers alert logging actions when structural asset limits drop low.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_04",
+      "id": "aegis-eng-d12-n8-ops-fac-04",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Physical Placement Asset Tracker APIs",
+      "responsibility": "Exposes endpoints that handle state coordinates for structural signs.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ops_Fac_05",
+      "id": "aegis-eng-d12-n9-ops-fac-05",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 12,
+      "departmentName": "Asset Tracking & System File Operations",
+      "departmentSlug": "dept-12-asset-tracking-system-file-ops",
+      "skill": "Invoice Balance Sheet Ingestion Scripts",
+      "responsibility": "Parses operational bills to verify data shape prior to ledger commit.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/project-optimizer",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "departmentId": 3,
+  "departmentName": "Frontend & UI Architecture Core",
+  "departmentSlug": "dept-03-frontend-ui-architecture",
+  "director": "@Una",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+  "team": [
+    {
+      "name": "@Una",
+      "id": "aegis-eng-d3-n1-una",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Stateless Component Architecture Design",
+      "responsibility": "Drafts presentational View layout grids using strict 4-Way Co-Location standards.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Lea",
+      "id": "aegis-eng-d3-n2-lea",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Responsive Container Scaffolding",
+      "responsibility": "Develops layout grids for multi-viewport dashboard navigation frames.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Marissa",
+      "id": "aegis-eng-d3-n3-marissa",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Luxury Design System Token Integration",
+      "responsibility": "Maintains CSS variables, layout variables, and exact brand red tokens (#EF4444).",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Tracy",
+      "id": "aegis-eng-d3-n4-tracy",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Hardware-Accelerated Animation Layouts",
+      "responsibility": "Scripts UI component transitions and smooth interactive modal flows.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Africa",
+      "id": "aegis-eng-d3-n5-africa",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Bilingual i18n Routing Modules",
+      "responsibility": "Handles localization routing, providing perfect native RTL layout support.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@UX_Design_01",
+      "id": "aegis-eng-d3-n6-ux-design-01",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Reactive Micro-Interaction States",
+      "responsibility": "Builds interactive element states and canvas dark theme toggles.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@UX_Design_02",
+      "id": "aegis-eng-d3-n7-ux-design-02",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "DOM Accessibility & ARIA Structuring",
+      "responsibility": "Optimizes keyboard layout navigation paths to pass accessibility checks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@UX_Design_03",
+      "id": "aegis-eng-d3-n8-ux-design-03",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Render Loop Cycle Profiling",
+      "responsibility": "Identifies and eliminates unnecessary sub-tree re-renders within the UI canvas.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@UX_Design_04",
+      "id": "aegis-eng-d3-n9-ux-design-04",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 3,
+      "departmentName": "Frontend & UI Architecture Core",
+      "departmentSlug": "dept-03-frontend-ui-architecture",
+      "skill": "Symmetrical Floating Widget Positioning",
+      "responsibility": "Maintains alignment grids for floating tools like CavesFloatingSearch.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}

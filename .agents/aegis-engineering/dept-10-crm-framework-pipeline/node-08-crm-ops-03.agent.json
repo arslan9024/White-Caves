@@ -1,0 +1,21 @@
+{
+  "name": "@CRM_Ops_03",
+  "id": "aegis-eng-d10-n8-crm-ops-03",
+  "nodeNumber": 8,
+  "isDirector": false,
+  "departmentId": 10,
+  "departmentName": "CRM Framework & Pipeline Software",
+  "departmentSlug": "dept-10-crm-framework-pipeline",
+  "skill": "Asset Data Sanity Check Auditors",
+  "responsibility": "Scans current listings parameters to flag and drop incomplete items.",
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+  "governance": {
+    "law": "Aegis V4 Strict Engineering Standard",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true,
+    "typeScriptStrict": true
+  },
+  "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+  "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+}

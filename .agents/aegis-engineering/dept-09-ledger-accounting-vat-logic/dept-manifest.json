@@ -1,0 +1,200 @@
+{
+  "departmentId": 9,
+  "departmentName": "Ledger Accounting & VAT Logic Engines",
+  "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+  "director": "@Invoice",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+  "team": [
+    {
+      "name": "@Invoice",
+      "id": "aegis-eng-d9-n1-invoice",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "External API Ledger Integration Drivers",
+      "responsibility": "Syncs client side data events straight into remote accounting platforms.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Dora",
+      "id": "aegis-eng-d9-n2-dora",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Tiered Formula Rules Modules",
+      "responsibility": "Programs rule checking libraries that apply dynamic transaction processing splits.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Theodora",
+      "id": "aegis-eng-d9-n3-theodora",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Escrow Transaction Guard Methods",
+      "responsibility": "Codes validation blocks that block execution unless payment tokens are confirmed.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_01",
+      "id": "aegis-eng-d9-n4-fin-analyst-01",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Currency Exchange Processing Helpers",
+      "responsibility": "Maintains automated currency calculation matrices based on spot parameters.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_02",
+      "id": "aegis-eng-d9-n5-fin-analyst-02",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Aging Data Aggregator Ingestors",
+      "responsibility": "Runs database scripts that sort overdue balances into tracking buckets.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_03",
+      "id": "aegis-eng-d9-n6-fin-analyst-03",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Outgoing Transaction Queue Pipelines",
+      "responsibility": "Controls request worker queues handling vendor settlement outputs.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_04",
+      "id": "aegis-eng-d9-n7-fin-analyst-04",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Statistical Trend Plot Map Exporters",
+      "responsibility": "Generates data tracking points for populating graph interface vectors.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_05",
+      "id": "aegis-eng-d9-n8-fin-analyst-05",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Official Ingestion Form Webhooks",
+      "responsibility": "Secures data collection routes from external system response parameters.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Fin_Analyst_06",
+      "id": "aegis-eng-d9-n9-fin-analyst-06",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 9,
+      "departmentName": "Ledger Accounting & VAT Logic Engines",
+      "departmentSlug": "dept-09-ledger-accounting-vat-logic",
+      "skill": "Ledger Audit Trailing File Handlers",
+      "responsibility": "Maintains read-only event logs tracking user state updates.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [".agents/skills/whitecaves-ejari-rules", ".agents/skills/bigquery_sql"],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}

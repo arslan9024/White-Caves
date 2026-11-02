@@ -1,0 +1,250 @@
+{
+  "departmentId": 4,
+  "departmentName": "Backend, Route & API Engineers",
+  "departmentSlug": "dept-04-backend-route-api",
+  "director": "@Mira",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [
+    ".agents/skills/gemini-api-dev",
+    ".agents/skills/gemini-interactions-api",
+    ".agents/skills/gemini-live-api-dev",
+    ".agents/skills/gemini-omni-flash-api"
+  ],
+  "team": [
+    {
+      "name": "@Mira",
+      "id": "aegis-eng-d4-n1-mira",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "High-Throughput Endpoint Optimization",
+      "responsibility": "Builds backend endpoint controllers for core application data actions.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Petra",
+      "id": "aegis-eng-d4-n2-petra",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Middleware Authentication Hook Integration",
+      "responsibility": "Secures data paths using authorization token validation checks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Ruchi",
+      "id": "aegis-eng-d4-n3-ruchi",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Third-Party Endpoint Connection Drivers",
+      "responsibility": "Architects synchronization hooks for processing incoming property data streams.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Daniela",
+      "id": "aegis-eng-d4-n4-daniela",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Asynchronous Queue Webhook Handlers",
+      "responsibility": "Processes heavy external server payloads without blocking main event threads.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_01",
+      "id": "aegis-eng-d4-n5-node-eng-01",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Microservice RPC Protocol Engineering",
+      "responsibility": "Manages communication layers between internal server microservices.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_02",
+      "id": "aegis-eng-d4-n6-node-eng-02",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Error Interception Layer Architecture",
+      "responsibility": "Builds centralized logging layers to trap broken request pipelines.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_03",
+      "id": "aegis-eng-d4-n7-node-eng-03",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "Process Heap Footprint Profiling",
+      "responsibility": "Monitors Node server runtime memory to intercept execution memory leaks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_04",
+      "id": "aegis-eng-d4-n8-node-eng-04",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "API Rate Limiting Shield Policy",
+      "responsibility": "Protects core backend routes against flood requests and infinite call abuse.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    },
+    {
+      "name": "@Node_Eng_05",
+      "id": "aegis-eng-d4-n9-node-eng-05",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 4,
+      "departmentName": "Backend, Route & API Engineers",
+      "departmentSlug": "dept-04-backend-route-api",
+      "skill": "JSON Data Compression Streamers",
+      "responsibility": "Optimizes network transit payload sizes for fast mobile execution.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "git", "search_web"]
+    }
+  ]
+}
