@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { safeStorage } from '../utils/safeStorage';
 
-export type CurrencyCode = 'AED' | 'USD' | 'EUR' | 'GBP' | 'SAR' | 'CNY';
+export type CurrencyCode = 'AED' | 'USD' | 'EUR' | 'GBP' | 'SAR' | 'CNY' | 'INR';
 
 export interface CurrencyItem {
   code: CurrencyCode;
@@ -27,6 +27,7 @@ export const SUPPORTED_CURRENCIES: Record<CurrencyCode, CurrencyItem> = {
   GBP: { code: 'GBP', name: 'British Pound', symbol: '£', flag: '🇬🇧', rateToAED: 4.6189 },
   SAR: { code: 'SAR', name: 'Saudi Riyal', symbol: 'SAR', flag: '🇸🇦', rateToAED: 0.9791 },
   CNY: { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', flag: '🇨🇳', rateToAED: 0.5085 },
+  INR: { code: 'INR', name: 'Indian Rupee', symbol: '₹', flag: '🇮🇳', rateToAED: 0.04376 },
 };
 
 export interface CurrencyContextType {

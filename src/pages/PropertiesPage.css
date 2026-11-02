@@ -307,6 +307,29 @@
   gap: 1rem;
 }
 
+.currency-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--wc-text-secondary, var(--text-secondary));
+  font: inherit;
+}
+
+.currency-toggle select {
+  min-height: 2.25rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--wc-border-subtle, var(--border-color));
+  border-radius: var(--wc-radius-md, 10px);
+  background: var(--wc-bg-surface, var(--bg-secondary));
+  color: var(--wc-text-primary, var(--text-primary));
+  cursor: pointer;
+}
+
+.currency-toggle select:focus-visible {
+  outline: 2px solid var(--wc-red-primary);
+  outline-offset: 2px;
+}
+
 .view-toggle {
   display: flex;
   background: var(--bg-secondary);

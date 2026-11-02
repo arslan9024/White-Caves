@@ -102,6 +102,7 @@ export const es = {
     shortTerm: 'Corta Estancia',
     price: 'Precio',
     pricePerSqft: 'Precio por pie²',
+    selectCurrency: 'Moneda de visualización',
     aed: 'AED',
     perYear: '/año',
     perMonth: '/mes',

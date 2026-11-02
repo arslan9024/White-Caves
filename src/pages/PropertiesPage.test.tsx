@@ -10,6 +10,9 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
+import { CurrencyProvider, useGlobalCurrency } from '../context/CurrencyContext';
+import { LanguageProvider } from '../context/LanguageContext';
+import { safeStorage } from '../utils/safeStorage';
 
 // ── Mocks ────────────────────────────────────────────────────────
 
@@ -55,6 +58,25 @@ vi.mock('../utils/authFetch', () => ({
 }));
 
 vi.mock('../shared/components/property', () => ({
+  LuxuryPropertyCard: ({
+    property,
+    onClick,
+  }: {
+    property: Record<string, unknown>;
+    onClick: (property: unknown) => void;
+  }) => (
+    <article
+      className="luxury-property-card"
+      role="button"
+      onClick={() => onClick(property)}
+    >
+      <h3>{property.title as string}</h3>
+      <span>{property.location as string}</span>
+      <span>{String(property.beds ?? property.bedrooms)} Beds</span>
+      <span>{String(property.baths ?? property.bathrooms)} Baths</span>
+      <span>{Number(property.sqft).toLocaleString()} sqft</span>
+    </article>
+  ),
   PropertyImageSlider: ({ images }: { images: string[] }) => (
     <div data-testid="image-slider">{images?.length ?? 0} images</div>
   ),
@@ -78,6 +100,11 @@ import userReducer from '../store/userSlice';
 import navigationReducer from '../store/navigationSlice';
 import authReducer from '../store/authSlice';
 import propertyReducer from '../store/propertySlice';
+
+const CurrencyPreferenceProbe = () => {
+  const { currency } = useGlobalCurrency();
+  return <span data-testid="currency-preference">{currency}</span>;
+};
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -182,11 +209,16 @@ const renderPage = (crmOverrides: Record<string, unknown> = {}) => {
   return {
     store,
     ...render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <PropertiesPage />
-        </MemoryRouter>
-      </Provider>
+      <CurrencyProvider>
+        <LanguageProvider>
+          <Provider store={store}>
+            <MemoryRouter>
+              <PropertiesPage />
+              <CurrencyPreferenceProbe />
+            </MemoryRouter>
+          </Provider>
+        </LanguageProvider>
+      </CurrencyProvider>
     ),
   };
 };
@@ -201,6 +233,8 @@ describe('PropertiesPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    safeStorage.remove('whitecaves_currency');
+    safeStorage.remove('whitecaves_language');
     // Default: API returns the mock properties
     mockAuthFetchForProperties.mockResolvedValue({
       ok: true,
@@ -239,6 +273,31 @@ describe('PropertiesPage', () => {
       renderPage();
       const buttons = document.querySelectorAll('.view-btn');
       expect(buttons.length).toBe(3); // grid, list, map
+    });
+
+    it('should select a listing currency and update the shared currency preference', () => {
+      renderPage();
+      const selector = screen.getByRole('combobox', { name: 'Display currency' });
+
+      expect(Array.from((selector as HTMLSelectElement).options).map(option => option.value)).toEqual([
+        'AED',
+        'USD',
+        'GBP',
+        'EUR',
+        'INR',
+        'CNY',
+      ]);
+
+      fireEvent.change(selector, { target: { value: 'INR' } });
+      expect(screen.getByTestId('currency-preference')).toHaveTextContent('INR');
+    });
+
+    it('localizes the currency selector and direction for Arabic', () => {
+      safeStorage.set('whitecaves_language', 'ar');
+      renderPage();
+      const selector = screen.getByRole('combobox', { name: 'عملة العرض' });
+
+      expect(selector.closest('label')).toHaveAttribute('dir', 'rtl');
     });
 
     it('should render Footer', () => {
@@ -350,7 +409,7 @@ describe('PropertiesPage', () => {
       await waitFor(() => {
         expect(screen.getByText('Palm Villa')).toBeInTheDocument();
       });
-      const propertyCard = screen.getByText('Palm Villa').closest('.property-card-enhanced');
+      const propertyCard = screen.getByText('Palm Villa').closest('.luxury-property-card');
       fireEvent.click(propertyCard!);
       expect(screen.getByTestId('property-modal')).toBeInTheDocument();
     });
@@ -360,7 +419,7 @@ describe('PropertiesPage', () => {
       await waitFor(() => {
         expect(screen.getByText('Palm Villa')).toBeInTheDocument();
       });
-      const propertyCard = screen.getByText('Palm Villa').closest('.property-card-enhanced');
+      const propertyCard = screen.getByText('Palm Villa').closest('.luxury-property-card');
       fireEvent.click(propertyCard!);
       fireEvent.click(screen.getByTestId('modal-close'));
       expect(screen.queryByTestId('property-modal')).not.toBeInTheDocument();
