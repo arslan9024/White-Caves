@@ -54,3 +54,4 @@
 | **`@Margaret_Hamilton`** | Asynchronous Thread Crash Profiler | `.agents/orchestrator/aegis-deep-analyzer.js` |
 | **`@Annette_Wagner`** | Interactive Component Testing Auditor | `.agents/orchestrator/aegis-frontend-visual-matrix-bootstrapper.js` |
 | **`@Rebecca_Heineman`** | High-Stress Logic Breakage Specialist | `.agents/orchestrator/error-scan.ps1` |
+
