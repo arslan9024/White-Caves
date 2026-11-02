@@ -9,7 +9,9 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, CheckCircle2, ShieldCheck, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import VirtualTourModal from '../../properties/VirtualTourModal';
-import PropertyComparisonDrawer, { ComparableProperty } from '../../properties/PropertyComparisonDrawer';
+import PropertyComparisonDrawer, {
+  ComparableProperty,
+} from '../../properties/PropertyComparisonDrawer';
 import type { HomepageProperty } from '../../../store/slices/homepageSlice';
 import { BayutTruCheckBadge } from './BayutTruCheckBadge';
 import './FeaturedPropertiesSection.css';
@@ -75,11 +77,6 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
       whileHover={{ y: -8 }}
-      onClick={() => navigate(`/property/${property.id}`)}
-      role="button"
-      tabIndex={0}
-      aria-label={`View ${property.title}`}
-      onKeyDown={e => e.key === 'Enter' && navigate(`/property/${property.id}`)}
     >
       {/* Image */}
       <div className="fp-card__image-wrapper">
@@ -182,10 +179,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({
           <button
             className="fp-action-btn"
             style={{ flex: 1 }}
-            onClick={e => {
-              e.stopPropagation();
-              navigate(`/property/${property.id}`);
-            }}
+            onClick={() => navigate(`/property/${property.id}`)}
           >
             View Details
           </button>
@@ -199,10 +193,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({
               fontSize: '0.72rem',
               fontWeight: 800,
             }}
-            onClick={e => {
-              e.stopPropagation();
-              onOpenTour(property);
-            }}
+            onClick={() => onOpenTour(property)}
             title="Launch 3D WebGL Virtual Tour"
           >
             🕶️ 3D
@@ -217,10 +208,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({
               fontSize: '0.72rem',
               fontWeight: 800,
             }}
-            onClick={e => {
-              e.stopPropagation();
-              onToggleCompare(property);
-            }}
+            onClick={() => onToggleCompare(property)}
             title="Compare property specifications"
           >
             {isCompared ? '✓ Added' : '⚖️ Compare'}
@@ -321,7 +309,12 @@ const FeaturedPropertiesSection: React.FC<FeaturedPropertiesSectionProps> = ({
 
         {/* Grid */}
         {isLoading ? (
-          <div className="fp-grid" aria-busy="true" aria-label="Loading featured properties">
+          <div
+            className="fp-grid"
+            role="status"
+            aria-busy="true"
+            aria-label="Loading featured properties"
+          >
             {[...Array(6)].map((_, i) => (
               <SkeletonCard key={i} />
             ))}

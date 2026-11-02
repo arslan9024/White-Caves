@@ -10,10 +10,12 @@ export const TimeDisplayContainer = styled.div<{ $isVisible?: boolean }>`
   display: flex;
   align-items: center;
   gap: ${spacing.sm};
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  opacity: ${props => props.$isVisible ? 1 : 0};
-  transform: translateX(${props => props.$isVisible ? 0 : '-20px'});
-  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+  opacity: ${props => (props.$isVisible ? 1 : 0)};
+  transform: translateX(${props => (props.$isVisible ? 0 : '-20px')});
+  pointer-events: ${props => (props.$isVisible ? 'auto' : 'none')};
 
   &:hover {
     opacity: 1;
@@ -36,7 +38,7 @@ const statusPulseKeyframes = `
 
 export const ConnectionStatus = styled.span<{ $isOnline?: boolean }>`
   ${statusPulseKeyframes}
-  
+
   display: flex;
   align-items: center;
   gap: 6px;
@@ -50,16 +52,19 @@ export const ConnectionStatus = styled.span<{ $isOnline?: boolean }>`
   transition: all 0.3s ease;
   cursor: default;
 
-  ${props => props.$isOnline ? `
+  ${props =>
+    props.$isOnline
+      ? `
     background: rgba(34, 197, 94, 0.15);
-    color: #15803d;
+    color: #166534;
     border: 1px solid rgba(34, 197, 94, 0.3);
     
     &::before {
-      background: #15803d;
+      background: #166534;
       box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
     }
-  ` : `
+  `
+      : `
     background: rgba(239, 68, 68, 0.15);
     color: #b91c1c;
     border: 1px solid rgba(239, 68, 68, 0.3);

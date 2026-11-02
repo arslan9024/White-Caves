@@ -8,7 +8,7 @@ import {
   ContentWrapper,
   Title,
   DetailRow,
-  VerificationBadge
+  VerificationBadge,
 } from './BrokerLicenseBadge.style';
 
 export const BrokerLicenseBadge: FC = () => {
@@ -16,7 +16,11 @@ export const BrokerLicenseBadge: FC = () => {
   const { t } = useTranslation();
 
   return (
-    <BadgeContainer role="region" aria-label="RERA Broker License Verification" onClick={toggleVerification}>
+    <BadgeContainer
+      role="region"
+      aria-label="RERA Broker License Verification"
+      onClick={toggleVerification}
+    >
       <IconWrapper $verified={isVerified}>
         {isVerified ? <ShieldCheck size={28} /> : <Award size={28} />}
       </IconWrapper>
@@ -24,7 +28,7 @@ export const BrokerLicenseBadge: FC = () => {
         <Title>
           {t('compliance.broker_license') || 'White Caves Real Estate LLC'}
           {isVerified && (
-            <VerificationBadge title="Verified by DLD" aria-label="Verified">
+            <VerificationBadge title="Verified by DLD">
               <CheckCircle size={14} /> Verified
             </VerificationBadge>
           )}

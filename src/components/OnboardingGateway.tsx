@@ -60,7 +60,7 @@ const OnboardingGateway = () => {
       ),
       path: '/seller/dashboard',
       role: 'seller',
-      color: '#C9A84C',
+      color: '#735F24',
     },
     {
       id: 'buyer',
@@ -75,7 +75,7 @@ const OnboardingGateway = () => {
       ),
       path: '/buyer/dashboard',
       role: 'buyer',
-      color: '#10B981',
+      color: '#047857',
     },
     {
       id: 'tenant',
@@ -90,7 +90,7 @@ const OnboardingGateway = () => {
       ),
       path: '/landlord/dashboard',
       role: 'landlord',
-      color: '#10B981',
+      color: '#047857',
     },
     {
       id: 'employee',
@@ -105,7 +105,7 @@ const OnboardingGateway = () => {
       ),
       path: '/signin',
       role: 'agent',
-      color: '#C9A84C',
+      color: '#735F24',
     },
   ];
 

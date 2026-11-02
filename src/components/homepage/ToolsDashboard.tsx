@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const RED = 'var(--primary-red, #EF4444)';
+const RED_TEXT = 'var(--text-red, #B91C1C)';
 const SLATE = 'var(--card-dark, #1E293B)';
 
 const DashboardContainer = styled.div`
   max-width: 1400px;
   margin: 40px auto;
   padding: 40px 24px;
-  background: var(--white, #FFFFFF);
+  background: var(--white, #ffffff);
   border-radius: 24px;
   border: 1px solid rgba(239, 68, 68, 0.2);
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
@@ -21,7 +22,7 @@ const SectionBadge = styled.div`
   padding: 6px 14px;
   border-radius: 9999px;
   background: rgba(239, 68, 68, 0.1);
-  color: ${RED};
+  color: ${RED_TEXT};
   font-weight: 800;
   font-size: 0.8rem;
   margin-bottom: 12px;
@@ -35,7 +36,7 @@ const Title = styled.h2`
 `;
 
 const Subtitle = styled.p`
-  color: var(--text-secondary, #64748B);
+  color: var(--text-secondary, #64748b);
   max-width: 680px;
   font-size: 1rem;
   margin: 0 0 32px;
@@ -52,7 +53,7 @@ const Grid = styled.div`
 `;
 
 const Card = styled.div`
-  background: var(--color-f8fafc, #F8FAFC);
+  background: var(--color-f8fafc, #f8fafc);
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 20px;
   padding: 28px;
@@ -82,18 +83,18 @@ const LabelFlex = styled.div`
 `;
 
 const ValueHighlight = styled.span`
-  color: ${RED};
+  color: ${RED_TEXT};
   font-weight: 800;
 `;
 
 const Slider = styled.input`
   width: 100%;
-  accent-color: #EF4444;
+  accent-color: #ef4444;
   cursor: pointer;
 `;
 
 const MetricBox = styled.div`
-  background: var(--white, #FFFFFF);
+  background: var(--white, #ffffff);
   border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: 16px;
   padding: 16px 20px;
@@ -112,7 +113,7 @@ const MetricLabel = styled.span`
 const MetricValue = styled.span`
   font-size: 1.35rem;
   font-weight: 800;
-  color: ${RED};
+  color: ${RED_TEXT};
 `;
 
 export const ToolsDashboard: React.FC = () => {
@@ -144,7 +145,9 @@ export const ToolsDashboard: React.FC = () => {
   const dldAdminFee = 4300;
   const agencyBrokerageFee = propertyPrice * 0.02 * 1.05; // 2% + 5% VAT
   const mortgageRegistrationFee = loanAmountAED > 0 ? loanAmountAED * 0.0025 + 290 : 0;
-  const totalUpfrontFees = Math.round(dldTransferFee + dldAdminFee + agencyBrokerageFee + mortgageRegistrationFee);
+  const totalUpfrontFees = Math.round(
+    dldTransferFee + dldAdminFee + agencyBrokerageFee + mortgageRegistrationFee
+  );
   const totalInitialCashRequired = Math.round(downPaymentAED + totalUpfrontFees);
 
   const netAnnualIncomeAED = Math.round(annualRentAED * (1 - maintenanceCostPct / 100));
@@ -157,7 +160,8 @@ export const ToolsDashboard: React.FC = () => {
         <SectionBadge>⚡ GAMIFIED FINTECH & INVESTMENT SUITE</SectionBadge>
         <Title>Interactive Financial & UAE Mortgage Calculators</Title>
         <Subtitle style={{ margin: '0 auto 32px' }}>
-          Simulate your Dubai property mortgage, statutory DLD fees, net rental yield, and cash flow in real-time.
+          Simulate your Dubai property mortgage, statutory DLD fees, net rental yield, and cash flow
+          in real-time.
         </Subtitle>
       </div>
 
@@ -172,6 +176,7 @@ export const ToolsDashboard: React.FC = () => {
             </LabelFlex>
             <Slider
               type="range"
+              aria-label="Property acquisition value"
               min={1000000}
               max={25000000}
               step={250000}
@@ -187,6 +192,7 @@ export const ToolsDashboard: React.FC = () => {
             </LabelFlex>
             <Slider
               type="range"
+              aria-label="Down payment percentage"
               min={15}
               max={50}
               step={5}
@@ -202,6 +208,7 @@ export const ToolsDashboard: React.FC = () => {
             </LabelFlex>
             <Slider
               type="range"
+              aria-label="Loan duration in years"
               min={5}
               max={25}
               step={5}
@@ -217,6 +224,7 @@ export const ToolsDashboard: React.FC = () => {
             </LabelFlex>
             <Slider
               type="range"
+              aria-label="Mortgage interest rate"
               min={2.5}
               max={8.0}
               step={0.1}
@@ -230,17 +238,59 @@ export const ToolsDashboard: React.FC = () => {
             <MetricValue>AED {monthlyMortgageAED.toLocaleString()}/mo</MetricValue>
           </MetricBox>
 
-          <div style={{ marginTop: '14px', padding: '12px', background: 'var(--white, #FFFFFF)', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.15)', fontSize: '0.78rem' }}>
-            <div style={{ fontWeight: 800, color: 'var(--color-1e293b, #1E293B)', marginBottom: '4px' }}>🏛️ Statutory UAE Acquisition Outlay:</div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary, #64748B)' }}>
+          <div
+            style={{
+              marginTop: '14px',
+              padding: '12px',
+              background: 'var(--white, #FFFFFF)',
+              borderRadius: '12px',
+              border: '1px solid rgba(239, 68, 68, 0.15)',
+              fontSize: '0.78rem',
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 800,
+                color: 'var(--color-1e293b, #1E293B)',
+                marginBottom: '4px',
+              }}
+            >
+              🏛️ Statutory UAE Acquisition Outlay:
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                color: 'var(--text-secondary, #64748B)',
+              }}
+            >
               <span>DLD 4% Transfer + Admin:</span>
               <strong>AED {(dldTransferFee + dldAdminFee).toLocaleString()}</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary, #64748B)', marginTop: '2px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                color: 'var(--text-secondary, #64748B)',
+                marginTop: '2px',
+              }}
+            >
               <span>Brokerage (2% + 5% VAT) + Reg:</span>
-              <strong>AED {Math.round(agencyBrokerageFee + mortgageRegistrationFee).toLocaleString()}</strong>
+              <strong>
+                AED {Math.round(agencyBrokerageFee + mortgageRegistrationFee).toLocaleString()}
+              </strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--primary-red, #EF4444)', fontWeight: 800, marginTop: '4px', borderTop: '1px solid var(--text-secondary, #E2E8F0)', paddingTop: '4px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                color: RED_TEXT,
+                fontWeight: 800,
+                marginTop: '4px',
+                borderTop: '1px solid var(--text-secondary, #E2E8F0)',
+                paddingTop: '4px',
+              }}
+            >
               <span>Total Initial Cash Required:</span>
               <span>AED {totalInitialCashRequired.toLocaleString()}</span>
             </div>
@@ -257,6 +307,7 @@ export const ToolsDashboard: React.FC = () => {
             </LabelFlex>
             <Slider
               type="range"
+              aria-label="Expected annual rent"
               min={60000}
               max={1500000}
               step={10000}
@@ -272,6 +323,7 @@ export const ToolsDashboard: React.FC = () => {
             </LabelFlex>
             <Slider
               type="range"
+              aria-label="Service charges and maintenance percentage"
               min={2}
               max={15}
               step={1}
@@ -287,7 +339,9 @@ export const ToolsDashboard: React.FC = () => {
 
           <MetricBox>
             <MetricLabel>Estimated Net ROI Yield</MetricLabel>
-            <MetricValue style={{ color: 'var(--accent-green, #10B981)' }}>{netRoiPct}% Net</MetricValue>
+            <MetricValue style={{ color: 'var(--text-green, #047857)' }}>
+              {netRoiPct}% Net
+            </MetricValue>
           </MetricBox>
 
           <MetricBox style={{ background: 'rgba(239, 68, 68, 0.08)' }}>

@@ -204,6 +204,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         <motion.div
           className="luxury-hero__market-ribbon"
           variants={heroItemVariants}
+          role="group"
           aria-label={copy.marketLabel}
         >
           {marketAreas.map((area, index) => (
@@ -231,6 +232,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         <motion.div
           className="luxury-hero__search-wrapper"
           variants={heroItemVariants}
+          role="group"
           aria-label={copy.searchAction}
         >
           <button
@@ -319,10 +321,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
               <div className="luxury-hero__stat-icon" aria-hidden="true">
                 <StatIcon icon={stat.icon} />
               </div>
-              <div
-                className="luxury-hero__stat-number"
-                aria-label={`${stat.number}${stat.suffix} ${stat.label}`}
-              >
+              <div className="luxury-hero__stat-number">
                 {isLoading ? (
                   <span className="luxury-hero__stat-skeleton" aria-hidden="true" />
                 ) : (
@@ -336,11 +335,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
                 )}
               </div>
               <div className="luxury-hero__stat-label">{stat.label}</div>
-              {stat.sublabel && (
-                <div className="luxury-hero__stat-sublabel" aria-label={stat.sublabel}>
-                  {stat.sublabel}
-                </div>
-              )}
+              {stat.sublabel && <div className="luxury-hero__stat-sublabel">{stat.sublabel}</div>}
             </motion.div>
           ))}
         </motion.div>
@@ -348,6 +343,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         <motion.div
           className="luxury-hero__trust-strip"
           variants={heroItemVariants}
+          role="group"
           aria-label={copy.trustLabel}
         >
           <div className="luxury-hero__trust-badge">

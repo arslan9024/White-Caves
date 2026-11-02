@@ -215,7 +215,7 @@
 .public-navbar__crm-btn {
   text-decoration: none;
   background: #ef4444;
-  color: #ffffff !important;
+  color: #000000 !important;
   border: 1px solid #dc2626;
   border-radius: 0.55rem;
   padding: 0.46rem 0.88rem;

@@ -208,7 +208,7 @@ export default function CompanyProfile() {
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      color: 'var(--whatsapp-color)',
+                      color: '#047857',
                       textDecoration: 'none',
                       fontWeight: 700,
                     }}
