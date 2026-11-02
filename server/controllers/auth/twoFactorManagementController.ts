@@ -14,7 +14,6 @@ import { generateTOTPSecret, generateBackupCodes, verifyTOTP } from './totpUtils
 import { db, verifyPassword, getClientIp } from './authCommon.js';
 
 export const setup2faHandler =   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const db = prisma as any;
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
@@ -31,7 +30,7 @@ export const setup2faHandler =   asyncHandler(async (req: AuthRequest, res: Resp
     const pendingToken = jwt.sign({ userId, totpSecret: secret }, JWT_SECRET, { expiresIn: 600 });
 
     // Mark twoFactorEnabled as false to indicate setup is in progress
-    await (prisma as any).user.update({
+    await db.user.update({
       where: { id: userId },
       data: { twoFactorEnabled: false },
     });
@@ -105,7 +104,6 @@ export const enable2faHandler =   asyncHandler(async (req: AuthRequest, res: Res
   });
 
 export const disable2faHandler =   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const db = prisma as any;
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
@@ -195,7 +193,6 @@ export const disable2faHandler =   asyncHandler(async (req: AuthRequest, res: Re
   });
 
 export const status2faHandler =   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const db = prisma as any;
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 

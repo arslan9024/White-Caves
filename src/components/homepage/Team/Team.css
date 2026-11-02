@@ -40,11 +40,11 @@
   gap: 4px;
   padding: 4px 10px;
   border-radius: 20px;
-  background: linear-gradient(135deg, #E31E24, #B71C1C);
+  background: linear-gradient(135deg, #e31e24, #b71c1c);
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(227, 30, 36,0.4);
+  box-shadow: 0 2px 8px rgba(227, 30, 36, 0.4);
   pointer-events: none;
 }
 
@@ -52,7 +52,7 @@
 .social-link--whatsapp {
   background: rgba(37, 211, 102, 0.2) !important;
   border-color: rgba(37, 211, 102, 0.4) !important;
-  color: #25D366 !important;
+  color: #25d366 !important;
 }
 
 .team-image {
@@ -69,11 +69,7 @@
 .team-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(46, 90, 79, 0.9) 0%,
-    transparent 60%
-  );
+  background: linear-gradient(to top, rgba(46, 90, 79, 0.9) 0%, transparent 60%);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -135,6 +131,24 @@
   color: var(--text-secondary);
   line-height: 1.5;
   margin-bottom: 1rem;
+}
+
+.team-profile-button {
+  margin-bottom: 1rem;
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  border: 1px solid var(--text-primary);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.team-profile-button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 .team-skills {
@@ -203,22 +217,21 @@
   .team-section {
     padding: 4rem 0;
   }
-  
+
   .team-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .team-image-wrapper {
     height: 250px;
   }
-  
+
   .team-cta {
     padding: 2rem 1.5rem;
   }
-  
+
   .team-cta h3 {
     font-size: 1.5rem;
   }
 }
-

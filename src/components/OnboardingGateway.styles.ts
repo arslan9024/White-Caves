@@ -37,7 +37,7 @@ export const StyledGatewayTitle = styled.h2`
 export const StyledGatewaySubtitle = styled.p`
   font-family: ${typography.fontFamily.primary};
   font-size: 1.125rem;
-  color: var(--text-muted, #757575);
+  color: #4b5563;
   max-width: 500px;
   margin: 0 auto;
 
@@ -68,7 +68,12 @@ export const StyledRoleTilesGrid = styled.div`
   }
 `;
 
-export const StyledOnboardingRoleTile = styled.div<{ $roleColor: string; $isSelected: boolean; $isFadingOut: boolean; $animationDelay?: string }>`
+export const StyledOnboardingRoleTile = styled.div<{
+  $roleColor: string;
+  $isSelected: boolean;
+  $isFadingOut: boolean;
+  $animationDelay?: string;
+}>`
   background: var(--bg-primary, #ffffff);
   border: 2px solid var(--border-color, #e0e0e0);
   border-radius: var(--radius-xl, 1rem);
@@ -79,15 +84,18 @@ export const StyledOnboardingRoleTile = styled.div<{ $roleColor: string; $isSele
   position: relative;
   overflow: hidden;
   animation: fadeInUp 0.6s ease forwards;
-  opacity: ${props => props.$isFadingOut ? 0.4 : 1};
-  transform: ${props => props.$isFadingOut ? 'scale(0.95)' : 'scale(1)'};
+  opacity: ${props => (props.$isFadingOut ? 0.4 : 1)};
+  transform: ${props => (props.$isFadingOut ? 'scale(0.95)' : 'scale(1)')};
   animation-delay: ${props => props.$animationDelay || '0ms'};
-  border-color: ${props => props.$isSelected ? props.$roleColor : 'var(--border-color, #e0e0e0)'};
-  box-shadow: ${props => props.$isSelected ? `0 0 0 3px rgba(${parseInt(props.$roleColor.slice(1, 3), 16)}, ${parseInt(props.$roleColor.slice(3, 5), 16)}, ${parseInt(props.$roleColor.slice(5, 7), 16)}, 0.2)` : 'none'};
+  border-color: ${props => (props.$isSelected ? props.$roleColor : 'var(--border-color, #e0e0e0)')};
+  box-shadow: ${props =>
+    props.$isSelected
+      ? `0 0 0 3px rgba(${parseInt(props.$roleColor.slice(1, 3), 16)}, ${parseInt(props.$roleColor.slice(3, 5), 16)}, ${parseInt(props.$roleColor.slice(5, 7), 16)}, 0.2)`
+      : 'none'};
 
   [data-theme='dark'] & {
     background: #2d3748;
-    border-color: ${props => props.$isSelected ? props.$roleColor : '#4a5568'};
+    border-color: ${props => (props.$isSelected ? props.$roleColor : '#4a5568')};
   }
 
   &:hover {
@@ -98,11 +106,9 @@ export const StyledOnboardingRoleTile = styled.div<{ $roleColor: string; $isSele
 
   @keyframes fadeInUp {
     from {
-      opacity: 0;
       transform: translateY(20px);
     }
     to {
-      opacity: 1;
       transform: translateY(0);
     }
   }
@@ -168,7 +174,7 @@ export const StyledTileSubtitle = styled.p<{ $roleColor: string }>`
 
 export const StyledTileDescription = styled.p`
   font-size: 0.875rem;
-  color: var(--text-muted, #757575);
+  color: #4b5563;
   line-height: 1.5;
 
   [data-theme='dark'] & {
@@ -185,7 +191,7 @@ export const StyledTileArrow = styled.div<{ $roleColor: string }>`
   margin: 0 auto;
   background: var(--bg-secondary, #f5f5f5);
   border-radius: 50%;
-  color: var(--text-muted, #757575);
+  color: #4b5563;
   transition: ${transitions.all};
 
   [data-theme='dark'] & {
@@ -213,7 +219,7 @@ export const StyledGatewayFooter = styled.div`
 
 export const StyledFooterText = styled.p`
   font-size: 0.95rem;
-  color: var(--text-muted, #757575);
+  color: #4b5563;
 
   [data-theme='dark'] & {
     color: #cbd5e0;
@@ -221,7 +227,7 @@ export const StyledFooterText = styled.p`
 `;
 
 export const StyledFooterLink = styled.a`
-  color: var(--primary-color, ${colors.primary});
+  color: #b91c1c;
   font-weight: ${typography.weights.semibold};
   text-decoration: none;
   transition: color 0.2s ease;

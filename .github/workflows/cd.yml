@@ -87,7 +87,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
   smoke-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: deploy-staging
     if: success()
     timeout-minutes: 35

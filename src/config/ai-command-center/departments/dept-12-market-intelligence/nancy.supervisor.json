@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "nancy",
+  "name": "Nancy",
+  "gender": "Female",
+  "title": "Sub-Cluster Capital Growth Predictor",
+  "supervisorSlot": 1,
+  "department": {
+    "code": "DEPT-12",
+    "name": "Market Intelligence & IoT Data Science"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Elena"
+  },
+  "assignedTasks": [
+    "Sub-Cluster Capital Growth Models",
+    "Seasonal Demand Wave Forecasting",
+    "Rental Yield Degradation Warning"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

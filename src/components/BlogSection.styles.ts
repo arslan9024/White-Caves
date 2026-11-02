@@ -103,7 +103,7 @@ export const PostCategory = styled.span`
   top: 16px;
   left: 16px;
   background: var(--primary, ${colors.primary});
-  color: white;
+  color: #111827;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 0.8rem;
@@ -145,12 +145,16 @@ export const FeaturedContent = styled.div`
 export const PostMeta = styled.div`
   margin-bottom: 12px;
   font-size: 0.85rem;
-  color: var(--text-muted, #9ca3af);
+  color: #4b5563;
 `;
 
 export const PostAuthor = styled.span`
   font-weight: ${typography.weights.medium};
-  color: var(--primary, #c9a962);
+  color: #735f24;
+
+  @media (prefers-color-scheme: dark) {
+    color: #f2d675;
+  }
 `;
 
 export const ReadMoreBtn = styled.button`
@@ -158,7 +162,7 @@ export const ReadMoreBtn = styled.button`
   margin-top: 16px;
   padding: 10px 20px;
   background: var(--primary, #c9a962);
-  color: white;
+  color: #111827;
   border: none;
   border-radius: ${radius.lg};
   font-size: 0.9rem;
@@ -168,6 +172,7 @@ export const ReadMoreBtn = styled.button`
 
   &:hover {
     background: ${colors.primaryDark};
+    color: white;
     transform: translateX(4px);
   }
 `;
@@ -186,7 +191,7 @@ export const FilterBtn = styled.button<{ $isActive?: boolean }>`
     props.$isActive ? 'var(--primary, #c9a962)' : 'var(--surface-alt, #f5f5f7)'};
   border: none;
   border-radius: 25px;
-  color: ${props => (props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)')};
+  color: ${props => (props.$isActive ? '#111827' : '#4b5563')};
   font-size: 0.9rem;
   font-weight: ${typography.weights.medium};
   cursor: pointer;
@@ -201,6 +206,7 @@ export const FilterBtn = styled.button<{ $isActive?: boolean }>`
   &:hover {
     background: ${props =>
       props.$isActive ? colors.primaryDark : 'var(--surface-hover, #e5e5e7)'};
+    color: ${props => (props.$isActive ? 'white' : '#374151')};
 
     @media (prefers-color-scheme: dark) {
       background: ${props => (props.$isActive ? colors.primaryDark : 'rgba(255, 255, 255, 0.1)')};
@@ -261,7 +267,7 @@ export const BlogCardContent = styled.div`
 export const BlogCardCategory = styled.span`
   display: inline-block;
   background: var(--primary, ${colors.primary});
-  color: white;
+  color: #111827;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
@@ -287,7 +293,7 @@ export const BlogCardMeta = styled.div`
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  color: var(--text-muted, #9ca3af);
+  color: #4b5563;
   padding-top: 12px;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 
@@ -301,7 +307,7 @@ export const LoadMoreBtn = styled.button`
   margin: 40px auto 0;
   padding: 12px 32px;
   background: var(--primary, #c9a962);
-  color: white;
+  color: #111827;
   border: none;
   border-radius: ${radius.lg};
   font-size: 0.95rem;
@@ -311,6 +317,7 @@ export const LoadMoreBtn = styled.button`
 
   &:hover {
     background: ${colors.primaryDark};
+    color: white;
     transform: translateY(-2px);
   }
 `;
@@ -323,13 +330,17 @@ export const CardFooter = styled.div`
 `;
 
 export const ReadMoreLink = styled.a`
-  color: var(--primary-color, ${colors.primary});
+  color: #735f24;
   text-decoration: none;
   font-weight: ${typography.weights.medium};
   transition: opacity 0.2s ease;
 
   &:hover {
     opacity: 0.8;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color: #f2d675;
   }
 `;
 

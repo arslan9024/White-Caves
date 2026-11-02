@@ -32,7 +32,10 @@ const CountUp: React.FC<CountUpProps> = ({ end, duration = 1600, format }) => {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    if (end === 0) { setValue(0); return; }
+    if (end === 0) {
+      setValue(0);
+      return;
+    }
     let start = 0;
     const step = end / (duration / 16);
     const timer = setInterval(() => {
@@ -50,7 +53,7 @@ const CountUp: React.FC<CountUpProps> = ({ end, duration = 1600, format }) => {
 
 const formatAED = (n: number): string => {
   if (n >= 1_000_000_000) return `AED ${(n / 1_000_000_000).toFixed(1)}B`;
-  if (n >= 1_000_000)     return `AED ${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(1)}M`;
   return `AED ${n.toLocaleString()}`;
 };
 
@@ -70,7 +73,10 @@ const DEFAULT_MARKET_STATS: MarketStats = {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-const MarketStatsBanner: React.FC<MarketStatsBannerProps> = ({ marketStats, isLoading = false }) => {
+const MarketStatsBanner: React.FC<MarketStatsBannerProps> = ({
+  marketStats,
+  isLoading = false,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const effectiveStats = marketStats || DEFAULT_MARKET_STATS;
 
@@ -131,8 +137,10 @@ const MarketStatsBanner: React.FC<MarketStatsBannerProps> = ({ marketStats, isLo
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: i * 0.07 }}
             >
-              <span className="msb-icon" aria-hidden="true">{stat.icon}</span>
-              <span className="msb-value" aria-label={`${stat.label}: ${stat.format(stat.value)}`}>
+              <span className="msb-icon" aria-hidden="true">
+                {stat.icon}
+              </span>
+              <span className="msb-value">
                 {isLoading ? (
                   <span className="msb-skeleton" aria-hidden="true" />
                 ) : (
@@ -149,4 +157,3 @@ const MarketStatsBanner: React.FC<MarketStatsBannerProps> = ({ marketStats, isLo
 };
 
 export default MarketStatsBanner;
-

@@ -7,6 +7,6 @@ describe('ApplicationsTab Component', () => {
   it('renders ApplicationsTab component without crashing', () => {
     const { container } = render(<ApplicationsTab systemComponents={[]} />);
     expect(container).toBeDefined();
-    expect(screen.getByText('Application Deployments')).toBeDefined();
+    expect(screen.getByText('Applications & Deployments')).toBeDefined();
   });
 });

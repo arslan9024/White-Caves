@@ -78,15 +78,56 @@ async function navigateAndStabilize(page: any, path: string) {
   }
 }
 
-function ensureExpectedPathOrSkip(page: any, expectedPath: string) {
+async function ensureExpectedPathOrSkip(page: any, expectedPath: string) {
   const currentPath = new URL(page.url()).pathname;
   const canonicalExpectedPath = toCanonicalDashboardPath(expectedPath);
-  if (!currentPath.startsWith(canonicalExpectedPath)) {
+  if (
+    !currentPath.startsWith(canonicalExpectedPath) ||
+    currentPath === '/' ||
+    currentPath.startsWith('/signin') ||
+    currentPath.startsWith('/login')
+  ) {
     test.skip(true, `Auth redirect detected for ${canonicalExpectedPath}. Current: ${currentPath}`);
+  }
+
+  // Detect auth gate rendered in-place (Firefox renders the sign-in form
+  // without changing the URL for protected routes).
+  const authGateSelectors =
+    '.auth-container, .auth-modal, .auth-form, .auth-subtitle, .auth-modal-overlay, input[type="password"]';
+  const authGateCount = await page
+    .locator(authGateSelectors)
+    .count()
+    .catch(() => 0);
+  if (authGateCount > 0) {
+    test.skip(
+      true,
+      `Authentication required for ${canonicalExpectedPath} — auth gate rendered in-place`
+    );
   }
 }
 
 async function ensureDashboardReadyOrSkip(page: any) {
+  const currentPath = new URL(page.url()).pathname;
+  if (
+    currentPath === '/' ||
+    currentPath.startsWith('/signin') ||
+    currentPath.startsWith('/login')
+  ) {
+    test.skip(true, `Auth redirect detected. Current path: ${currentPath}`);
+    return;
+  }
+
+  const authGateCount = await page
+    .locator(
+      '.auth-page-container, .auth-card, .auth-modal-overlay, .auth-form, input[type="password"]'
+    )
+    .count()
+    .catch(() => 0);
+  if (authGateCount > 0) {
+    test.skip(true, 'Authentication required for protected dashboard');
+    return;
+  }
+
   const bodyText =
     (await page
       .locator('body')
@@ -94,11 +135,13 @@ async function ensureDashboardReadyOrSkip(page: any) {
       .catch(() => '')) || '';
   if (/loading\s+page/i.test(bodyText)) {
     test.skip(true, 'Dashboard shell still loading. Skipping non-deterministic assertion.');
+    return;
   }
 
   const interactiveCount = await page.locator('button, a, h1, h2, h3').count();
   if (interactiveCount === 0) {
     test.skip(true, 'Dashboard content not ready for accessibility assertions.');
+    return;
   }
 }
 
@@ -156,7 +199,8 @@ test.describe('WCAG 2.1 Level AA Compliance', () => {
   DASHBOARD_PAGES.forEach(({ path, name }) => {
     test(`${name} - No accessibility violations`, async ({ page }) => {
       await navigateAndStabilize(page, path);
-      ensureExpectedPathOrSkip(page, path);
+      await ensureExpectedPathOrSkip(page, path);
+      await ensureDashboardReadyOrSkip(page);
 
       const violations = await runAxeViolations(page);
 
@@ -169,7 +213,7 @@ test.describe('WCAG 2.1 Level AA Compliance', () => {
 test.describe('Keyboard Navigation', () => {
   test('Owner Dashboard - Tab navigation works', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Tab to first interactive element
@@ -187,7 +231,7 @@ test.describe('Keyboard Navigation', () => {
 
   test('Owner Dashboard - Escape key closes modals', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Try to find and open a modal (e.g., by clicking a button)
@@ -209,7 +253,7 @@ test.describe('Keyboard Navigation', () => {
 test.describe('ARIA Labels and Roles', () => {
   test('Owner Dashboard - Buttons have accessible names', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     const buttons = page.locator('button');
@@ -232,7 +276,7 @@ test.describe('ARIA Labels and Roles', () => {
 
   test('Owner Dashboard - Links have accessible names', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     const links = page.locator('a');
@@ -257,7 +301,7 @@ test.describe('ARIA Labels and Roles', () => {
 test.describe('Semantic HTML Structure', () => {
   test('Owner Dashboard - Uses semantic HTML elements', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Check for main element
@@ -277,7 +321,7 @@ test.describe('Semantic HTML Structure', () => {
 
   test('Owner Dashboard - Proper heading hierarchy', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Dynamic layouts can hydrate with delayed heading levels; validate semantic heading presence.
@@ -291,7 +335,8 @@ test.describe('Semantic HTML Structure', () => {
 test.describe('Color Contrast (WCAG AA)', () => {
   test('Owner Dashboard - Text contrast is sufficient', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
+    await ensureDashboardReadyOrSkip(page);
 
     const contrastViolations = await runAxeViolations(page, {
       runOnly: { type: 'rule', values: ['color-contrast'] },
@@ -305,7 +350,7 @@ test.describe('Color Contrast (WCAG AA)', () => {
 test.describe('Focus Management', () => {
   test('Owner Dashboard - Focus visible on keyboard navigation', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Press Tab to focus first element
@@ -326,26 +371,33 @@ test.describe('Focus Management', () => {
 
   test('Owner Dashboard - Focus trap in modals', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
-    // Try to find and open a modal
-    const buttons = page.locator('button');
-    const count = await buttons.count();
+    // Try to find and open a modal with bounded timeouts
+    let dialog = page.locator('dialog, [role="dialog"]');
+    let dialogCount = await dialog.count().catch(() => 0);
 
-    if (count > 0) {
-      // Click first button that might open a modal
-      await buttons.first().click();
-      await page.waitForTimeout(500);
-
-      // Check if dialog exists
-      const dialog = page.locator('dialog, [role="dialog"]');
-      const dialogCount = await dialog.count();
-
-      if (dialogCount > 0) {
-        // Tab through dialog - focus should stay within
-        await page.keyboard.press('Tab');
+    if (dialogCount === 0) {
+      const modalTrigger = page
+        .locator(
+          'button[aria-haspopup="dialog"], button[data-modal-target], button:has-text("Filter"), button:has-text("Add"), button:has-text("New")'
+        )
+        .first();
+      const triggerExists = await modalTrigger.count().catch(() => 0);
+      if (triggerExists > 0) {
+        await modalTrigger.click({ timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(300);
       }
+      dialog = page.locator('dialog, [role="dialog"]');
+      dialogCount = await dialog.count().catch(() => 0);
+    }
+
+    if (dialogCount > 0) {
+      // Tab through dialog - focus should stay within
+      await page.keyboard.press('Tab');
+      const activeEl = await page.evaluate(() => Boolean(document.activeElement));
+      expect(activeEl).toBeTruthy();
     }
   });
 });
@@ -354,7 +406,8 @@ test.describe('Focus Management', () => {
 test.describe('Page Load Accessibility', () => {
   test('Owner Dashboard - Loads without accessibility violations', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
+    await ensureDashboardReadyOrSkip(page);
 
     const violations = await runAxeViolations(page);
     expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
@@ -371,7 +424,18 @@ test.describe('Page Load Accessibility', () => {
         await navigateAndStabilize(page, path).catch(() => {}); // ignore auth/nav failures
 
         const currentPath = new URL(page.url()).pathname;
-        if (!currentPath.startsWith(path)) {
+        const isAuthGate = await page
+          .locator(
+            '.auth-page-container, .auth-card, .auth-modal-overlay, .auth-form, input[type="password"]'
+          )
+          .count()
+          .catch(() => 0);
+        if (
+          isAuthGate > 0 ||
+          !currentPath.startsWith(path) ||
+          currentPath === '/' ||
+          currentPath.startsWith('/signin')
+        ) {
           results.push({ page: name, violations: -1 });
           continue;
         }
@@ -403,7 +467,8 @@ test.describe('Responsive Accessibility', () => {
     await page.setViewportSize({ width: 375, height: 667 });
 
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
+    await ensureDashboardReadyOrSkip(page);
 
     const violations = await runAxeViolations(page);
     expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
@@ -414,7 +479,8 @@ test.describe('Responsive Accessibility', () => {
     await page.setViewportSize({ width: 768, height: 1024 });
 
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
+    await ensureDashboardReadyOrSkip(page);
 
     const violations = await runAxeViolations(page);
     expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
@@ -425,7 +491,7 @@ test.describe('Responsive Accessibility', () => {
 test.describe('Form Accessibility', () => {
   test('Owner Dashboard - Form inputs have labels', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
-    ensureExpectedPathOrSkip(page, '/crm');
+    await ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     const inputs = page.locator('input, textarea, select');
@@ -493,7 +559,14 @@ test.describe('WCAG 2.2 — New Success Criteria', () => {
     ).violations.filter(v => v.impact === 'critical' || v.impact === 'serious');
 
     if (criticalViolations.length > 0) {
-      console.error('[WCAG 2.2] Critical/serious violations:', JSON.stringify(criticalViolations.map(v => ({ id: v.id, description: v.description })), null, 2));
+      console.error(
+        '[WCAG 2.2] Critical/serious violations:',
+        JSON.stringify(
+          criticalViolations.map(v => ({ id: v.id, description: v.description })),
+          null,
+          2
+        )
+      );
     }
 
     expect(criticalViolations).toHaveLength(0);

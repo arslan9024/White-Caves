@@ -1,0 +1,196 @@
+import { Router, Request, Response } from 'express';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import { AuthRequest } from '../middleware/auth.js';
+import { requirePermission } from '../middleware/rbac.js';
+import { DepartmentNode } from '../../src/models/DepartmentNode.js';
+import { Personnel } from '../../src/models/Personnel.js';
+import { TeamSquad } from '../../src/models/TeamSquad.js';
+import {
+  renameDepartmentNode,
+  reorderDepartmentNodes,
+  createSubDepartment,
+  createTeamSquad,
+  renameTeamSquad,
+  assignMemberToSquad,
+  promoteDemotePersonnel,
+  updateAIPersonaPrompt,
+} from '../../src/app/(dashboard)/departments/actions.js';
+
+const router = Router();
+type CorporateRouteRequest = Request<Record<string, string>>;
+type AuthCorporateRouteRequest = CorporateRouteRequest & Pick<AuthRequest, 'user'>;
+
+// GET /api/corporate-departments - list all 12 corporate departments with subDepts count and headcount
+router.get(
+  '/',
+  requirePermission('manage_hr', 'manage_agents'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const departments = await DepartmentNode.find({ level: 'DEPARTMENT' })
+      .sort({ order: 1 })
+      .populate({ path: 'directorOrManagerId', select: 'fullName role' });
+
+    const result = await Promise.all(
+      departments.map(async dept => {
+        const subDepts = await DepartmentNode.find({ parentDeptId: dept._id });
+        const subDeptIds = subDepts.map(s => s._id);
+        const squads = await TeamSquad.find({ subDepartmentId: { $in: subDeptIds } });
+        const headcount = await Personnel.countDocuments({
+          $or: [{ departmentId: dept._id }, { subDepartmentId: { $in: subDeptIds } }],
+          status: 'ACTIVE',
+        });
+
+        return {
+          ...dept.toObject(),
+          subDeptsCount: subDepts.length,
+          squadsCount: squads.length,
+          headcount,
+        };
+      })
+    );
+
+    res.json({ success: true, data: result });
+  })
+);
+
+// GET /api/corporate-departments/standby - unassigned standby roster
+router.get(
+  '/standby',
+  requirePermission('manage_hr', 'manage_agents'),
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    const baseFields = '_id employeeId fullName role employmentType isVirtual title status';
+    const userEmail = req.user?.email.trim().toLowerCase();
+    const superUserEmail = process.env.SUPER_USER_EMAIL?.trim().toLowerCase();
+    const isSuperUser = Boolean(userEmail && superUserEmail && userEmail === superUserEmail);
+    const fields = isSuperUser ? `${baseFields} systemPrompt` : baseFields;
+    const standbyList = await Personnel.find({ status: 'STANDBY' })
+      .select(fields)
+      .sort({ updatedAt: -1 });
+    res.json({ success: true, data: standbyList });
+  })
+);
+
+// GET /api/corporate-departments/:slug - get department container data with subDepts and squads
+router.get(
+  '/:slug',
+  requirePermission('manage_hr', 'manage_agents'),
+  asyncHandler(async (req: CorporateRouteRequest, res: Response) => {
+    const dept = await DepartmentNode.findOne({
+      slug: req.params.slug.toLowerCase().trim(),
+      level: 'DEPARTMENT',
+    }).populate({ path: 'directorOrManagerId', select: 'fullName role' });
+
+    if (!dept) throw new AppError('Corporate department not found', 404);
+
+    const subDepts = await DepartmentNode.find({ parentDeptId: dept._id }).sort({ order: 1 });
+    const subDeptIds = subDepts.map(s => s._id);
+    const squads = await TeamSquad.find({ subDepartmentId: { $in: subDeptIds } })
+      .sort({ order: 1 })
+      .populate({ path: 'supervisorId', select: 'employeeId fullName role isVirtual title' });
+
+    const squadIds = squads.map(sq => sq._id);
+    const members = await Personnel.find({ teamSquadId: { $in: squadIds } }).select(
+      '_id employeeId fullName role employmentType isVirtual title status teamSquadId'
+    );
+
+    res.json({
+      success: true,
+      data: {
+        department: dept,
+        subDepartments: subDepts,
+        squads,
+        members,
+      },
+    });
+  })
+);
+
+// Mutations
+router.patch(
+  '/:nodeId/rename',
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    const updated = await renameDepartmentNode(
+      req.params.nodeId,
+      req.body.newTitle,
+      req.user?.email
+    );
+    res.json({ success: true, data: updated });
+  })
+);
+
+router.post(
+  '/reorder',
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    await reorderDepartmentNodes(req.body.orderedIds, req.user?.email);
+    res.json({ success: true, message: 'Departments reordered successfully' });
+  })
+);
+
+router.post(
+  '/:parentDeptId/sub-departments',
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    const { title, slug, code } = req.body;
+    const subDept = await createSubDepartment(
+      req.params.parentDeptId,
+      title,
+      slug,
+      code,
+      req.user?.email
+    );
+    res.status(201).json({ success: true, data: subDept });
+  })
+);
+
+router.post(
+  '/squads',
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    const { subDepartmentId, name, supervisorId } = req.body;
+    const squad = await createTeamSquad(subDepartmentId, name, supervisorId, req.user?.email);
+    res.status(201).json({ success: true, data: squad });
+  })
+);
+
+router.patch(
+  '/squads/:squadId/rename',
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    const squad = await renameTeamSquad(req.params.squadId, req.body.newName, req.user?.email);
+    res.json({ success: true, data: squad });
+  })
+);
+
+router.patch(
+  '/personnel/:personnelId/assign',
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    const member = await assignMemberToSquad(
+      req.params.personnelId,
+      req.body.targetSquadId ?? null,
+      req.user?.email
+    );
+    res.json({ success: true, data: member });
+  })
+);
+
+router.patch(
+  '/personnel/:personnelId/role',
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    const member = await promoteDemotePersonnel(
+      req.params.personnelId,
+      req.body.newRole,
+      req.user?.email
+    );
+    res.json({ success: true, data: member });
+  })
+);
+
+router.patch(
+  '/personnel/:personnelId/prompt',
+  asyncHandler(async (req: AuthCorporateRouteRequest, res: Response) => {
+    const member = await updateAIPersonaPrompt(
+      req.params.personnelId,
+      req.body.newPrompt,
+      req.user?.email
+    );
+    res.json({ success: true, data: member });
+  })
+);
+
+export default router;

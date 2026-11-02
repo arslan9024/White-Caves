@@ -16,4 +16,9 @@ describe('PublicFooter Component', () => {
     expect(screen.getByText('Contact Head Office')).toBeDefined();
     expect(screen.getByText('Dubai Market Intelligence')).toBeDefined();
   });
+
+  it('labels the investor email field for assistive technology', () => {
+    render(<PublicFooter />);
+    expect(screen.getByRole('textbox', { name: 'Investor email address' })).toBeDefined();
+  });
 });

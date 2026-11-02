@@ -8,7 +8,7 @@ describe('OffMarketLeadRouter', () => {
     render(<OffMarketLeadRouter />);
 
     expect(screen.getByTestId('off-market-lead-router')).toBeDefined();
-    expect(screen.getByText(/Off-Market Ultra-Luxury Lead Router/i)).toBeDefined();
-    expect(screen.getByText(/LEVEL 5 SOVEREIGN ACCESS/i)).toBeDefined();
+    expect(screen.getByText(/Off-Market Exclusive Lead Router/i)).toBeDefined();
+    expect(screen.getByText(/Level 5 Access Required/i)).toBeDefined();
   });
 });

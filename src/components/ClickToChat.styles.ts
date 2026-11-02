@@ -24,26 +24,25 @@ export const ChatTrigger = styled.button<{ $expanded?: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: ${props => props.$expanded 
-    ? 'var(--text-secondary, #6b7280)' 
-    : 'linear-gradient(135deg, #25D366, #128C7E)'};
-  color: white;
+  background: ${props =>
+    props.$expanded
+      ? 'var(--text-secondary, #6b7280)'
+      : 'linear-gradient(135deg, #25D366, #128C7E)'};
+  color: ${props => (props.$expanded ? 'white' : '#111827')};
   border: none;
-  border-radius: ${props => props.$expanded ? '50%' : '50px'};
-  padding: ${props => props.$expanded ? '0.75rem' : '0.75rem 1.25rem'};
+  border-radius: ${props => (props.$expanded ? '50%' : '50px')};
+  padding: ${props => (props.$expanded ? '0.75rem' : '0.75rem 1.25rem')};
   cursor: pointer;
-  box-shadow: ${props => props.$expanded 
-    ? '0 4px 12px rgba(0, 0, 0, 0.15)' 
-    : '0 4px 20px rgba(37, 211, 102, 0.4)'};
+  box-shadow: ${props =>
+    props.$expanded ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 4px 20px rgba(37, 211, 102, 0.4)'};
   transition: ${transitions.all};
   font-weight: ${typography.weights.semibold};
   font-size: 0.9rem;
 
   &:hover {
     transform: scale(1.05);
-    box-shadow: ${props => props.$expanded 
-      ? '0 6px 16px rgba(0, 0, 0, 0.2)' 
-      : '0 6px 28px rgba(37, 211, 102, 0.5)'};
+    box-shadow: ${props =>
+      props.$expanded ? '0 6px 16px rgba(0, 0, 0, 0.2)' : '0 6px 28px rgba(37, 211, 102, 0.5)'};
   }
 `;
 
@@ -79,8 +78,8 @@ export const ChatHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  background: linear-gradient(135deg, #25D366, #128C7E);
-  color: white;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  color: #0b2418;
 `;
 
 export const ChatHeaderInfo = styled.div`
@@ -114,7 +113,7 @@ export const OnlineStatus = styled.div<{ $isOnline?: boolean }>`
     content: '';
     width: 8px;
     height: 8px;
-    background: ${props => props.$isOnline ? '#90EE90' : '#ffa500'};
+    background: ${props => (props.$isOnline ? '#90EE90' : '#ffa500')};
     border-radius: 50%;
     display: inline-block;
   }
@@ -123,7 +122,7 @@ export const OnlineStatus = styled.div<{ $isOnline?: boolean }>`
 export const CloseChat = styled.button`
   background: none;
   border: none;
-  color: white;
+  color: #0b2418;
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.25rem;
@@ -219,7 +218,7 @@ export const MessageInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #25D366;
+    border-color: #25d366;
     background: white;
 
     @media (prefers-color-scheme: dark) {
@@ -236,7 +235,7 @@ export const SendBtn = styled.button`
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #25D366;
+  background: #25d366;
   border: none;
   color: white;
   cursor: pointer;
@@ -246,7 +245,7 @@ export const SendBtn = styled.button`
   transition: ${transitions.hover};
 
   &:hover {
-    background: #128C7E;
+    background: #128c7e;
     transform: scale(1.05);
   }
 
@@ -268,7 +267,7 @@ export const ChatAppBtn = styled.button<{ $appColor?: string }>`
   background: ${props => props.$appColor || '#25D366'};
   border: none;
   border-radius: ${radius.lg};
-  color: white;
+  color: #111827;
   cursor: pointer;
   display: flex;
   flex-direction: column;

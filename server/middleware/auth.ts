@@ -63,13 +63,23 @@ const decodeJwt = (token: string): JwtPayload => {
 
 const mapJwtErrorToAppError = (error: unknown): AppError => {
   if (error instanceof jwt.TokenExpiredError) {
+    log.warn(`JWT expired at ${error.expiredAt?.toISOString?.()}`);
     return new AppError('Token expired', 401);
   }
 
+  if (error instanceof jwt.NotBeforeError) {
+    log.warn(`JWT not active until ${error.date?.toISOString?.()}`);
+    return new AppError('Token not yet active', 401);
+  }
+
   if (error instanceof jwt.JsonWebTokenError) {
+    log.warn(`JWT malformed: ${error.message}`);
     return new AppError('Invalid token', 401);
   }
 
+  log.error('Unexpected auth error', {
+    error: error instanceof Error ? error.message : String(error),
+  });
   return new AppError('Authentication failed', 401);
 };
 
@@ -107,11 +117,7 @@ function enrichFounderPayload(user: AuthUser): AuthUser {
   return user;
 }
 
-const authMiddleware = (
-  req: AuthRequest,
-  _res: Response,
-  next: NextFunction
-) => {
+const authMiddleware = (req: AuthRequest, _res: Response, next: NextFunction) => {
   try {
     const token = extractBearerToken(req.headers.authorization);
 
@@ -134,24 +140,12 @@ const authMiddleware = (
     req.user = enrichFounderPayload(authUser);
     next();
   } catch (error: unknown) {
-    // Structured JWT error classification
-    if (error instanceof jwt.TokenExpiredError) {
-      log.warn(`JWT expired at ${error.expiredAt?.toISOString?.()}`);
-      return next(new AppError('Token expired', 401));
-    } else if (error instanceof jwt.NotBeforeError) {
-      log.warn(`JWT not active until ${error.date?.toISOString?.()}`);
-      return next(new AppError('Token not yet active', 401));
-    } else if (error instanceof jwt.JsonWebTokenError) {
-      log.warn(`JWT malformed: ${error.message}`);
-      return next(new AppError('Invalid token', 401));
-    } else {
-      log.error('Unexpected auth error', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      return next(new AppError('Authentication failed', 401));
-    }
+    return next(mapJwtErrorToAppError(error));
   }
 };
 
-export default authMiddleware;
+export const authenticateToken = authMiddleware;
+export const verifyToken = authMiddleware;
+export { requireRole } from './rbac.js';
 
+export default authMiddleware;

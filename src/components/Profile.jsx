@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Profile.css';
+import { firebaseAuth as auth, isFirebaseConfigured, firebaseMissingReason } from '../auth/firebaseInit';
 import { updateUserProfile, updateUserEmail, updateUserPassword, verifyEmail, EmailAuthProvider, reauthenticateWithCredential } from '../config/firebase';
 import { useToast } from './Toast';
 

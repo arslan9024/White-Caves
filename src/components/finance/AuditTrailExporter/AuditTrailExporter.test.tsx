@@ -1,17 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { AuditTrailExporter } from './AuditTrailExporter';
 
 describe('AuditTrailExporter Component', () => {
-  it('renders corporate financial audit exporter and export options', () => {
+  it('renders the audit trail, filters entries, and records the selected export', () => {
     render(<AuditTrailExporter />);
     expect(screen.getByTestId('audit-trail-exporter')).toBeDefined();
-    expect(screen.getByText(/Corporate Financial & Escrow Audit Exporter/i)).toBeDefined();
-    expect(screen.getByText(/FTA & RERA EXPORT/i)).toBeDefined();
-    expect(screen.getByText(/Structured CSV Format/i)).toBeDefined();
-    expect(screen.getByText(/Microsoft Excel XML Workbook/i)).toBeDefined();
-    expect(screen.getByRole('button', { name: /Download Audit CSV/i })).toBeDefined();
-    expect(screen.getByRole('button', { name: /Download Excel Workbook/i })).toBeDefined();
+    expect(screen.getByText(/Corporate Audit Trail Exporter/i)).toBeDefined();
+    expect(screen.getByText(/CSV · Excel XML/i)).toBeDefined();
+
+    fireEvent.click(screen.getByRole('button', { name: 'READ' }));
+    expect(screen.getByText(/AML screening/i)).toBeDefined();
+    expect(screen.queryByText(/Landlord payout batch dispatched/i)).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: /Export CSV/i }));
+    expect(screen.getByRole('button', { name: /CSV Downloaded/i })).toBeDefined();
   });
 });

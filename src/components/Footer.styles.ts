@@ -131,7 +131,7 @@ export const AppBtn = styled.a<{ $platform?: 'whatsapp' | 'botim' | 'gochat' }>`
   font-size: 0.8rem;
   font-weight: ${typography.weights.semibold};
   text-decoration: none;
-  color: white;
+  color: #111827;
   transition: ${transitions.hover};
   background: ${props => {
     switch (props.$platform) {

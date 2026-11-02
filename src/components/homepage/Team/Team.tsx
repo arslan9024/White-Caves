@@ -108,7 +108,9 @@ const Team = ({ topAgents, isLoading: _isLoading = false }: TeamProps) => {
   // Close modal on Escape
   useEffect(() => {
     if (!selectedMember) return;
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelectedMember(null); };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedMember(null);
+    };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [selectedMember]);
@@ -166,12 +168,6 @@ const Team = ({ topAgents, isLoading: _isLoading = false }: TeamProps) => {
               className="team-card"
               variants={cardVariants}
               whileHover={{ y: -10 }}
-              onClick={() => setSelectedMember(member)}
-              role="button"
-              tabIndex={0}
-              style={{ cursor: 'pointer' }}
-              aria-label={`View ${member.name}'s profile`}
-              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedMember(member); } }}
             >
               <div className="team-image-wrapper">
                 <img
@@ -186,10 +182,7 @@ const Team = ({ topAgents, isLoading: _isLoading = false }: TeamProps) => {
                 />
                 {/* Deals badge — shown when agent data is live */}
                 {member.dealsCount !== undefined && member.dealsCount > 0 && (
-                  <div
-                    className="team-deals-badge"
-                    aria-label={`${member.dealsCount} deals closed`}
-                  >
+                  <div className="team-deals-badge">
                     <Star size={11} fill="currentColor" />
                     {member.dealsCount} Deals
                   </div>
@@ -240,6 +233,14 @@ const Team = ({ topAgents, isLoading: _isLoading = false }: TeamProps) => {
                 <h3 className="team-name">{member.name}</h3>
                 <p className="team-role">{member.role}</p>
                 <p className="team-bio">{member.bio}</p>
+                <button
+                  type="button"
+                  className="team-profile-button"
+                  onClick={() => setSelectedMember(member)}
+                  aria-label={`View ${member.name}'s profile`}
+                >
+                  View Profile
+                </button>
 
                 <div className="team-skills">
                   {member.skills.map(skill => (
@@ -276,9 +277,15 @@ const Team = ({ topAgents, isLoading: _isLoading = false }: TeamProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             style={{
-              position: 'fixed', inset: 0, zIndex: 1000,
-              background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
+              position: 'fixed',
+              inset: 0,
+              zIndex: 1000,
+              background: 'rgba(0,0,0,0.6)',
+              backdropFilter: 'blur(4px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
             }}
             onClick={() => setSelectedMember(null)}
             role="dialog"
@@ -291,8 +298,13 @@ const Team = ({ topAgents, isLoading: _isLoading = false }: TeamProps) => {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ duration: 0.25 }}
               style={{
-                background: '#fff', borderRadius: 16, padding: '2rem', maxWidth: 480,
-                width: '100%', position: 'relative', boxShadow: '0 25px 60px rgba(0,0,0,0.25)',
+                background: '#fff',
+                borderRadius: 16,
+                padding: '2rem',
+                maxWidth: 480,
+                width: '100%',
+                position: 'relative',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.25)',
               }}
               onClick={e => e.stopPropagation()}
             >
@@ -300,8 +312,14 @@ const Team = ({ topAgents, isLoading: _isLoading = false }: TeamProps) => {
                 onClick={() => setSelectedMember(null)}
                 aria-label="Close profile"
                 style={{
-                  position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none',
-                  cursor: 'pointer', color: '#6b7280', padding: 4,
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: 4,
                 }}
               >
                 <X size={20} />
@@ -310,44 +328,157 @@ const Team = ({ topAgents, isLoading: _isLoading = false }: TeamProps) => {
                 <img
                   src={selectedMember.image}
                   alt={selectedMember.name}
-                  style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--accent-red, #E31E24)' }}
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '3px solid var(--accent-red, #E31E24)',
+                  }}
                 />
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>{selectedMember.name}</h3>
-                  <p style={{ margin: '0.2rem 0', color: 'var(--color-e31e24, #E31E24)', fontWeight: 600, fontSize: '0.9rem' }}>{selectedMember.role}</p>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>
+                    {selectedMember.name}
+                  </h3>
+                  <p
+                    style={{
+                      margin: '0.2rem 0',
+                      color: 'var(--color-e31e24, #E31E24)',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    {selectedMember.role}
+                  </p>
                   {selectedMember.dealsCount !== undefined && selectedMember.dealsCount > 0 && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--color-fef3c7, #fef3c7)', color: 'var(--accent-gold, #d97706)', padding: '0.2rem 0.5rem', borderRadius: 20, fontSize: '0.75rem', fontWeight: 600 }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        background: 'var(--color-fef3c7, #fef3c7)',
+                        color: 'var(--accent-gold, #d97706)',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: 20,
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                      }}
+                    >
                       <Star size={10} fill="currentColor" /> {selectedMember.dealsCount} Deals
                     </span>
                   )}
                 </div>
               </div>
-              <p style={{ color: 'var(--text-secondary, #4b5563)', lineHeight: 1.6, fontSize: '0.9rem', marginBottom: '1rem' }}>{selectedMember.bio}</p>
+              <p
+                style={{
+                  color: 'var(--text-secondary, #4b5563)',
+                  lineHeight: 1.6,
+                  fontSize: '0.9rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                {selectedMember.bio}
+              </p>
               <div style={{ marginBottom: '1rem' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary, #6b7280)', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Skills</div>
+                <div
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    color: 'var(--text-secondary, #6b7280)',
+                    marginBottom: '0.4rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  Skills
+                </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                   {selectedMember.skills.map(skill => (
-                    <span key={skill} style={{ background: 'var(--color-f3f4f6, #f3f4f6)', color: 'var(--text-secondary, #374151)', padding: '0.25rem 0.6rem', borderRadius: 20, fontSize: '0.78rem', fontWeight: 500 }}>{skill}</span>
+                    <span
+                      key={skill}
+                      style={{
+                        background: 'var(--color-f3f4f6, #f3f4f6)',
+                        color: 'var(--text-secondary, #374151)',
+                        padding: '0.25rem 0.6rem',
+                        borderRadius: 20,
+                        fontSize: '0.78rem',
+                        fontWeight: 500,
+                      }}
+                    >
+                      {skill}
+                    </span>
                   ))}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
-                <a href={selectedMember.social.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.35rem 0.7rem', borderRadius: 8, background: 'var(--color-e7f3ff, #e7f3ff)', color: 'var(--color-0077b5, #0077b5)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: 600 }}>
+                <a
+                  href={selectedMember.social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    padding: '0.35rem 0.7rem',
+                    borderRadius: 8,
+                    background: 'var(--color-e7f3ff, #e7f3ff)',
+                    color: 'var(--color-0077b5, #0077b5)',
+                    fontSize: '0.8rem',
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                  }}
+                >
                   <Linkedin size={14} /> LinkedIn
                 </a>
-                <a href={`mailto:${selectedMember.social.email}`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.35rem 0.7rem', borderRadius: 8, background: 'var(--color-fef2f2, #fef2f2)', color: 'var(--accent-red, #EF4444)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: 600 }}>
+                <a
+                  href={`mailto:${selectedMember.social.email}`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    padding: '0.35rem 0.7rem',
+                    borderRadius: 8,
+                    background: 'var(--color-fef2f2, #fef2f2)',
+                    color: 'var(--accent-red, #EF4444)',
+                    fontSize: '0.8rem',
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                  }}
+                >
                   <Mail size={14} /> Email
                 </a>
-                <a href={selectedMember.social.twitter} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.35rem 0.7rem', borderRadius: 8, background: 'var(--color-eff6ff, #eff6ff)', color: 'var(--color-1d9bf0, #1d9bf0)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: 600 }}>
+                <a
+                  href={selectedMember.social.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    padding: '0.35rem 0.7rem',
+                    borderRadius: 8,
+                    background: 'var(--color-eff6ff, #eff6ff)',
+                    color: 'var(--color-1d9bf0, #1d9bf0)',
+                    fontSize: '0.8rem',
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                  }}
+                >
                   <Twitter size={14} /> Twitter
                 </a>
               </div>
               <Link
                 to="/contact"
                 style={{
-                  display: 'block', textAlign: 'center', padding: '0.75rem',
-                  background: 'linear-gradient(135deg, #E31E24, #c01a1f)', color: '#fff',
-                  borderRadius: 10, textDecoration: 'none', fontWeight: 700, fontSize: '0.9rem',
+                  display: 'block',
+                  textAlign: 'center',
+                  padding: '0.75rem',
+                  background: 'linear-gradient(135deg, #E31E24, #c01a1f)',
+                  color: '#fff',
+                  borderRadius: 10,
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
                 }}
                 onClick={() => setSelectedMember(null)}
               >

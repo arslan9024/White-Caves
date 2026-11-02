@@ -11,8 +11,9 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
 // Mock child components and styles
-vi.mock('../../../components/ClickToChat', () => ({
-  default: () => <div data-testid="click-to-chat">ClickToChat</div>,
+vi.mock('../../shared', () => ({
+  CavesFloatingWidget: () => <div data-testid="caves-floating-widget">CavesFloatingWidget</div>,
+  CavesFloatingSearch: () => <div data-testid="caves-floating-search">CavesFloatingSearch</div>,
 }));
 
 vi.mock('../UniversalComponents/styles', () => ({
@@ -70,9 +71,14 @@ describe('UniversalComponents', () => {
 
   // ── Rendering ──────────────────────────────────────────
   describe('Rendering', () => {
-    it('renders ClickToChat component', () => {
+    it('renders CavesFloatingWidget component', () => {
       renderWithStore();
-      expect(screen.getByTestId('click-to-chat')).toBeInTheDocument();
+      expect(screen.getByTestId('caves-floating-widget')).toBeInTheDocument();
+    });
+
+    it('renders CavesFloatingSearch component', () => {
+      renderWithStore();
+      expect(screen.getByTestId('caves-floating-search')).toBeInTheDocument();
     });
 
     it('renders connection status container', () => {

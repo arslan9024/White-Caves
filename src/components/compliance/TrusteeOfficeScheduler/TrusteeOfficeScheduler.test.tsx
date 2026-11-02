@@ -7,12 +7,14 @@ describe('TrusteeOfficeScheduler Component', () => {
   it('renders Dubai DLD trustee office transfer scheduler and books slot', () => {
     render(<TrusteeOfficeScheduler />);
     expect(screen.getByTestId('trustee-office-scheduler')).toBeDefined();
-    expect(screen.getByText(/Dubai DLD Trustee Office Transfer Scheduler/i)).toBeDefined();
-    expect(screen.getByText(/DLD TRUSTEE PORTAL/i)).toBeDefined();
-    expect(screen.getByText(/Available Registration Trustee Appointment Slots/i)).toBeDefined();
+    expect(screen.getByText(/Trustee Office Appointment Queue/i)).toBeDefined();
+    expect(screen.getByText(/DLD Booking/i)).toBeDefined();
+    expect(screen.getByText(/Available Time Slots/i)).toBeDefined();
 
-    const bookBtn = screen.getByRole('button', { name: /Confirm DLD Trustee Office Booking Slot/i });
+    fireEvent.click(screen.getByText('08:00'));
+
+    const bookBtn = screen.getByRole('button', { name: /Book 08:00 Slot at DNRD/i });
     fireEvent.click(bookBtn);
-    expect(screen.getByText(/Trustee Appointment Confirmed for/i)).toBeDefined();
+    expect(screen.getByText(/Appointment Confirmed!/i)).toBeDefined();
   });
 });

@@ -1,7 +1,7 @@
 /**
  * DashboardAiTile.tsx
  *
- * Tile 3: AI Command Center (40 AI Assistants & 11 Specialized Teams) with SearchableSelect & Squad Filters.
+ * Tile 3: AI Command Center — 12 Corporate Departments, 108 Supervisors & Persistent Standby Roster.
  */
 
 import React, { FC, useMemo, useState } from 'react';
@@ -81,11 +81,11 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
         $open={isOpen}
         onClick={onTileClick}
         $accentColor="#8B5CF6"
-        title="AI Command Center (40 AI Assistants & 11 Teams)"
+        title="AI Command Center — 12 Departments · 108 Supervisors · Standby Roster"
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span>🤖</span>
-          {!isCollapsed && <span>3. AI Command Center (40 AI)</span>}
+          {!isCollapsed && <span>3. AI Command Center (12 Depts · 108 Sup)</span>}
         </div>
         {!isCollapsed && <span className="arrow">▶</span>}
       </TopLevelTileButton>
@@ -188,6 +188,30 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
           )}
 
           {/* Reusable Searchable AI Dropdown */}
+          <button
+            type="button"
+            onClick={() => onSubItemClick?.('ai-command')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              width: '100%',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              border: '1px solid #8B5CF6',
+              background: activeTab === 'ai-command' ? 'linear-gradient(135deg, #8B5CF6, #7C3AED)' : 'rgba(139, 92, 246, 0.1)',
+              color: activeTab === 'ai-command' ? '#FFFFFF' : '#8B5CF6',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              marginBottom: '8px',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <span>⚡</span>
+            <span>Launch AI Command Center (12 Depts • 108 Sup)</span>
+          </button>
           <SearchableSelect
             options={aiOptions}
             selectedId={selectedAiId}

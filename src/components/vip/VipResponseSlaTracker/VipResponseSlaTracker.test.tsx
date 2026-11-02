@@ -8,13 +8,17 @@ describe('VipResponseSlaTracker Component', () => {
     render(<VipResponseSlaTracker />);
     expect(screen.getByTestId('vip-response-sla-tracker')).toBeDefined();
     expect(screen.getByText(/VIP SLA Response Tracker/i)).toBeDefined();
-    expect(screen.getByText(/Sheikh Rashid Al Maktoum/i)).toBeDefined();
+    expect(screen.getByText(/Sheikh Abdullah Al Nahyan/i)).toBeDefined();
+    expect(screen.getByText(/Prince Rashed Al Qasimi/i)).toBeDefined();
   });
 
-  it('marks pending enquiry as responded when action button is triggered', () => {
+  it('escalates an overdue enquiry when its action button is triggered', () => {
     render(<VipResponseSlaTracker />);
-    const respondBtn = screen.getByRole('button', { name: /Reply ✓/i });
-    fireEvent.click(respondBtn);
-    expect(screen.getByText(/All enquiries responded to/i)).toBeDefined();
+    const escalateButtons = screen.getAllByRole('button', { name: /Escalate/i });
+
+    fireEvent.click(escalateButtons[0]);
+
+    expect(screen.getAllByRole('button', { name: /Escalate/i })).toHaveLength(1);
+    expect(screen.getByText(/Sheikh Abdullah Al Nahyan/i)).toBeDefined();
   });
 });

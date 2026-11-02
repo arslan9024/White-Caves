@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "iris",
+  "name": "Iris",
+  "gender": "Female",
+  "title": "Utility & DEWA Clearances Supervisor",
+  "supervisorSlot": 6,
+  "department": {
+    "code": "DEPT-11",
+    "name": "Conveyancing & Transaction Management"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Evangeline"
+  },
+  "assignedTasks": [
+    "Final DEWA Bill Settlement Check",
+    "Empower/Tabreed Clearance Letter",
+    "Move-In Premises NOC Issuance"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

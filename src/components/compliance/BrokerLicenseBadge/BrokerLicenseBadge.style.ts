@@ -42,7 +42,7 @@ export const IconWrapper = styled.div<{ $verified?: boolean }>`
   border-radius: 50%;
   background: ${({ $verified }) =>
     $verified ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'};
-  color: ${({ $verified }) => ($verified ? '#22C55E' : '#EF4444')};
+  color: ${({ $verified }) => ($verified ? '#15803d' : '#EF4444')};
 `;
 
 export const ContentWrapper = styled.div`
@@ -80,7 +80,7 @@ export const VerificationBadge = styled.span`
   gap: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #22c55e;
+  color: #166534;
   background: rgba(34, 197, 94, 0.1);
   padding: 4px 8px;
   border-radius: 999px;

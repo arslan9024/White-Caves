@@ -54,7 +54,7 @@ export const CompanyProfileTitle = styled.div`
 
 export const CompanyTagline = styled.p`
   font-size: 1.25rem;
-  color: var(--primary-color, ${colors.primary});
+  color: #b91c1c;
   font-weight: ${typography.weights.medium};
   margin: 0;
 `;

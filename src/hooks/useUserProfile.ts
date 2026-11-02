@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../store/store';
 import { selectSessionUser } from '../store/selectors/sessionSelectors';
 import { setUser } from '../store/userSlice';
-import { auth } from '../config/firebase';
+import { firebaseAuth as auth } from '../auth/firebaseInit';
 import { createLogger } from '../utils/logger';
 import { safeStorage } from '../utils/safeStorage';
 import { authFetch } from '../utils/authFetch';
