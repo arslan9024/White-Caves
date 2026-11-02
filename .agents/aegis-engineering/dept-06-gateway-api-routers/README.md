@@ -1,45 +1,63 @@
 # Department 6: Distributed Gateway Hubs & Cross-Service API Routers
 
 > **Framework:** White Caves Engineering Matrix V2 (1-12-108 Software Core)  
-> **Protocol:** Bhakti Protocol (1 Core Sovereign | 12 Departments | 108 Engineering Nodes)  
+> **Protocol:** Bhakti 1-12-108  
 > **Director:** `@Ruchi` — Principal API Platform Gateway Architect  
-> **Total Nodes:** 9 Nodes (1 Director + 8 Engineering Specialists)
-
----
-
-## Department Mission
-
-Designs unified edge routing distribution maps and public API entry gateways.
+> **Tech Stack:** Express.js, REST, WebSocket (socket.io), TypeScript, Zod  
+> **Skill Reference:** [`.agents/skills/aegis-dept-06-api-gateway/SKILL.md`](../../skills/aegis-dept-06-api-gateway/SKILL.md)  
 
 ---
 
 ## 9-Node Engineering Roster
 
-| Node   | Agent                   | Engineering Role                                | Primary Responsibility                                                                     | Config                                                         |
-| :----- | :---------------------- | :---------------------------------------------- | :----------------------------------------------------------------------------------------- | :------------------------------------------------------------- |
-| Node 1 | **@Ruchi** _(Director)_ | Principal API Platform Gateway Architect        | Designs unified edge routing distribution maps and public API entry gateways.              | [`Ruchi.json`](./node-01-ruchi.agent.json)                     |
-| Node 2 | **@Daniela**            | Microservice Inter-Service Contract Specialist  | Establishes RPC network connection parameters and message communication contracts.         | [`Daniela.json`](./node-02-daniela.agent.json)                 |
-| Node 3 | **@Mary_Meeker**        | Network Payload Scaling Analyst                 | Monitors transaction request flows to dynamically scale internal gateway load bounds.      | [`Mary_Meeker.json`](./node-03-mary-meeker.agent.json)         |
-| Node 4 | **@Amy_Hood**           | External Webhook Lifecycle Cost Specialist      | Audits transaction API costs to guarantee optimized outbound request data weights.         | [`Amy_Hood.json`](./node-04-amy-hood.agent.json)               |
-| Node 5 | **@Susan_Wojcicki**     | Content Delivery Network Routing Engineer       | Configures edge network proxies to accelerate binary media payload delivery scripts.       | [`Susan_Wojcicki.json`](./node-05-susan-wojcicki.agent.json)   |
-| Node 6 | **@Meg_Whitman**        | Container Microservice Node Orchestrator        | Manages automated cluster rollover parameters during continuous delivery updates.          | [`Meg_Whitman.json`](./node-06-meg-whitman.agent.json)         |
-| Node 7 | **@Angela_Ahrendts**    | Third-Party Platform Hook Protocol Designer     | Standardizes ingress communication maps for handling external developer platform hooks.    | [`Angela_Ahrendts.json`](./node-07-angela-ahrendts.agent.json) |
-| Node 8 | **@Sheryl_Sandberg**    | Cross-Department Contract Alignment Coordinator | Harmonizes endpoint request-response interface properties across isolated codebase tracks. | [`Sheryl_Sandberg.json`](./node-08-sheryl-sandberg.agent.json) |
-| Node 9 | **@Kim_Swift**          | High-Velocity Stream Processing Programmer      | Optimizes event broadcasting message loops to maintain real-time web socket data syncs.    | [`Kim_Swift.json`](./node-09-kim-swift.agent.json)             |
+| # | Agent | Role | Responsibility | Config |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | **@Ruchi** *(Director)* | Principal API Platform Gateway Architect | Designs unified edge routing distribution maps and public API entry gateways. | [`config`](./node-01-ruchi.agent.json) |
+| 2 | **@Daniela** | Microservice Inter-Service Contract Specialist | Establishes RPC network connection parameters and message communication contracts. | [`config`](./node-02-daniela.agent.json) |
+| 3 | **@Mary_Meeker** | Network Payload Scaling Analyst | Monitors transaction request flows to dynamically scale internal gateway load bounds. | [`config`](./node-03-mary-meeker.agent.json) |
+| 4 | **@Amy_Hood** | External Webhook Lifecycle Cost Specialist | Audits transaction API costs to guarantee optimized outbound request data weights. | [`config`](./node-04-amy-hood.agent.json) |
+| 5 | **@Susan_Wojcicki** | Content Delivery Network Routing Engineer | Configures edge network proxies to accelerate binary media payload delivery scripts. | [`config`](./node-05-susan-wojcicki.agent.json) |
+| 6 | **@Meg_Whitman** | Container Microservice Node Orchestrator | Manages automated cluster rollover parameters during continuous delivery updates. | [`config`](./node-06-meg-whitman.agent.json) |
+| 7 | **@Angela_Ahrendts** | Third-Party Platform Hook Protocol Designer | Standardizes ingress communication maps for handling external developer platform hooks. | [`config`](./node-07-angela-ahrendts.agent.json) |
+| 8 | **@Sheryl_Sandberg** | Cross-Department Contract Alignment Coordinator | Harmonizes endpoint request-response interface properties across isolated codebase tracks. | [`config`](./node-08-sheryl-sandberg.agent.json) |
+| 9 | **@Kim_Swift** | High-Velocity Stream Processing Programmer | Optimizes event broadcasting message loops to maintain real-time web socket data syncs. | [`config`](./node-09-kim-swift.agent.json) |
 
 ---
 
-## Attached Skills
+## Key Codebase Ownership
 
-- [`.agents/skills/gemini-api-dev`](../../skills/gemini-api-dev/SKILL.md)
-- [`.agents/skills/gemini-interactions-api`](../../skills/gemini-interactions-api/SKILL.md)
-- [`.agents/skills/gemini-live-api-dev`](../../skills/gemini-live-api-dev/SKILL.md)
+- `server/routes/`
+- `server/middleware/`
+- `server/services/`
+- `src/utils/apiClient.ts`
+
+---
+
+## Mandatory Coding Rules
+
+1. API versioning: all public endpoints must be under /api/v1/ prefix
+2. Request/response contracts must be defined with Zod schemas
+3. Webhook handlers must validate signatures before processing payloads
+4. CDN: static assets must be served via edge with Cache-Control headers
+5. WebSocket: rooms must be scoped per-tenant — no cross-tenant data leaks
+6. Rate limiting: tier-based — 100/min for standard, 1000/min for premium
+7. CORS: whitelist only known origins — never use wildcard in production
+8. Payload compression: responses > 1KB must use gzip encoding
+
+---
+
+## Operational Procedures
+
+- **API Contract Tests:** `npx vitest run server/routes/`
+- **WebSocket Load Test:** `npm run test:ws:load`
+- **OpenAPI Spec Validation:** `npx swagger-cli validate openapi.yaml`
 
 ---
 
 ## Governance
 
-1. **Single Purpose File Law:** < 350 lines per file.
-2. **TypeScript Strict:** Zero warnings, zero `any` bypasses.
-3. **Zero Backlog Law:** All PRs and issues resolved cleanly.
-4. **Continuous Deduplication:** Zero duplicate handlers or ghost files.
+- Single Purpose File Law (< 350 lines)
+- TypeScript Strict (zero warnings)
+- Zero Backlog Law
+- Continuous Deduplication
+- Conventional Commits
