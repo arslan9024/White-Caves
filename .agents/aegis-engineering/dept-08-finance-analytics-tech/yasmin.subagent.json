@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "yasmin",
+  "name": "Yasmin",
+  "title": "Commission Ledger & Split Architect",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-08",
+    "name": "Finance & Accounting Engine"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Invoice (Director of Finance & Accounting Engine)"
+  },
+  "technicalFocus": "2% standard agency split, internal agent tiers, and VAT deduction",
+  "attachedSkills": [
+    "bigquery_sql",
+    "orchestration-progress-intelligence"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/09_crm_features/financial-reporting.md",
+    "docs/business_docs/07_business_model/white-caves-commission-engine-spec.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

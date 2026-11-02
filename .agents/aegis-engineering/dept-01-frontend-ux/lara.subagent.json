@@ -1,0 +1,28 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "lara",
+  "name": "Lara",
+  "title": "Accessibility Compliance Auditor",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-01",
+    "name": "Frontend & UX Engineering"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Una (Director of Frontend & UX Engineering)"
+  },
+  "technicalFocus": "Automated Axe-core integration, audit logs, and contrast fixes",
+  "attachedSkills": [
+    "whitecaves-ui-library",
+    "generative_ui",
+    "flutter-build-responsive-layout"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/06_design_architecture/ui-ux-specification.md",
+    "docs/business_docs/10_design_system_and_security/BRAND_IDENTITY.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

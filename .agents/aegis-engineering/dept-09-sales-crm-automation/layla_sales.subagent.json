@@ -1,0 +1,26 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "layla_sales",
+  "name": "Layla",
+  "title": "Offer Management Workflow Lead",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-09",
+    "name": "Sales Pipeline & CRM Automation"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Jaime (Director of Sales Pipeline & CRM Automation)"
+  },
+  "technicalFocus": "Formal written offers, counter-offer tracking, and deposit receipting",
+  "attachedSkills": [
+    "project-optimizer"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/09_crm_features/sales-pipeline.md",
+    "docs/business_docs/09_crm_features/client-management.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

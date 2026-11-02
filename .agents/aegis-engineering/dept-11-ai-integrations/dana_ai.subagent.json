@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "dana_ai",
+  "name": "Dana",
+  "title": "Emerging AI Technology Scout",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-11",
+    "name": "AI Models & Intelligent Integrations"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Joelle (Director of AI Models & Intelligent Integrations)"
+  },
+  "technicalFocus": "Reasoning models (R1), multimodal vision inspection, VR tours",
+  "attachedSkills": [
+    "gemini-interactions-api",
+    "gemini-api-dev"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/03_ai_assistants/README.md",
+    "docs/plans/ai_assistants/README.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

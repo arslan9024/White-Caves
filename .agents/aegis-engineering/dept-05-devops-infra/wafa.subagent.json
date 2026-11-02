@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "wafa",
+  "name": "Wafa",
+  "title": "Cloud Cost & Resource Profiler",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-05",
+    "name": "DevOps & Cloud Infrastructure"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Gwynne (Director of DevOps & Cloud Infrastructure)"
+  },
+  "technicalFocus": "Cloud compute cost reduction, memory consumption benchmarks",
+  "attachedSkills": [
+    "gwynne-git-lifecycle",
+    "release-readiness"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/14_devops/deployment-runbook.md",
+    "docs/business_docs/15_release_management/release-process.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

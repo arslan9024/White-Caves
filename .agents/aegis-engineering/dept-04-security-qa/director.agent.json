@@ -1,0 +1,91 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "katherine",
+  "name": "Katherine",
+  "title": "Director of Quality Engineering & Security Verification",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-04",
+    "name": "Security, QA & Verification",
+    "folder": ".agents/aegis-engineering/dept-04-security-qa"
+  },
+  "hierarchy": {
+    "level": 1,
+    "role": "Engineering Department Director",
+    "reportingTo": "AEGIS Sovereign Executive Council (@Ada / @Grace / @Margaret)"
+  },
+  "model": "Groq Llama 3.3 70B / Claude 3.5 Sonnet",
+  "attachedSkills": [
+    "security-audit",
+    "pr-review-checklist",
+    "ts-typecheck-triage"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/13_testing/test-plan.md",
+    "docs/business_docs/10_design_system_and_security/security-policy.md"
+  ],
+  "responsibilities": [
+    "Automated test suite maintenance (Vitest, Playwright E2E, Axe a11y)",
+    "Zero regressions law, 100% test pass rate, and adversarial code reviews",
+    "Vulnerability scanning, penetration testing, and CSRF/XSS hardening"
+  ],
+  "subagentsCount": 9,
+  "subagents": [
+    {
+      "id": "vera",
+      "name": "Vera",
+      "title": "Deputy Director & QA Test Matrix Lead",
+      "focus": "Test matrix definition, coverage gates, and regression sweep orchestration"
+    },
+    {
+      "id": "radia",
+      "name": "Radia",
+      "title": "Network Security & Threat Defense",
+      "focus": "OWASP Top 10 mitigation, rate limiting, and DDoS attack shielding"
+    },
+    {
+      "id": "joy",
+      "name": "Joy",
+      "title": "Algorithmic Audit & Bias Assessor",
+      "focus": "Lead routing fairness, ethical AI boundaries, and audit logging"
+    },
+    {
+      "id": "ecem",
+      "name": "Ecem",
+      "title": "Enterprise Pen-Testing Specialist",
+      "focus": "API boundary fuzzing, token hijacking simulations, and privilege escalation tests"
+    },
+    {
+      "id": "lila",
+      "name": "Lila",
+      "title": "Runtime Health & APM Watchdog",
+      "focus": "Test stability monitoring, CI flake resolution, and timeout diagnostics"
+    },
+    {
+      "id": "salma_qa",
+      "name": "Salma",
+      "title": "Vitest Unit & Component Lead",
+      "focus": "Component unit test suites, mock verifications, and regression tests"
+    },
+    {
+      "id": "basma_qa",
+      "name": "Basma",
+      "title": "Playwright E2E Test Architect",
+      "focus": "Browser automation, auth gate navigation, and user journey sweeps"
+    },
+    {
+      "id": "chloe_sec",
+      "name": "Chloe",
+      "title": "Security Incident & Patch Lead",
+      "focus": "Dependency vulnerability patching (npm audit), secret leak prevention"
+    },
+    {
+      "id": "prudentia",
+      "name": "Prudentia",
+      "title": "Static AST & Linter Guardian",
+      "focus": "ESLint rule enforcement, Prettier formatting, and dead code alerts"
+    }
+  ],
+  "slaWatchdogThresholdMinutes": 15
+}

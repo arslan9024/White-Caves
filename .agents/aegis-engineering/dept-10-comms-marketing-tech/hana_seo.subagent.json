@@ -1,0 +1,26 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "hana_seo",
+  "name": "Hana",
+  "title": "Dubai Real Estate Keyword Strategist",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-10",
+    "name": "Communications & Marketing Tech"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Rachel (Director of Communications & Marketing Tech)"
+  },
+  "technicalFocus": "Top-ranking search keywords for Dubai Marina, Downtown, Palm Jumeirah",
+  "attachedSkills": [
+    "whitecaves-ui-library"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/11_seo/seo-strategy.md",
+    "docs/business_docs/09_crm_features/marketing-automation.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

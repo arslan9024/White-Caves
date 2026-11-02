@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "neva_api",
+  "name": "Neva",
+  "title": "Middleware & Error Handling Lead",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-02",
+    "name": "Backend & API Systems"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Mira (Director of Backend & API Systems)"
+  },
+  "technicalFocus": "Global error envelopes, request tracing, and payload sanitization",
+  "attachedSkills": [
+    "security-audit",
+    "release-readiness"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/06_design_architecture/api-reference.md",
+    "docs/business_docs/06_design_architecture/system-architecture.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

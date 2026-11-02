@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "iman",
+  "name": "Iman",
+  "title": "Prisma Schema Specialist",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-03",
+    "name": "Database & Data Architecture"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Barbara (Director of Database & Data Architecture)"
+  },
+  "technicalFocus": "Relation models, index declarations, and multi-tenant schema safety",
+  "attachedSkills": [
+    "bigquery_sql",
+    "data_autocleaning"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/06_design_architecture/database-schema.md",
+    "docs/business_docs/06_design_architecture/data-flow.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "lexa",
+  "name": "Lexa",
+  "title": "Legal Document Generation Engine",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-07",
+    "name": "Compliance & Legal Tech Engineering"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Sofia (Director of Compliance & Legal Tech Engineering)"
+  },
+  "technicalFocus": "MOU generation, power of attorney validation, and escrow agreements",
+  "attachedSkills": [
+    "whitecaves-ejari-rules",
+    "security-audit"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/05_requirements/compliance-requirements.md",
+    "docs/business_docs/10_design_system_and_security/uae-pdpl-compliance.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

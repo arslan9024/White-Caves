@@ -1,0 +1,90 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "invoice",
+  "name": "Invoice",
+  "title": "Director of Financial Engineering & Tax Systems",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-08",
+    "name": "Finance & Accounting Engine",
+    "folder": ".agents/aegis-engineering/dept-08-finance-analytics-tech"
+  },
+  "hierarchy": {
+    "level": 1,
+    "role": "Engineering Department Director",
+    "reportingTo": "AEGIS Sovereign Executive Council (@Ada / @Grace / @Margaret)"
+  },
+  "model": "Groq Llama 3.1 70B",
+  "attachedSkills": [
+    "bigquery_sql",
+    "orchestration-progress-intelligence"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/09_crm_features/financial-reporting.md",
+    "docs/business_docs/07_business_model/white-caves-commission-engine-spec.md"
+  ],
+  "responsibilities": [
+    "FTA Form 201 VAT 5% calculations and corporate tax 9% accounting rules",
+    "Double-entry General Ledger, multi-currency pricing, and commission splits",
+    "Real-time P&L, balance sheets, and statutory UAE audit trail reports"
+  ],
+  "subagentsCount": 9,
+  "subagents": [
+    {
+      "id": "dora",
+      "name": "Dora",
+      "title": "Deputy Director & VAT Compliance Specialist",
+      "focus": "Tax invoices, TRN formatting, VAT return Form 201 XML generation"
+    },
+    {
+      "id": "cassie_fin",
+      "name": "Cassie",
+      "title": "Cash Flow & Runway Modeling Lead",
+      "focus": "12-month rolling cash flow forecasting and liquidity models"
+    },
+    {
+      "id": "amal",
+      "name": "Amal",
+      "title": "AED & Multi-Currency FX Engine",
+      "focus": "Real-time central bank FX rates, USD/EUR/GBP/SAR/CNY/INR conversions"
+    },
+    {
+      "id": "yasmin",
+      "name": "Yasmin",
+      "title": "Commission Ledger & Split Architect",
+      "focus": "2% standard agency split, internal agent tiers, and VAT deduction"
+    },
+    {
+      "id": "lina",
+      "name": "Lina",
+      "title": "Corporate Tax 9% Logic Specialist",
+      "focus": "AED 375,000 threshold calculations, Small Business Relief logic"
+    },
+    {
+      "id": "sana_fin",
+      "name": "Sana",
+      "title": "Financial Market Telemetry Lead",
+      "focus": "UAE interbank offer rates (EIBOR), mortgage interest rate feeds"
+    },
+    {
+      "id": "astrid",
+      "name": "Astrid",
+      "title": "Double-Entry General Ledger Lead",
+      "focus": "Debits, credits, chart of accounts, and immutable transaction logs"
+    },
+    {
+      "id": "bianca",
+      "name": "Bianca",
+      "title": "Escrow & Trust Account Guardian",
+      "focus": "Client money trust account separation, bank reconciliation import"
+    },
+    {
+      "id": "gemma",
+      "name": "Gemma",
+      "title": "Financial Dashboard & P&L Lead",
+      "focus": "Sub-10ms executive financial KPI rendering, balance sheet generators"
+    }
+  ],
+  "slaWatchdogThresholdMinutes": 15
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "rehab",
+  "name": "Rehab",
+  "title": "Real-time Streaming & Audio Lead",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-11",
+    "name": "AI Models & Intelligent Integrations"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Joelle (Director of AI Models & Intelligent Integrations)"
+  },
+  "technicalFocus": "Server-sent events (SSE) chat streaming, Gemini Live voice chat",
+  "attachedSkills": [
+    "gemini-interactions-api",
+    "gemini-api-dev"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/03_ai_assistants/README.md",
+    "docs/plans/ai_assistants/README.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

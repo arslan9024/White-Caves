@@ -1,0 +1,28 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "vera",
+  "name": "Vera",
+  "title": "Deputy Director & QA Test Matrix Lead",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-04",
+    "name": "Security, QA & Verification"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "Specialized Engineering Subagent",
+    "reportingTo": "@Katherine (Director of Security, QA & Verification)"
+  },
+  "technicalFocus": "Test matrix definition, coverage gates, and regression sweep orchestration",
+  "attachedSkills": [
+    "security-audit",
+    "pr-review-checklist",
+    "ts-typecheck-triage"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/13_testing/test-plan.md",
+    "docs/business_docs/10_design_system_and_security/security-policy.md"
+  ],
+  "slaWatchdogMinutes": 30
+}

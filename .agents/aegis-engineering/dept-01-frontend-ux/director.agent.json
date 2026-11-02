@@ -1,0 +1,91 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "una",
+  "name": "Una",
+  "title": "Director of Frontend Architecture & UX Engineering",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-01",
+    "name": "Frontend & UX Engineering",
+    "folder": ".agents/aegis-engineering/dept-01-frontend-ux"
+  },
+  "hierarchy": {
+    "level": 1,
+    "role": "Engineering Department Director",
+    "reportingTo": "AEGIS Sovereign Executive Council (@Ada / @Grace / @Margaret)"
+  },
+  "model": "Gemini 2.0 Flash / Claude 3.5 Sonnet",
+  "attachedSkills": [
+    "whitecaves-ui-library",
+    "generative_ui",
+    "flutter-build-responsive-layout"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/06_design_architecture/ui-ux-specification.md",
+    "docs/business_docs/10_design_system_and_security/BRAND_IDENTITY.md"
+  ],
+  "responsibilities": [
+    "React 18 components, Tailwind CSS tokens & White Caves Luxury design system",
+    "Mobile responsive pixel perfection and WCAG 2.1 AA accessibility",
+    "Sub-1200ms LCP, Zero CLS, and smooth luxury interactive micro-animations"
+  ],
+  "subagentsCount": 9,
+  "subagents": [
+    {
+      "id": "cyra",
+      "name": "Cyra",
+      "title": "Deputy Director & Design Token Architect",
+      "focus": "Design tokens, theme switching, and CSS variables"
+    },
+    {
+      "id": "marissa",
+      "name": "Marissa",
+      "title": "Luxury Buyer UX Specialist",
+      "focus": "Buyer journey, interactive property filters, and luxury search UX"
+    },
+    {
+      "id": "lea",
+      "name": "Lea",
+      "title": "Luxury UI Component Engineer",
+      "focus": "Modals, drawers, cards, and atomic UI component library"
+    },
+    {
+      "id": "tracy",
+      "name": "Tracy",
+      "title": "Mobile & Tablet Responsive Lead",
+      "focus": "Viewport adaptation, touch gestures, and cross-device testing"
+    },
+    {
+      "id": "africa",
+      "name": "Africa",
+      "title": "WCAG AA Accessibility Sentinel",
+      "focus": "ARIA attributes, color contrast, keyboard navigation, and screen reader tests"
+    },
+    {
+      "id": "noura",
+      "name": "Noura",
+      "title": "Motion & Micro-Interaction Specialist",
+      "focus": "Framer motion, gold shimmer effects, and hero transitions"
+    },
+    {
+      "id": "sanaa",
+      "name": "Sanaa",
+      "title": "Tailwind CSS Core Engineer",
+      "focus": "Utility deduplication, CSS bundle minimization, and purge safety"
+    },
+    {
+      "id": "yara",
+      "name": "Yara",
+      "title": "UX Research & Discovery Analyst",
+      "focus": "User flow synthesis, usability testing, and wireframe specs"
+    },
+    {
+      "id": "lara",
+      "name": "Lara",
+      "title": "Accessibility Compliance Auditor",
+      "focus": "Automated Axe-core integration, audit logs, and contrast fixes"
+    }
+  ],
+  "slaWatchdogThresholdMinutes": 15
+}

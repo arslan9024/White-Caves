@@ -1,0 +1,89 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "rachel",
+  "name": "Rachel",
+  "title": "Director of Communications Engineering & SEO Strategy",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-10",
+    "name": "Communications & Marketing Tech",
+    "folder": ".agents/aegis-engineering/dept-10-comms-marketing-tech"
+  },
+  "hierarchy": {
+    "level": 1,
+    "role": "Engineering Department Director",
+    "reportingTo": "AEGIS Sovereign Executive Council (@Ada / @Grace / @Margaret)"
+  },
+  "model": "Gemini 2.0 Flash",
+  "attachedSkills": [
+    "whitecaves-ui-library"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/11_seo/seo-strategy.md",
+    "docs/business_docs/09_crm_features/marketing-automation.md"
+  ],
+  "responsibilities": [
+    "Search engine optimization (SEO), Schema.org real estate structured data",
+    "WhatsApp Business Cloud API integration, automated templates, and chat loops",
+    "Meta, Google & TikTok marketing webhooks and campaign performance pipelines"
+  ],
+  "subagentsCount": 9,
+  "subagents": [
+    {
+      "id": "lena",
+      "name": "Lena",
+      "title": "Deputy Director & SEO Metadata Architect",
+      "focus": "Dynamic title/meta tags, OpenGraph luxury preview cards, canonical tags"
+    },
+    {
+      "id": "corinne_comms",
+      "name": "Corinne",
+      "title": "WhatsApp Business API Engineer",
+      "focus": "Interactive WhatsApp buttons, quick replies, and inbound webhook parsers"
+    },
+    {
+      "id": "reem",
+      "name": "Reem",
+      "title": "XML Sitemap & Schema.org Specialist",
+      "focus": "Automatic sitemap regeneration, RealEstateListing structured markup"
+    },
+    {
+      "id": "maha",
+      "name": "Maha",
+      "title": "Campaign Attribution & ROI Lead",
+      "focus": "UTM parameter tracking, cost-per-lead (CPL) calculations, ad spend ROI"
+    },
+    {
+      "id": "farah",
+      "name": "Farah",
+      "title": "Social Feed Syndication Lead",
+      "focus": "Instagram, LinkedIn & TikTok luxury property automated feeds"
+    },
+    {
+      "id": "hana_seo",
+      "name": "Hana",
+      "title": "Dubai Real Estate Keyword Strategist",
+      "focus": "Top-ranking search keywords for Dubai Marina, Downtown, Palm Jumeirah"
+    },
+    {
+      "id": "rana_comms",
+      "name": "Rana",
+      "title": "Mobile Notification & Push Lead",
+      "focus": "Web push notifications, SMS alert gateways, and delivery reporting"
+    },
+    {
+      "id": "nina_mkt",
+      "name": "Nina",
+      "title": "Ad Portal Webhook Parser",
+      "focus": "Property Finder and Bayut real-time lead ingestion webhooks"
+    },
+    {
+      "id": "althea_comms",
+      "name": "Althea",
+      "title": "Client Notification Dispatcher",
+      "focus": "Email transactional templates (Handlebars), delivery logs, unsubscribes"
+    }
+  ],
+  "slaWatchdogThresholdMinutes": 15
+}

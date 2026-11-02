@@ -149,122 +149,50 @@
     },
     "riskProfiles": {
       "security": {
-        "requiredChecks": ["test:run", "verify:runtime:dry", "audit"],
-        "optionalChecks": ["test:e2e:accessibility"]
+        "requiredChecks": [
+          "test:run",
+          "verify:runtime:dry",
+          "audit"
+        ],
+        "optionalChecks": [
+          "test:e2e:accessibility"
+        ]
       },
       "auth": {
-        "requiredChecks": ["test:run", "verify:runtime:dry", "test:assistant-contract"],
-        "optionalChecks": ["test:e2e:smoke"]
+        "requiredChecks": [
+          "test:run",
+          "verify:runtime:dry",
+          "test:assistant-contract"
+        ],
+        "optionalChecks": [
+          "test:e2e:smoke"
+        ]
       },
       "database": {
-        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
+        "requiredChecks": [
+          "test:run",
+          "verify:runtime:dry",
+          "build"
+        ],
         "optionalChecks": []
       },
       "payment": {
-        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
-        "optionalChecks": ["audit"]
+        "requiredChecks": [
+          "test:run",
+          "verify:runtime:dry",
+          "build"
+        ],
+        "optionalChecks": [
+          "audit"
+        ]
       },
       "general": {
-        "requiredChecks": ["test:run"],
+        "requiredChecks": [
+          "test:run"
+        ],
         "optionalChecks": []
       }
     }
-  },
-  "workforceMesh": {
-    "totalAgents": 170,
-    "freeAgentCount": 120,
-    "premiumAgentCount": 50,
-    "squads": 10,
-    "corporateDepartments": [
-      {
-        "id": "DEPT_01",
-        "name": "Luxury Sales",
-        "manager": "@Clara",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-01-luxury-sales"
-      },
-      {
-        "id": "DEPT_02",
-        "name": "Strategic Off-Plan",
-        "manager": "@Zara",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-02-strategic-offplan"
-      },
-      {
-        "id": "DEPT_03",
-        "name": "Commercial Investment",
-        "manager": "@Maya",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-03-commercial-investment"
-      },
-      {
-        "id": "DEPT_04",
-        "name": "Residential Leasing",
-        "manager": "@Nadia",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-04-residential-leasing"
-      },
-      {
-        "id": "DEPT_05",
-        "name": "Asset Facilities",
-        "manager": "@Selena",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-05-asset-facilities"
-      },
-      {
-        "id": "DEPT_06",
-        "name": "Revenue Finance",
-        "manager": "@Theodora",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-06-revenue-finance"
-      },
-      {
-        "id": "DEPT_07",
-        "name": "Performance Marketing",
-        "manager": "@Olivia",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-07-performance-marketing"
-      },
-      {
-        "id": "DEPT_08",
-        "name": "Client Experience",
-        "manager": "@Corinne",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-08-client-experience"
-      },
-      {
-        "id": "DEPT_09",
-        "name": "Corporate Governance",
-        "manager": "@Aurora",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-09-corporate-governance"
-      },
-      {
-        "id": "DEPT_10",
-        "name": "RERA Compliance",
-        "manager": "@Sofia",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-10-rera-compliance"
-      },
-      {
-        "id": "DEPT_11",
-        "name": "Conveyancing Transactions",
-        "manager": "@Evangeline",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-11-conveyancing-transactions"
-      },
-      {
-        "id": "DEPT_12",
-        "name": "Market Intelligence",
-        "manager": "@Elena",
-        "supervisors": 9,
-        "folder": ".agents/departments/dept-12-market-intelligence"
-      }
-    ],
-    "masterWorkforceGrid": ".agents/master-workforce-grid.json",
-    "subagentsRegistry": ".agents/subagents-registry.json",
-    "workforceRegistry": ".agents/workforce-registry.json",
-    "subagentRegistry170": ".agents/subagent-registry-170.json"
   },
   "protocolInfiniteCrucible": {
     "identifier": "aegis:nova:protocol:infinite:crucible",
@@ -280,27 +208,48 @@
       "googleAIStudio": {
         "model": "Gemini 2.0 Flash",
         "cost": "0 USD (Free Tier)",
-        "assignedAgents": ["@Victoria", "@Sofia", "@Nova", "@Quark", "@Margaret"]
+        "assignedAgents": [
+          "@Victoria",
+          "@Sofia",
+          "@Nova",
+          "@Quark",
+          "@Margaret"
+        ]
       },
       "groqConsole": {
         "model": "Llama 3.1 70B",
         "cost": "0 USD (Free Tier)",
-        "assignedAgents": ["@Invoice", "@Joelle", "@Orion", "@Zara"]
+        "assignedAgents": [
+          "@Invoice",
+          "@Joelle",
+          "@Orion",
+          "@Zara"
+        ]
       },
       "deepSeekChat": {
         "model": "DeepSeek V3",
         "cost": "0 USD (Free Tier)",
-        "assignedAgents": ["@Cassie", "@Pulse"]
+        "assignedAgents": [
+          "@Cassie",
+          "@Pulse"
+        ]
       }
     },
     "premiumTier": {
       "anthropic": {
         "model": "Claude 3.5 Sonnet / Opus",
-        "assignedAgents": ["@Ada", "@Grace", "@S5"]
+        "assignedAgents": [
+          "@Ada",
+          "@Grace",
+          "@S5"
+        ]
       },
       "openAI": {
         "model": "GPT-4o",
-        "assignedAgents": ["@Mira", "@Katherine"]
+        "assignedAgents": [
+          "@Mira",
+          "@Katherine"
+        ]
       }
     }
   },
@@ -361,6 +310,173 @@
       "severity": "Normal",
       "maxResolutionHours": 24,
       "escalateTo": "Autonomous Queue"
+    }
+  },
+  "workforceSeparationArchitecture": {
+    "aegisSoftwareEngineering": {
+      "description": "Autonomous Software Engineering, Architecture, Testing, CI/CD, and Codebase Orchestration Mesh",
+      "rootFolder": ".agents/aegis-engineering",
+      "protocol": "BHAKTI_1_12_108",
+      "sovereignLeader": "AEGIS (Level 0 Orchestrator)",
+      "executiveCouncil": [
+        ".agents/executive/ada.agent.json",
+        ".agents/executive/margaret.agent.json",
+        ".agents/executive/grace.agent.json",
+        ".agents/executive/elena.agent.json",
+        ".agents/executive/gwynne.agent.json",
+        ".agents/executive/nova.agent.json"
+      ],
+      "departmentsCount": 12,
+      "directorsCount": 12,
+      "subagentsCount": 108,
+      "totalEngineeringAgents": 120,
+      "departments": [
+        {
+          "code": "ENG-01",
+          "name": "Frontend & UX Engineering",
+          "director": "@Una",
+          "folder": ".agents/aegis-engineering/dept-01-frontend-ux"
+        },
+        {
+          "code": "ENG-02",
+          "name": "Backend & API Systems",
+          "director": "@Mira",
+          "folder": ".agents/aegis-engineering/dept-02-backend-api"
+        },
+        {
+          "code": "ENG-03",
+          "name": "Database & Data Architecture",
+          "director": "@Barbara",
+          "folder": ".agents/aegis-engineering/dept-03-database-data"
+        },
+        {
+          "code": "ENG-04",
+          "name": "Security, QA & Verification",
+          "director": "@Katherine",
+          "folder": ".agents/aegis-engineering/dept-04-security-qa"
+        },
+        {
+          "code": "ENG-05",
+          "name": "DevOps & Cloud Infrastructure",
+          "director": "@Gwynne",
+          "folder": ".agents/aegis-engineering/dept-05-devops-infra"
+        },
+        {
+          "code": "ENG-06",
+          "name": "Leasing & Tenancy Engineering",
+          "director": "@Victoria",
+          "folder": ".agents/aegis-engineering/dept-06-leasing-tenancy"
+        },
+        {
+          "code": "ENG-07",
+          "name": "Compliance & Legal Tech Engineering",
+          "director": "@Sofia",
+          "folder": ".agents/aegis-engineering/dept-07-compliance-legal-tech"
+        },
+        {
+          "code": "ENG-08",
+          "name": "Finance & Accounting Engine",
+          "director": "@Invoice",
+          "folder": ".agents/aegis-engineering/dept-08-finance-analytics-tech"
+        },
+        {
+          "code": "ENG-09",
+          "name": "Sales Pipeline & CRM Automation",
+          "director": "@Jaime",
+          "folder": ".agents/aegis-engineering/dept-09-sales-crm-automation"
+        },
+        {
+          "code": "ENG-10",
+          "name": "Communications & Marketing Tech",
+          "director": "@Rachel",
+          "folder": ".agents/aegis-engineering/dept-10-comms-marketing-tech"
+        },
+        {
+          "code": "ENG-11",
+          "name": "AI Models & Intelligent Integrations",
+          "director": "@Joelle",
+          "folder": ".agents/aegis-engineering/dept-11-ai-integrations"
+        },
+        {
+          "code": "ENG-12",
+          "name": "Operations & Diagnostic Engineering",
+          "director": "@Rania",
+          "folder": ".agents/aegis-engineering/dept-12-operations-maintenance-tech"
+        }
+      ]
+    },
+    "zoeAiCorporateWorkforce": {
+      "description": "White Caves Corporate Real Estate Brokerage Business Assistants",
+      "rootFolder": ".agents/zoe-business-assistants",
+      "uiHubFolder": "src/config/ai-command-center",
+      "protocol": "BHAKTI_1_12_108",
+      "executiveLeader": "@Zoe (Chief Operations Officer & Executive AI Partner)",
+      "departmentsCount": 12,
+      "managersCount": 12,
+      "supervisorsCount": 108,
+      "totalBusinessPersonnel": 120,
+      "departments": [
+        {
+          "code": "DEPT-01",
+          "name": "Luxury Sales & Brokerage",
+          "manager": "@Clara"
+        },
+        {
+          "code": "DEPT-02",
+          "name": "Strategic Off-Plan Allocations",
+          "manager": "@Zara"
+        },
+        {
+          "code": "DEPT-03",
+          "name": "Commercial Investment & Acquisitions",
+          "manager": "@Maya"
+        },
+        {
+          "code": "DEPT-04",
+          "name": "Residential Leasing & Ejari",
+          "manager": "@Nadia"
+        },
+        {
+          "code": "DEPT-05",
+          "name": "Asset & Facilities Operations",
+          "manager": "@Selena"
+        },
+        {
+          "code": "DEPT-06",
+          "name": "Revenue Finance & Treasury",
+          "manager": "@Theodora"
+        },
+        {
+          "code": "DEPT-07",
+          "name": "Performance Marketing & Growth",
+          "manager": "@Olivia"
+        },
+        {
+          "code": "DEPT-08",
+          "name": "Client Concierge & Experience",
+          "manager": "@Corinne"
+        },
+        {
+          "code": "DEPT-09",
+          "name": "Corporate Governance & Integrity",
+          "manager": "@Aurora"
+        },
+        {
+          "code": "DEPT-10",
+          "name": "RERA & Legal Affairs",
+          "manager": "@Sofia"
+        },
+        {
+          "code": "DEPT-11",
+          "name": "Conveyancing & Trustee Transfers",
+          "manager": "@Evangeline"
+        },
+        {
+          "code": "DEPT-12",
+          "name": "Market Intelligence & Forecasting",
+          "manager": "@Elena"
+        }
+      ]
     }
   }
 }

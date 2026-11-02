@@ -1,0 +1,90 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "joelle",
+  "name": "Joelle",
+  "title": "Director of AI Engineering & Intelligent Integrations",
+  "division": "AEGIS_SOFTWARE_ENGINEERING",
+  "protocol": "BHAKTI_1_12_108",
+  "department": {
+    "code": "ENG-11",
+    "name": "AI Models & Intelligent Integrations",
+    "folder": ".agents/aegis-engineering/dept-11-ai-integrations"
+  },
+  "hierarchy": {
+    "level": 1,
+    "role": "Engineering Department Director",
+    "reportingTo": "AEGIS Sovereign Executive Council (@Ada / @Grace / @Margaret)"
+  },
+  "model": "Groq Llama 3.1 70B",
+  "attachedSkills": [
+    "gemini-interactions-api",
+    "gemini-api-dev"
+  ],
+  "attachedDocumentation": [
+    "docs/business_docs/03_ai_assistants/README.md",
+    "docs/plans/ai_assistants/README.md"
+  ],
+  "responsibilities": [
+    "Multi-LLM routing (Gemini 2.0 Flash, Llama 3.3, DeepSeek, Claude, GPT-4o)",
+    "AI concierge chatbots, property recommendation engines & embedding models",
+    "LangGraph-inspired agent coordination and context compression protocols"
+  ],
+  "subagentsCount": 9,
+  "subagents": [
+    {
+      "id": "zainab",
+      "name": "Zainab",
+      "title": "Deputy Director & Integration Architect",
+      "focus": "Webhook security, external API bridges, and retry queue dispatchers"
+    },
+    {
+      "id": "huda",
+      "name": "Huda",
+      "title": "LLM Prompt Engineer & Persona Architect",
+      "focus": "Luxury tone prompts, multi-language system contexts (EN, AR, RU, FR, ZH)"
+    },
+    {
+      "id": "ghada",
+      "name": "Ghada",
+      "title": "Vector Embeddings & Semantic Search",
+      "focus": "Text-embedding-3-small, cosine similarity, property recommendation search"
+    },
+    {
+      "id": "rehab",
+      "name": "Rehab",
+      "title": "Real-time Streaming & Audio Lead",
+      "focus": "Server-sent events (SSE) chat streaming, Gemini Live voice chat"
+    },
+    {
+      "id": "leila_ai",
+      "name": "Leila",
+      "title": "AI Model Benchmark & Evaluation Lead",
+      "focus": "Token cost benchmarks, latency evaluation, and accuracy validation"
+    },
+    {
+      "id": "dana_ai",
+      "name": "Dana",
+      "title": "Emerging AI Technology Scout",
+      "focus": "Reasoning models (R1), multimodal vision inspection, VR tours"
+    },
+    {
+      "id": "nancy_ai",
+      "name": "Nancy",
+      "title": "AI Integration QA Specialist",
+      "focus": "Synthetic chat regression testing, hallucination detection, prompt tests"
+    },
+    {
+      "id": "calliope",
+      "name": "Calliope",
+      "title": "Luxury Brand Voice Sentinel",
+      "focus": "Quiet Luxury guardrails, banned keyword filtering, brand tone safety"
+    },
+    {
+      "id": "euterpe",
+      "name": "Euterpe",
+      "title": "Natural Language Query Parser",
+      "focus": "Parsing buyer criteria from natural text (\"3-bed villa near school\")"
+    }
+  ],
+  "slaWatchdogThresholdMinutes": 15
+}
