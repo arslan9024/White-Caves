@@ -1,1 +1,1 @@
-node aegis/scripts/orchestrator/post-commit-premium-guard.js
+node .agents/orchestrator/post-commit-premium-guard.js
