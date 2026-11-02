@@ -93,3 +93,4 @@ export { THEODORA_67_REPORTS } from './theodoraReports/reports';
 `;
 fs.writeFileSync(FILE_PATH, facadeContent, 'utf8');
 console.log(`Rewrote ${FILE_PATH} to ${facadeContent.split('\n').length} lines.`);
+

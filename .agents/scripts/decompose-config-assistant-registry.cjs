@@ -182,3 +182,4 @@ export default {
 `;
 fs.writeFileSync(FILE_PATH, facadeContent, 'utf8');
 console.log(`Rewrote ${FILE_PATH} to ${facadeContent.split('\n').length} lines.`);
+
