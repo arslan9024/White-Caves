@@ -1,0 +1,1 @@
+{agent} -- RESEARCH: {file} -> research "{section}" and synthesize findings into actionable updates with evidence and assumptions. Target sections: {target_sections}. Acceptance criteria: {acceptance_criteria}

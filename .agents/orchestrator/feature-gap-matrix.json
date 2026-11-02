@@ -1,0 +1,1182 @@
+{
+  "version": "2026.05.25-discovery-matrix-v1",
+  "description": "Curated Dubai PropTech feature-gap matrix for Aegis queue-empty discovery mode",
+  "features": [
+    {
+      "featureId": "leasing-ejari-renewal-automation",
+      "name": "Ejari renewal automation",
+      "category": "Leasing",
+      "priority": "P1",
+      "suggestedAgent": "@Victoria",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/tenancy-ejari.md",
+      "researchBasis": "Dubai tenancy operations benchmark and Ejari renewal workflow expectations",
+      "suggestedPrompt": "@Victoria -- EXPAND: tenancy-ejari.md -> add Ejari renewal automation workflow including reminders, required document checklist, DLD/Ejari renewal submission steps, SLA tracking, and acceptance criteria",
+      "planKeywords": [
+        "ejari",
+        "renewal",
+        "tenancy"
+      ],
+      "tags": [
+        "leasing",
+        "workflow"
+      ],
+      "acceptanceCriteria": [
+        "Document Ejari renewal triggers, due dates, and handoff states",
+        "List required renewal documents and responsible parties",
+        "Define reminder cadence and renewal completion validation"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "Ejari renewal"
+        },
+        {
+          "type": "content",
+          "value": "renewal reminder cadence"
+        }
+      ]
+    },
+    {
+      "featureId": "leasing-pdc-bounce-escalation",
+      "name": "PDC bounce escalation",
+      "category": "Leasing",
+      "priority": "P0",
+      "suggestedAgent": "@Victoria",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/tenancy-ejari.md",
+      "researchBasis": "Dubai leasing ops norms for bounced cheque escalation and landlord notification",
+      "suggestedPrompt": "@Victoria -- EXPAND: tenancy-ejari.md -> add bounced PDC escalation flow including cheque-return capture, landlord alerting, grace-period rules, legal escalation checkpoints, and acceptance criteria",
+      "planKeywords": [
+        "pdc",
+        "bounced cheque",
+        "cheque workflow"
+      ],
+      "tags": [
+        "leasing",
+        "compliance"
+      ],
+      "acceptanceCriteria": [
+        "Define bounced cheque state machine and escalation deadlines",
+        "Capture landlord/tenant notifications and evidence requirements",
+        "Define legal escalation and closeout checkpoints"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "bounced cheque escalation"
+        },
+        {
+          "type": "content",
+          "value": "cheque return reason"
+        }
+      ]
+    },
+    {
+      "featureId": "leasing-enoc-generation",
+      "name": "Tenant e-NOC generation",
+      "category": "Leasing",
+      "priority": "P1",
+      "suggestedAgent": "@Victoria",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/09_crm_features/landlord-portal.md",
+      "researchBasis": "Dubai tenant services benchmark for bank/visa NOC self-service",
+      "suggestedPrompt": "@Victoria -- DRAFT: landlord-portal.md -> add tenant e-NOC generation workflow for bank, visa, and move-out use cases with approval routing, PDF issuance, and audit trail requirements",
+      "planKeywords": [
+        "noc",
+        "landlord portal",
+        "tenant documents"
+      ],
+      "tags": [
+        "leasing",
+        "documents"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "e-noc generation"
+        },
+        {
+          "type": "content",
+          "value": "visa noc request"
+        }
+      ]
+    },
+    {
+      "featureId": "finance-vat-fta-filing",
+      "name": "VAT FTA filing workflow",
+      "category": "Finance",
+      "priority": "P0",
+      "suggestedAgent": "@Invoice",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/financial-reporting.md",
+      "researchBasis": "UAE FTA real-estate VAT filing requirements and finance ops best practice",
+      "suggestedPrompt": "@Invoice -- EXPAND: financial-reporting.md -> add UAE FTA VAT filing workflow including taxable/exempt buckets, quarterly submission steps, reconciliation checkpoints, exception handling, and acceptance criteria",
+      "planKeywords": [
+        "vat",
+        "fta",
+        "filing",
+        "financial reporting"
+      ],
+      "tags": [
+        "finance",
+        "compliance"
+      ],
+      "acceptanceCriteria": [
+        "Define VAT data sources and taxable/exempt categorization rules",
+        "Document quarterly filing workflow with approvals and deadlines",
+        "Define reconciliation controls and exception handling"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "FTA filing workflow"
+        },
+        {
+          "type": "content",
+          "value": "quarterly VAT submission"
+        }
+      ]
+    },
+    {
+      "featureId": "finance-commission-split-calculator",
+      "name": "Commission split calculator",
+      "category": "Finance",
+      "priority": "P1",
+      "suggestedAgent": "@Invoice",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/09_crm_features/financial-reporting.md",
+      "researchBasis": "Brokerage finance standard for multi-agent commission waterfalls",
+      "suggestedPrompt": "@Invoice -- DRAFT: financial-reporting.md -> add commission split calculator covering agent, manager, referral, and company share waterfalls, overrides, and payout validation rules",
+      "planKeywords": [
+        "commission",
+        "payout",
+        "split"
+      ],
+      "tags": [
+        "finance",
+        "sales"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "commission split calculator"
+        },
+        {
+          "type": "content",
+          "value": "referral commission waterfall"
+        }
+      ]
+    },
+    {
+      "featureId": "finance-arrears-escalation",
+      "name": "Rent arrears escalation",
+      "category": "Finance",
+      "priority": "P1",
+      "suggestedAgent": "@Invoice",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/financial-reporting.md",
+      "researchBasis": "Property management arrears control benchmark for rent recovery",
+      "suggestedPrompt": "@Invoice -- EXPAND: financial-reporting.md -> add rent arrears escalation ladder with aging buckets, reminders, landlord escalation, and recovery KPI tracking",
+      "planKeywords": [
+        "arrears",
+        "rent recovery",
+        "overdue"
+      ],
+      "tags": [
+        "finance",
+        "leasing"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "arrears escalation ladder"
+        },
+        {
+          "type": "content",
+          "value": "rent aging bucket"
+        }
+      ]
+    },
+    {
+      "featureId": "compliance-form7-form12-generation",
+      "name": "RERA Form 7 and Form 12 generation",
+      "category": "Compliance",
+      "priority": "P0",
+      "suggestedAgent": "@Timnit",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/09_crm_features/legal-management.md",
+      "researchBasis": "RERA notice generation compliance and dispute-readiness requirements",
+      "suggestedPrompt": "@Timnit -- DRAFT: legal-management.md -> add Form 7 and Form 12 generation workflow with notice grounds, deadlines, approval steps, evidence attachments, and delivery-proof requirements",
+      "planKeywords": [
+        "form 7",
+        "form 12",
+        "legal notice"
+      ],
+      "tags": [
+        "compliance",
+        "legal"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "Form 7 generation"
+        },
+        {
+          "type": "content",
+          "value": "Form 12 generation"
+        }
+      ]
+    },
+    {
+      "featureId": "compliance-oqood-registration",
+      "name": "Oqood registration workflow",
+      "category": "Compliance",
+      "priority": "P0",
+      "suggestedAgent": "@Timnit",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/09_crm_features/dld-integration.md",
+      "researchBasis": "DLD Oqood off-plan registration process expectations",
+      "suggestedPrompt": "@Timnit -- DRAFT: dld-integration.md -> add end-to-end Oqood registration workflow including payload schema, retries, exception handling, and settlement checkpoints",
+      "planKeywords": [
+        "oqood",
+        "off-plan",
+        "dld integration"
+      ],
+      "tags": [
+        "compliance",
+        "api"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "Oqood registration workflow"
+        },
+        {
+          "type": "content",
+          "value": "POST /oqood/register"
+        }
+      ]
+    },
+    {
+      "featureId": "compliance-aml-risk-scoring",
+      "name": "AML risk scoring",
+      "category": "Compliance",
+      "priority": "P1",
+      "suggestedAgent": "@Sofia",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/05_requirements/compliance-requirements.md",
+      "researchBasis": "UAE AML enhanced due diligence expectations for real-estate brokerages",
+      "suggestedPrompt": "@Sofia -- EXPAND: compliance-requirements.md -> add AML risk scoring model covering source-of-funds triggers, PEP checks, sanctions screening, review cadence, and audit outputs",
+      "planKeywords": [
+        "aml",
+        "risk scoring",
+        "pep"
+      ],
+      "tags": [
+        "compliance",
+        "security"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "AML risk scoring"
+        },
+        {
+          "type": "content",
+          "value": "source of funds trigger"
+        }
+      ]
+    },
+    {
+      "featureId": "ux-wcag-22-aa-audit",
+      "name": "WCAG 2.2 AA audit package",
+      "category": "UX",
+      "priority": "P1",
+      "suggestedAgent": "@Marissa",
+      "suggestedAction": "EXPAND",
+      "targetFile": "plans/IMPROVEMENTS_UX.md",
+      "researchBasis": "WCAG 2.2 AA checklist for luxury web platforms and government-adjacent portals",
+      "suggestedPrompt": "@Marissa -- EXPAND: IMPROVEMENTS_UX.md -> add a WCAG 2.2 AA audit package for keyboard flow, focus visibility, touch targets, and remediation checkpoints",
+      "planKeywords": [
+        "wcag",
+        "accessibility",
+        "item 31"
+      ],
+      "tags": [
+        "ux",
+        "accessibility"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "WCAG 2.2"
+        },
+        {
+          "type": "content",
+          "value": "focus appearance"
+        }
+      ]
+    },
+    {
+      "featureId": "ux-dark-mode-completeness",
+      "name": "Dark mode completeness audit",
+      "category": "UX",
+      "priority": "P2",
+      "suggestedAgent": "@Marissa",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/06_design_architecture/ui-ux-specification.md",
+      "researchBasis": "Luxury-brand consistency requirement for dark mode token parity",
+      "suggestedPrompt": "@Marissa -- EXPAND: ui-ux-specification.md -> add dark mode completeness audit covering tokens, contrast exceptions, fallback surfaces, and QA checkpoints",
+      "planKeywords": [
+        "dark mode",
+        "token map"
+      ],
+      "tags": [
+        "ux",
+        "design-tokens"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "dark mode completeness audit"
+        },
+        {
+          "type": "content",
+          "value": "dark token parity"
+        }
+      ]
+    },
+    {
+      "featureId": "ux-arabic-rtl-keyboard-nav",
+      "name": "Arabic RTL keyboard navigation audit",
+      "category": "UX",
+      "priority": "P1",
+      "suggestedAgent": "@Marissa",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/06_design_architecture/ui-ux-specification.md",
+      "researchBasis": "Arabic RTL usability expectations for MENA property portals",
+      "suggestedPrompt": "@Marissa -- EXPAND: ui-ux-specification.md -> add Arabic RTL keyboard navigation audit covering drawer direction, tab order, focus movement, and localization QA",
+      "planKeywords": [
+        "rtl",
+        "arabic",
+        "keyboard"
+      ],
+      "tags": [
+        "ux",
+        "rtl"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "RTL keyboard navigation audit"
+        },
+        {
+          "type": "content",
+          "value": "focus order in rtl"
+        }
+      ]
+    },
+    {
+      "featureId": "ai-lead-score-retrigger",
+      "name": "AI lead-score re-trigger automation",
+      "category": "AI",
+      "priority": "P1",
+      "suggestedAgent": "@Joelle",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/03_ai_assistants/README.md",
+      "researchBasis": "CRM AI scoring best practice for re-evaluating leads after behavior changes",
+      "suggestedPrompt": "@Joelle -- DRAFT: README.md -> add AI lead-score re-trigger automation covering behavior triggers, cooldowns, fallback handling, and audit visibility",
+      "planKeywords": [
+        "lead scoring",
+        "re-trigger",
+        "ai"
+      ],
+      "tags": [
+        "ai",
+        "analytics"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "lead-score re-trigger"
+        },
+        {
+          "type": "content",
+          "value": "rescoring cooldown"
+        }
+      ]
+    },
+    {
+      "featureId": "ai-whatsapp-fallback-recovery",
+      "name": "WhatsApp chatbot fallback recovery",
+      "category": "AI",
+      "priority": "P1",
+      "suggestedAgent": "@Jaime",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/whatsapp-integration.md",
+      "researchBasis": "Conversational CRM design pattern for bot fallback and human recovery",
+      "suggestedPrompt": "@Jaime -- EXPAND: whatsapp-integration.md -> add chatbot fallback recovery covering retry prompts, knowledge gaps, human-agent takeover, and conversation salvage KPIs",
+      "planKeywords": [
+        "whatsapp",
+        "fallback",
+        "chatbot"
+      ],
+      "tags": [
+        "ai",
+        "whatsapp"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "fallback recovery"
+        },
+        {
+          "type": "content",
+          "value": "conversation salvage"
+        }
+      ]
+    },
+    {
+      "featureId": "ai-generated-property-descriptions",
+      "name": "AI-generated property description workflow",
+      "category": "AI",
+      "priority": "P2",
+      "suggestedAgent": "@Joelle",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/03_ai_assistants/README.md",
+      "researchBasis": "PropTech AI writing assist benchmark for listing enrichment",
+      "suggestedPrompt": "@Joelle -- DRAFT: README.md -> add AI-generated property description workflow covering prompt inputs, tone controls, compliance review, and approval safeguards",
+      "planKeywords": [
+        "property description",
+        "ai generated",
+        "listing copy"
+      ],
+      "tags": [
+        "ai",
+        "content"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "AI-generated property descriptions"
+        },
+        {
+          "type": "content",
+          "value": "listing copy approval"
+        }
+      ]
+    },
+    {
+      "featureId": "analytics-mobile-view",
+      "name": "Mobile analytics view",
+      "category": "Analytics",
+      "priority": "P1",
+      "suggestedAgent": "@Cassie",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/analytics-dashboard.md",
+      "researchBasis": "Field-agent mobile KPI access benchmark for broker CRMs",
+      "suggestedPrompt": "@Cassie -- EXPAND: analytics-dashboard.md -> add mobile analytics view with compact KPI cards, thumb-friendly filters, offline considerations, and validation criteria",
+      "planKeywords": [
+        "mobile analytics",
+        "analytics dashboard"
+      ],
+      "tags": [
+        "analytics",
+        "mobile"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "mobile analytics view"
+        },
+        {
+          "type": "content",
+          "value": "thumb-friendly KPI filter"
+        }
+      ]
+    },
+    {
+      "featureId": "analytics-export-api",
+      "name": "Analytics CSV/Excel export API",
+      "category": "Analytics",
+      "priority": "P1",
+      "suggestedAgent": "@Cassie",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/analytics-dashboard.md",
+      "researchBasis": "Executive reporting expectation for exportable CRM metrics",
+      "suggestedPrompt": "@Cassie -- EXPAND: analytics-dashboard.md -> add CSV/Excel export API workflow including async jobs, download security, row limits, and delivery notifications",
+      "planKeywords": [
+        "csv",
+        "excel",
+        "export api"
+      ],
+      "tags": [
+        "analytics",
+        "api"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "CSV/Excel export API"
+        },
+        {
+          "type": "content",
+          "value": "analytics export job"
+        }
+      ]
+    },
+    {
+      "featureId": "analytics-area-heatmap-drilldown",
+      "name": "Area heatmap drill-down",
+      "category": "Analytics",
+      "priority": "P2",
+      "suggestedAgent": "@Fei-Fei",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/09_crm_features/market-analytics.md",
+      "researchBasis": "Dubai area intelligence reporting norm for market comparison dashboards",
+      "suggestedPrompt": "@Fei-Fei -- DRAFT: market-analytics.md -> add area heatmap drill-down experience with choropleth interaction, market filters, and insight panel acceptance criteria",
+      "planKeywords": [
+        "heatmap",
+        "area",
+        "market analytics"
+      ],
+      "tags": [
+        "analytics",
+        "maps"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "area heatmap drill-down"
+        },
+        {
+          "type": "content",
+          "value": "choropleth insight panel"
+        }
+      ]
+    },
+    {
+      "featureId": "quality-server-route-test-coverage",
+      "name": "Server route test coverage uplift",
+      "category": "Quality",
+      "priority": "P1",
+      "suggestedAgent": "@Salma",
+      "suggestedAction": "DRAFT",
+      "targetFile": "plans/IMPROVEMENTS_UX.md",
+      "researchBasis": "Backend reliability standard for critical route coverage in CRM systems",
+      "suggestedPrompt": "@Salma -- DRAFT: IMPROVEMENTS_UX.md -> add a server route test coverage uplift plan covering critical route inventory, risk ranking, and validation gates",
+      "planKeywords": [
+        "test coverage",
+        "server routes",
+        "regression"
+      ],
+      "tags": [
+        "quality",
+        "testing"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "server route coverage matrix"
+        },
+        {
+          "type": "content",
+          "value": "critical route regression inventory"
+        }
+      ]
+    },
+    {
+      "featureId": "quality-tenant-portal-e2e",
+      "name": "Tenant portal Playwright E2E suite",
+      "category": "Quality",
+      "priority": "P1",
+      "suggestedAgent": "@Salma",
+      "suggestedAction": "DRAFT",
+      "targetFile": "plans/IMPROVEMENTS_UX.md",
+      "researchBasis": "Tenant self-service reliability benchmark for end-to-end coverage",
+      "suggestedPrompt": "@Salma -- DRAFT: IMPROVEMENTS_UX.md -> add a Playwright E2E suite plan for tenant portal login, documents, payments, and maintenance flows",
+      "planKeywords": [
+        "playwright",
+        "tenant portal",
+        "e2e"
+      ],
+      "tags": [
+        "quality",
+        "testing"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "path",
+          "value": "tenant-portal.spec.ts"
+        },
+        {
+          "type": "content",
+          "value": "tenant portal e2e"
+        }
+      ]
+    },
+    {
+      "featureId": "quality-redis-cache-layer",
+      "name": "Redis cache layer planning",
+      "category": "DevOps",
+      "priority": "P2",
+      "suggestedAgent": "@Wafa",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/09_crm_features/wave-15-cache-performance.md",
+      "researchBasis": "CRM performance benchmark for caching frequently-read data",
+      "suggestedPrompt": "@Wafa -- DRAFT: wave-15-cache-performance.md -> add Redis cache layer planning for keys, TTLs, invalidation, and rollout safeguards",
+      "planKeywords": [
+        "redis",
+        "cache",
+        "wave 15"
+      ],
+      "tags": [
+        "devops",
+        "performance"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "Redis cache key strategy"
+        },
+        {
+          "type": "content",
+          "value": "cache invalidation matrix"
+        }
+      ]
+    },
+    {
+      "featureId": "security-csp-completeness",
+      "name": "CSP header completeness audit",
+      "category": "Security",
+      "priority": "P1",
+      "suggestedAgent": "@S5",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/09_crm_features/wave-16-security-hardening.md",
+      "researchBasis": "OWASP and modern frontend deployment policy for CSP coverage",
+      "suggestedPrompt": "@S5 -- DRAFT: wave-16-security-hardening.md -> add CSP completeness audit covering script-src, connect-src, report-only rollout, and third-party exceptions",
+      "planKeywords": [
+        "csp",
+        "security hardening"
+      ],
+      "tags": [
+        "security",
+        "headers"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "Content-Security-Policy"
+        },
+        {
+          "type": "content",
+          "value": "report-uri"
+        }
+      ]
+    },
+    {
+      "featureId": "security-csrf-mutation-routes",
+      "name": "CSRF coverage for mutation routes",
+      "category": "Security",
+      "priority": "P0",
+      "suggestedAgent": "@S5",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/wave-16-security-hardening.md",
+      "researchBasis": "OWASP CSRF mitigation requirement for session-backed mutation endpoints",
+      "suggestedPrompt": "@S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification",
+      "planKeywords": [
+        "csrf",
+        "mutation routes"
+      ],
+      "tags": [
+        "security",
+        "api"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "csrf token validation"
+        },
+        {
+          "type": "content",
+          "value": "mutation route csrf"
+        }
+      ]
+    },
+    {
+      "featureId": "security-jwt-refresh-rotation",
+      "name": "JWT refresh rotation hardening",
+      "category": "Security",
+      "priority": "P1",
+      "suggestedAgent": "@S5",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/wave-16-security-hardening.md",
+      "researchBasis": "Auth session hardening baseline for rotating refresh tokens",
+      "suggestedPrompt": "@S5 -- EXPAND: wave-16-security-hardening.md -> add JWT refresh rotation hardening including token family invalidation, replay detection, and device-bound session audit",
+      "planKeywords": [
+        "jwt refresh",
+        "rotation",
+        "auth"
+      ],
+      "tags": [
+        "security",
+        "auth"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "refresh token family"
+        },
+        {
+          "type": "content",
+          "value": "refresh replay detection"
+        }
+      ]
+    },
+    {
+      "featureId": "operations-maintenance-sla-dashboard",
+      "name": "Maintenance SLA dashboard",
+      "category": "Operations",
+      "priority": "P2",
+      "suggestedAgent": "@Rania",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/09_crm_features/maintenance.md",
+      "researchBasis": "Resident operations benchmark for SLA monitoring and escalations",
+      "suggestedPrompt": "@Rania -- DRAFT: maintenance.md -> add a maintenance SLA dashboard with queue aging, breach alerts, contractor performance, and landlord visibility metrics",
+      "planKeywords": [
+        "maintenance",
+        "sla",
+        "dashboard"
+      ],
+      "tags": [
+        "operations",
+        "analytics"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "maintenance SLA dashboard"
+        },
+        {
+          "type": "content",
+          "value": "queue aging by contractor"
+        }
+      ]
+    },
+    {
+      "featureId": "operations-tenant-journey-map",
+      "name": "Tenant journey mapping",
+      "category": "Operations",
+      "priority": "P2",
+      "suggestedAgent": "@Tara",
+      "suggestedAction": "DRAFT",
+      "targetFile": "business_docs/09_crm_features/tenant-portal.md",
+      "researchBasis": "Tenant experience mapping norm for self-service product evolution",
+      "suggestedPrompt": "@Tara -- DRAFT: tenant-portal.md -> add tenant journey mapping from onboarding through renewal, including pain points, KPIs, and service moments",
+      "planKeywords": [
+        "tenant journey",
+        "portal ux"
+      ],
+      "tags": [
+        "operations",
+        "ux"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "tenant journey map"
+        },
+        {
+          "type": "content",
+          "value": "post move-in touchpoint"
+        }
+      ]
+    },
+    {
+      "featureId": "seo-local-business-schema-audit",
+      "name": "Local business schema audit",
+      "category": "SEO",
+      "priority": "P2",
+      "suggestedAgent": "@Rachel",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/seo-strategy.md",
+      "researchBasis": "Google local SEO baseline for multilingual real estate brands",
+      "suggestedPrompt": "@Rachel -- EXPAND: seo-strategy.md -> add a local business schema audit covering JSON-LD completeness, branch details, Arabic metadata, and validation steps",
+      "planKeywords": [
+        "seo",
+        "local business",
+        "schema"
+      ],
+      "tags": [
+        "seo",
+        "metadata"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "LocalBusiness JSON-LD audit"
+        },
+        {
+          "type": "content",
+          "value": "Arabic metadata validation"
+        }
+      ]
+    },
+    {
+      "featureId": "seo-hreflang-coverage",
+      "name": "Arabic/English hreflang coverage",
+      "category": "SEO",
+      "priority": "P2",
+      "suggestedAgent": "@Rachel",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/seo-strategy.md",
+      "researchBasis": "Multilingual search benchmark for MENA property portals",
+      "suggestedPrompt": "@Rachel -- EXPAND: seo-strategy.md -> add hreflang coverage planning for English and Arabic pages, localization rules, and validation workflow",
+      "planKeywords": [
+        "hreflang",
+        "arabic",
+        "english"
+      ],
+      "tags": [
+        "seo",
+        "rtl"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "hreflang coverage matrix"
+        },
+        {
+          "type": "content",
+          "value": "localized canonical rules"
+        }
+      ]
+    },
+    {
+      "featureId": "communications-resend-delivery-analytics",
+      "name": "Resend delivery analytics",
+      "category": "Communications",
+      "priority": "P2",
+      "suggestedAgent": "@Annie",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/email-automation.md",
+      "researchBasis": "Email operations benchmark for lifecycle messaging observability",
+      "suggestedPrompt": "@Annie -- EXPAND: email-automation.md -> add Resend delivery analytics with event capture, bounce handling, suppression, and campaign health KPIs",
+      "planKeywords": [
+        "resend",
+        "delivery",
+        "email analytics"
+      ],
+      "tags": [
+        "communications",
+        "analytics"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "Resend delivery analytics"
+        },
+        {
+          "type": "content",
+          "value": "suppression list workflow"
+        }
+      ]
+    },
+    {
+      "featureId": "documents-template-registry",
+      "name": "Document template registry",
+      "category": "Documents",
+      "priority": "P1",
+      "suggestedAgent": "@Annie",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/document-generation.md",
+      "researchBasis": "Enterprise document ops requirement for governed template sets",
+      "suggestedPrompt": "@Annie -- EXPAND: document-generation.md -> add a document template registry with versioning, variable maps, approval controls, and deprecation workflow",
+      "planKeywords": [
+        "template registry",
+        "document generation"
+      ],
+      "tags": [
+        "documents",
+        "workflow"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "document template registry"
+        },
+        {
+          "type": "content",
+          "value": "template deprecation workflow"
+        }
+      ]
+    },
+    {
+      "featureId": "crm-mobile-drawer-hardening",
+      "name": "CRM mobile drawer hardening",
+      "category": "UX",
+      "priority": "P1",
+      "suggestedAgent": "@Marissa",
+      "suggestedAction": "EXPAND",
+      "targetFile": "plans/IMPROVEMENTS_UX.md",
+      "researchBasis": "Tablet and phone CRM usability requirement for field teams",
+      "suggestedPrompt": "@Marissa -- EXPAND: IMPROVEMENTS_UX.md -> add CRM mobile drawer hardening with gesture support, icon-only tablet mode, RTL behavior, and device validation",
+      "planKeywords": [
+        "mobile crm",
+        "drawer",
+        "tablet"
+      ],
+      "tags": [
+        "ux",
+        "mobile"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "path",
+          "value": "MobileCRMDrawer.tsx"
+        },
+        {
+          "type": "content",
+          "value": "swipe-right to open drawer"
+        }
+      ]
+    },
+    {
+      "featureId": "pwa-groundwork-refresh",
+      "name": "PWA groundwork refresh",
+      "category": "UX",
+      "priority": "P2",
+      "suggestedAgent": "@PWA",
+      "suggestedAction": "EXPAND",
+      "targetFile": "plans/IMPROVEMENTS_UX.md",
+      "researchBasis": "Mobile installability groundwork requirement for field usage",
+      "suggestedPrompt": "@PWA -- EXPAND: IMPROVEMENTS_UX.md -> add PWA groundwork refresh covering manifest review, service worker scope, cache policy, and installability checks",
+      "planKeywords": [
+        "pwa",
+        "manifest",
+        "service worker"
+      ],
+      "tags": [
+        "ux",
+        "pwa"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "path",
+          "value": "manifest.json"
+        },
+        {
+          "type": "content",
+          "value": "registerType: 'autoUpdate'"
+        }
+      ]
+    },
+    {
+      "featureId": "realtime-notification-preferences",
+      "name": "Notification preferences matrix",
+      "category": "Operations",
+      "priority": "P2",
+      "suggestedAgent": "@Socket",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/wave-13-realtime-notifications.md",
+      "researchBasis": "Broker productivity norm for channel-specific alert preferences",
+      "suggestedPrompt": "@Socket -- EXPAND: wave-13-realtime-notifications.md -> add notification preferences matrix covering in-app, email, push, and quiet hours by role",
+      "planKeywords": [
+        "notification preferences",
+        "quiet hours"
+      ],
+      "tags": [
+        "operations",
+        "realtime"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "notification preferences matrix"
+        },
+        {
+          "type": "content",
+          "value": "quiet hours by role"
+        }
+      ]
+    },
+    {
+      "featureId": "media-retention-policy",
+      "name": "Media retention policy",
+      "category": "Operations",
+      "priority": "P2",
+      "suggestedAgent": "@Cloudinary",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/wave-13-media-upload.md",
+      "researchBasis": "Operational media governance requirement for property assets",
+      "suggestedPrompt": "@Cloudinary -- EXPAND: wave-13-media-upload.md -> add media retention policy covering raw/original storage, derivatives, archival, and deletion approval rules",
+      "planKeywords": [
+        "media retention",
+        "upload governance"
+      ],
+      "tags": [
+        "operations",
+        "media"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "media retention policy"
+        },
+        {
+          "type": "content",
+          "value": "derivative archival workflow"
+        }
+      ]
+    },
+    {
+      "featureId": "virtual-tour-fallback-behavior",
+      "name": "Virtual tour fallback behavior",
+      "category": "UX",
+      "priority": "P2",
+      "suggestedAgent": "@Pannellum",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/wave-13-virtual-tour.md",
+      "researchBasis": "Luxury listing UX requirement for low-bandwidth and unsupported-device fallback",
+      "suggestedPrompt": "@Pannellum -- EXPAND: wave-13-virtual-tour.md -> add fallback behavior for low-bandwidth, unsupported devices, and accessibility alternatives in virtual tours",
+      "planKeywords": [
+        "virtual tour",
+        "fallback",
+        "bandwidth"
+      ],
+      "tags": [
+        "ux",
+        "media"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "virtual tour fallback behavior"
+        },
+        {
+          "type": "content",
+          "value": "low-bandwidth tour fallback"
+        }
+      ]
+    },
+    {
+      "featureId": "validation-error-envelope-coverage",
+      "name": "Validation error envelope coverage",
+      "category": "Compliance",
+      "priority": "P2",
+      "suggestedAgent": "@Zod",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/wave-14-validation-architecture.md",
+      "researchBasis": "API consistency standard for validation failure responses",
+      "suggestedPrompt": "@Zod -- EXPAND: wave-14-validation-architecture.md -> add validation error envelope coverage with field-level issues, localization hooks, and tracing metadata",
+      "planKeywords": [
+        "validation",
+        "error envelope"
+      ],
+      "tags": [
+        "compliance",
+        "api"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "validation error envelope"
+        },
+        {
+          "type": "content",
+          "value": "field-level validation issue"
+        }
+      ]
+    },
+    {
+      "featureId": "product-automation-audit-visibility",
+      "name": "Product automation audit visibility",
+      "category": "AI",
+      "priority": "P2",
+      "suggestedAgent": "@LeadScore",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/wave-14-product-automation.md",
+      "researchBasis": "CRM automation governance standard for explainability and review",
+      "suggestedPrompt": "@LeadScore -- EXPAND: wave-14-product-automation.md -> add automation audit visibility including who/why logs, rollback controls, and operator review queue",
+      "planKeywords": [
+        "automation audit",
+        "lead score"
+      ],
+      "tags": [
+        "ai",
+        "operations"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "automation audit visibility"
+        },
+        {
+          "type": "content",
+          "value": "operator review queue"
+        }
+      ]
+    },
+    {
+      "featureId": "finance-mortgage-offer-comparison",
+      "name": "Mortgage offer comparison panel",
+      "category": "Finance",
+      "priority": "P2",
+      "suggestedAgent": "@Mortgage",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/wave-14-finance-features.md",
+      "researchBasis": "Buyer finance workflow benchmark for comparing lender offers",
+      "suggestedPrompt": "@Mortgage -- EXPAND: wave-14-finance-features.md -> add mortgage offer comparison panel with bank terms, APR differences, and recommendation rules",
+      "planKeywords": [
+        "mortgage",
+        "comparison",
+        "offer"
+      ],
+      "tags": [
+        "finance",
+        "product"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "mortgage offer comparison panel"
+        },
+        {
+          "type": "content",
+          "value": "APR difference breakdown"
+        }
+      ]
+    },
+    {
+      "featureId": "cache-readthrough-policy",
+      "name": "Cache read-through policy",
+      "category": "DevOps",
+      "priority": "P2",
+      "suggestedAgent": "@Redis",
+      "suggestedAction": "EXPAND",
+      "targetFile": "business_docs/09_crm_features/wave-15-cache-performance.md",
+      "researchBasis": "Scalable CRM backend pattern for read-through and stale-while-revalidate caching",
+      "suggestedPrompt": "@Redis -- EXPAND: wave-15-cache-performance.md -> add read-through cache policy including stale-while-revalidate, eviction signals, and query ownership mapping",
+      "planKeywords": [
+        "read-through",
+        "cache",
+        "swr"
+      ],
+      "tags": [
+        "devops",
+        "performance"
+      ],
+      "codebaseSignatures": [
+        {
+          "type": "content",
+          "value": "read-through cache policy"
+        },
+        {
+          "type": "content",
+          "value": "stale-while-revalidate cache"
+        }
+      ]
+    }
+  ]
+}

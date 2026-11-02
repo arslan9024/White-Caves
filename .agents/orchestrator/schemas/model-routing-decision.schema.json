@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Aegis Model Routing Decision",
+  "type": "object",
+  "required": [
+    "taskClass",
+    "riskLevel",
+    "contextSize",
+    "recommendedModel",
+    "fallbackModel",
+    "modelTier"
+  ],
+  "properties": {
+    "taskClass": {
+      "type": "string",
+      "minLength": 1
+    },
+    "riskLevel": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "contextSize": {
+      "type": "string",
+      "enum": [
+        "small",
+        "medium",
+        "large"
+      ]
+    },
+    "recommendedModel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fallbackModel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "modelTier": {
+      "type": "string",
+      "enum": [
+        "free",
+        "premium"
+      ]
+    },
+    "premiumAllowed": {
+      "type": "boolean"
+    },
+    "premiumTurns": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "requiresPlanPacket": {
+      "type": "boolean"
+    },
+    "reasonCodes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sessionCapMode": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}
