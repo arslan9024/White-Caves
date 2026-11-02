@@ -1,0 +1,620 @@
+{
+  "frameworkCode": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+  "totalEngineeringDepartments": 12,
+  "nodesPerDepartment": 9,
+  "orchestrationEnvironment": "Antigravity IDE & VS Code Local Staging",
+  "departments": [
+    {
+      "id": 1,
+      "name": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "team": [
+        {
+          "agent": "@Ada",
+          "role": "Principal Multi-Agent System Architect",
+          "responsibility": "Architects cross-agent workflow pipelines and global state orchestration frameworks in Antigravity."
+        },
+        {
+          "agent": "@Margaret",
+          "role": "Agent Context Boundary Guardrail Specialist",
+          "responsibility": "Enforces prompt isolation parameters, execution tokens, and system-wide agent context lengths."
+        },
+        {
+          "agent": "@Grace",
+          "role": "Dynamic Token Preservation Shield Developer",
+          "responsibility": "Monitors memory context usage limits during iterative code generation execution loops."
+        },
+        {
+          "agent": "@Elena",
+          "role": "Asynchronous Multi-Agent Sync Hook Architect",
+          "responsibility": "Binds parallel agent workspace routines to prevent race conditions during file generation."
+        },
+        {
+          "agent": "@Zoe",
+          "role": "Agent Core Memory Pipeline Engineer",
+          "responsibility": "Structures historical codebase context arrays to optimize runtime agent file editing speeds."
+        },
+        {
+          "agent": "@Marissa_Mayer",
+          "role": "Agent Output Verification Supervisor",
+          "responsibility": "Validates code changes compiled by agents before triggering main branch push events."
+        },
+        {
+          "agent": "@Gwynne_Shotwell",
+          "role": "Autonomous Compilation Flow Controller",
+          "responsibility": "Manages heavy code generation tasks across isolated background thread clusters safely."
+        },
+        {
+          "agent": "@Diane_Greene",
+          "role": "Agent-to-Human Handshake Configurator",
+          "responsibility": "Programs system hooks that elevate critical compilation blockers directly to human operators."
+        },
+        {
+          "agent": "@Safra_Catz",
+          "role": "Agent Cluster Computing Load Balancer",
+          "responsibility": "Optimizes background processing power across simultaneous agent code refactoring runs."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "User Interface (UI/UX) View Primitive Architecture",
+      "team": [
+        {
+          "agent": "@Una",
+          "role": "Principal UI Component Palette Architect",
+          "responsibility": "Designs atomic layout primitives matching strict 4-Way Folder Segregation standards."
+        },
+        {
+          "agent": "@Lea",
+          "role": "Responsive Viewport Framework Programmer",
+          "responsibility": "Develops dashboard layout systems to preserve perfect presentation symmetry across viewports."
+        },
+        {
+          "agent": "@Marissa",
+          "role": "Luxury Design System CSS Token Engineer",
+          "responsibility": "Locks down system styling profiles, dark mode canvases, and corporate red variables (#EF4444)."
+        },
+        {
+          "agent": "@Tracy",
+          "role": "Hardware-Accelerated Animation Core Specialist",
+          "responsibility": "Scripts interface micro-interactions and smooth component transition rules via Framer Motion."
+        },
+        {
+          "agent": "@Africa",
+          "role": "Client Symmetrical Layout Balance Engineer",
+          "responsibility": "Calculates geometry positions to locate floating UI tools symmetrically over view spaces."
+        },
+        {
+          "agent": "@Lea_Verou",
+          "role": "Advanced Browser Styling Transpiler Specialist",
+          "responsibility": "Engineers specialized CSS workarounds to maintain visual parity across web view engines."
+        },
+        {
+          "agent": "@Rachel_Andrew",
+          "role": "Multi-Grid Layout Sizing Engineer",
+          "responsibility": "Maintains complex tabular matrix data positioning templates across dashboard screens."
+        },
+        {
+          "agent": "@Sara_Soueidan",
+          "role": "DOM Accessibility & ARIA Layout Auditor",
+          "responsibility": "Optimizes structural layout properties to pass strict platform usability validation checks."
+        },
+        {
+          "agent": "@Estelle_Weyl",
+          "role": "Mobile Web View Optimization Specialist",
+          "responsibility": "Truncates asset loading scripts to ensure instantaneous canvas component rendering times."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Cross-Platform Mobile Engine Engineering",
+      "team": [
+        {
+          "agent": "@Iris",
+          "role": "Principal Cross-Platform Mobile Architect",
+          "responsibility": "Designs responsive layout definitions and native application build configurations."
+        },
+        {
+          "agent": "@Cassie",
+          "role": "iOS Native App Integration Developer",
+          "responsibility": "Optimizes mobile asset processing pathways explicitly for Apple device deployment zones."
+        },
+        {
+          "agent": "@Fei-Fei",
+          "role": "Android Core System Runtime Programmer",
+          "responsibility": "Builds responsive client-side app files for deployment on Google OS architectures."
+        },
+        {
+          "agent": "@Anima",
+          "role": "Mobile Client Local Persistence Cache Developer",
+          "responsibility": "Configures secure offline memory spaces and transactional local synchronization parameters."
+        },
+        {
+          "agent": "@Dina_Katabi",
+          "role": "Hardware Sensor Protocol Integrator",
+          "responsibility": "Binds mobile app assets directly to camera captures, biometric sensors, and GPS targets."
+        },
+        {
+          "agent": "@Ayah_Bdeir",
+          "role": "Mobile Peripheral Communication Specialist",
+          "responsibility": "Manages local connection layers to tie mobile screens safely to telemetry loops."
+        },
+        {
+          "agent": "@Limor_Fried",
+          "role": "Mobile Battery Consumption Optimizer",
+          "responsibility": "Refines data processing intervals to minimize battery drain during foreground sync loops."
+        },
+        {
+          "agent": "@Jerri_Ellsworth",
+          "role": "Mobile Canvas Hardware Graphics Programmer",
+          "responsibility": "Optimizes GPU rendering layers for fluid tracking transitions on small viewports."
+        },
+        {
+          "agent": "@Jade_Raymond",
+          "role": "Concurrent Mobile Thread Flow Engineer",
+          "responsibility": "Isolates application execution scripts from main UI threads to bypass layout rendering stalls."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "High-Throughput Backend & Distributed Core Systems",
+      "team": [
+        {
+          "agent": "@Mira",
+          "role": "Principal Server Infrastructure Systems Architect",
+          "responsibility": "Designs scalable multi-threaded server architecture routines for high-frequency data handling."
+        },
+        {
+          "agent": "@Petra",
+          "role": "Senior Node.js Core Backend Developer",
+          "responsibility": "Authors canonical business rules controllers and modular system processing pathways."
+        },
+        {
+          "agent": "@Barbara_Liskov",
+          "role": "Backend Subsystem Abstraction Specialist",
+          "responsibility": "Enforces strict class definition principles across all server runtime modules."
+        },
+        {
+          "agent": "@Frances_Allen",
+          "role": "Instruction Set Compiling Optimization Expert",
+          "responsibility": "Refines code compilation paths to minimize server thread processing delays."
+        },
+        {
+          "agent": "@Jean_Sammet",
+          "role": "Core Logic Expression Parser Programmer",
+          "responsibility": "Maintains calculation engines responsible for computing tiered pricing matrices."
+        },
+        {
+          "agent": "@Ursula_Burns",
+          "role": "Parallel Server Transaction Coordinator",
+          "responsibility": "Balances asynchronous background queue pipelines to manage data traffic spikes smoothly."
+        },
+        {
+          "agent": "@Padmasree_Warrior",
+          "role": "Distributed Microservice Network Engineer",
+          "responsibility": "Manages container networking rules to protect internal data flows from communication lag."
+        },
+        {
+          "agent": "@Peggy_Johnson",
+          "role": "Enterprise Software Interface Integrator",
+          "responsibility": "Binds application service layers securely to core multi-server transaction backbones."
+        },
+        {
+          "agent": "@Ruth_Porat",
+          "role": "Backend Compute Resource Efficiency Auditor",
+          "responsibility": "Instruments logging loops to discover and fix memory leak vulnerabilities in server processes."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Relational Schemas & Cloud Object Key Data Stores",
+      "team": [
+        {
+          "agent": "@Barbara",
+          "role": "Principal Relational Database Architect",
+          "responsibility": "Designs master schema diagrams and entity relationship definitions for tracking records."
+        },
+        {
+          "agent": "@Anima_Research",
+          "role": "Prisma ORM Client Modeling Specialist",
+          "responsibility": "Maintains relational schema model definitions inside code persistence modules."
+        },
+        {
+          "agent": "@Cassie_Data",
+          "role": "High-Performance Query Tuning Engineer",
+          "responsibility": "Indexes slow lookup tracks and optimizes database aggregation pipelines to keep runs sub-10ms."
+        },
+        {
+          "agent": "@Jennifer_Widom",
+          "role": "Automated Data Index Tuning Specialist",
+          "responsibility": "Constructs automated execution plan monitoring systems over core collection files."
+        },
+        {
+          "agent": "@Cynthia_Dwork",
+          "role": "Differential Privacy Model Configurator",
+          "responsibility": "Enforces strict mathematical privacy rules over historical data warehouse pipelines."
+        },
+        {
+          "agent": "@Latanya_Sweeney",
+          "role": "Data Integrity & Identity De-anonymizer Auditor",
+          "responsibility": "Validates schema typing boundaries to prevent identifying data leakage inside analytical pools."
+        },
+        {
+          "agent": "@Daphne_Koller",
+          "role": "NoSQL JSON Document Collection Engineer",
+          "responsibility": "Structures high-performance non-relational document stores for handling unstructured logs safely."
+        },
+        {
+          "agent": "@Pat_Hanrahan",
+          "role": "Spatial Entity Node Relationship Programmer",
+          "responsibility": "Maps data coordinate attributes cleanly across complex spatial relational entities."
+        },
+        {
+          "agent": "@Heidi_Lam",
+          "role": "Database Transaction Concurrency Controller",
+          "responsibility": "Optimizes resource connection pooling to isolate locks during parallel bulk database writes."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "team": [
+        {
+          "agent": "@Ruchi",
+          "role": "Principal API Platform Gateway Architect",
+          "responsibility": "Designs unified edge routing distribution maps and public API entry gateways."
+        },
+        {
+          "agent": "@Daniela",
+          "role": "Microservice Inter-Service Contract Specialist",
+          "responsibility": "Establishes RPC network connection parameters and message communication contracts."
+        },
+        {
+          "agent": "@Mary_Meeker",
+          "role": "Network Payload Scaling Analyst",
+          "responsibility": "Monitors transaction request flows to dynamically scale internal gateway load bounds."
+        },
+        {
+          "agent": "@Amy_Hood",
+          "role": "External Webhook Lifecycle Cost Specialist",
+          "responsibility": "Audits transaction API costs to guarantee optimized outbound request data weights."
+        },
+        {
+          "agent": "@Susan_Wojcicki",
+          "role": "Content Delivery Network Routing Engineer",
+          "responsibility": "Configures edge network proxies to accelerate binary media payload delivery scripts."
+        },
+        {
+          "agent": "@Meg_Whitman",
+          "role": "Container Microservice Node Orchestrator",
+          "responsibility": "Manages automated cluster rollover parameters during continuous delivery updates."
+        },
+        {
+          "agent": "@Angela_Ahrendts",
+          "role": "Third-Party Platform Hook Protocol Designer",
+          "responsibility": "Standardizes ingress communication maps for handling external developer platform hooks."
+        },
+        {
+          "agent": "@Sheryl_Sandberg",
+          "role": "Cross-Department Contract Alignment Coordinator",
+          "responsibility": "Harmonizes endpoint request-response interface properties across isolated codebase tracks."
+        },
+        {
+          "agent": "@Kim_Swift",
+          "role": "High-Velocity Stream Processing Programmer",
+          "responsibility": "Optimizes event broadcasting message loops to maintain real-time web socket data syncs."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Application Defense & Cryptographic Integrity Gates (SecOps)",
+      "team": [
+        {
+          "agent": "@Sofia",
+          "role": "Principal Cyber Security Shield Architect",
+          "responsibility": "Owns level 5 system defense layout protocols, session parameters, and encryption boundaries."
+        },
+        {
+          "agent": "@Katherine",
+          "role": "Identity Access Validation Token Engineer",
+          "responsibility": "Maintains fine-grained role-based access control (RBAC) security verification code pathways."
+        },
+        {
+          "agent": "@Radia",
+          "role": "Input Validation Sanitization Guard Specialist",
+          "responsibility": "Scrubs system template fields against persistent cross-site scripting (XSS) exploit vectors."
+        },
+        {
+          "agent": "@Ecem",
+          "role": "Staging Credential Environment Vault Guardian",
+          "responsibility": "Secures infrastructure encryption keys, server credentials, and active database .env files."
+        },
+        {
+          "agent": "@Joy",
+          "role": "Code Package Vulnerability Auditor",
+          "responsibility": "Scans third-party node configurations to intercept and drop outdated external libraries."
+        },
+        {
+          "agent": "@Shafi_Goldwasser",
+          "role": "Zero-Knowledge Authentication Proof Architect",
+          "responsibility": "Develops secure cryptographic validation procedures for remote data handshakes."
+        },
+        {
+          "agent": "@Dorothy_Denning",
+          "role": "Intrusion Detection System Sequence Developer",
+          "responsibility": "Programs real-time server traffic analytics engines to auto-block suspicious query paths."
+        },
+        {
+          "agent": "@Joan_Feigenbaum",
+          "role": "Decentralized Access Authorization Specialist",
+          "responsibility": "Secures authentication code operations across split deployment server instances safely."
+        },
+        {
+          "agent": "@Mary_Lou_Jepsen",
+          "role": "Runtime Process Stack Boundary Guard",
+          "responsibility": "Defends code execution spaces against memory overrun manipulations and trace vulnerabilities."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "DevOps CI/CD Pipelines & Site Reliability Automation (SRE)",
+      "team": [
+        {
+          "agent": "@Gwynne",
+          "role": "Principal Code Delivery Automation Director",
+          "responsibility": "Engineers master build verification pipelines, testing bars, and automated deployment blocks."
+        },
+        {
+          "agent": "@Lisa",
+          "role": "Cloud Edge Production Routing Configurator",
+          "responsibility": "Manages system deployment configurations inside distributed cloud edge infrastructure arrays."
+        },
+        {
+          "agent": "@Annie",
+          "role": "Docker Container Ecosystem Scaffolding Specialist",
+          "responsibility": "Containerizes core codebase folders into optimized multi-stage production environments."
+        },
+        {
+          "agent": "@Corinne",
+          "role": "Cross-Platform Environment State Unifier",
+          "responsibility": "Ensures environment variable consistency across local workspaces, staging, and live endpoints."
+        },
+        {
+          "agent": "@Rachel",
+          "role": "Repository Secret Disclosure Interceptor",
+          "responsibility": "Monitors git pull histories to identify and wipe accidentally tracked developer credentials."
+        },
+        {
+          "agent": "@Radia_Perlman",
+          "role": "Internal Topology Networking Programmer",
+          "responsibility": "Optimizes cloud server communication hops to completely minimize package transmission delays."
+        },
+        {
+          "agent": "@Sister_Mary_Keller",
+          "role": "Static Code Style Rule Engine Architect",
+          "responsibility": "Configures compiler validation tools to enforce style properties before repository integration."
+        },
+        {
+          "agent": "@Adele_Goldberg",
+          "role": "Sandboxed Local Dev Workspace Virtualizer",
+          "responsibility": "Builds lightweight local virtualization runtimes for reliable offline debugging loops."
+        },
+        {
+          "agent": "@Evelyn_Boyd_Granville",
+          "role": "Automated Zero-Downtime Rollback Coordinator",
+          "responsibility": "Authors automated safe deployment scripts to roll back software branches instantly if telemetry drops."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Vector Typography, UI Layout Assets & Canvas Tuning",
+      "team": [
+        {
+          "agent": "@Victoria",
+          "role": "Principal Visual Branding Token Architect",
+          "responsibility": "Owns global interface look-and-feel specs and resolution-independent layout assets."
+        },
+        {
+          "agent": "@Tara",
+          "role": "UX Interface Vector Asset Designer",
+          "responsibility": "Develops customized graphical component profiles, system icons, and layout accents."
+        },
+        {
+          "agent": "@Daisy",
+          "role": "Design Interface Component Converter Specialist",
+          "responsibility": "Transforms absolute Figma layout mockups into crisp CSS coordinate configurations."
+        },
+        {
+          "agent": "@Olivia",
+          "role": "Dynamic Element Screen Placement Coordinator",
+          "responsibility": "Computes pixel coordinate boundaries to center floating canvas components symmetrically."
+        },
+        {
+          "agent": "@Nina",
+          "role": "High-Contrast Palette Value Designer",
+          "responsibility": "Locks down theme asset profiles for readable light and luxury dark system backdrops."
+        },
+        {
+          "agent": "@Susan_Kare",
+          "role": "Atomic Visual Primitive Pixel Designer",
+          "responsibility": "Engineers pixel-aligned visual asset components and inline action button items."
+        },
+        {
+          "agent": "@Muriel_Cooper",
+          "role": "Responsive Template Dimension Modeler",
+          "responsibility": "Scripts structural CSS transition states triggered by dynamic content box updates."
+        },
+        {
+          "agent": "@April_Greiman",
+          "role": "Fluid Font Metric Hierarchy Specialist",
+          "responsibility": "Sets up fluid typography sizing constraints to pass formatting tests across device viewports."
+        },
+        {
+          "agent": "@Zuzana_Licko",
+          "role": "Font Rendering Pipeline Optimization Engineer",
+          "responsibility": "Configures subset web-font asset distributions to block flashing layout rendering loops."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Localization i18n Translation & Bidirectional Compilers",
+      "team": [
+        {
+          "agent": "@Invoice",
+          "role": "Principal Universal i18n Systems Architect",
+          "responsibility": "Architects 4-language routing frameworks and global translation dictionary structures."
+        },
+        {
+          "agent": "@Dora",
+          "role": "Native RTL Script Reversal System Specialist",
+          "responsibility": "Enforces structural bidirectional template swapping parameters (dir=\"rtl\") for perfect Arabic layouts."
+        },
+        {
+          "agent": "@Theodora",
+          "role": "Logical Styling Interface Parameter Transpiler",
+          "responsibility": "Scripts automated CSS processors to swap spatial attributes instantly on language toggles."
+        },
+        {
+          "agent": "@Nadia",
+          "role": "Language Dictionary Bundle Chunk Planner",
+          "responsibility": "Splits deep localization files into lazy-loaded payload segments to optimize load speed."
+        },
+        {
+          "agent": "@Lixia_Zhang",
+          "role": "Internationalized Transmission Network Engineer",
+          "responsibility": "Coordinates data string injection delivery rules across geographic endpoint domains."
+        },
+        {
+          "agent": "@Radhika_Nagpal",
+          "role": "Bulk String Parsing Automation Developer",
+          "responsibility": "Deploys static script sweeps to discover and pull hardcoded template strings into translation pools."
+        },
+        {
+          "agent": "@Anupam_Chander",
+          "role": "Regional Border Data Policy Compliance Auditor",
+          "responsibility": "Validates tracking data localization pathways against global geographic regulations."
+        },
+        {
+          "agent": "@Ruzena_Bajcsy",
+          "role": "Contextual Text Expansion Guard Specialist",
+          "responsibility": "Monitors structural sizing breaks caused by long language string expansions inside buttons."
+        },
+        {
+          "agent": "@Manuela_Veloso",
+          "role": "Erratic Input Character Set Normalizer",
+          "responsibility": "Filters multi-language form submissions to strip illegal character mutations before processing."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Autonomous Machine Vision & Optical Character Recognition",
+      "team": [
+        {
+          "agent": "@Rania",
+          "role": "Principal Computer Vision Systems Lead",
+          "responsibility": "Owns binary file parsing systems, Live Tesseract OCR structures, and optical ingestion grids."
+        },
+        {
+          "agent": "@Dina",
+          "role": "Binary Byte Upload Chloroform Traffic Controller",
+          "responsibility": "Manages incoming multi-part byte stream buffers to isolate server memory from upload overflow crashes."
+        },
+        {
+          "agent": "@Vesta",
+          "role": "Media Asset Dimension Compression Developer",
+          "responsibility": "Scripts automated canvas image scaling filters to truncate binary file weights inside asset pipelines."
+        },
+        {
+          "agent": "@Henry",
+          "role": "PDF Tabular Matrix Data Extraction Specialist",
+          "responsibility": "Transforms unstructured document tabular streams into clean relational database array variables."
+        },
+        {
+          "agent": "@Fei_Fei_Li",
+          "role": "Image Object Identification Matrix Designer",
+          "responsibility": "Programs pattern recognition classification configurations to isolate critical data categories."
+        },
+        {
+          "agent": "@Carol_Shaw",
+          "role": "Raw Byte Mapping Matrix Programmer",
+          "responsibility": "Refines raw byte parsing logic arrays to achieve sub-millisecond data extraction performance."
+        },
+        {
+          "agent": "@Roberta_Williams",
+          "role": "Graphical Boundary Coordinate Mapper",
+          "responsibility": "Calculates spatial bounding box dimensions over blueprints to gather listing parameters."
+        },
+        {
+          "agent": "@Mary_Lou_Jepsen_Vision",
+          "role": "Template Image Graphic Layer Projector",
+          "responsibility": "Calculates precise coordinate layouts to output system values dynamically over document graphics."
+        },
+        {
+          "agent": "@Barbara_Grosz",
+          "role": "Natural Language Structural Field Compiler",
+          "responsibility": "Normalizes parsed text inputs into validated database configurations before data save updates."
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Defensive Coding, SQA & Automated End-to-End Testing",
+      "team": [
+        {
+          "agent": "@Rachel_QA",
+          "role": "Principal Software Quality Assurance Architect",
+          "responsibility": "Owns overall validation check criteria, system test strategies, and quality gates."
+        },
+        {
+          "agent": "@Corinne_QA",
+          "role": "Calculation Engine Unit Test Specialist",
+          "responsibility": "Writes strict unit assertions to validate multi-tiered calculation formulas."
+        },
+        {
+          "agent": "@Olivia_QA",
+          "role": "Automated Playwright End-to-End Specialist",
+          "responsibility": "Maintains complete automated user journey replication scripts across transaction views."
+        },
+        {
+          "agent": "@Nina_QA",
+          "role": "Pre-Merge Staging Smoke Test Developer",
+          "responsibility": "Configures automated pre-commit gates to block regressions from active git branches."
+        },
+        {
+          "agent": "@Nadia_QA",
+          "role": "API Shape Contract Contract Assessor",
+          "responsibility": "Confirms live backend endpoint response structures comply with TypeScript type maps."
+        },
+        {
+          "agent": "@Katie_Bouman",
+          "role": "Data Integrity Visual Imaging Specialist",
+          "responsibility": "Deploys visual screenshot layout comparison checks to auto-flag rendering drifts."
+        },
+        {
+          "agent": "@Margaret_Hamilton",
+          "role": "Asynchronous Thread Crash Profiler",
+          "responsibility": "Performs deep asynchronous execution tests to defend systems from race conditions."
+        },
+        {
+          "agent": "@Annette_Wagner",
+          "role": "Interactive Component Testing Auditor",
+          "responsibility": "Validates responsive visual components across extreme scaling view variables."
+        },
+        {
+          "agent": "@Rebecca_Heineman",
+          "role": "High-Stress Logic Breakage Specialist",
+          "responsibility": "Runs automated brute-force fuzz injection checking pipelines across input routes."
+        }
+      ]
+    }
+  ]
+}

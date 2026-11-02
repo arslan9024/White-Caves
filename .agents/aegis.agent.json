@@ -5,7 +5,7 @@
   "fullName": "Autonomous Enterprise Governance & Intelligent Orchestration System",
   "tagline": "Unified Multi-Expert Autonomous Mesh & Enterprise Governance Architecture",
   "version": "4.1.0",
-  "lastUpdated": "2026-09-11",
+  "lastUpdated": "2026-11-02",
   "protocol": "AEGIS_SOVEREIGN_ORCHESTRATOR",
   "hierarchy": {
     "level": 0,
@@ -269,10 +269,11 @@
   },
   "workforceSeparationArchitecture": {
     "aegisSoftwareEngineering": {
-      "description": "Autonomous Software Engineering, Architecture, Testing, CI/CD, and Codebase Orchestration Mesh",
+      "description": "Autonomous Software Engineering, Architecture, Testing, CI/CD, and Codebase Orchestration Mesh — V2 Pure Engineering Matrix",
       "rootFolder": ".agents/aegis-engineering",
       "protocol": "BHAKTI_1_12_108",
-      "framework": "White Caves Engineering Matrix (1-12-108 Software Core)",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "version": "v2",
       "sovereignLeader": "AEGIS (Level 0 Orchestrator)",
       "departmentsCount": 12,
       "nodesPerDepartment": 9,
@@ -280,87 +281,99 @@
       "departments": [
         {
           "id": 1,
-          "name": "Core System Architects (Executive Council Cluster)",
-          "slug": "dept-01-core-system-architects",
+          "name": "Autonomous Agent Orchestration & Prompt Engineering Core",
+          "slug": "dept-01-agent-orchestration",
           "director": "@Ada",
-          "manifest": ".agents/aegis-engineering/dept-01-core-system-architects/dept-manifest.json"
+          "directorRole": "Principal Multi-Agent System Architect",
+          "manifest": ".agents/aegis-engineering/dept-01-agent-orchestration/dept-manifest.json"
         },
         {
           "id": 2,
-          "name": "Data Engine & Vector Sorters (Research Cluster)",
-          "slug": "dept-02-data-engine-vector-sorters",
-          "director": "@Elena",
-          "manifest": ".agents/aegis-engineering/dept-02-data-engine-vector-sorters/dept-manifest.json"
+          "name": "User Interface (UI/UX) View Primitive Architecture",
+          "slug": "dept-02-ui-ux-view-primitives",
+          "director": "@Una",
+          "directorRole": "Principal UI Component Palette Architect",
+          "manifest": ".agents/aegis-engineering/dept-02-ui-ux-view-primitives/dept-manifest.json"
         },
         {
           "id": 3,
-          "name": "Frontend & UI Architecture Core",
-          "slug": "dept-03-frontend-ui-architecture",
-          "director": "@Una",
-          "manifest": ".agents/aegis-engineering/dept-03-frontend-ui-architecture/dept-manifest.json"
+          "name": "Cross-Platform Mobile Engine Engineering",
+          "slug": "dept-03-cross-platform-mobile",
+          "director": "@Iris",
+          "directorRole": "Principal Cross-Platform Mobile Architect",
+          "manifest": ".agents/aegis-engineering/dept-03-cross-platform-mobile/dept-manifest.json"
         },
         {
           "id": 4,
-          "name": "Backend, Route & API Engineers",
-          "slug": "dept-04-backend-route-api",
+          "name": "High-Throughput Backend & Distributed Core Systems",
+          "slug": "dept-04-backend-distributed-systems",
           "director": "@Mira",
-          "manifest": ".agents/aegis-engineering/dept-04-backend-route-api/dept-manifest.json"
+          "directorRole": "Principal Server Infrastructure Systems Architect",
+          "manifest": ".agents/aegis-engineering/dept-04-backend-distributed-systems/dept-manifest.json"
         },
         {
           "id": 5,
-          "name": "Database Schemas & ORM Modlers",
-          "slug": "dept-05-database-schemas-orm",
+          "name": "Relational Schemas & Cloud Object Key Data Stores",
+          "slug": "dept-05-relational-schemas-data",
           "director": "@Barbara",
-          "manifest": ".agents/aegis-engineering/dept-05-database-schemas-orm/dept-manifest.json"
+          "directorRole": "Principal Relational Database Architect",
+          "manifest": ".agents/aegis-engineering/dept-05-relational-schemas-data/dept-manifest.json"
         },
         {
           "id": 6,
-          "name": "Software Quality Assurance & Code QA",
-          "slug": "dept-06-software-qa-code",
-          "director": "@Sofia",
-          "manifest": ".agents/aegis-engineering/dept-06-software-qa-code/dept-manifest.json"
+          "name": "Distributed Gateway Hubs & Cross-Service API Routers",
+          "slug": "dept-06-gateway-api-routers",
+          "director": "@Ruchi",
+          "directorRole": "Principal API Platform Gateway Architect",
+          "manifest": ".agents/aegis-engineering/dept-06-gateway-api-routers/dept-manifest.json"
         },
         {
           "id": 7,
-          "name": "DevOps & Infrastructure Gatekeepers",
-          "slug": "dept-07-devops-infrastructure",
-          "director": "@Gwynne",
-          "manifest": ".agents/aegis-engineering/dept-07-devops-infrastructure/dept-manifest.json"
+          "name": "Application Defense & Cryptographic Integrity Gates (SecOps)",
+          "slug": "dept-07-secops-cryptographic-gates",
+          "director": "@Sofia",
+          "directorRole": "Principal Cyber Security Shield Architect",
+          "manifest": ".agents/aegis-engineering/dept-07-secops-cryptographic-gates/dept-manifest.json"
         },
         {
           "id": 8,
-          "name": "Lease, Rent & Expiry System Logic",
-          "slug": "dept-08-lease-rent-expiry-logic",
-          "director": "@Victoria",
-          "manifest": ".agents/aegis-engineering/dept-08-lease-rent-expiry-logic/dept-manifest.json"
+          "name": "DevOps CI/CD Pipelines & Site Reliability Automation (SRE)",
+          "slug": "dept-08-devops-cicd-sre",
+          "director": "@Gwynne",
+          "directorRole": "Principal Code Delivery Automation Director",
+          "manifest": ".agents/aegis-engineering/dept-08-devops-cicd-sre/dept-manifest.json"
         },
         {
           "id": 9,
-          "name": "Ledger Accounting & VAT Logic Engines",
-          "slug": "dept-09-ledger-accounting-vat-logic",
-          "director": "@Invoice",
-          "manifest": ".agents/aegis-engineering/dept-09-ledger-accounting-vat-logic/dept-manifest.json"
+          "name": "Vector Typography, UI Layout Assets & Canvas Tuning",
+          "slug": "dept-09-typography-layout-assets",
+          "director": "@Victoria",
+          "directorRole": "Principal Visual Branding Token Architect",
+          "manifest": ".agents/aegis-engineering/dept-09-typography-layout-assets/dept-manifest.json"
         },
         {
           "id": 10,
-          "name": "CRM Framework & Pipeline Software",
-          "slug": "dept-10-crm-framework-pipeline",
-          "director": "@Jaime",
-          "manifest": ".agents/aegis-engineering/dept-10-crm-framework-pipeline/dept-manifest.json"
+          "name": "Localization i18n Translation & Bidirectional Compilers",
+          "slug": "dept-10-localization-i18n-rtl",
+          "director": "@Invoice",
+          "directorRole": "Principal Universal i18n Systems Architect",
+          "manifest": ".agents/aegis-engineering/dept-10-localization-i18n-rtl/dept-manifest.json"
         },
         {
           "id": 11,
-          "name": "Lead Ingestion & Asset Media Pipelines",
-          "slug": "dept-11-lead-ingestion-media-pipelines",
-          "director": "@Rachel",
-          "manifest": ".agents/aegis-engineering/dept-11-lead-ingestion-media-pipelines/dept-manifest.json"
+          "name": "Autonomous Machine Vision & Optical Character Recognition",
+          "slug": "dept-11-machine-vision-ocr",
+          "director": "@Rania",
+          "directorRole": "Principal Computer Vision Systems Lead",
+          "manifest": ".agents/aegis-engineering/dept-11-machine-vision-ocr/dept-manifest.json"
         },
         {
           "id": 12,
-          "name": "Asset Tracking & System File Operations",
-          "slug": "dept-12-asset-tracking-system-file-ops",
-          "director": "@Rania",
-          "manifest": ".agents/aegis-engineering/dept-12-asset-tracking-system-file-ops/dept-manifest.json"
+          "name": "Defensive Coding, SQA & Automated End-to-End Testing",
+          "slug": "dept-12-sqa-e2e-testing",
+          "director": "@Rachel_QA",
+          "directorRole": "Principal Software Quality Assurance Architect",
+          "manifest": ".agents/aegis-engineering/dept-12-sqa-e2e-testing/dept-manifest.json"
         }
       ]
     },

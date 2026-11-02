@@ -1,0 +1,259 @@
+{
+  "departmentId": 6,
+  "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+  "departmentSlug": "dept-06-gateway-api-routers",
+  "director": "@Ruchi",
+  "directorRole": "Principal API Platform Gateway Architect",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [
+    ".agents/skills/gemini-api-dev",
+    ".agents/skills/gemini-interactions-api",
+    ".agents/skills/gemini-live-api-dev"
+  ],
+  "team": [
+    {
+      "name": "@Ruchi",
+      "id": "aegis-eng-v2-d6-n1-ruchi",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 6,
+      "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "departmentSlug": "dept-06-gateway-api-routers",
+      "role": "Principal API Platform Gateway Architect",
+      "responsibility": "Designs unified edge routing distribution maps and public API entry gateways.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Daniela",
+      "id": "aegis-eng-v2-d6-n2-daniela",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "departmentSlug": "dept-06-gateway-api-routers",
+      "role": "Microservice Inter-Service Contract Specialist",
+      "responsibility": "Establishes RPC network connection parameters and message communication contracts.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Mary_Meeker",
+      "id": "aegis-eng-v2-d6-n3-mary-meeker",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "departmentSlug": "dept-06-gateway-api-routers",
+      "role": "Network Payload Scaling Analyst",
+      "responsibility": "Monitors transaction request flows to dynamically scale internal gateway load bounds.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Amy_Hood",
+      "id": "aegis-eng-v2-d6-n4-amy-hood",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "departmentSlug": "dept-06-gateway-api-routers",
+      "role": "External Webhook Lifecycle Cost Specialist",
+      "responsibility": "Audits transaction API costs to guarantee optimized outbound request data weights.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Susan_Wojcicki",
+      "id": "aegis-eng-v2-d6-n5-susan-wojcicki",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "departmentSlug": "dept-06-gateway-api-routers",
+      "role": "Content Delivery Network Routing Engineer",
+      "responsibility": "Configures edge network proxies to accelerate binary media payload delivery scripts.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Meg_Whitman",
+      "id": "aegis-eng-v2-d6-n6-meg-whitman",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "departmentSlug": "dept-06-gateway-api-routers",
+      "role": "Container Microservice Node Orchestrator",
+      "responsibility": "Manages automated cluster rollover parameters during continuous delivery updates.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Angela_Ahrendts",
+      "id": "aegis-eng-v2-d6-n7-angela-ahrendts",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "departmentSlug": "dept-06-gateway-api-routers",
+      "role": "Third-Party Platform Hook Protocol Designer",
+      "responsibility": "Standardizes ingress communication maps for handling external developer platform hooks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Sheryl_Sandberg",
+      "id": "aegis-eng-v2-d6-n8-sheryl-sandberg",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "departmentSlug": "dept-06-gateway-api-routers",
+      "role": "Cross-Department Contract Alignment Coordinator",
+      "responsibility": "Harmonizes endpoint request-response interface properties across isolated codebase tracks.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Kim_Swift",
+      "id": "aegis-eng-v2-d6-n9-kim-swift",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 6,
+      "departmentName": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "departmentSlug": "dept-06-gateway-api-routers",
+      "role": "High-Velocity Stream Processing Programmer",
+      "responsibility": "Optimizes event broadcasting message loops to maintain real-time web socket data syncs.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api",
+        ".agents/skills/gemini-live-api-dev"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    }
+  ]
+}

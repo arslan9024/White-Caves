@@ -1,0 +1,30 @@
+{
+  "name": "@Grace",
+  "id": "aegis-eng-v2-d1-n3-grace",
+  "nodeNumber": 3,
+  "isDirector": false,
+  "departmentId": 1,
+  "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+  "departmentSlug": "dept-01-agent-orchestration",
+  "role": "Dynamic Token Preservation Shield Developer",
+  "responsibility": "Monitors memory context usage limits during iterative code generation execution loops.",
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+  "governance": {
+    "law": "Aegis V4.1 Strict Engineering Standard",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true,
+    "typeScriptStrict": true,
+    "singlePurposeFileLaw": true,
+    "continuousDeduplication": true
+  },
+  "attachedSkills": [
+    ".agents/skills/aegis-infinite-crucible",
+    ".agents/skills/orchestration-progress-intelligence",
+    ".agents/skills/strategic-planner",
+    ".agents/skills/project-optimizer",
+    ".agents/skills/agy-customizations",
+    ".agents/skills/antigravity_guide"
+  ],
+  "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+}

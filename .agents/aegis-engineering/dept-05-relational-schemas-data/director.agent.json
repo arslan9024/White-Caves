@@ -1,0 +1,82 @@
+{
+  "name": "@Barbara",
+  "title": "Director of Relational Schemas & Cloud Object Key Data Stores",
+  "departmentId": 5,
+  "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+  "departmentSlug": "dept-05-relational-schemas-data",
+  "nodeNumber": 1,
+  "isDirector": true,
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+  "primaryRole": "Principal Relational Database Architect",
+  "primaryResponsibility": "Designs master schema diagrams and entity relationship definitions for tracking records.",
+  "governance": {
+    "law": "Aegis V4.1 Strict Engineering Standard",
+    "approvalAuthority": "Full Automated Autopilot & Review Authority",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true
+  },
+  "attachedSkills": [
+    ".agents/skills/bigquery_sql",
+    ".agents/skills/data_autocleaning",
+    ".agents/skills/accidental_data_loss_prevention"
+  ],
+  "subordinateNodes": [
+    {
+      "node": 2,
+      "agent": "@Anima_Research",
+      "role": "Prisma ORM Client Modeling Specialist",
+      "responsibility": "Maintains relational schema model definitions inside code persistence modules.",
+      "file": "node-02-anima-research.agent.json"
+    },
+    {
+      "node": 3,
+      "agent": "@Cassie_Data",
+      "role": "High-Performance Query Tuning Engineer",
+      "responsibility": "Indexes slow lookup tracks and optimizes database aggregation pipelines to keep runs sub-10ms.",
+      "file": "node-03-cassie-data.agent.json"
+    },
+    {
+      "node": 4,
+      "agent": "@Jennifer_Widom",
+      "role": "Automated Data Index Tuning Specialist",
+      "responsibility": "Constructs automated execution plan monitoring systems over core collection files.",
+      "file": "node-04-jennifer-widom.agent.json"
+    },
+    {
+      "node": 5,
+      "agent": "@Cynthia_Dwork",
+      "role": "Differential Privacy Model Configurator",
+      "responsibility": "Enforces strict mathematical privacy rules over historical data warehouse pipelines.",
+      "file": "node-05-cynthia-dwork.agent.json"
+    },
+    {
+      "node": 6,
+      "agent": "@Latanya_Sweeney",
+      "role": "Data Integrity & Identity De-anonymizer Auditor",
+      "responsibility": "Validates schema typing boundaries to prevent identifying data leakage inside analytical pools.",
+      "file": "node-06-latanya-sweeney.agent.json"
+    },
+    {
+      "node": 7,
+      "agent": "@Daphne_Koller",
+      "role": "NoSQL JSON Document Collection Engineer",
+      "responsibility": "Structures high-performance non-relational document stores for handling unstructured logs safely.",
+      "file": "node-07-daphne-koller.agent.json"
+    },
+    {
+      "node": 8,
+      "agent": "@Pat_Hanrahan",
+      "role": "Spatial Entity Node Relationship Programmer",
+      "responsibility": "Maps data coordinate attributes cleanly across complex spatial relational entities.",
+      "file": "node-08-pat-hanrahan.agent.json"
+    },
+    {
+      "node": 9,
+      "agent": "@Heidi_Lam",
+      "role": "Database Transaction Concurrency Controller",
+      "responsibility": "Optimizes resource connection pooling to isolate locks during parallel bulk database writes.",
+      "file": "node-09-heidi-lam.agent.json"
+    }
+  ]
+}

@@ -1,0 +1,289 @@
+{
+  "departmentId": 1,
+  "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+  "departmentSlug": "dept-01-agent-orchestration",
+  "director": "@Ada",
+  "directorRole": "Principal Multi-Agent System Architect",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [
+    ".agents/skills/aegis-infinite-crucible",
+    ".agents/skills/orchestration-progress-intelligence",
+    ".agents/skills/strategic-planner",
+    ".agents/skills/project-optimizer",
+    ".agents/skills/agy-customizations",
+    ".agents/skills/antigravity_guide"
+  ],
+  "team": [
+    {
+      "name": "@Ada",
+      "id": "aegis-eng-v2-d1-n1-ada",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 1,
+      "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "departmentSlug": "dept-01-agent-orchestration",
+      "role": "Principal Multi-Agent System Architect",
+      "responsibility": "Architects cross-agent workflow pipelines and global state orchestration frameworks in Antigravity.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Margaret",
+      "id": "aegis-eng-v2-d1-n2-margaret",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "departmentSlug": "dept-01-agent-orchestration",
+      "role": "Agent Context Boundary Guardrail Specialist",
+      "responsibility": "Enforces prompt isolation parameters, execution tokens, and system-wide agent context lengths.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Grace",
+      "id": "aegis-eng-v2-d1-n3-grace",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "departmentSlug": "dept-01-agent-orchestration",
+      "role": "Dynamic Token Preservation Shield Developer",
+      "responsibility": "Monitors memory context usage limits during iterative code generation execution loops.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Elena",
+      "id": "aegis-eng-v2-d1-n4-elena",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "departmentSlug": "dept-01-agent-orchestration",
+      "role": "Asynchronous Multi-Agent Sync Hook Architect",
+      "responsibility": "Binds parallel agent workspace routines to prevent race conditions during file generation.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Zoe",
+      "id": "aegis-eng-v2-d1-n5-zoe",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "departmentSlug": "dept-01-agent-orchestration",
+      "role": "Agent Core Memory Pipeline Engineer",
+      "responsibility": "Structures historical codebase context arrays to optimize runtime agent file editing speeds.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Marissa_Mayer",
+      "id": "aegis-eng-v2-d1-n6-marissa-mayer",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "departmentSlug": "dept-01-agent-orchestration",
+      "role": "Agent Output Verification Supervisor",
+      "responsibility": "Validates code changes compiled by agents before triggering main branch push events.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Gwynne_Shotwell",
+      "id": "aegis-eng-v2-d1-n7-gwynne-shotwell",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "departmentSlug": "dept-01-agent-orchestration",
+      "role": "Autonomous Compilation Flow Controller",
+      "responsibility": "Manages heavy code generation tasks across isolated background thread clusters safely.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Diane_Greene",
+      "id": "aegis-eng-v2-d1-n8-diane-greene",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "departmentSlug": "dept-01-agent-orchestration",
+      "role": "Agent-to-Human Handshake Configurator",
+      "responsibility": "Programs system hooks that elevate critical compilation blockers directly to human operators.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Safra_Catz",
+      "id": "aegis-eng-v2-d1-n9-safra-catz",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 1,
+      "departmentName": "Autonomous Agent Orchestration & Prompt Engineering Core",
+      "departmentSlug": "dept-01-agent-orchestration",
+      "role": "Agent Cluster Computing Load Balancer",
+      "responsibility": "Optimizes background processing power across simultaneous agent code refactoring runs.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/aegis-infinite-crucible",
+        ".agents/skills/orchestration-progress-intelligence",
+        ".agents/skills/strategic-planner",
+        ".agents/skills/project-optimizer",
+        ".agents/skills/agy-customizations",
+        ".agents/skills/antigravity_guide"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    }
+  ]
+}

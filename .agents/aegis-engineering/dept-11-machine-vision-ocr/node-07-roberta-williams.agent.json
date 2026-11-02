@@ -1,0 +1,23 @@
+{
+  "name": "@Roberta_Williams",
+  "id": "aegis-eng-v2-d11-n7-roberta-williams",
+  "nodeNumber": 7,
+  "isDirector": false,
+  "departmentId": 11,
+  "departmentName": "Autonomous Machine Vision & Optical Character Recognition",
+  "departmentSlug": "dept-11-machine-vision-ocr",
+  "role": "Graphical Boundary Coordinate Mapper",
+  "responsibility": "Calculates spatial bounding box dimensions over blueprints to gather listing parameters.",
+  "protocol": "BHAKTI_1_12_108",
+  "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+  "governance": {
+    "law": "Aegis V4.1 Strict Engineering Standard",
+    "maxFileLines": 350,
+    "zeroBacklogLaw": true,
+    "typeScriptStrict": true,
+    "singlePurposeFileLaw": true,
+    "continuousDeduplication": true
+  },
+  "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
+  "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+}

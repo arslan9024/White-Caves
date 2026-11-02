@@ -1,0 +1,259 @@
+{
+  "departmentId": 5,
+  "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+  "departmentSlug": "dept-05-relational-schemas-data",
+  "director": "@Barbara",
+  "directorRole": "Principal Relational Database Architect",
+  "nodeCount": 9,
+  "protocol": "BHAKTI_1_12_108",
+  "attachedSkills": [
+    ".agents/skills/bigquery_sql",
+    ".agents/skills/data_autocleaning",
+    ".agents/skills/accidental_data_loss_prevention"
+  ],
+  "team": [
+    {
+      "name": "@Barbara",
+      "id": "aegis-eng-v2-d5-n1-barbara",
+      "nodeNumber": 1,
+      "isDirector": true,
+      "departmentId": 5,
+      "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+      "departmentSlug": "dept-05-relational-schemas-data",
+      "role": "Principal Relational Database Architect",
+      "responsibility": "Designs master schema diagrams and entity relationship definitions for tracking records.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Anima_Research",
+      "id": "aegis-eng-v2-d5-n2-anima-research",
+      "nodeNumber": 2,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+      "departmentSlug": "dept-05-relational-schemas-data",
+      "role": "Prisma ORM Client Modeling Specialist",
+      "responsibility": "Maintains relational schema model definitions inside code persistence modules.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Cassie_Data",
+      "id": "aegis-eng-v2-d5-n3-cassie-data",
+      "nodeNumber": 3,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+      "departmentSlug": "dept-05-relational-schemas-data",
+      "role": "High-Performance Query Tuning Engineer",
+      "responsibility": "Indexes slow lookup tracks and optimizes database aggregation pipelines to keep runs sub-10ms.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Jennifer_Widom",
+      "id": "aegis-eng-v2-d5-n4-jennifer-widom",
+      "nodeNumber": 4,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+      "departmentSlug": "dept-05-relational-schemas-data",
+      "role": "Automated Data Index Tuning Specialist",
+      "responsibility": "Constructs automated execution plan monitoring systems over core collection files.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Cynthia_Dwork",
+      "id": "aegis-eng-v2-d5-n5-cynthia-dwork",
+      "nodeNumber": 5,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+      "departmentSlug": "dept-05-relational-schemas-data",
+      "role": "Differential Privacy Model Configurator",
+      "responsibility": "Enforces strict mathematical privacy rules over historical data warehouse pipelines.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Latanya_Sweeney",
+      "id": "aegis-eng-v2-d5-n6-latanya-sweeney",
+      "nodeNumber": 6,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+      "departmentSlug": "dept-05-relational-schemas-data",
+      "role": "Data Integrity & Identity De-anonymizer Auditor",
+      "responsibility": "Validates schema typing boundaries to prevent identifying data leakage inside analytical pools.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Daphne_Koller",
+      "id": "aegis-eng-v2-d5-n7-daphne-koller",
+      "nodeNumber": 7,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+      "departmentSlug": "dept-05-relational-schemas-data",
+      "role": "NoSQL JSON Document Collection Engineer",
+      "responsibility": "Structures high-performance non-relational document stores for handling unstructured logs safely.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Pat_Hanrahan",
+      "id": "aegis-eng-v2-d5-n8-pat-hanrahan",
+      "nodeNumber": 8,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+      "departmentSlug": "dept-05-relational-schemas-data",
+      "role": "Spatial Entity Node Relationship Programmer",
+      "responsibility": "Maps data coordinate attributes cleanly across complex spatial relational entities.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    },
+    {
+      "name": "@Heidi_Lam",
+      "id": "aegis-eng-v2-d5-n9-heidi-lam",
+      "nodeNumber": 9,
+      "isDirector": false,
+      "departmentId": 5,
+      "departmentName": "Relational Schemas & Cloud Object Key Data Stores",
+      "departmentSlug": "dept-05-relational-schemas-data",
+      "role": "Database Transaction Concurrency Controller",
+      "responsibility": "Optimizes resource connection pooling to isolate locks during parallel bulk database writes.",
+      "protocol": "BHAKTI_1_12_108",
+      "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+      "governance": {
+        "law": "Aegis V4.1 Strict Engineering Standard",
+        "maxFileLines": 350,
+        "zeroBacklogLaw": true,
+        "typeScriptStrict": true,
+        "singlePurposeFileLaw": true,
+        "continuousDeduplication": true
+      },
+      "attachedSkills": [
+        ".agents/skills/bigquery_sql",
+        ".agents/skills/data_autocleaning",
+        ".agents/skills/accidental_data_loss_prevention"
+      ],
+      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+    }
+  ]
+}
