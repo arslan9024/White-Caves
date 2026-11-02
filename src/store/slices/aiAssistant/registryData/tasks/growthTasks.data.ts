@@ -1,4 +1,4 @@
-import type { Task } from '../types';
+import type { Task } from '../../types';
 
 export const growthRawTasks: Record<string, Task[]> = {
   daisy: [

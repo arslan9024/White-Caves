@@ -1,4 +1,4 @@
-import type { Notification } from '../types';
+import type { Notification } from '../../types';
 import { getNotificationsPart1 } from './notificationsPart1.data';
 import { getNotificationsPart2 } from './notificationsPart2.data';
 

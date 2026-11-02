@@ -1,4 +1,4 @@
-import type { Notification } from '../types';
+import type { Notification } from '../../types';
 
 export const getNotificationsPart1 = (now: number): Record<string, Notification[]> => ({
   nadia: [

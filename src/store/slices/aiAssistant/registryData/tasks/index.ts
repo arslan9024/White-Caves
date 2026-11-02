@@ -1,4 +1,4 @@
-import type { Task } from '../types';
+import type { Task } from '../../types';
 import { enrichTaskWithLifecycle } from './taskLifecycle';
 import { coreRawTasks } from './coreTasks.data';
 import { growthRawTasks } from './growthTasks.data';

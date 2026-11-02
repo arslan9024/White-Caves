@@ -1,4 +1,4 @@
-import type { AIAssistant } from '../types';
+import type { AIAssistant } from '../../types';
 import { coreAssistants } from './coreAssistants.data';
 import { growthAssistants } from './growthAssistants.data';
 import { intelligenceAssistants } from './intelligenceAssistants.data';

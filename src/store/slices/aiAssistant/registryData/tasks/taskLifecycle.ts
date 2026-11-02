@@ -1,4 +1,4 @@
-import type { Task, TaskAction, TaskLifecycleStage } from '../types';
+import type { Task, TaskAction, TaskLifecycleStage } from '../../types';
 
 export /**
  * Adds lifecycle fields (lifecycleStage, actions, startedAt, updatedAt) to a

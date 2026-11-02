@@ -1,4 +1,4 @@
-import type { AIAssistant } from '../types';
+import type { AIAssistant } from '../../types';
 
 export const advancedAssistants: Record<string, AIAssistant> = {
   apex: {

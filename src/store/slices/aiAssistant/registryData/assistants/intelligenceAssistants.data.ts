@@ -1,4 +1,4 @@
-import type { AIAssistant } from '../types';
+import type { AIAssistant } from '../../types';
 
 export const intelligenceAssistants: Record<string, AIAssistant> = {
   sentinel: {
