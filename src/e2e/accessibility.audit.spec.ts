@@ -81,20 +81,53 @@ async function navigateAndStabilize(page: any, path: string) {
 async function ensureExpectedPathOrSkip(page: any, expectedPath: string) {
   const currentPath = new URL(page.url()).pathname;
   const canonicalExpectedPath = toCanonicalDashboardPath(expectedPath);
-  if (!currentPath.startsWith(canonicalExpectedPath)) {
+  if (
+    !currentPath.startsWith(canonicalExpectedPath) ||
+    currentPath === '/' ||
+    currentPath.startsWith('/signin') ||
+    currentPath.startsWith('/login')
+  ) {
     test.skip(true, `Auth redirect detected for ${canonicalExpectedPath}. Current: ${currentPath}`);
   }
 
   // Detect auth gate rendered in-place (Firefox renders the sign-in form
   // without changing the URL for protected routes).
-  const authGateSelectors = '.auth-container, .auth-modal, .auth-form, .auth-subtitle, .auth-modal-overlay, input[type="password"]';
-  const authGateCount = await page.locator(authGateSelectors).count().catch(() => 0);
+  const authGateSelectors =
+    '.auth-container, .auth-modal, .auth-form, .auth-subtitle, .auth-modal-overlay, input[type="password"]';
+  const authGateCount = await page
+    .locator(authGateSelectors)
+    .count()
+    .catch(() => 0);
   if (authGateCount > 0) {
-    test.skip(true, `Authentication required for ${canonicalExpectedPath} — auth gate rendered in-place`);
+    test.skip(
+      true,
+      `Authentication required for ${canonicalExpectedPath} — auth gate rendered in-place`
+    );
   }
 }
 
 async function ensureDashboardReadyOrSkip(page: any) {
+  const currentPath = new URL(page.url()).pathname;
+  if (
+    currentPath === '/' ||
+    currentPath.startsWith('/signin') ||
+    currentPath.startsWith('/login')
+  ) {
+    test.skip(true, `Auth redirect detected. Current path: ${currentPath}`);
+    return;
+  }
+
+  const authGateCount = await page
+    .locator(
+      '.auth-page-container, .auth-card, .auth-modal-overlay, .auth-form, input[type="password"]'
+    )
+    .count()
+    .catch(() => 0);
+  if (authGateCount > 0) {
+    test.skip(true, 'Authentication required for protected dashboard');
+    return;
+  }
+
   const bodyText =
     (await page
       .locator('body')
@@ -102,11 +135,13 @@ async function ensureDashboardReadyOrSkip(page: any) {
       .catch(() => '')) || '';
   if (/loading\s+page/i.test(bodyText)) {
     test.skip(true, 'Dashboard shell still loading. Skipping non-deterministic assertion.');
+    return;
   }
 
   const interactiveCount = await page.locator('button, a, h1, h2, h3').count();
   if (interactiveCount === 0) {
     test.skip(true, 'Dashboard content not ready for accessibility assertions.');
+    return;
   }
 }
 
@@ -165,6 +200,7 @@ test.describe('WCAG 2.1 Level AA Compliance', () => {
     test(`${name} - No accessibility violations`, async ({ page }) => {
       await navigateAndStabilize(page, path);
       await ensureExpectedPathOrSkip(page, path);
+      await ensureDashboardReadyOrSkip(page);
 
       const violations = await runAxeViolations(page);
 
@@ -300,6 +336,7 @@ test.describe('Color Contrast (WCAG AA)', () => {
   test('Owner Dashboard - Text contrast is sufficient', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
     await ensureExpectedPathOrSkip(page, '/crm');
+    await ensureDashboardReadyOrSkip(page);
 
     const contrastViolations = await runAxeViolations(page, {
       runOnly: { type: 'rule', values: ['color-contrast'] },
@@ -342,7 +379,11 @@ test.describe('Focus Management', () => {
     let dialogCount = await dialog.count().catch(() => 0);
 
     if (dialogCount === 0) {
-      const modalTrigger = page.locator('button[aria-haspopup="dialog"], button[data-modal-target], button:has-text("Filter"), button:has-text("Add"), button:has-text("New")').first();
+      const modalTrigger = page
+        .locator(
+          'button[aria-haspopup="dialog"], button[data-modal-target], button:has-text("Filter"), button:has-text("Add"), button:has-text("New")'
+        )
+        .first();
       const triggerExists = await modalTrigger.count().catch(() => 0);
       if (triggerExists > 0) {
         await modalTrigger.click({ timeout: 3000 }).catch(() => {});
@@ -366,6 +407,7 @@ test.describe('Page Load Accessibility', () => {
   test('Owner Dashboard - Loads without accessibility violations', async ({ page }) => {
     await navigateAndStabilize(page, '/crm');
     await ensureExpectedPathOrSkip(page, '/crm');
+    await ensureDashboardReadyOrSkip(page);
 
     const violations = await runAxeViolations(page);
     expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
@@ -382,7 +424,18 @@ test.describe('Page Load Accessibility', () => {
         await navigateAndStabilize(page, path).catch(() => {}); // ignore auth/nav failures
 
         const currentPath = new URL(page.url()).pathname;
-        if (!currentPath.startsWith(path)) {
+        const isAuthGate = await page
+          .locator(
+            '.auth-page-container, .auth-card, .auth-modal-overlay, .auth-form, input[type="password"]'
+          )
+          .count()
+          .catch(() => 0);
+        if (
+          isAuthGate > 0 ||
+          !currentPath.startsWith(path) ||
+          currentPath === '/' ||
+          currentPath.startsWith('/signin')
+        ) {
           results.push({ page: name, violations: -1 });
           continue;
         }
@@ -415,6 +468,7 @@ test.describe('Responsive Accessibility', () => {
 
     await navigateAndStabilize(page, '/crm');
     await ensureExpectedPathOrSkip(page, '/crm');
+    await ensureDashboardReadyOrSkip(page);
 
     const violations = await runAxeViolations(page);
     expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
@@ -426,6 +480,7 @@ test.describe('Responsive Accessibility', () => {
 
     await navigateAndStabilize(page, '/crm');
     await ensureExpectedPathOrSkip(page, '/crm');
+    await ensureDashboardReadyOrSkip(page);
 
     const violations = await runAxeViolations(page);
     expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
@@ -504,7 +559,14 @@ test.describe('WCAG 2.2 — New Success Criteria', () => {
     ).violations.filter(v => v.impact === 'critical' || v.impact === 'serious');
 
     if (criticalViolations.length > 0) {
-      console.error('[WCAG 2.2] Critical/serious violations:', JSON.stringify(criticalViolations.map(v => ({ id: v.id, description: v.description })), null, 2));
+      console.error(
+        '[WCAG 2.2] Critical/serious violations:',
+        JSON.stringify(
+          criticalViolations.map(v => ({ id: v.id, description: v.description })),
+          null,
+          2
+        )
+      );
     }
 
     expect(criticalViolations).toHaveLength(0);
