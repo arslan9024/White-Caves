@@ -51,13 +51,13 @@
 
 .auth-error span {
   font-size: 14px;
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .auth-error button {
   background: none;
   border: none;
-  color: #EF4444;
+  color: #ef4444;
   font-size: 20px;
   cursor: pointer;
   padding: 0;
@@ -81,18 +81,18 @@
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-secondary, #6b7280);
+  color: #4b5563;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .auth-tab:hover {
-  color: var(--text-primary, #1f2937);
+  color: #1f2937;
 }
 
 .auth-tab.active {
   background: var(--bg-primary, #ffffff);
-  color: var(--text-primary, #1f2937);
+  color: #1f2937;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -156,6 +156,14 @@
 [data-theme='dark'] .auth-tab.active {
   background: var(--bg-tertiary, #4b5563);
   color: var(--text-primary, #f9fafb);
+}
+
+[data-theme='dark'] .auth-tab {
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .auth-tab:hover {
+  color: #f9fafb;
 }
 
 @media (max-width: 480px) {

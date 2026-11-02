@@ -6,8 +6,8 @@
 
 /* ─── Design Tokens ─────────────────────────────────────────────────── */
 :root {
-  --brand-primary: #C6A87C;
-  --brand-primary-hover: #D4AF37;
+  --brand-primary: #c6a87c;
+  --brand-primary-hover: #d4af37;
   --brand-primary-glow: rgba(198, 168, 124, 0.25);
   --brand-bg-dark: #0f172a;
   --brand-bg-deeper: #050810;
@@ -30,7 +30,6 @@
   --auth-transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-
 /* ─── Standalone Auth Page & Card (for /signin & /signup) ────────────── */
 .auth-page-container {
   min-height: 100vh;
@@ -38,11 +37,7 @@
   align-items: center;
   justify-content: center;
   background-color: #0f172a;
-  background: radial-gradient(
-    ellipse 80% 60% at 50% 40%,
-    rgba(15, 23, 42, 0.98) 0%,
-    #050810 100%
-  );
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(15, 23, 42, 0.98) 0%, #050810 100%);
   padding: 32px 16px;
   box-sizing: border-box;
 }
@@ -52,11 +47,7 @@
   width: 100%;
   max-width: 440px;
   background-color: #0f172a;
-  background: linear-gradient(
-    165deg,
-    #0f172a 0%,
-    #141c32 100%
-  );
+  background: linear-gradient(165deg, #0f172a 0%, #141c32 100%);
   border: 1px solid var(--brand-border);
   border-radius: var(--auth-radius);
   padding: 44px 40px 36px;
@@ -105,11 +96,7 @@
   position: relative;
   width: 100%;
   max-width: 440px;
-  background: linear-gradient(
-    165deg,
-    rgba(15, 23, 42, 0.95) 0%,
-    rgba(20, 28, 50, 0.92) 100%
-  );
+  background: linear-gradient(165deg, rgba(15, 23, 42, 0.95) 0%, rgba(20, 28, 50, 0.92) 100%);
   border: 1px solid var(--brand-border);
   border-radius: var(--auth-radius);
   padding: 44px 40px 36px;
@@ -302,7 +289,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.03) 100%);
+  background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.03) 100%);
   opacity: 0;
   transition: opacity var(--auth-transition);
 }
@@ -372,6 +359,38 @@
 }
 
 /* ─── Auth Method Tabs ──────────────────────────────────────────────── */
+.auth-page-container .auth-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--auth-radius-sm);
+  background: #1e293b;
+}
+
+.auth-page-container .auth-tab {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--auth-transition);
+}
+
+.auth-page-container .auth-tab:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.auth-page-container .auth-tab.active {
+  background: var(--brand-primary);
+  color: #0f172a;
+}
+
 .auth-method-tabs {
   display: flex;
   background: var(--brand-surface);
@@ -455,6 +474,11 @@
 .form-input::placeholder,
 .form-group input::placeholder {
   color: #94a3b8;
+}
+
+.auth-page-container input.form-input {
+  background: #1e293b;
+  color: #f8fafc;
 }
 
 /* ─── Primary Button ────────────────────────────────────────────────── */
@@ -648,8 +672,12 @@
 }
 
 @keyframes shimmer {
-  from { left: -100%; }
-  to { left: 100%; }
+  from {
+    left: -100%;
+  }
+  to {
+    left: 100%;
+  }
 }
 
 /* ─── Responsive ────────────────────────────────────────────────────── */
