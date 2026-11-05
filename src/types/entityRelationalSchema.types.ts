@@ -116,3 +116,83 @@ export interface DealPipelineEntity {
   createdAt: string;
   updatedAt: string;
 }
+
+// ─── UML SECTION 2: STRICT DOMAIN ENTITIES ──────────────────────────────────
+
+export type PropertyCluster =
+  | 'DAMAC_HILLS_2'
+  | 'DOWNTOWN_DUBAI'
+  | 'PALM_JUMEIRAH'
+  | 'DUBAI_MARINA'
+  | 'BUSINESS_BAY'
+  | 'EMIRATES_HILLS';
+
+export type VacancyStatus = 'VACANT' | 'OCCUPIED' | 'PENDING_LEGAL';
+
+export interface UserStaffEntity {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  floorAssignment: number;
+  assignedTasks?: TaskNodeRecordEntity[];
+}
+
+export interface TenantKYCEntity {
+  id: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  isVerified: boolean;
+  encryptedEmiratesId?: string;
+  encryptedPassport?: string;
+  contracts?: TenancyContractEntity[];
+}
+
+export interface LandlordKYCEntity {
+  id: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  isVerified: boolean;
+  encryptedTaxId?: string;
+  properties?: PropertyRelationalEntity[];
+}
+
+export interface TenancyContractEntity {
+  id: string;
+  contractNumber: string;
+  leaseStart: string;
+  leaseEnd: string;
+  annualRentAED: number;
+  commissionAmount: number;
+  status: 'DRAFT' | 'ATTESTED_EJARI' | 'ACTIVE' | 'EXPIRED' | 'TERMINATED';
+  tenantId: string;
+  propertyId: string;
+  financialLogs?: FinancialReceiptLogEntity[];
+}
+
+export interface FinancialReceiptLogEntity {
+  id: string;
+  receiptNumber: string;
+  amountAED: number;
+  vatAmountAED: number;
+  zohoBooksSynced: boolean;
+  contractId: string;
+}
+
+export interface TaskNodeRecordEntity {
+  id: string;
+  taskCode: string;
+  title: string;
+  category: string;
+  priority: string;
+  status: 'PENDING' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'BLOCKED';
+  action: string;
+  results: string;
+  meritXP: number;
+  statutoryAuthority?: string;
+  userId?: string;
+  propertyId?: string;
+  contractId?: string;
+}

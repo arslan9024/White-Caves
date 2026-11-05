@@ -10,10 +10,42 @@ export type EntityType =
   | 'ROLE'
   | 'PROPERTY'
   | 'CLIENT'
+  | 'TENANT'
+  | 'LANDLORD'
+  | 'CONTRACT'
   | 'TASK'
   | 'DOCUMENT'
   | 'DEAL'
+  | 'INVOICE'
+  | 'CHEQUE'
   | 'REVENUE';
+
+export type RelationshipTab = 'entities' | 'relationships' | 'erd';
+
+export interface ERDAttribute {
+  name: string;
+  type: string;
+  isPk?: boolean;
+  isFk?: boolean;
+  nullable?: boolean;
+}
+
+export interface ERDClassModel {
+  name: string;
+  stereotype: '«Entity»' | '«Control»' | '«Boundary»';
+  domain: 'LEASING' | 'SALES' | 'GOVERNANCE' | 'FINANCE' | 'STATUTORY';
+  attributes: ERDAttribute[];
+}
+
+export interface ERDRelation {
+  id: string;
+  from: string;
+  to: string;
+  label: string;
+  multiplicity: string; // e.g. "1 to 0..*"
+  type: 'COMPOSITION' | 'AGGREGATION' | 'ASSOCIATION';
+  foreignKey: string;
+}
 
 export interface EntityNode {
   id: string; // e.g. 'user-001', 'emp-001', 'deal-001'

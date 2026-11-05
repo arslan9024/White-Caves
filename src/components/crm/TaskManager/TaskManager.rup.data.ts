@@ -1,0 +1,142 @@
+/**
+ * TaskManager.rup.data.ts
+ * White Caves Real Estate LLC - RUP Section 3 Unified Domain Action Tasks
+ * Standard: AEGIS Canonical 7-Category Architecture Standard (Data Layer)
+ * Single Purpose File Law: < 350 lines
+ * Protocol: Rational Unified Process (RUP) & Strict UML Structural Contracts
+ */
+
+import type { TaskNode } from './TaskManager.types';
+
+export const RUP_OPERATIONAL_TASKS: Array<Omit<TaskNode, 'actor' | 'action' | 'results'>> = [
+  {
+    _id: 'task-wc-kyc-001',
+    taskCode: 'WC-KYC-001',
+    title: 'Scan Emirates ID / Passport — Local OCR Processing',
+    pillarId: 'pillar-1',
+    pillarName: 'Pillar I: Legal & Regulatory',
+    category: 'REGULATORY',
+    statutoryAuthority: 'Federal Authority for Identity & Citizenship (ICP)',
+    description:
+      'Extract machine-readable identification data from Emirates ID and Passports via high-precision client-side OCR without third-party leak.',
+    priority: 'CRITICAL',
+    status: 'IN_PROGRESS',
+    defaultSla: '10 Mins',
+    reportingChain: {
+      supervisorName: 'Supervisor Amira (SUP-01)',
+      supervisorCode: 'SUP-01',
+      managerName: 'Manager Farooq (M01)',
+      managerCode: 'M01',
+      directorName: 'Adv. Tariq Mansoor (D01)',
+      directorCode: 'D01',
+      executiveReviewer: 'Sophia Al-Hashemi (MD-01)',
+    },
+    dueDate: '2026-11-15',
+    createdAt: '2026-11-05',
+    completionRate: 80,
+  },
+  {
+    _id: 'task-wc-kyc-004',
+    taskCode: 'WC-KYC-004',
+    title: 'Secure Field Encryption — AES-256 Identification Data Masking',
+    pillarId: 'pillar-6',
+    pillarName: 'Pillar VI: Technology & CRM',
+    category: 'TECH',
+    statutoryAuthority: 'UAE Data Protection Law (Federal Decree-Law No. 45/2021)',
+    description:
+      'Client-side zero-knowledge AES-256 field encryption for national identification credentials prior to database persistence.',
+    priority: 'CRITICAL',
+    status: 'IN_PROGRESS',
+    defaultSla: '5 Mins',
+    reportingChain: {
+      supervisorName: 'Supervisor Kareem (SUP-06)',
+      supervisorCode: 'SUP-06',
+      managerName: 'Manager Zaid (M06)',
+      managerCode: 'M06',
+      directorName: 'Director Omar Sharif (D06)',
+      directorCode: 'D06',
+      executiveReviewer: 'Sophia Al-Hashemi (MD-01)',
+    },
+    dueDate: '2026-11-15',
+    createdAt: '2026-11-05',
+    completionRate: 90,
+  },
+  {
+    _id: 'task-wc-inv-101',
+    taskCode: 'WC-INV-101',
+    title: 'Update Property Vacancy Status — Real-Time Availability Fluctuations',
+    pillarId: 'pillar-5',
+    pillarName: 'Pillar V: Real Estate Operations',
+    category: 'OPERATIONS',
+    statutoryAuthority: 'White Caves Inventory Governance Office',
+    description:
+      'Atomic state machine transition for residential units (VACANT -> OCCUPIED -> PENDING_LEGAL) with privacy plot masking.',
+    priority: 'HIGH',
+    status: 'REVIEW',
+    defaultSla: '30 Mins',
+    reportingChain: {
+      supervisorName: 'Supervisor Tariq (SUP-05)',
+      supervisorCode: 'SUP-05',
+      managerName: 'Manager Samir (M05)',
+      managerCode: 'M05',
+      directorName: 'Director Khalid Al-Falasi (D05)',
+      directorCode: 'D05',
+      executiveReviewer: 'Sophia Al-Hashemi (MD-01)',
+    },
+    dueDate: '2026-11-12',
+    createdAt: '2026-11-05',
+    completionRate: 70,
+  },
+  {
+    _id: 'task-wc-lease-203',
+    taskCode: 'WC-LEASE-203',
+    title: 'Parse DLD Unified Tenancy Contracts — Official Government PDF Mapping',
+    pillarId: 'pillar-1',
+    pillarName: 'Pillar I: Legal & Regulatory',
+    category: 'REGULATORY',
+    statutoryAuthority: 'Dubai Land Department (DLD) Ejari Center',
+    description:
+      'Parse standardized DLD unified tenancy agreement fields to extract terms, annual rent, security deposit, and payment schedule.',
+    priority: 'CRITICAL',
+    status: 'IN_PROGRESS',
+    defaultSla: '15 Mins',
+    reportingChain: {
+      supervisorName: 'Supervisor Amira (SUP-01)',
+      supervisorCode: 'SUP-01',
+      managerName: 'Manager Farooq (M01)',
+      managerCode: 'M01',
+      directorName: 'Adv. Tariq Mansoor (D01)',
+      directorCode: 'D01',
+      executiveReviewer: 'Sophia Al-Hashemi (MD-01)',
+    },
+    dueDate: '2026-11-14',
+    createdAt: '2026-11-05',
+    completionRate: 60,
+  },
+  {
+    _id: 'task-wc-fin-302',
+    taskCode: 'WC-FIN-302',
+    title: 'Generate Receipt Ledger Entries — Escrow & Zoho Books VAT Reconciliation',
+    pillarId: 'pillar-2',
+    pillarName: 'Pillar II: Finance & Accounting',
+    category: 'FINANCE',
+    statutoryAuthority: 'Federal Tax Authority (FTA)',
+    description:
+      'Generate statutory receipt voucher with 5% UAE VAT computation, double-entry escrow tracking, and Zoho Books synchronization.',
+    priority: 'CRITICAL',
+    status: 'IN_PROGRESS',
+    defaultSla: '20 Mins',
+    reportingChain: {
+      supervisorName: 'Supervisor Bilal (SUP-02)',
+      supervisorCode: 'SUP-02',
+      managerName: 'Manager Laila (M02)',
+      managerCode: 'M02',
+      directorName: 'Dr. Noura Al-Sayed (D02)',
+      directorCode: 'D02',
+      executiveReviewer: 'Sophia Al-Hashemi (MD-01)',
+    },
+    dueDate: '2026-11-16',
+    createdAt: '2026-11-05',
+    completionRate: 85,
+  },
+];

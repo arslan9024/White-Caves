@@ -62,6 +62,8 @@ model User {
   pushTokens       UserPushToken[]
   eventRsvps       EventRSVP[]
   facilityBookings FacilityBooking[]
+  floorAssignment  Int?              @default(1)
+  taskRecords      TaskNodeRecord[]  @relation("UserAssignedTasks")
 
   @@index([role])
   @@index([status])
@@ -238,6 +240,13 @@ model Property {
   // RERA / Dubai DLD compliance fields
   municipalityNumber  String? // Dubai municipality plot/unit number
   plotNumber          String? // DLD plot number
+  cluster             String?           // e.g. DAMAC_HILLS_2, DOWNTOWN
+  vacancyStatus       String            @default("VACANT") // VACANT, OCCUPIED, PENDING_LEGAL
+  isMasked            Boolean           @default(true) // Auto-mask house/plot numbers
+  landlordId          String?           @db.ObjectId
+  landlord            Landlord?         @relation(fields: [landlordId], references: [id])
+  tenancyContracts    TenancyContract[]
+  taskRecords         TaskNodeRecord[]
   buildingPermitNumber String? // Building permit from Dubai Municipality
   rentIndexRef        String? // RERA Rent Index reference (for rent increase calculations)
   furnished           Boolean @default(false) // affects max deposit calculation
@@ -424,6 +433,10 @@ model Transaction {
 model Tenant {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   name          String
+  fullName      String?
+  isVerified    Boolean  @default(false)
+  encryptedEmiratesId String?
+  encryptedPassport   String?
   email         String?
   phone         String?
   nationality   String?
@@ -441,6 +454,7 @@ model Tenant {
   // Relations
   propertyId    String?  @db.ObjectId
   property      Property? @relation(fields: [propertyId], references: [id])
+  contracts     TenancyContract[]
 
   @@index([status])
   @@index([propertyId])
@@ -2255,4 +2269,85 @@ model TaxInvoice {
 
   @@index([trn])
   @@index([dealId])
+}
+
+
+// ─── STRICT UML & RUP EXTENDED ENTITIES ─────────────────────────────────────
+
+model Landlord {
+  id                  String     @id @default(auto()) @map("_id") @db.ObjectId
+  fullName            String
+  email               String?
+  phone               String?
+  isVerified          Boolean    @default(false)
+  encryptedTaxId      String?
+  properties          Property[]
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@index([isVerified])
+}
+
+model TenancyContract {
+  id               String                 @id @default(auto()) @map("_id") @db.ObjectId
+  contractNumber   String                 @unique
+  leaseStart       DateTime
+  leaseEnd         DateTime
+  annualRentAED    Float
+  commissionAmount Float
+  status           String                 @default("DRAFT") // DRAFT | ATTESTED_EJARI | ACTIVE | EXPIRED | TERMINATED
+  tenantId         String                 @db.ObjectId
+  tenant           Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  propertyId       String                 @db.ObjectId
+  property         Property               @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  financialLogs    FinancialReceiptLog[]  // Composition link: Cascade delete child logs
+  taskRecords      TaskNodeRecord[]
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+
+  @@index([status])
+  @@index([tenantId])
+  @@index([propertyId])
+}
+
+model FinancialReceiptLog {
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  receiptNumber    String          @unique
+  amountAED        Float
+  vatAmountAED     Float
+  zohoBooksSynced  Boolean         @default(false)
+  contractId       String          @db.ObjectId
+  contract         TenancyContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([contractId])
+  @@index([zohoBooksSynced])
+}
+
+model TaskNodeRecord {
+  id                 String           @id @default(auto()) @map("_id") @db.ObjectId
+  taskCode           String           @unique
+  title              String
+  category           String
+  priority           String
+  status             String           @default("PENDING")
+  action             String
+  results            String
+  meritXP            Int              @default(34)
+  statutoryAuthority String?
+  userId             String?          @db.ObjectId
+  user               User?            @relation("UserAssignedTasks", fields: [userId], references: [id])
+  propertyId         String?          @db.ObjectId
+  property           Property?        @relation(fields: [propertyId], references: [id])
+  contractId         String?          @db.ObjectId
+  contract           TenancyContract? @relation(fields: [contractId], references: [id])
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  @@index([status])
+  @@index([priority])
+  @@index([userId])
+  @@index([propertyId])
+  @@index([contractId])
 }

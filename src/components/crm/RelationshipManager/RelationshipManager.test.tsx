@@ -89,4 +89,26 @@ describe('RelationshipManager Suite (7-Category Architecture Standard)', () => {
 
     expect(onNavigate).toHaveBeenCalledWith('/dashboard/employees/EMP-001');
   });
+
+  it('switches between Entities Hub, Relationships Matrix, and UML ERD tabs', () => {
+    render(<RelationshipManagerView initialChains={CANONICAL_RELATIONSHIPS} />);
+
+    // Switch to Entities Hub
+    const entitiesTab = screen.getByTestId('tab-entities-hub');
+    fireEvent.click(entitiesTab);
+    expect(screen.getByTestId('relationship-entities-hub')).toBeInTheDocument();
+    expect(screen.getByTestId('create-entity-btn')).toBeInTheDocument();
+    expect(screen.getByText('All Entities')).toBeInTheDocument();
+
+    // Switch to UML ERD
+    const erdTab = screen.getByTestId('tab-uml-erd');
+    fireEvent.click(erdTab);
+    expect(screen.getByTestId('relationship-erd-visualizer')).toBeInTheDocument();
+    expect(screen.getByText(/Strict Entity-Relationship Diagram/i)).toBeInTheDocument();
+
+    // Switch back to Relationships Matrix
+    const relTab = screen.getByTestId('tab-relationships-matrix');
+    fireEvent.click(relTab);
+    expect(screen.getByTestId('relationship-matrix-flow')).toBeInTheDocument();
+  });
 });

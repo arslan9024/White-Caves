@@ -4,7 +4,10 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import { RelationshipChain } from './RelationshipManager.types';
+import type { RelationshipChain } from './RelationshipManager.types';
+
+export { CANONICAL_ERD_MODELS, CANONICAL_ERD_RELATIONS } from './RelationshipErd.data';
+export { CANONICAL_ALL_ENTITIES } from './RelationshipEntities.data';
 
 export const CANONICAL_RELATIONSHIPS: RelationshipChain[] = [
   {

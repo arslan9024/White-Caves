@@ -5,11 +5,12 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { RelationshipChain, EntityNode } from './RelationshipManager.types';
+import { RelationshipChain, EntityNode, RelationshipTab } from './RelationshipManager.types';
 import { CANONICAL_RELATIONSHIPS } from './RelationshipManager.data';
 
 export interface UseRelationshipManagerProps {
   initialChains?: RelationshipChain[];
+  initialTab?: RelationshipTab;
   selectedEntityId?: string | null;
   onSelectEntity?: (id: string) => void;
   onNavigateToDeepRoute?: (route: string) => void;

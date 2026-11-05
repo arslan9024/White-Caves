@@ -8,6 +8,7 @@ export interface TopNavbarProps {
   sticky?: boolean;
   onToggleSidebar?: () => void;
   onOpenDeptManager?: () => void;
+  homeRoute?: string;
 }
 
 export const useTopNavbarLogic = (props: TopNavbarProps = {}) => {

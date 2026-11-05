@@ -224,6 +224,45 @@ Do not delete; leave idle until a dedicated milestone activates them.
 
 ---
 
+## 📐 Rational Unified Process (RUP) & UML Structural Contracts
+
+The White Caves architecture enforces the **Rational Unified Process (RUP)** with strict UML stereotype boundaries across all modules:
+
+### 1. RUP Stereotype Layering Standard
+
+- **Boundary (`«Boundary»`)**: Pure presentation views (`*.view.tsx` / `*.tsx`) and visualizers connecting end users and operators to the system. No business calculations or raw database state logic.
+- **Control (`«Control»`)**: Transaction engines, workflow orchestrators (`*.workflow.ts`), and hooks (`*.logic.ts`) coordinating operations, calculating VAT/commissions, enforcing SLAs, and driving stage transitions.
+- **Entity (`«Entity»`)**: Persistent data objects (`prisma/schema.prisma`, `*.types.ts`, `*.data.ts`) representing business models (User, Landlord, Tenant, Property, TenancyContract, FinancialReceiptLog, TaskNodeRecord).
+
+### 2. UML Entity-Relationship Diagram (ERD) Multiplicities & Composition Law
+
+- **Composition (`◆—`)**: Strong ownership with automatic cascade delete. For example, `TenancyContract ◆— FinancialReceiptLog`: deleting a tenancy contract automatically purges and cascades its linked financial logs to maintain zero dangling accounting records.
+- **Aggregation (`◇—`)**: Weak container relationships. For example, `Property ◇— TenancyContract`: properties can exist independently of current active leases.
+- **Association (`—`)**: Referential links. For example, `User (Staff)` 1 to 0..\* `TaskNodeRecord`, mapping staff to assigned operational duties.
+- **Multiplicities**:
+  - `User (Staff)` 1 : 0..\* `TaskNodeRecord` (`userId`)
+  - `Landlord` 1 : 0..\* `Property` (`landlordId`)
+  - `Tenant` 1 : 0..\* `TenancyContract` (`tenantId`)
+  - `Property` 1 : 0..\* `TenancyContract` (`propertyId`)
+  - `TenancyContract` 1 : 0..\* `FinancialReceiptLog` (`contractId` — Cascade Delete)
+  - `Property` 1 : 0..\* `TaskNodeRecord` (`propertyId`)
+
+### 3. Unified Task Management Matrix (System Action Engines)
+
+System actions are cataloged with globally unique deterministic task codes, strict lineage, and RUP Use Case dossiers:
+
+- `WC-KYC-*` (Document Extraction & Privacy):
+  - `WC-KYC-001`: Scan Emirates ID / Passport — Local OCR Processing.
+  - `WC-KYC-004`: Secure Field Encryption — AES-256 Identification Data Masking.
+- `WC-INV-*` (Inventory & Status Automation):
+  - `WC-INV-101`: Update Property Vacancy Status — Real-Time Availability Fluctuations.
+- `WC-LEASE-*` (Tenancy Lifecycle Gates):
+  - `WC-LEASE-203`: Parse DLD Unified Tenancy Contracts — Official Government PDF Mapping.
+- `WC-FIN-*` (Financial Ledger Triggers):
+  - `WC-FIN-302`: Generate Receipt Ledger Entries — Escrow & Zoho Books VAT Reconciliation.
+
+---
+
 ## 🔱 AEGIS
 
 AEGIS is the orchestration layer. **Do not trim** scripts or agents for “simplicity”. **Do organise** lanes, naming, and department ownership so progress is visible per department. See `docs/governance/AEGIS_ORGANISATION.md`.

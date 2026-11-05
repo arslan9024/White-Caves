@@ -22,6 +22,13 @@ import {
   executeBiometricSecurityTask,
   ExecutedTaskPayload,
 } from './taskExecutors.workflow';
+import {
+  executeKycOcrTask,
+  executeKycEncryptionTask,
+  executeInventoryVacancyTask,
+  executeLeaseParseTask,
+  executeFinancialReceiptLedgerTask,
+} from './taskExecutorsRup.workflow';
 
 export interface TaskWorkflowResult {
   success: boolean;
@@ -200,6 +207,16 @@ export function executeTaskFunctionalRunWorkflow(
     code.includes('UAE-PASS')
   ) {
     payload = executeBiometricSecurityTask(inputs);
+  } else if (code.includes('WC-KYC-001') || code.includes('KYC-001')) {
+    payload = executeKycOcrTask(inputs);
+  } else if (code.includes('WC-KYC-004') || code.includes('KYC-004')) {
+    payload = executeKycEncryptionTask(inputs);
+  } else if (code.includes('WC-INV-101') || code.includes('INV-101')) {
+    payload = executeInventoryVacancyTask(inputs);
+  } else if (code.includes('WC-LEASE-203') || code.includes('LEASE-203')) {
+    payload = executeLeaseParseTask(inputs);
+  } else if (code.includes('WC-FIN-302') || code.includes('FIN-302')) {
+    payload = executeFinancialReceiptLedgerTask(inputs);
   } else {
     payload = {
       outputs: {

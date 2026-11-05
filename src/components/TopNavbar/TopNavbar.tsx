@@ -90,8 +90,20 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
       <OverhangingLogoWrapper
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => handleNavigate('/')}
-        title="White Caves Real Estate LLC — Sovereign Real Estate OS"
+        onClick={() => {
+          const targetHome =
+            props.homeRoute ||
+            (currentPath.startsWith('/dashboard') || currentPath.startsWith('/crm')
+              ? '/dashboard'
+              : '/');
+          handleNavigate(targetHome);
+        }}
+        title={
+          currentPath.startsWith('/dashboard')
+            ? 'White Caves Dashboard Home'
+            : 'White Caves Real Estate LLC — Sovereign Real Estate OS'
+        }
+        data-testid="navbar-logo-home"
       >
         <img src="/company-logo.jpg" alt="White Caves Logo" />
       </OverhangingLogoWrapper>
