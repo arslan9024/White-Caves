@@ -68,4 +68,40 @@ describe('ExecutiveVSCodeSidebar Component (7-Category Co-Location Spec)', () =>
     expect(onSelectTab).toHaveBeenCalledWith('REproperties');
     expect(screen.getByText(/RE Properties Inventory/i)).toBeInTheDocument();
   }, 15000);
+
+  it('renders Activity Bar icon for Deals and switches tabs', () => {
+    const onSelectTab = vi.fn();
+    render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
+
+    const dealsBtn = screen.getByTestId('activity-btn-deals');
+    expect(dealsBtn).toBeInTheDocument();
+
+    fireEvent.click(dealsBtn);
+    expect(onSelectTab).toHaveBeenCalledWith('deals');
+    expect(screen.getByText(/Deals & Pipeline/i)).toBeInTheDocument();
+  }, 15000);
+
+  it('renders Activity Bar icon for Documents and switches tabs', () => {
+    const onSelectTab = vi.fn();
+    render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
+
+    const docBtn = screen.getByTestId('activity-btn-documents');
+    expect(docBtn).toBeInTheDocument();
+
+    fireEvent.click(docBtn);
+    expect(onSelectTab).toHaveBeenCalledWith('documents');
+    expect(screen.getAllByText(/Document Vault/i).length).toBeGreaterThan(0);
+  }, 15000);
+
+  it('renders Activity Bar icon for Relationships and switches tabs', () => {
+    const onSelectTab = vi.fn();
+    render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
+
+    const relBtn = screen.getByTestId('activity-btn-relationships');
+    expect(relBtn).toBeInTheDocument();
+
+    fireEvent.click(relBtn);
+    expect(onSelectTab).toHaveBeenCalledWith('relationships');
+    expect(screen.getByText(/Relational Matrix/i)).toBeInTheDocument();
+  }, 15000);
 });

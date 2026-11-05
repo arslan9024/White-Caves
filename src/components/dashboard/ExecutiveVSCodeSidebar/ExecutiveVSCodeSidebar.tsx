@@ -9,6 +9,8 @@ import {
   CheckSquare,
   Trophy,
   Home,
+  Handshake,
+  Network,
   Settings,
   Search,
   Building,
@@ -22,6 +24,9 @@ import { SidebarEmployeesList } from './SidebarEmployeesList';
 import { SidebarTasksList } from './SidebarTasksList';
 import { SidebarLeaderboardList } from './SidebarLeaderboardList';
 import { SidebarREPropertiesList } from './SidebarREPropertiesList';
+import { SidebarDealsList } from './SidebarDealsList';
+import { SidebarDocumentsList } from './SidebarDocumentsList';
+import { SidebarRelationshipsList } from './SidebarRelationshipsList';
 import { SidebarExplorerTree } from './SidebarExplorerTree';
 import {
   SidebarLayoutContainer,
@@ -33,6 +38,31 @@ import {
   FilterBarWrapper,
   ResizeHandle,
 } from './ExecutiveVSCodeSidebar.styles';
+
+const TAB_HEADER_MAP: Record<string, { icon: React.ReactNode; label: string }> = {
+  departments: {
+    icon: <Building2 size={14} color="#EF4444" />,
+    label: 'Departments Hub (12 Slots)',
+  },
+  employees: { icon: <Users size={14} color="#3B82F6" />, label: 'Employees Hub (Roster)' },
+  tasks: { icon: <CheckSquare size={14} color="#10B981" />, label: '200+ Tasks Catalog' },
+  leaderboard: { icon: <Trophy size={14} color="#F59E0B" />, label: 'Merit Leaderboard & Tiers' },
+  REproperties: { icon: <Home size={14} color="#8B5CF6" />, label: 'RE Properties Inventory' },
+  deals: { icon: <Handshake size={14} color="#C084FC" />, label: 'Deals & Pipeline' },
+  documents: { icon: <FileText size={14} color="#38BDF8" />, label: 'Document Vault' },
+  relationships: { icon: <Network size={14} color="#10B981" />, label: 'Relational Matrix' },
+};
+
+const SEARCH_PLACEHOLDER_MAP: Record<string, string> = {
+  departments: 'Filter 12 slots & depts...',
+  employees: 'Filter employees & roles...',
+  tasks: 'Filter 200 tasks & SLAs...',
+  leaderboard: 'Filter leaderboard & tiers...',
+  REproperties: 'Filter properties & units...',
+  deals: 'Filter deals & pipelines...',
+  documents: 'Filter vault documents...',
+  relationships: 'Filter relational matrix...',
+};
 
 export interface ExecutiveVSCodeSidebarProps {
   activeTab?: ActivityTab;
@@ -71,6 +101,11 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
     if (onSelectItem) onSelectItem(key, label);
   };
 
+  const headerInfo = TAB_HEADER_MAP[activeTab] || {
+    icon: <Building size={14} color="#EF4444" />,
+    label: 'White Caves Explorer',
+  };
+
   return (
     <SidebarLayoutContainer
       $isCollapsed={isCollapsed}
@@ -90,31 +125,6 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
           </ActivityIconBtn>
 
           <ActivityIconBtn
-            $isActive={activeTab === 'ai-mesh'}
-            onClick={() => handleSelectTab('ai-mesh')}
-            title="AI Mesh Command (Zoe + 120 Agents)"
-          >
-            <Cpu size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'documents'}
-            onClick={() => handleSelectTab('documents')}
-            title="Document Centre & Henry OCR Studio"
-          >
-            <FileText size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'audit'}
-            onClick={() => handleSelectTab('audit')}
-            title="RERA Compliance & Master Audit"
-          >
-            <ShieldCheck size={18} />
-          </ActivityIconBtn>
-
-          {/* 5th Icon: Corporate Departments Management */}
-          <ActivityIconBtn
             $isActive={activeTab === 'departments'}
             onClick={() => handleSelectTab('departments')}
             title="Corporate Departments Hub (12 Slots / 7 Pillars)"
@@ -123,7 +133,6 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             <Building2 size={18} />
           </ActivityIconBtn>
 
-          {/* 6th Icon: Employees Management Hub */}
           <ActivityIconBtn
             $isActive={activeTab === 'employees'}
             onClick={() => handleSelectTab('employees')}
@@ -133,7 +142,6 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             <Users size={18} />
           </ActivityIconBtn>
 
-          {/* 7th Icon: Tasks Management Hub */}
           <ActivityIconBtn
             $isActive={activeTab === 'tasks'}
             onClick={() => handleSelectTab('tasks')}
@@ -143,7 +151,33 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             <CheckSquare size={18} />
           </ActivityIconBtn>
 
-          {/* 8th Icon: Gamified Leaderboard & Tier Progression */}
+          <ActivityIconBtn
+            $isActive={activeTab === 'REproperties'}
+            onClick={() => handleSelectTab('REproperties')}
+            title="Real Estate Inventory & Portfolio (REproperties)"
+            data-testid="activity-btn-reproperties"
+          >
+            <Home size={18} />
+          </ActivityIconBtn>
+
+          <ActivityIconBtn
+            $isActive={activeTab === 'deals'}
+            onClick={() => handleSelectTab('deals')}
+            title="Deals & Revenue Pipeline (deals)"
+            data-testid="activity-btn-deals"
+          >
+            <Handshake size={18} />
+          </ActivityIconBtn>
+
+          <ActivityIconBtn
+            $isActive={activeTab === 'documents'}
+            onClick={() => handleSelectTab('documents')}
+            title="Sovereign Document Vault (documents)"
+            data-testid="activity-btn-documents"
+          >
+            <FileText size={18} />
+          </ActivityIconBtn>
+
           <ActivityIconBtn
             $isActive={activeTab === 'leaderboard'}
             onClick={() => handleSelectTab('leaderboard')}
@@ -153,14 +187,29 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             <Trophy size={18} />
           </ActivityIconBtn>
 
-          {/* 9th Icon: Real Estate Properties Inventory */}
           <ActivityIconBtn
-            $isActive={activeTab === 'REproperties'}
-            onClick={() => handleSelectTab('REproperties')}
-            title="Real Estate Inventory & Portfolio (REproperties)"
-            data-testid="activity-btn-reproperties"
+            $isActive={activeTab === 'relationships'}
+            onClick={() => handleSelectTab('relationships')}
+            title="Entities & Relational Matrix (relationships)"
+            data-testid="activity-btn-relationships"
           >
-            <Home size={18} />
+            <Network size={18} />
+          </ActivityIconBtn>
+
+          <ActivityIconBtn
+            $isActive={activeTab === 'ai-mesh'}
+            onClick={() => handleSelectTab('ai-mesh')}
+            title="AI Mesh Command (Zoe + 120 Agents)"
+          >
+            <Cpu size={18} />
+          </ActivityIconBtn>
+
+          <ActivityIconBtn
+            $isActive={activeTab === 'audit'}
+            onClick={() => handleSelectTab('audit')}
+            title="RERA Compliance & Master Audit"
+          >
+            <ShieldCheck size={18} />
           </ActivityIconBtn>
         </ActivityGroup>
 
@@ -177,47 +226,10 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
 
       {/* ── 2. Collapsible Explorer Drawer ─────────────────────────── */}
       <ExplorerDrawer $isCollapsed={isCollapsed}>
-        {/* Drawer Header */}
         <ExplorerHeader>
           <div className="title-wrap">
-            {activeTab === 'departments' && (
-              <>
-                <Building2 size={14} color="#EF4444" />
-                <span>Departments Hub (12 Slots)</span>
-              </>
-            )}
-            {activeTab === 'employees' && (
-              <>
-                <Users size={14} color="#3B82F6" />
-                <span>Employees Hub (Roster)</span>
-              </>
-            )}
-            {activeTab === 'tasks' && (
-              <>
-                <CheckSquare size={14} color="#10B981" />
-                <span>200+ Tasks Catalog</span>
-              </>
-            )}
-            {activeTab === 'leaderboard' && (
-              <>
-                <Trophy size={14} color="#F59E0B" />
-                <span>Merit Leaderboard & Tiers</span>
-              </>
-            )}
-            {activeTab === 'REproperties' && (
-              <>
-                <Home size={14} color="#8B5CF6" />
-                <span>RE Properties Inventory</span>
-              </>
-            )}
-            {!['departments', 'employees', 'tasks', 'leaderboard', 'REproperties'].includes(
-              activeTab
-            ) && (
-              <>
-                <Building size={14} color="#EF4444" />
-                <span>White Caves Explorer</span>
-              </>
-            )}
+            {headerInfo.icon}
+            <span>{headerInfo.label}</span>
           </div>
           <div className="header-actions">
             {onOpenDeptManager && (
@@ -237,19 +249,7 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             <Search size={14} />
             <input
               type="text"
-              placeholder={
-                activeTab === 'departments'
-                  ? 'Filter 12 slots & depts...'
-                  : activeTab === 'employees'
-                    ? 'Filter employees & roles...'
-                    : activeTab === 'tasks'
-                      ? 'Filter 200 tasks & SLAs...'
-                      : activeTab === 'leaderboard'
-                        ? 'Filter leaderboard & tiers...'
-                        : activeTab === 'REproperties'
-                          ? 'Filter properties & communities...'
-                          : 'Filter modules & squads...'
-              }
+              placeholder={SEARCH_PLACEHOLDER_MAP[activeTab] || 'Filter modules & squads...'}
               value={filterQuery}
               onChange={e => setFilterQuery(e.target.value)}
             />
@@ -278,6 +278,21 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
           <SidebarREPropertiesList
             filterQuery={filterQuery}
             onSelectProperty={(id, title) => handleLeafClick(`prop-${id}`, `Property: ${title}`)}
+          />
+        ) : activeTab === 'deals' ? (
+          <SidebarDealsList
+            filterQuery={filterQuery}
+            onSelectDeal={(id, title) => handleLeafClick(`deal-${id}`, `Deal: ${title}`)}
+          />
+        ) : activeTab === 'documents' ? (
+          <SidebarDocumentsList
+            filterQuery={filterQuery}
+            onSelectDoc={(id, title) => handleLeafClick(`doc-${id}`, `Doc: ${title}`)}
+          />
+        ) : activeTab === 'relationships' ? (
+          <SidebarRelationshipsList
+            filterQuery={filterQuery}
+            onSelectChain={(id, name) => handleLeafClick(`rel-${id}`, `Chain: ${name}`)}
           />
         ) : (
           <SidebarExplorerTree

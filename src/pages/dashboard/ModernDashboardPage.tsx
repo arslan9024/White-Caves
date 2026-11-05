@@ -16,6 +16,9 @@ import { EmployeeManagerView } from '../../components/crm/EmployeeManager';
 import { TaskManagerView } from '../../components/crm/TaskManager';
 import { LeaderboardView } from '../../components/crm/Leaderboard';
 import { REPropertyManagerView } from '../../components/crm/REPropertyManager';
+import { DealManagerView } from '../../components/crm/DealManager';
+import { DocumentManagerView } from '../../components/crm/DocumentManager';
+import { RelationshipManagerView } from '../../components/crm/RelationshipManager';
 import { CorporateDepartmentsProvider } from '../../context/CorporateDepartmentsContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
@@ -38,9 +41,11 @@ export const ModernDashboardPage: FC = () => {
     'tasks',
     'leaderboard',
     'REproperties',
+    'deals',
+    'documents',
+    'relationships',
     'explorer',
     'ai-mesh',
-    'documents',
     'audit',
     'settings',
   ];
@@ -77,6 +82,15 @@ export const ModernDashboardPage: FC = () => {
     } else if (key.startsWith('prop-')) {
       const propId = key.replace('prop-', '');
       navigate(`/dashboard/REproperties/${propId}`);
+    } else if (key.startsWith('deal-')) {
+      const dealId = key.replace('deal-', '');
+      navigate(`/dashboard/deals/${dealId}`);
+    } else if (key.startsWith('doc-')) {
+      const docId = key.replace('doc-', '');
+      navigate(`/dashboard/documents/${docId}`);
+    } else if (key.startsWith('rel-')) {
+      const relId = key.replace('rel-', '');
+      navigate(`/dashboard/relationships/${relId}`);
     } else {
       navigate(`/dashboard/${activeTab}`);
     }
@@ -150,6 +164,22 @@ export const ModernDashboardPage: FC = () => {
               <REPropertyManagerView
                 selectedPropertyId={activeItemId}
                 onSelectProperty={id => navigate(`/dashboard/REproperties/${id}`)}
+              />
+            ) : activeTab === 'deals' ? (
+              <DealManagerView
+                selectedDealId={activeItemId}
+                onSelectDeal={id => navigate(`/dashboard/deals/${id}`)}
+              />
+            ) : activeTab === 'documents' ? (
+              <DocumentManagerView
+                selectedDocId={activeItemId}
+                onSelectDoc={id => navigate(`/dashboard/documents/${id}`)}
+              />
+            ) : activeTab === 'relationships' ? (
+              <RelationshipManagerView
+                selectedEntityId={activeItemId}
+                onSelectEntity={id => navigate(`/dashboard/relationships/${id}`)}
+                onNavigateToDeepRoute={route => navigate(route)}
               />
             ) : (
               <div

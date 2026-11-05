@@ -14,6 +14,8 @@ export type ActivityTab =
   | 'tasks'
   | 'leaderboard'
   | 'REproperties'
+  | 'deals'
+  | 'relationships'
   | 'settings';
 
 export interface UseExecutiveVSCodeSidebarProps {
