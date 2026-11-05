@@ -29,13 +29,16 @@ export const ModernDashboardPage: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Parse deep URL e.g. /dashboard/tasks/T001 or /dashboard/departments/D01
+  // Parse deep URL e.g. /dashboard/tasks/T001 or /dashboard/departments/DEPT-01/sub/SUB-01
   const pathParts = location.pathname
     .replace(/^\/dashboard\/?/, '')
     .split('/')
     .filter(Boolean);
   const rawTab = pathParts[0] as ActivityTab | undefined;
   const activeItemId = pathParts[1] || null;
+
+  const queryParams = new URLSearchParams(location.search);
+  const isReadOnly = queryParams.get('mode') === 'view' || queryParams.get('mode') === 'execution';
 
   const validTabs: ActivityTab[] = [
     'departments',
@@ -109,6 +112,27 @@ export const ModernDashboardPage: FC = () => {
       navigate(`/dashboard/customers/${custId}`);
     } else {
       navigate(`/dashboard/${activeTab}`);
+    }
+  };
+
+  const handleSelectRightExplorerItem = (key: string, label: string) => {
+    if (key.startsWith('dept-')) {
+      const deptId = key.replace('dept-', '');
+      navigate(`/dashboard/departments/${deptId}?mode=view`);
+    } else if (key.startsWith('task-')) {
+      const taskId = key.replace('task-', '');
+      navigate(`/dashboard/tasks/${taskId}?mode=execution`);
+    } else if (key.startsWith('prop-')) {
+      const propId = key.replace('prop-', '');
+      navigate(`/dashboard/REproperties/${propId}?mode=view`);
+    } else if (key.startsWith('deal-')) {
+      const dealId = key.replace('deal-', '');
+      navigate(`/dashboard/deals/${dealId}?mode=view`);
+    } else if (key.startsWith('emp-')) {
+      const empId = key.replace('emp-', '');
+      navigate(`/dashboard/employees/${empId}?mode=view`);
+    } else {
+      handleSelectSidebarItem(key, label);
     }
   };
 
@@ -207,7 +231,10 @@ export const ModernDashboardPage: FC = () => {
           >
             {/* ── Active Viewport Switcher ── */}
             {activeTab === 'departments' ? (
-              <DepartmentManagementWorkspace selectedDeptId={activeItemId || undefined} />
+              <DepartmentManagementWorkspace
+                selectedDeptId={activeItemId || undefined}
+                isReadOnly={isReadOnly}
+              />
             ) : activeTab === 'employees' ? (
               <EmployeeManagerView selectedEmpId={activeItemId || undefined} />
             ) : activeTab === 'tasks' ? (
@@ -291,7 +318,7 @@ export const ModernDashboardPage: FC = () => {
           {/* ── Right VS Code-Style AI Command Center Sidebar ─────────────────── */}
           <ExecutiveAIVSCodeSidebar
             onSelectAgent={(agentId, agentName) => setActiveAgent({ id: agentId, name: agentName })}
-            onSelectItem={handleSelectSidebarItem}
+            onSelectItem={handleSelectRightExplorerItem}
           />
         </div>
       </CorporateDepartmentsProvider>

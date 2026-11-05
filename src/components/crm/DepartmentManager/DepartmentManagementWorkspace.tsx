@@ -17,11 +17,13 @@ import {
 export interface DepartmentManagementWorkspaceProps {
   initialViewMode?: 'squads' | 'grid' | 'hierarchy';
   selectedDeptId?: string;
+  isReadOnly?: boolean;
 }
 
 export const DepartmentManagementWorkspace: FC<DepartmentManagementWorkspaceProps> = ({
   initialViewMode = 'grid',
   selectedDeptId,
+  isReadOnly = false,
 }) => {
   const [viewMode, setViewMode] = useState<'squads' | 'grid' | 'hierarchy'>(initialViewMode);
 
@@ -218,10 +220,12 @@ export const DepartmentManagementWorkspace: FC<DepartmentManagementWorkspaceProp
           />
         </div>
 
-        <button className="add-btn" onClick={handleOpenCreate}>
-          <Plus size={16} />
-          Add Corporate Department
-        </button>
+        {!isReadOnly && (
+          <button className="add-btn" onClick={handleOpenCreate}>
+            <Plus size={16} />
+            Add Corporate Department
+          </button>
+        )}
       </ActionBar>
 
       {/* ── 5. Main Viewport Renderers ───────────────────────────────────── */}
@@ -284,6 +288,7 @@ export const DepartmentManagementWorkspace: FC<DepartmentManagementWorkspaceProp
         isOpen={Boolean(selectedDeptForModal)}
         onClose={handleCloseSubItems}
         department={selectedDeptForModal}
+        isReadOnly={isReadOnly}
       />
     </WorkspaceContainer>
   );

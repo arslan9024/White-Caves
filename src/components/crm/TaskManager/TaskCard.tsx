@@ -109,27 +109,43 @@ export const TaskCard: FC<TaskCardProps> = ({
           </div>
         </div>
 
-        {/* Bhakti 5-Tier Lineage Tag */}
+        {/* Bhakti 5-Tier Lineage Tag (Entity & Role Paired) */}
         {task.lineage && (
-          <div className="my-1.5 px-2 py-1 rounded bg-slate-950/70 border border-slate-800/60 flex items-center gap-1.5 text-[10px] font-mono text-amber-400/90 flex-wrap">
+          <div className="my-1.5 px-2 py-1.5 rounded bg-slate-950/70 border border-slate-800/60 flex items-center gap-1.5 text-[10px] font-mono text-amber-400/90 flex-wrap">
             <span className="text-slate-500 font-sans font-bold uppercase text-[9px]">
               Lineage:
             </span>
-            <span className="px-1.5 py-0.2 rounded bg-red-950/40 text-red-400 border border-red-900/40 font-bold">
-              {task.lineage.deptId}
+            <span
+              className="px-1.5 py-0.5 rounded bg-red-950/50 text-red-300 border border-red-800/50 font-bold"
+              title="Department Entity & Appointed Director Role"
+            >
+              Entity: {task.lineage.deptId} | Role: {task.lineage.directorId || 'DIR-01'}
             </span>
             <span className="text-slate-600">›</span>
-            <span className="px-1.5 py-0.2 rounded bg-blue-950/40 text-blue-400 border border-blue-900/40 font-bold">
-              {task.lineage.subDeptId}
+            <span
+              className="px-1.5 py-0.5 rounded bg-blue-950/50 text-blue-300 border border-blue-800/50 font-bold"
+              title="Sub-Department Entity & Appointed Manager Role"
+            >
+              Entity: {task.lineage.subDeptId} | Role: {task.lineage.managerId || 'MGR-01'}
             </span>
             <span className="text-slate-600">›</span>
-            <span className="px-1.5 py-0.2 rounded bg-amber-950/40 text-amber-400 border border-amber-900/40 font-bold">
-              {task.lineage.squadId}
+            <span
+              className="px-1.5 py-0.5 rounded bg-amber-950/50 text-amber-300 border border-amber-800/50 font-bold"
+              title="Squad Entity & Appointed Supervisor Role"
+            >
+              Entity: {task.lineage.squadId} | Role: {task.lineage.supervisorId || 'SUP-01'}
             </span>
-            <span className="text-slate-600">›</span>
-            <span className="px-1.5 py-0.2 rounded bg-emerald-950/40 text-emerald-400 border border-emerald-900/40 font-bold">
-              {task.lineage.supervisorId}
-            </span>
+            {task.lineage.teamId && (
+              <>
+                <span className="text-slate-600">›</span>
+                <span
+                  className="px-1.5 py-0.5 rounded bg-purple-950/50 text-purple-300 border border-purple-800/50 font-bold"
+                  title="Team Entity & Operator Role"
+                >
+                  Entity: {task.lineage.teamId} | Role: {task.lineage.operatorRoleId || 'OPERATOR'}
+                </span>
+              </>
+            )}
           </div>
         )}
 

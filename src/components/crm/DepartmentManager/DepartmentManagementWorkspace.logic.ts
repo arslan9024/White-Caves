@@ -13,31 +13,38 @@ import {
 import {
   handleDepartmentSlotDropHelper,
   handleSubDeptDropHelper,
+  handleDropOnPoolHelper,
   type DragPayload,
 } from './DepartmentManagementWorkspace.dnd';
-
-const INITIAL_FORM: DepartmentFormData = {
-  title: '',
-  code: '',
-  slug: '',
-  color: '#EF4444',
-  icon: 'Briefcase',
-  description: '',
-};
+import {
+  loadStoredDepartments,
+  saveDepartments,
+  computeDepartmentMetrics,
+  filterDepartmentsBySearch,
+} from './DepartmentManagementWorkspace.storage';
+import { useDepartmentForm, INITIAL_FORM } from './DepartmentManagementWorkspace.form';
 
 export function useDepartmentManagementWorkspaceLogic() {
-  const [departments, setDepartments] = useState<DepartmentNodeItem[]>(FALLBACK_12_DEPARTMENTS);
+  const [departments, setDepartments] = useState<DepartmentNodeItem[]>(loadStoredDepartments);
   const [unassignedPool, setUnassignedPool] = useState<SupervisorDef[]>(getUnassignedSquadPool());
   const [subDeptsMap, setSubDeptsMap] = useState<Record<string, SupervisorDef[]>>({});
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<DepartmentFormData>(INITIAL_FORM);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedDeptForModal, setSelectedDeptForModal] = useState<DepartmentNodeItem | null>(null);
+
+  const {
+    isFormOpen,
+    editingNodeId,
+    formData,
+    isSubmitting,
+    handleOpenCreate,
+    handleOpenEdit,
+    handleCloseForm,
+    handleFormChange,
+    handleSubmit,
+  } = useDepartmentForm(departments, setDepartments, setError);
 
   const [draggedDeptIndex, setDraggedDeptIndex] = useState<number | null>(null);
   const [dragOverDeptIndex, setDragOverDeptIndex] = useState<number | null>(null);
@@ -57,12 +64,14 @@ export function useDepartmentManagementWorkspaceLogic() {
         const data = await res.json();
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
           setDepartments(data.data);
+          saveDepartments(data.data);
           return;
         }
       }
-      setDepartments(FALLBACK_12_DEPARTMENTS);
+      // If backend call doesn't succeed, load from localStorage first
+      setDepartments(loadStoredDepartments());
     } catch {
-      setDepartments(FALLBACK_12_DEPARTMENTS);
+      setDepartments(loadStoredDepartments());
     } finally {
       setLoading(false);
     }
@@ -87,95 +96,22 @@ export function useDepartmentManagementWorkspaceLogic() {
     if (index >= 0 && index < 12) setSelectedSlotIndex(index);
   }, []);
 
-  const handleOpenCreate = () => {
-    setEditingNodeId(null);
-    setFormData(INITIAL_FORM);
-    setIsFormOpen(true);
-  };
-
-  const handleOpenEdit = (dept: DepartmentNodeItem) => {
-    setEditingNodeId(dept._id);
-    setFormData({
-      title: dept.title,
-      code: dept.code,
-      slug: dept.slug,
-      color: dept.color || '#EF4444',
-      icon: dept.icon || 'Briefcase',
-      description: dept.description || '',
-    });
-    setIsFormOpen(true);
-  };
-
-  const handleCloseForm = () => {
-    setIsFormOpen(false);
-    setEditingNodeId(null);
-    setFormData(INITIAL_FORM);
-  };
-
-  const handleFormChange = (field: keyof DepartmentFormData, value: string) => {
-    setFormData(prev => {
-      const next = { ...prev, [field]: value };
-      if (field === 'title' && !editingNodeId) {
-        next.slug = value
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)/g, '');
-        if (!prev.code) next.code = `DEPT-${value.slice(0, 3).toUpperCase()}`;
-      }
-      return next;
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.title.trim() || !formData.code.trim() || !formData.slug.trim()) {
-      setError('Title, Code, and Slug are strictly required.');
-      return;
-    }
-    try {
-      setIsSubmitting(true);
-      setError(null);
-      if (editingNodeId) {
-        setDepartments(prev =>
-          prev.map(d => (d._id === editingNodeId ? { ...d, ...formData } : d))
-        );
-      } else {
-        const slotCode = `DEPT-${String(departments.length + 1).padStart(2, '0')}`;
-        const newDept: DepartmentNodeItem = {
-          _id: `dept-${Date.now()}`,
-          ...formData,
-          code: slotCode,
-          level: 'DEPARTMENT',
-          order: departments.length + 1,
-          subDeptsCount: 9,
-          squadsCount: 9,
-          headcount: 18,
-          directorOrManagerId: { fullName: 'Appointed Lead', role: 'Department Director' },
-        };
-        setDepartments(prev => [...prev, newDept]);
-      }
-      handleCloseForm();
-    } catch {
-      setError('Failed to save corporate department changes.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleDelete = (nodeId: string) => {
     const targetDept = departments.find(d => d._id === nodeId);
     if (!targetDept) return;
 
     setUnassignedPool(prev => [convertDepartmentToSubDept(targetDept), ...prev]);
-    setDepartments(prev =>
-      prev
+    setDepartments(prev => {
+      const updated = prev
         .filter(d => d._id !== nodeId)
         .map((d, idx) => ({
           ...d,
           order: idx + 1,
           code: `DEPT-${String(idx + 1).padStart(2, '0')}`,
-        }))
-    );
+        }));
+      saveDepartments(updated);
+      return updated;
+    });
 
     if (token && !nodeId.startsWith('canonical-')) {
       fetch('/api/corporate-departments/demote-to-subdept', {
@@ -193,7 +129,11 @@ export function useDepartmentManagementWorkspaceLogic() {
     setUnassignedPool(prev => prev.filter(s => s.id !== subId));
     const nextOrder = departments.length + 1;
     const promotedDept = convertSubDeptToDepartment(targetSub, nextOrder);
-    setDepartments(prev => [...prev, promotedDept]);
+    setDepartments(prev => {
+      const updated = [...prev, promotedDept];
+      saveDepartments(updated);
+      return updated;
+    });
 
     if (token && !subId.startsWith('sub-from-dept-canonical-')) {
       fetch('/api/corporate-departments/promote-to-dept', {
@@ -248,28 +188,10 @@ export function useDepartmentManagementWorkspaceLogic() {
 
   const handleDropOnPool = (e: React.DragEvent) => {
     e.preventDefault();
-    const rawData = e.dataTransfer.getData('text/plain');
     setDraggedDeptIndex(null);
     setDragOverDeptIndex(null);
-    if (!rawData) return;
-
-    let payload: DragPayload;
-    try {
-      payload = JSON.parse(rawData);
-    } catch {
-      const idx = parseInt(rawData, 10);
-      payload = { type: 'dept-slot', slotIndex: isNaN(idx) ? undefined : idx };
-    }
-
-    if (
-      payload.type === 'dept-slot' &&
-      payload.slotIndex !== undefined &&
-      departments[payload.slotIndex]
-    ) {
-      handleDelete(departments[payload.slotIndex]._id);
-    } else if (payload.type === 'sub-slot' && payload.subIndex !== undefined) {
-      handleDemoteSubDept(payload.subIndex);
-    }
+    const rawData = e.dataTransfer.getData('text/plain');
+    handleDropOnPoolHelper(rawData, departments, handleDelete, handleDemoteSubDept);
   };
 
   const handleSubDragStart = (e: React.DragEvent, subIndex: number) => {
@@ -320,27 +242,12 @@ export function useDepartmentManagementWorkspaceLogic() {
     setSubDeptsMap(prev => ({ ...prev, [deptKey]: currentSubs }));
   };
 
-  const metrics = useMemo(
-    () => ({
-      totalDepartments: departments.length,
-      totalSubDepts: departments.reduce((acc, d) => acc + (d.subDeptsCount || 9), 0),
-      totalSquads: departments.reduce((acc, d) => acc + (d.squadsCount || 9), 0),
-      totalHeadcount: departments.reduce((acc, d) => acc + (d.headcount || 0), 0),
-    }),
-    [departments]
-  );
+  const metrics = useMemo(() => computeDepartmentMetrics(departments), [departments]);
 
-  const filteredDepartments = useMemo(() => {
-    if (!searchTerm.trim()) return departments;
-    const term = searchTerm.toLowerCase();
-    return departments.filter(
-      d =>
-        d.title.toLowerCase().includes(term) ||
-        d.code.toLowerCase().includes(term) ||
-        d.slug.toLowerCase().includes(term) ||
-        (d.description && d.description.toLowerCase().includes(term))
-    );
-  }, [departments, searchTerm]);
+  const filteredDepartments = useMemo(
+    () => filterDepartmentsBySearch(departments, searchTerm),
+    [departments, searchTerm]
+  );
 
   return {
     slots,

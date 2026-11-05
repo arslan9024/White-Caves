@@ -160,3 +160,28 @@ export function handleSubDeptDropHelper(
     setSubDeptsMap(prev => ({ ...prev, [deptKey]: currentSubs }));
   }
 }
+
+export function handleDropOnPoolHelper(
+  rawData: string,
+  departments: DepartmentNodeItem[],
+  onDeleteDept: (id: string) => void,
+  onDemoteSubDept: (index: number) => void
+): void {
+  if (!rawData) return;
+  let payload: DragPayload;
+  try {
+    payload = JSON.parse(rawData);
+  } catch {
+    const idx = parseInt(rawData, 10);
+    payload = { type: 'dept-slot', slotIndex: isNaN(idx) ? undefined : idx };
+  }
+  if (
+    payload.type === 'dept-slot' &&
+    payload.slotIndex !== undefined &&
+    departments[payload.slotIndex]
+  ) {
+    onDeleteDept(departments[payload.slotIndex]._id);
+  } else if (payload.type === 'sub-slot' && payload.subIndex !== undefined) {
+    onDemoteSubDept(payload.subIndex);
+  }
+}

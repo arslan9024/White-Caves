@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import type { SupervisorDef } from '../../../data/assistants108Registry.data';
 import type { DepartmentNodeItem } from './DepartmentManager.types';
 import { getDepartmentSubItems, getUnassignedSquadPool } from './DepartmentManager.data';
+import {
+  loadDeptSquadPriorities,
+  saveDeptSquadPriorities,
+} from './DepartmentManagementWorkspace.storage';
 
 export type SquadDragSource = 'assigned' | 'pool';
 
@@ -23,18 +27,57 @@ export function useDepartmentSubItemsModalLogic(
   const [unassignedPool, setUnassignedPool] = useState<SupervisorDef[]>([]);
   const [draggedItem, setDraggedItem] = useState<DraggedSquadItem | null>(null);
   const [dragOverTarget, setDragOverTarget] = useState<DragOverTarget | null>(null);
+  const [savedFeedback, setSavedFeedback] = useState(false);
 
   // Initialize 9 squads and unassigned pool when modal opens or department changes
   useEffect(() => {
     if (isOpen && department) {
-      const items = getDepartmentSubItems(department.slug || department._id);
+      const deptKey = department.slug || department._id;
+      const initialSquads = loadDeptSquadPriorities(deptKey) || getDepartmentSubItems(deptKey);
       // Guarantee exactly 9 squads
-      setAssignedSquads(items.slice(0, 9));
+      setAssignedSquads(initialSquads.slice(0, 9));
       setUnassignedPool(getUnassignedSquadPool());
       setDraggedItem(null);
       setDragOverTarget(null);
+      setSavedFeedback(false);
     }
   }, [isOpen, department]);
+
+  const handleSavePriorities = () => {
+    if (!department) return;
+    const deptKey = department.slug || department._id;
+    saveDeptSquadPriorities(deptKey, assignedSquads);
+    setSavedFeedback(true);
+    setTimeout(() => setSavedFeedback(false), 2500);
+  };
+
+  const handleMoveUp = (index: number) => {
+    if (index <= 0) return;
+    setAssignedSquads(prev => {
+      const next = [...prev];
+      const temp = next[index];
+      next[index] = next[index - 1];
+      next[index - 1] = temp;
+      if (department) {
+        saveDeptSquadPriorities(department.slug || department._id, next);
+      }
+      return next;
+    });
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index >= assignedSquads.length - 1) return;
+    setAssignedSquads(prev => {
+      const next = [...prev];
+      const temp = next[index];
+      next[index] = next[index + 1];
+      next[index + 1] = temp;
+      if (department) {
+        saveDeptSquadPriorities(department.slug || department._id, next);
+      }
+      return next;
+    });
+  };
 
   const handleSquadDragStart = (e: React.DragEvent, source: SquadDragSource, index: number) => {
     const payload: DraggedSquadItem = { source, index };
@@ -282,6 +325,10 @@ export function useDepartmentSubItemsModalLogic(
     unassignedPool,
     draggedItem,
     dragOverTarget,
+    savedFeedback,
+    handleSavePriorities,
+    handleMoveUp,
+    handleMoveDown,
     handleSquadDragStart,
     handleSquadDragOver,
     handleSquadDragLeave,

@@ -86,6 +86,41 @@ The **Bhakti Protocol Hierarchy** is the foundational, multi-layered structural 
 
 > **Note:** Department 8 is explicitly the **Software Quality & Testing** domain so testing is owned, measured, and not buried inside generic “Compliance”.
 
+### 🏷️ Entity vs. User Role Pairing Law (Zero Ambiguity Mandate)
+
+To resolve any architectural ambiguity between **organizational container units** and **governing human/agent roles**, all lineages must pair both identifiers explicitly across every tier:
+
+- **Tier 5 (Executive):** `[Entity: EXEC-01 | Role: MD-01]` — Executive MD Office & Sovereign Authority.
+- **Tier 4 (Department):** `[Entity: DEPT-xx | Role: DIR-xx]` — e.g. `[Entity: DEPT-01 | Role: DIR-01]` (Executive & Architecture Director).
+- **Tier 3 (Sub-Department):** `[Entity: SUB-xx | Role: MGR-xx]` — e.g. `[Entity: SUB-01 | Role: MGR-01]` (Tactical Sub-Department Manager).
+- **Tier 2 (Squad):** `[Entity: SQD-xx | Role: SUP-xx]` — e.g. `[Entity: SQD-01 | Role: SUP-01]` (Operational Squad Supervisor).
+- **Tier 1 (Team / Task):** `[Entity: TEAM-xx | Role: OPERATOR]` — e.g. `[Entity: TEAM-01 | Role: OPERATOR]` (Execution Team & Specialist Agent).
+
+**Canonical Visual Lineage Tag:**
+`[Entity: DEPT-01 | Role: DIR-01] › [Entity: SUB-01 | Role: MGR-01] › [Entity: SQD-01 | Role: SUP-01]`
+
+#### Active Sovereign Executor Clearance
+
+Until formal human staff are onboarded, **Managing Director Arslan Malik Bashir Ahmad (`MD-01` / `EMP-001`)** possesses sovereign, omnipotent clearance to test, trigger, and execute all actions across all departments, squads, and tasks.
+
+#### Rational Unified Process (RUP) Specification Standard
+
+Every verb-driven action or task is specified as a formal RUP Use Case:
+
+- **Use Case ID:** `UC-[TASK-ID]` (e.g. `UC-TSK-001`)
+- **Primary Actor:** Required Governing Role (e.g. `L3 Tenancy Supervisor`, `L4 Finance Director`).
+- **Active Executor:** `Managing Director Arslan Malik Bashir Ahmad (EMP-001) [Sovereign Clearance]`.
+- **Secondary Actors:** Integrated external statutory and system actors (e.g. `Dubai Land Department (DLD) REST API`, `UAE Federal Tax Authority (FTA) EmaraTax Gateway`, `UAE Central Bank UAEFTS`).
+- **Pre-conditions:** Dual check for actor authorization and verified database entity references (Property UID, Client Code, Deal Number).
+- **Trigger:** User dispatch from White Caves Explorer or automated telemetry alert (e.g. Ejari 30-day renewal cycle).
+- **Main Success Scenario (4-Stage Journey):**
+  1. **Input Phase:** System prompts actor for parameters (Reference ID, Value, Attestation No).
+  2. **Processing Phase:** Core engine executes regulatory checks, VAT/fee arithmetic, and cryptographic hash generation.
+  3. **Output Phase:** Statutory PDF certificate, Ejari contract, or tamper-evident receipt artifact generated.
+  4. **Persistence Phase:** Database record committed, audit ledger logged, and Merit XP credited.
+- **Post-conditions:** Entity state shifted to next milestone; live telemetry emitted to Right Sidebar stream.
+- **Statutory Compliance Mandate:** DLD Law No. 7 / RERA Regulation No. 26 / FTA VAT Executive Law.
+
 ---
 
 ## 💰 Bhakti Gamified Merit Matrix & Statutory Commission Slabs

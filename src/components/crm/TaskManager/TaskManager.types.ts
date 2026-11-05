@@ -7,6 +7,18 @@
 export type TaskPriority = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'STANDARD';
 export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'BLOCKED';
 
+export interface EntityRolePair {
+  entityId: string; // e.g. "DEPT-01"
+  entityName?: string; // e.g. "Executive & Architecture"
+  roleId: string; // e.g. "DIR-01"
+  roleTitle?: string; // e.g. "Department Director"
+}
+
+export interface SecondaryActorDef {
+  name: string; // e.g. "Dubai Land Department (DLD) REST API"
+  role: string; // e.g. "Title Deed & Ejari Attestation"
+}
+
 export interface TaskHierarchyLineage {
   deptId: string; // e.g. "DEPT-01" to "DEPT-12"
   deptName?: string;
@@ -22,13 +34,15 @@ export interface TaskHierarchyLineage {
   supervisorName?: string;
   teamId?: string; // e.g. "TEAM-01"
   teamName?: string;
+  operatorRoleId?: string; // e.g. "ROLE-OPERATOR"
   isUnassignedPool?: boolean;
 }
 
 export interface RUPUseCaseDossier {
   useCaseId: string; // e.g. "UC-TSK-001"
-  primaryActor: string; // Default: Managing Director Arslan Malik Bashir Ahmad (EMP-001)
-  secondaryActors?: string[];
+  primaryActor: string; // Required Governing Role (e.g. "L3 Tenancy Supervisor")
+  executingUser?: string; // Default: Managing Director Arslan Malik Bashir Ahmad (EMP-001) [Sovereign Clearance]
+  secondaryActors?: Array<string | SecondaryActorDef>;
   preconditions: string[];
   trigger: string;
   mainSuccessScenario: {
