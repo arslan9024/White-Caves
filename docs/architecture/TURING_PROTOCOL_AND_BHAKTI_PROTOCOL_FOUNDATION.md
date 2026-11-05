@@ -114,6 +114,15 @@ $$\text{Task XP} = \text{Base XP} \times (1 + \text{SLA Bonus} + \text{Complianc
 Cumulative points govern tier elevation:
 $$\text{L4 Specialist} \xrightarrow{2,500\text{ XP}} \text{L3 Supervisor} \xrightarrow{7,500\text{ XP}} \text{L2 Manager} \xrightarrow{20,000\text{ XP}} \text{L1 Director}$$
 
+#### Law T7: Migration & Zero-Breakage Law (Safe Phased Deprecation)
+
+Legacy systems, routes (`/dashboard2`), and monolithic components must never be abruptly deleted or deprecated without strict functional guarantees:
+
+1. **Incremental Atomic Extraction:** Any function or tool shifted from legacy must be broken down into atomic, reusable single-purpose task functions (< 350 lines).
+2. **Pure 4-Stage Workflow Binding:** The extracted function must implement the explicit 4-stage I-P-O-V workflow engine.
+3. **Dual-Run Verification:** The new atomic implementation must pass 100% of automated unit and integration tests with zero regressions.
+4. **Conditional Safe Pruning:** Only after the new component is active, tested, and verified in the live workflow may the legacy code be removed from `/dashboard2` or legacy files. Legacy `/dashboard2` remains available as a secondary fallback until the entire backlog is drained.
+
 ---
 
 ### 4. Implementation Validation Matrix

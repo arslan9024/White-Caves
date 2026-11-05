@@ -1,4 +1,12 @@
-import React, { FC, useState } from 'react';
+/**
+ * White Caves Real Estate LLC - Sovereign Executive Dashboard Page
+ * Standard: AEGIS Canonical 7-Category Architecture Standard (Page Orchestrator)
+ * Single Purpose File Law: < 350 lines
+ * Protocol: Turing Protocol Deep URL Routing & Bhakti Protocol Anchors
+ */
+
+import React, { FC, useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { ExecutiveTopNavbar } from '../../components/dashboard/ExecutiveTopNavbar';
 import { ExecutiveVSCodeSidebar } from '../../components/dashboard/ExecutiveVSCodeSidebar';
@@ -12,48 +20,60 @@ import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSide
 
 export const ModernDashboardPage: FC = () => {
   const { isDark } = useTheme();
-  const [activeTab, setActiveTab] = useState<ActivityTab>('departments');
-  const [activeItem, setActiveItem] = useState<{ key: string; label: string }>({
-    key: 'departments-crud',
-    label: 'Corporate Departments Management',
-  });
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Parse deep URL e.g. /dashboard/tasks/T001 or /dashboard/departments/D01
+  const pathParts = location.pathname
+    .replace(/^\/dashboard\/?/, '')
+    .split('/')
+    .filter(Boolean);
+  const rawTab = pathParts[0] as ActivityTab | undefined;
+  const activeItemId = pathParts[1] || null;
+
+  const validTabs: ActivityTab[] = [
+    'departments',
+    'employees',
+    'tasks',
+    'leaderboard',
+    'explorer',
+    'ai-mesh',
+    'documents',
+    'audit',
+    'settings',
+  ];
+
+  const activeTab: ActivityTab = validTabs.includes(rawTab as ActivityTab)
+    ? (rawTab as ActivityTab)
+    : 'departments';
+
+  // Auto-redirect /dashboard to /dashboard/departments
+  useEffect(() => {
+    if (location.pathname === '/dashboard' || location.pathname === '/dashboard/') {
+      navigate('/dashboard/departments', { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
   const [activeAgent, setActiveAgent] = useState<{ id: string; name: string } | null>(null);
 
   const handleSelectSidebarTab = (tab: ActivityTab) => {
-    setActiveTab(tab);
-    if (tab === 'departments') {
-      setActiveItem({
-        key: 'departments-crud',
-        label: 'Corporate Departments Management',
-      });
-    } else if (tab === 'employees') {
-      setActiveItem({
-        key: 'employees-directory',
-        label: 'Employee Directory & Personnel Management',
-      });
-    } else if (tab === 'tasks') {
-      setActiveItem({
-        key: 'tasks-catalog',
-        label: '200+ Core Statutory & Operational Tasks Catalog',
-      });
-    } else if (tab === 'leaderboard') {
-      setActiveItem({
-        key: 'leaderboard-progression',
-        label: 'Corporate Merit Leaderboard & Tier Progression (L0–L5)',
-      });
-    }
+    navigate(`/dashboard/${tab}`);
   };
 
   const handleSelectSidebarItem = (key: string, label: string) => {
-    setActiveItem({ key, label });
     if (key === 'departments-crud') {
-      setActiveTab('departments');
+      navigate('/dashboard/departments');
     } else if (key.startsWith('emp-')) {
-      setActiveTab('employees');
+      const empId = key.replace('emp-', '');
+      navigate(`/dashboard/employees/${empId}`);
     } else if (key.startsWith('task-')) {
-      setActiveTab('tasks');
+      const taskId = key.replace('task-', '');
+      navigate(`/dashboard/tasks/${taskId}`);
     } else if (key.startsWith('lead-')) {
-      setActiveTab('leaderboard');
+      const leadId = key.replace('lead-', '');
+      navigate(`/dashboard/leaderboard/${leadId}`);
+    } else {
+      navigate(`/dashboard/${activeTab}`);
     }
   };
 
@@ -68,116 +88,58 @@ export const ModernDashboardPage: FC = () => {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        transition: 'background-color 0.25s ease, color 0.25s ease',
       }}
       data-testid="modern-dashboard-page"
     >
-      {/* ── 1. Top Executive Navbar ────────────────────────────────────────── */}
-      <ExecutiveTopNavbar />
-
-      {/* ── 2. Tri-Pane Workspace Layout Body ──────────────────────────────── */}
       <CorporateDepartmentsProvider>
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-          {/* ── Left VS Code-Style Corporate Sidebar (Explorer) ──────────────── */}
+        {/* ── Top Executive Navbar ────────────────────────────────────────── */}
+        <ExecutiveTopNavbar
+          activeTab={activeTab}
+          currentRouteLabel={`White Caves Sovereign CRM / ${activeTab.toUpperCase()}${
+            activeItemId ? ` / ${activeItemId}` : ''
+          }`}
+        />
+
+        {/* ── Main Workspace Body (Sidebar + Viewport + AI Mesh) ──────────── */}
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
+          {/* ── Left VS Code-Style Explorer Sidebar ────────────────────────── */}
           <ExecutiveVSCodeSidebar
             activeTab={activeTab}
             onSelectTab={handleSelectSidebarTab}
             onSelectItem={handleSelectSidebarItem}
           />
 
-          {/* ── Center Working Canvas (Fills remaining space with 0 shift) ───── */}
+          {/* ── Center Working Canvas (Viewport Switcher) ─────────────────── */}
           <main
             style={{
               flex: 1,
-              backgroundColor: isDark ? '#0B1120' : '#FFFFFF',
+              height: '100%',
               overflowY: 'auto',
-              padding: '24px 32px',
+              backgroundColor: isDark ? '#020617' : '#FFFFFF',
+              position: 'relative',
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px',
-              transition: 'background-color 0.25s ease',
             }}
+            data-testid="viewport-main-area"
           >
-            {/* Breadcrumb Target Header */}
-            <div
-              style={{
-                paddingBottom: '12px',
-                borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid #E2E8F0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div>
-                <span
-                  style={{
-                    fontSize: '0.7rem',
-                    fontWeight: 800,
-                    color: '#EF4444',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.8px',
-                  }}
-                >
-                  Executive Workspace · Active Target
-                </span>
-                <h2
-                  style={{
-                    margin: '4px 0 0 0',
-                    fontSize: '1.4rem',
-                    fontWeight: 900,
-                    color: isDark ? '#FFFFFF' : '#0F172A',
-                  }}
-                >
-                  {activeItem.label}
-                </h2>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {activeAgent && (
-                  <span
-                    style={{
-                      fontSize: '0.72rem',
-                      background: 'rgba(239, 68, 68, 0.15)',
-                      border: '1px solid #EF4444',
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      color: isDark ? '#FFFFFF' : '#DC2626',
-                      fontWeight: 700,
-                    }}
-                  >
-                    🤖 Assigned: {activeAgent.name}
-                  </span>
-                )}
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    fontFamily: 'monospace',
-                    background: isDark ? 'rgba(255, 255, 255, 0.06)' : '#F1F5F9',
-                    padding: '4px 8px',
-                    borderRadius: '6px',
-                    color: isDark ? '#94A3B8' : '#64748B',
-                    border: isDark ? 'none' : '1px solid #E2E8F0',
-                  }}
-                >
-                  target: {activeItem.key}
-                </span>
-              </div>
-            </div>
-
             {/* ── Active Viewport Switcher ── */}
-            {activeTab === 'departments' || activeItem.key === 'departments-crud' ? (
+            {activeTab === 'departments' ? (
               <DepartmentManagementWorkspace />
-            ) : activeTab === 'employees' ||
-              activeItem.key === 'employees-directory' ||
-              activeItem.key.startsWith('emp-') ? (
+            ) : activeTab === 'employees' ? (
               <EmployeeManagerView />
-            ) : activeTab === 'tasks' ||
-              activeItem.key === 'tasks-catalog' ||
-              activeItem.key.startsWith('task-') ? (
-              <TaskManagerView />
-            ) : activeTab === 'leaderboard' ||
-              activeItem.key === 'leaderboard-progression' ||
-              activeItem.key.startsWith('lead-') ? (
+            ) : activeTab === 'tasks' ? (
+              <TaskManagerView
+                selectedTaskId={activeItemId}
+                onSelectTask={id => navigate(`/dashboard/tasks/${id}`)}
+              />
+            ) : activeTab === 'leaderboard' ? (
               <LeaderboardView />
             ) : (
               <div
@@ -196,7 +158,6 @@ export const ModernDashboardPage: FC = () => {
                   backgroundColor: isDark ? 'rgba(7, 13, 24, 0.3)' : '#F8FAFC',
                   textAlign: 'center',
                   gap: '12px',
-                  transition: 'all 0.25s ease',
                 }}
               >
                 <span style={{ fontSize: '2rem' }}>🎯</span>
@@ -208,7 +169,7 @@ export const ModernDashboardPage: FC = () => {
                       color: isDark ? '#F1F5F9' : '#0F172A',
                     }}
                   >
-                    {activeItem.label} Target Loaded
+                    {activeTab.toUpperCase()} Viewport Initialized
                   </div>
                   <div
                     style={{
@@ -217,8 +178,8 @@ export const ModernDashboardPage: FC = () => {
                       color: isDark ? '#94A3B8' : '#64748B',
                     }}
                   >
-                    Click the Activity Bar icons on the left sidebar to access Departments,
-                    Employees, or 200+ Core Tasks.
+                    Select a module from the left activity bar to inspect departments, employees,
+                    tasks, or merit rankings.
                   </div>
                 </div>
               </div>

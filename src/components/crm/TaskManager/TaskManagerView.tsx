@@ -1,16 +1,23 @@
 /**
- * TaskManagerView.tsx
- * 7-Category Architecture: Pure View Layer
- * Master 200+ Tasks Execution View with Hierarchical Escalation Chains
+ * White Caves Real Estate LLC - Task Manager View
+ * Standard: AEGIS Canonical 7-Category Architecture Standard (Pure View Layer)
+ * Single Purpose File Law: < 350 lines
  */
 
-import React from 'react';
+import React, { FC, useState } from 'react';
 import { taskStyles as s } from './TaskManager.styles';
 import { useTaskManager } from './TaskManager.logic';
+import { TaskCard } from './TaskCard';
 import { TaskEditDrawer } from './TaskEditDrawer';
-import type { TaskPriority, TaskStatus } from './TaskManager.types';
+import { TaskExecutionWorkbench } from './TaskExecutionWorkbench';
+import type { TaskNode } from './TaskManager.types';
 
-export const TaskManagerView: React.FC = () => {
+export interface TaskManagerViewProps {
+  selectedTaskId?: string | null;
+  onSelectTask?: (id: string) => void;
+}
+
+export const TaskManagerView: FC<TaskManagerViewProps> = ({ selectedTaskId, onSelectTask }) => {
   const {
     filteredTasks,
     searchQuery,
@@ -38,6 +45,8 @@ export const TaskManagerView: React.FC = () => {
     handleCloseDrawer,
   } = useTaskManager();
 
+  const [executingTask, setExecutingTask] = useState<TaskNode | null>(null);
+
   const SUPERVISOR_TARGETS = [
     { code: 'SUP-001', name: 'Tariq Mansoor' },
     { code: 'SUP-002', name: 'Fatima Zahra' },
@@ -45,34 +54,12 @@ export const TaskManagerView: React.FC = () => {
     { code: 'SUP-008', name: 'Aisha Al-Falasi' },
   ];
 
-  const getPriorityBadge = (p: TaskPriority) =>
-    p === 'CRITICAL'
-      ? s.priorityCritical
-      : p === 'HIGH'
-        ? s.priorityHigh
-        : p === 'MEDIUM'
-          ? s.priorityMedium
-          : s.priorityStandard;
-
-  const getStatusPill = (st: TaskStatus) =>
-    st === 'PENDING'
-      ? s.statusPending
-      : st === 'IN_PROGRESS'
-        ? s.statusProgress
-        : st === 'REVIEW'
-          ? s.statusReview
-          : st === 'COMPLETED'
-            ? s.statusCompleted
-            : s.statusBlocked;
-
-  const getNextStatus = (curr: TaskStatus): TaskStatus =>
-    curr === 'PENDING'
-      ? 'IN_PROGRESS'
-      : curr === 'IN_PROGRESS'
-        ? 'REVIEW'
-        : curr === 'REVIEW'
-          ? 'COMPLETED'
-          : 'PENDING';
+  // Resolve active workbench task from prop or state
+  const activeWorkbenchTask =
+    executingTask ||
+    (selectedTaskId
+      ? filteredTasks.find(t => t.taskCode === selectedTaskId || t._id === selectedTaskId) || null
+      : null);
 
   return (
     <div className={s.container} data-testid="task-manager-view">
@@ -107,20 +94,20 @@ export const TaskManagerView: React.FC = () => {
           <span className={s.metricLabel}>Total Tasks</span>
         </div>
         <div className={s.metricCard}>
-          <span className={`${s.metricNumber} text-amber-400`}>{metrics.pending}</span>
-          <span className={s.metricLabel}>Pending Backlog</span>
+          <span className={s.metricNumber}>{metrics.critical}</span>
+          <span className={s.metricLabel}>Critical P0</span>
         </div>
         <div className={s.metricCard}>
-          <span className={`${s.metricNumber} text-blue-400`}>{metrics.inProgress}</span>
-          <span className={s.metricLabel}>In Execution</span>
+          <span className={s.metricNumber}>{metrics.inProgress}</span>
+          <span className={s.metricLabel}>In Progress</span>
         </div>
         <div className={s.metricCard}>
-          <span className={`${s.metricNumber} text-purple-400`}>{metrics.review}</span>
-          <span className={s.metricLabel}>Director Review</span>
+          <span className={s.metricNumber}>{metrics.review}</span>
+          <span className={s.metricLabel}>Review</span>
         </div>
         <div className={s.metricCard}>
-          <span className={`${s.metricNumber} text-emerald-400`}>{metrics.completed}</span>
-          <span className={s.metricLabel}>Verified Complete</span>
+          <span className={s.metricNumber}>{metrics.completed}</span>
+          <span className={s.metricLabel}>Completed</span>
         </div>
       </div>
 
@@ -130,7 +117,7 @@ export const TaskManagerView: React.FC = () => {
           <span className={s.searchIcon}>🔍</span>
           <input
             type="text"
-            placeholder="Search by code (TSK-001), task title, authority (DLD, RERA), supervisor..."
+            placeholder="Search 200 tasks by code, title, authority, supervisor..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className={s.searchInput}
@@ -143,7 +130,7 @@ export const TaskManagerView: React.FC = () => {
             value={selectedPillar}
             onChange={e => setSelectedPillar(e.target.value)}
             className={s.filterSelect}
-            data-testid="filter-task-pillar"
+            data-testid="pillar-filter-select"
           >
             {pillars.map(p => (
               <option key={p.id} value={p.id}>
@@ -156,7 +143,6 @@ export const TaskManagerView: React.FC = () => {
             value={selectedCategory}
             onChange={e => setSelectedCategory(e.target.value)}
             className={s.filterSelect}
-            data-testid="filter-task-category"
           >
             {categories.map(c => (
               <option key={c.id} value={c.id}>
@@ -169,9 +155,8 @@ export const TaskManagerView: React.FC = () => {
             value={selectedPriority}
             onChange={e => setSelectedPriority(e.target.value)}
             className={s.filterSelect}
-            data-testid="filter-task-priority"
           >
-            <option value="all">All Priorities</option>
+            <option value="ALL">All Priorities</option>
             <option value="CRITICAL">Critical</option>
             <option value="HIGH">High</option>
             <option value="MEDIUM">Medium</option>
@@ -182,9 +167,8 @@ export const TaskManagerView: React.FC = () => {
             value={selectedStatus}
             onChange={e => setSelectedStatus(e.target.value)}
             className={s.filterSelect}
-            data-testid="filter-task-status"
           >
-            <option value="all">All Statuses</option>
+            <option value="ALL">All Statuses</option>
             <option value="PENDING">Pending</option>
             <option value="IN_PROGRESS">In Progress</option>
             <option value="REVIEW">Under Review</option>
@@ -241,117 +225,16 @@ export const TaskManagerView: React.FC = () => {
           </div>
         ) : (
           filteredTasks.slice(0, 60).map(task => (
-            <div
+            <TaskCard
               key={task._id}
-              draggable={true}
-              onDragStart={e => {
-                e.dataTransfer.setData('text/plain', task._id);
-                e.dataTransfer.effectAllowed = 'move';
+              task={task}
+              onOpenEdit={handleOpenEdit}
+              onAdvanceStatus={handleAdvanceStatus}
+              onExecuteTask={t => {
+                setExecutingTask(t);
+                onSelectTask?.(t.taskCode);
               }}
-              className={s.taskCard}
-              data-testid={`task-card-${task.taskCode}`}
-            >
-              <div>
-                <div className={s.taskTop}>
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className={s.codePill}>{task.taskCode}</span>
-                    {task.statutoryAuthority && (
-                      <span className={s.authorityPill}>{task.statutoryAuthority}</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className={`${s.priorityBadge} ${getPriorityBadge(task.priority)}`}>
-                      {task.priority}
-                    </span>
-                    <span className={`${s.statusPill} ${getStatusPill(task.status)}`}>
-                      {task.status}
-                    </span>
-                  </div>
-                </div>
-
-                <h3 className={s.taskTitle}>{task.title}</h3>
-                <p className={s.taskDesc}>{task.description}</p>
-
-                {/* Reporting Escalation Chain */}
-                <div className={s.escalationCard}>
-                  <div className={s.escalationTitle}>
-                    <span>Reporting Chain</span>
-                    <span>L3 → L0</span>
-                  </div>
-                  <div className={s.escalationStep}>
-                    <span className={`${s.escalationBadge} ${s.l3Badge}`}>L3 Sup:</span>
-                    <span className="font-semibold text-slate-200">
-                      {task.reportingChain.supervisorName}
-                    </span>
-                  </div>
-                  <div className={s.escalationStep}>
-                    <span className={`${s.escalationBadge} ${s.l2Badge}`}>L2 Mgr:</span>
-                    <span className="text-slate-300">{task.reportingChain.managerName}</span>
-                  </div>
-                  <div className={s.escalationStep}>
-                    <span className={`${s.escalationBadge} ${s.l1Badge}`}>L1 Dir:</span>
-                    <span className="text-slate-300">{task.reportingChain.directorName}</span>
-                  </div>
-                  <div className={s.escalationStep}>
-                    <span className={`${s.escalationBadge} ${s.l0Badge}`}>L0 MD:</span>
-                    <span className="text-slate-400 font-mono text-[10px]">
-                      {task.reportingChain.executiveReviewer}
-                    </span>
-                  </div>
-                </div>
-
-                {/* SLA Telemetry & Merit XP Row */}
-                <div className={s.slaRow}>
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span>
-                      SLA: <strong className={s.slaPill}>{task.defaultSla}</strong>
-                    </span>
-                    {task.defaultSla.includes('2') || task.defaultSla.includes('4') ? (
-                      <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse">
-                        ⚡ &lt;4h Critical
-                      </span>
-                    ) : task.status === 'BLOCKED' ? (
-                      <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                        🚨 Escalate L2
-                      </span>
-                    ) : (
-                      <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        🟢 On Schedule
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-amber-400 font-mono font-bold text-[10px]">
-                    +
-                    {task.priority === 'CRITICAL'
-                      ? 135
-                      : task.priority === 'HIGH'
-                        ? 68
-                        : task.priority === 'MEDIUM'
-                          ? 34
-                          : 14}{' '}
-                    XP
-                  </span>
-                </div>
-              </div>
-
-              <div className={s.cardFooter}>
-                <button
-                  onClick={() => handleOpenEdit(task)}
-                  className={s.actionBtn}
-                  data-testid={`edit-task-${task.taskCode}`}
-                >
-                  <span>✏️</span>
-                  <span>Edit</span>
-                </button>
-                <button
-                  onClick={() => handleAdvanceStatus(task._id, getNextStatus(task.status))}
-                  className={s.advanceBtn}
-                  data-testid={`advance-task-${task.taskCode}`}
-                >
-                  <span>Advance Status → {getNextStatus(task.status)}</span>
-                </button>
-              </div>
-            </div>
+            />
           ))
         )}
       </div>
@@ -375,6 +258,13 @@ export const TaskManagerView: React.FC = () => {
             handleCreateTask(payload);
           }
         }}
+      />
+
+      {/* ── 5. Atomic Task Execution Workbench ──────────────────────────── */}
+      <TaskExecutionWorkbench
+        task={activeWorkbenchTask}
+        onClose={() => setExecutingTask(null)}
+        onComplete={(taskId, xp) => handleAdvanceStatus(taskId, 'COMPLETED')}
       />
     </div>
   );

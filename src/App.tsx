@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -863,12 +863,9 @@ function App(): React.JSX.Element {
                                 />
                                 <Route
                                   path="/crm/*"
-                                  element={<Navigate to="/dashboard2" replace />}
+                                  element={<Navigate to="/dashboard" replace />}
                                 />
-                                <Route
-                                  path="/crm"
-                                  element={<Navigate to="/dashboard2" replace />}
-                                />
+                                <Route path="/crm" element={<Navigate to="/dashboard" replace />} />
 
                                 {/* NEW Blank Step-by-Step Modern Dashboard at /dashboard */}
                                 <Route

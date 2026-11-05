@@ -7,6 +7,7 @@ import {
   executeCreateTaskWorkflow,
   executeUpdateTaskWorkflow,
   executeAdvanceTaskStatusWorkflow,
+  executeTaskFunctionalRunWorkflow,
 } from './TaskManager.workflow';
 import { buildCanonical200Tasks } from './TaskManager.data';
 
@@ -39,7 +40,7 @@ describe('TaskManager 200+ Statutory & Operational Suite', () => {
   it('filters tasks by operational pillar', () => {
     render(<TaskManagerView />);
 
-    const pillarSelect = screen.getByTestId('filter-task-pillar');
+    const pillarSelect = screen.getByTestId('pillar-filter-select');
     fireEvent.change(pillarSelect, { target: { value: 'pillar-1' } });
 
     expect(screen.getByTestId('task-card-TSK-001')).toBeInTheDocument();
@@ -119,5 +120,31 @@ describe('TaskManager 200+ Statutory & Operational Suite', () => {
       expect(updated.status).toBe('COMPLETED');
       expect(updated.completionRate).toBe(100);
     });
+
+    it('executeTaskFunctionalRunWorkflow processes atomic task and outputs verification artifacts', () => {
+      const initial = buildCanonical200Tasks();
+      const task = initial[0];
+      const result = executeTaskFunctionalRunWorkflow(task, {
+        plotNumber: 'PLT-58204-DH2',
+        ownerName: 'White Caves Real Estate Holdings LLC',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.status).toBe('COMPLETED');
+      expect(result.verificationPassed).toBe(true);
+      expect(result.awardedXp).toBeGreaterThan(0);
+      expect(result.outputs.documentType).toBeDefined();
+    });
+  });
+
+  it('opens TaskExecutionWorkbench when clicking Run (δ) on a task card', () => {
+    render(<TaskManagerView />);
+
+    const runBtn = screen.getByTestId('run-task-TSK-001');
+    fireEvent.click(runBtn);
+
+    expect(screen.getByTestId('task-execution-workbench')).toBeInTheDocument();
+    expect(screen.getByText('Stage 1: Input Parameters')).toBeInTheDocument();
+    expect(screen.getAllByText(/Run Task Execution/i).length).toBeGreaterThan(0);
   });
 });

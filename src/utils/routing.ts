@@ -36,7 +36,7 @@ export function getPostLoginRoute(
   }
 
   if (isSuperUserAliasRole(role) || isCreatorSuperUserEmail(email)) {
-    return '/crm';
+    return '/dashboard';
   }
 
   if (!role) return '/select-role';
@@ -67,7 +67,7 @@ export function getPostLoginRoute(
     if (resolved === 'landlord') return '/landlord-portal';
     if (resolved === 'tenant') return '/tenant-portal';
     if (profileCompleted === false) return '/profile';
-    return '/crm';
+    return '/dashboard';
   }
 
   return '/pending-approval';
@@ -81,11 +81,11 @@ export function getLegacyCrmRoute(role: string | null | undefined): string {
   if (!role) return '/signin';
   const resolved = resolveBackendRole(role);
   const rank = getRank(resolved);
-  if (rank === 2) return '/crm';
+  if (rank === 2) return '/dashboard';
   if (rank === 3) {
     if (resolved === 'landlord') return '/landlord-portal';
     if (resolved === 'tenant') return '/tenant-portal';
-    return '/crm';
+    return '/dashboard';
   }
-  return '/crm';
+  return '/dashboard';
 }

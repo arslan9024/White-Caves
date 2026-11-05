@@ -5,6 +5,8 @@ export * from './TaskManager.tasks2.data';
 export * from './TaskManager.workflow';
 export * from './TaskManager.logic';
 export * from './TaskManager.styles';
+export * from './TaskCard';
 export * from './TaskEditDrawer';
+export * from './TaskExecutionWorkbench';
 export * from './TaskManagerView';
 export { TaskManagerView as default } from './TaskManagerView';
