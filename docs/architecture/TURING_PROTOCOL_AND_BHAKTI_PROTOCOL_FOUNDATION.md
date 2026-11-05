@@ -123,14 +123,39 @@ Legacy systems, routes (`/dashboard2`), and monolithic components must never be 
 3. **Dual-Run Verification:** The new atomic implementation must pass 100% of automated unit and integration tests with zero regressions.
 4. **Conditional Safe Pruning:** Only after the new component is active, tested, and verified in the live workflow may the legacy code be removed from `/dashboard2` or legacy files. Legacy `/dashboard2` remains available as a secondary fallback until the entire backlog is drained.
 
+#### Law T8: Zero-Duplication & Continuous Deduplication Law (Universal DRY)
+
+Duplicate code, redundant event handlers, copy-pasted UI primitives, and parallel data fixtures are permanently forbidden:
+
+1. **Single Source of Truth:** Any shared entity logic, tax calculation, or DLD validation must reside in an authoritative `*.workflow.ts` or `*.logic.ts` module.
+2. **AST Consolidation Protocol:** When two components share > 60% structural similarity, they must be merged into a reusable parameterized component with strongly typed props.
+3. **Ghost Artifact Purge:** No dead mock files or ghost mirror directories may persist outside canonical domain locations.
+
+#### Law T9: 100% Reusable Modular Abstraction Standard
+
+Every business component must be architected for modular composition across the entire White Caves enterprise matrix:
+
+1. **Self-Contained Logic Decoupling:** Views (`*.tsx`) must consume custom headless hooks (`*.logic.ts`) rather than embedding inline side-effects.
+2. **Contract Envelopes:** All inter-system communications (e.g. Deal to Task, Customer to Document) must pass through defined TypeScript interfaces and pure 4-stage I-P-O-V workflow engines.
+3. **Portable Goal Frames:** Feature modules must be testable in total isolation with zero external network dependencies.
+
+#### Law T10: 18-Step Continuous Transaction Pipeline Integrity (Lead to FTA Tax)
+
+The CRM serves as the company's centralized nervous system, guaranteeing that customer transactions advance seamlessly through the **Canonical 18-Step Real Estate Lifecycle** without dropping state tokens:
+
+1. `LEAD_INQUIRY` ──> 2. `AI_INTENT_CLASSIFICATION` ──> 3. `AGENT_ROUTING` ──> 4. `CRM_ONBOARDING` ──> 5. `PROPERTY_MATCHING` ──> 6. `VIEWING_SCHEDULED` ──> 7. `VIEWING_COMPLETED` ──> 8. `OFFER_SUBMISSION` ──> 9. `NEGOTIATION_COUNTER` ──> 10. `TERMS_ACCEPTANCE` ──> 11. `KYC_AML_VERIFICATION` ──> 12. `TITLE_DEED_SCRUTINY` ──> 13. `CONTRACT_PREPARATION` ──> 14. `PDC_CHEQUE_REGISTRATION` ──> 15. `EJARI_DLD_REGISTRATION` ──> 16. `KEY_HANDOVER_METER_AUDIT` ──> 17. `AGENCY_COMMISSION_COLLECTION` ──> 18. `FTA_VAT_5_TAX_FILING`.
+
 ---
 
 ### 4. Implementation Validation Matrix
 
-| Standard                                | Protocol | File / Component                                         | Gate Status |
-| :-------------------------------------- | :------- | :------------------------------------------------------- | :---------- |
-| Fixed 12 Slots / 108 Managers           | Bhakti   | `DepartmentManagementWorkspace.tsx`                      | ✅ PASSED   |
-| Universal Unique ID Taxonomies          | Turing   | `TaskManager.types.ts`, `EmployeeManager.types.ts`       | ✅ PASSED   |
-| Pure 4-Stage Workflow Engines           | Turing   | `Leaderboard.workflow.ts`, `TaskManager.workflow.ts`     | ✅ PASSED   |
-| 7-Category Architecture Standard        | Turing   | All CRM modules (`crm/Leaderboard/`, `crm/TaskManager/`) | ✅ PASSED   |
-| Single Purpose File Limit (< 350 lines) | Turing   | 100% of CRM & Dashboard files                            | ✅ PASSED   |
+| Standard                                | Protocol | File / Component                                          | Gate Status |
+| :-------------------------------------- | :------- | :-------------------------------------------------------- | :---------- |
+| Fixed 12 Slots / 108 Managers           | Bhakti   | `DepartmentManagementWorkspace.tsx`                       | ✅ PASSED   |
+| Universal Unique ID Taxonomies          | Turing   | `TaskManager.types.ts`, `EmployeeManager.types.ts`        | ✅ PASSED   |
+| Pure 4-Stage Workflow Engines           | Turing   | `Leaderboard.workflow.ts`, `TaskManager.workflow.ts`      | ✅ PASSED   |
+| 7-Category Architecture Standard        | Turing   | All CRM modules (`crm/Leaderboard/`, `crm/TaskManager/`)  | ✅ PASSED   |
+| Single Purpose File Limit (< 350 lines) | Turing   | 100% of CRM & Dashboard files                             | ✅ PASSED   |
+| Universal Zero-Duplication Law (T8)     | Turing   | Authoritative Workflows & Shared Hooks                    | ✅ PASSED   |
+| 100% Reusable Abstraction (T9)          | Turing   | Headless Hook & View Separation Standard                  | ✅ PASSED   |
+| 18-Step Pipeline Integrity (T10)        | Turing   | `CustomerManager.workflow.ts` & `DealManager.workflow.ts` | ✅ PASSED   |

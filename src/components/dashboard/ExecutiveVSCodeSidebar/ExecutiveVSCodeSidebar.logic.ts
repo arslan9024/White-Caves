@@ -15,6 +15,7 @@ export type ActivityTab =
   | 'leaderboard'
   | 'REproperties'
   | 'deals'
+  | 'customers'
   | 'relationships'
   | 'settings';
 

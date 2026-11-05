@@ -88,6 +88,10 @@ import marketRoutes from './routes/market.js';
 import departmentsRoutes from './routes/departments.js';
 import corporateDepartmentsRoutes from './routes/corporateDepartments.js';
 import corporateHierarchyRoutes from './routes/corporateHierarchy.js';
+import v1DealsRoutes from './routes/v1Deals.js';
+import v1CustomersRoutes from './routes/v1Customers.js';
+import v1RelationshipsRoutes from './routes/v1Relationships.js';
+import v1DocumentsRoutes from './routes/v1Documents.js';
 import homepageRoutes from './routes/homepage.js';
 import graphqlRoutes from './routes/graphql.js';
 import contactRoutes from './routes/contact.js';
@@ -593,6 +597,10 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/departments', departmentsRoutes);
 app.use('/api/corporate-departments', corporateDepartmentsRoutes);
 app.use('/api/corporate-hierarchy', corporateHierarchyRoutes);
+app.use('/api/v1/deals', v1DealsRoutes);
+app.use('/api/v1/customers', v1CustomersRoutes);
+app.use('/api/v1/relationships', v1RelationshipsRoutes);
+app.use('/api/v1/documents', v1DocumentsRoutes);
 
 // Currency API (Phase 2E - Multi-Currency Support)
 app.use('/api/currency', currencyRoutes);

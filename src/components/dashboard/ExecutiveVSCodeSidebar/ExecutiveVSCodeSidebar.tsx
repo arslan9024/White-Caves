@@ -11,6 +11,7 @@ import {
   Home,
   Handshake,
   Network,
+  Contact,
   Settings,
   Search,
   Building,
@@ -27,6 +28,7 @@ import { SidebarREPropertiesList } from './SidebarREPropertiesList';
 import { SidebarDealsList } from './SidebarDealsList';
 import { SidebarDocumentsList } from './SidebarDocumentsList';
 import { SidebarRelationshipsList } from './SidebarRelationshipsList';
+import { SidebarCustomersList } from './SidebarCustomersList';
 import { SidebarExplorerTree } from './SidebarExplorerTree';
 import {
   SidebarLayoutContainer,
@@ -51,6 +53,7 @@ const TAB_HEADER_MAP: Record<string, { icon: React.ReactNode; label: string }> =
   deals: { icon: <Handshake size={14} color="#C084FC" />, label: 'Deals & Pipeline' },
   documents: { icon: <FileText size={14} color="#38BDF8" />, label: 'Document Vault' },
   relationships: { icon: <Network size={14} color="#10B981" />, label: 'Relational Matrix' },
+  customers: { icon: <Contact size={14} color="#34D399" />, label: 'Customers Hub (CRM)' },
 };
 
 const SEARCH_PLACEHOLDER_MAP: Record<string, string> = {
@@ -62,6 +65,7 @@ const SEARCH_PLACEHOLDER_MAP: Record<string, string> = {
   deals: 'Filter deals & pipelines...',
   documents: 'Filter vault documents...',
   relationships: 'Filter relational matrix...',
+  customers: 'Filter clients & leads...',
 };
 
 export interface ExecutiveVSCodeSidebarProps {
@@ -167,6 +171,15 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             data-testid="activity-btn-deals"
           >
             <Handshake size={18} />
+          </ActivityIconBtn>
+
+          <ActivityIconBtn
+            $isActive={activeTab === 'customers'}
+            onClick={() => handleSelectTab('customers')}
+            title="Customers & CRM Nervous Hub (customers)"
+            data-testid="activity-btn-customers"
+          >
+            <Contact size={18} />
           </ActivityIconBtn>
 
           <ActivityIconBtn
@@ -283,6 +296,11 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
           <SidebarDealsList
             filterQuery={filterQuery}
             onSelectDeal={(id, title) => handleLeafClick(`deal-${id}`, `Deal: ${title}`)}
+          />
+        ) : activeTab === 'customers' ? (
+          <SidebarCustomersList
+            filterQuery={filterQuery}
+            onSelectCustomer={(id, name) => handleLeafClick(`cust-${id}`, `Customer: ${name}`)}
           />
         ) : activeTab === 'documents' ? (
           <SidebarDocumentsList

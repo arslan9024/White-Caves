@@ -104,4 +104,16 @@ describe('ExecutiveVSCodeSidebar Component (7-Category Co-Location Spec)', () =>
     expect(onSelectTab).toHaveBeenCalledWith('relationships');
     expect(screen.getByText(/Relational Matrix/i)).toBeInTheDocument();
   }, 15000);
+
+  it('renders Activity Bar icon for Customers and switches tabs', () => {
+    const onSelectTab = vi.fn();
+    render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
+
+    const custBtn = screen.getByTestId('activity-btn-customers');
+    expect(custBtn).toBeInTheDocument();
+
+    fireEvent.click(custBtn);
+    expect(onSelectTab).toHaveBeenCalledWith('customers');
+    expect(screen.getByText(/Customers Hub \(CRM\)/i)).toBeInTheDocument();
+  }, 15000);
 });

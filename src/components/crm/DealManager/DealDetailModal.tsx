@@ -5,26 +5,24 @@
  */
 
 import React, { FC } from 'react';
-import {
-  X,
-  Building,
-  UserCheck,
-  Handshake,
-  CheckCircle,
-  Clock,
-  ShieldCheck,
-  FileText,
-  CreditCard,
-} from 'lucide-react';
+import { X, Building, UserCheck, Handshake, CheckCircle } from 'lucide-react';
 import { DealItem, DealStatus } from './DealManager.types';
+import { DealPdcScheduleSection } from './DealPdcScheduleSection';
+import { DealStatutoryDocsSection } from './DealStatutoryDocsSection';
 
 interface DealDetailModalProps {
   deal: DealItem;
   onClose: () => void;
   onAdvanceStatus: (dealId: string, status: DealStatus) => void;
+  onNavigateToDoc?: (docId: string) => void;
 }
 
-export const DealDetailModal: FC<DealDetailModalProps> = ({ deal, onClose, onAdvanceStatus }) => {
+export const DealDetailModal: FC<DealDetailModalProps> = ({
+  deal,
+  onClose,
+  onAdvanceStatus,
+  onNavigateToDoc,
+}) => {
   const allStatuses: DealStatus[] = [
     'INQUIRY',
     'VIEWING',
@@ -319,132 +317,10 @@ export const DealDetailModal: FC<DealDetailModalProps> = ({ deal, onClose, onAdv
           </div>
 
           {/* Sequential PDC Cheques Ledger Table */}
-          {deal.pdcSchedule.length > 0 && (
-            <div>
-              <h4
-                style={{
-                  fontSize: '0.85rem',
-                  fontWeight: 800,
-                  color: '#38BDF8',
-                  margin: '0 0 10px 0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <CreditCard size={14} />
-                PDC Cheques Collection Schedule ({deal.pdcSchedule.length} Cheques)
-              </h4>
-              <div
-                style={{
-                  overflowX: 'auto',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: '8px',
-                }}
-              >
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
-                  <thead>
-                    <tr
-                      style={{
-                        background: 'rgba(255,255,255,0.04)',
-                        color: '#94A3B8',
-                        textAlign: 'left',
-                      }}
-                    >
-                      <th style={{ padding: '8px 12px' }}>Cheque #</th>
-                      <th style={{ padding: '8px 12px' }}>Drawn Bank</th>
-                      <th style={{ padding: '8px 12px' }}>Amount AED</th>
-                      <th style={{ padding: '8px 12px' }}>Maturation Due</th>
-                      <th style={{ padding: '8px 12px' }}>Clearing Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {deal.pdcSchedule.map((pdc, idx) => (
-                      <tr key={idx} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                        <td style={{ padding: '8px 12px', fontWeight: 700, color: '#FFFFFF' }}>
-                          {pdc.chequeNumber}
-                        </td>
-                        <td style={{ padding: '8px 12px', color: '#CBD5E1' }}>{pdc.bankName}</td>
-                        <td style={{ padding: '8px 12px', fontWeight: 700, color: '#34D399' }}>
-                          AED {pdc.amountAED.toLocaleString()}
-                        </td>
-                        <td style={{ padding: '8px 12px', color: '#94A3B8' }}>{pdc.dueDate}</td>
-                        <td style={{ padding: '8px 12px' }}>
-                          <span
-                            style={{
-                              fontSize: '0.65rem',
-                              fontWeight: 800,
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              background:
-                                pdc.status === 'CLEARED'
-                                  ? 'rgba(16, 185, 129, 0.15)'
-                                  : 'rgba(245, 158, 11, 0.15)',
-                              color: pdc.status === 'CLEARED' ? '#34D399' : '#FBBF24',
-                            }}
-                          >
-                            {pdc.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+          <DealPdcScheduleSection pdcSchedule={deal.pdcSchedule} />
 
           {/* Linked Statutory Documents */}
-          <div>
-            <h4
-              style={{
-                fontSize: '0.85rem',
-                fontWeight: 800,
-                color: '#C084FC',
-                margin: '0 0 10px 0',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-            >
-              <FileText size={14} />
-              Required Statutory Documents ({deal.documents.length} Files)
-            </h4>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                gap: '8px',
-              }}
-            >
-              {deal.documents.map((doc, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    padding: '8px 12px',
-                    background: 'rgba(0,0,0,0.25)',
-                    borderRadius: '6px',
-                    border: '1px solid rgba(255,255,255,0.05)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#FFFFFF' }}>
-                      {doc.title}
-                    </div>
-                    <div style={{ fontSize: '0.65rem', color: '#64748B' }}>
-                      {doc.type} · {doc.docId}
-                    </div>
-                  </div>
-                  <span style={{ color: doc.verified ? '#34D399' : '#F87171' }}>
-                    <ShieldCheck size={14} />
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <DealStatutoryDocsSection documents={deal.documents} onNavigateToDoc={onNavigateToDoc} />
         </div>
 
         {/* Footer */}

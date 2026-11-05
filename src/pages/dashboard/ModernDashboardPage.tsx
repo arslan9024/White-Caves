@@ -19,6 +19,7 @@ import { REPropertyManagerView } from '../../components/crm/REPropertyManager';
 import { DealManagerView } from '../../components/crm/DealManager';
 import { DocumentManagerView } from '../../components/crm/DocumentManager';
 import { RelationshipManagerView } from '../../components/crm/RelationshipManager';
+import { CustomerManagerView } from '../../components/crm/CustomerManager';
 import { CorporateDepartmentsProvider } from '../../context/CorporateDepartmentsContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
@@ -44,6 +45,7 @@ export const ModernDashboardPage: FC = () => {
     'deals',
     'documents',
     'relationships',
+    'customers',
     'explorer',
     'ai-mesh',
     'audit',
@@ -91,6 +93,9 @@ export const ModernDashboardPage: FC = () => {
     } else if (key.startsWith('rel-')) {
       const relId = key.replace('rel-', '');
       navigate(`/dashboard/relationships/${relId}`);
+    } else if (key.startsWith('cust-')) {
+      const custId = key.replace('cust-', '');
+      navigate(`/dashboard/customers/${custId}`);
     } else {
       navigate(`/dashboard/${activeTab}`);
     }
@@ -180,6 +185,11 @@ export const ModernDashboardPage: FC = () => {
                 selectedEntityId={activeItemId}
                 onSelectEntity={id => navigate(`/dashboard/relationships/${id}`)}
                 onNavigateToDeepRoute={route => navigate(route)}
+              />
+            ) : activeTab === 'customers' ? (
+              <CustomerManagerView
+                selectedCustomerId={activeItemId}
+                onSelectCustomer={id => navigate(`/dashboard/customers/${id}`)}
               />
             ) : (
               <div
