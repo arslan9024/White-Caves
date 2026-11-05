@@ -5,6 +5,7 @@
  */
 
 import React, { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserCheck, ShieldCheck, Building, Phone, Mail, ArrowRight, Sparkles } from 'lucide-react';
 import { CustomerItem } from './CustomerManager.types';
 
@@ -15,6 +16,7 @@ interface CustomerCardProps {
 }
 
 export const CustomerCard: FC<CustomerCardProps> = ({ customer, onInspect, onSelect }) => {
+  const navigate = useNavigate();
   const handleInspect = () => {
     (onInspect || onSelect)?.(customer);
   };
@@ -209,7 +211,26 @@ export const CustomerCard: FC<CustomerCardProps> = ({ customer, onInspect, onSel
             }}
           >
             <UserCheck size={12} />
-            Agent: {customer.assignedAgentName}
+            <span>Agent: </span>
+            <button
+              type="button"
+              onClick={e => {
+                e.stopPropagation();
+                navigate(`/dashboard/employees/${customer.assignedAgentId || 'EMP-001'}`);
+              }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                color: '#60A5FA',
+                fontWeight: 700,
+                textDecoration: 'underline',
+              }}
+              title={`View employee dossier for ${customer.assignedAgentName}`}
+            >
+              {customer.assignedAgentName}
+            </button>
           </div>
         </div>
 

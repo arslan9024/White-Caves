@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import type { TaskNode } from './TaskManager.types';
 import { executeTaskFunctionalRunWorkflow, TaskExecutionResult } from './TaskManager.workflow';
+import { getDefaultInputsForTask } from './taskDefaultInputs.data';
+import { StatutoryWizardModal, StatutoryFlowType } from '../StatutoryWizards';
 
 interface TaskExecutionWorkbenchProps {
   task: TaskNode | null;
@@ -27,96 +29,17 @@ interface TaskExecutionWorkbenchProps {
   onComplete: (taskId: string, awardedXp: number) => void;
 }
 
-function getDefaultInputsForTask(task: TaskNode | null): Record<string, string> {
-  if (!task) return {};
-  const c = task.taskCode.toUpperCase();
-  if (c.includes('DOC-001') || c.includes('TITLE')) {
-    return {
-      plotNumber: 'PLT-58204-DH2',
-      ownerName: 'White Caves Real Estate Holdings LLC',
-      areaSqm: '482.50',
-      municipality: 'DAMAC Hills 2 (Akoya Oxygen)',
-    };
-  }
-  if (c.includes('DOC-002') || c.includes('EID')) {
-    return {
-      idNumber: '784-1988-1234567-1',
-      holderName: 'Rashid Bin Dhaen',
-      nationality: 'United Arab Emirates',
-      dob: '1988-06-14',
-    };
-  }
-  if (c.includes('DOC-003') || c.includes('PASSPORT')) {
-    return {
-      passportNumber: 'N9824102',
-      holderName: 'David Alexander Vance',
-      nationality: 'United Kingdom',
-      issuingCountry: 'GBR',
-    };
-  }
-  if (c.includes('DOC-004') || c.includes('CONTRACT') || c.includes('EJARI')) {
-    return {
-      annualRent: '145000',
-      cheques: '4',
-      tenantName: 'Dr. Julian Thorne',
-      securityDeposit: '7250',
-    };
-  }
-  if (c.includes('FIN-001') || c.includes('ESCROW')) {
-    return {
-      projectCode: 'PRJ-DLD-2026-904',
-      escrowBalanceAED: '48500000',
-      constructionMilestone: '74.5',
-      escrowBank: 'Emirates NBD Trustee Branch',
-    };
-  }
-  if (c.includes('FIN-002') || c.includes('VAT')) {
-    return {
-      standardRatedSupplies: '3200000',
-      inputTaxRecoverable: '42000',
-      trnNumber: '100-4820-9182-0003',
-      taxPeriod: '2026-Q3',
-    };
-  }
-  if (c.includes('FIN-003') || c.includes('PDC') || c.includes('CHEQUE')) {
-    return {
-      chequesCount: '4',
-      totalAmountAED: '145000',
-      drawerBank: 'First Abu Dhabi Bank (FAB)',
-    };
-  }
-  if (c.includes('CRM-001') || c.includes('WHATSAPP')) {
-    return {
-      recipientPhone: '+971501234567',
-      clientName: 'Rashid Al-Maktoum',
-      templateName: 'whitecaves_exclusive_luxury_villa_preview',
-    };
-  }
-  if (c.includes('PORTAL-001') || c.includes('PORTAL') || c.includes('BAYUT')) {
-    return {
-      trakheesiPermit: 'TRAK-7194029-A',
-      listingPriceAED: '4200000',
-      propertyLocation: 'Palm Jumeirah Signature Villa',
-    };
-  }
-  if (c.includes('VAL-001') || c.includes('VALUATION')) {
-    return {
-      location: 'Downtown Dubai / Burj Crown',
-      areaSqft: '2850',
-      ratePerSqft: '1850',
-    };
-  }
-  if (c.includes('SEC-001') || c.includes('BIOMETRIC')) {
-    return {
-      userEmail: 'managing.director@whitecaves.ae',
-      authMethod: 'FIDO2 WebAuthn Biometric Enclave',
-    };
-  }
-  return {
-    referenceNumber: `REF-${task.taskCode}`,
-    operationalNotes: `Standard processing under ${task.reportingChain.supervisorName}`,
-    targetSla: task.defaultSla,
-  };
+function getMatchingStatutoryFlow(task: TaskNode | null): StatutoryFlowType | null {
+  if (!task) return null;
+  const c = `${task.taskCode} ${task.title}`.toUpperCase();
+  if (c.includes('EJARI') || c.includes('LEASE')) return 'EJARI_TENANCY_ATTESTATION';
+  if (c.includes('FORM A') || c.includes('LISTING')) return 'FORM_A_SELLER_AGREEMENT';
+  if (c.includes('FORM B') || c.includes('BUYER')) return 'FORM_B_BUYER_AGREEMENT';
+  if (c.includes('FORM F') || c.includes('MOU') || c.includes('SALE')) return 'FORM_F_SALE_MOU';
+  if (c.includes('PDC') || c.includes('CHEQUE')) return 'PDC_CHEQUE_REGISTRATION';
+  if (c.includes('TITLE') || c.includes('DEED')) return 'TITLE_DEED_VERIFICATION';
+  if (c.includes('VAT') || c.includes('TAX') || c.includes('TRN')) return 'FTA_VAT_TAX_INVOICE';
+  return null;
 }
 
 export const TaskExecutionWorkbench: FC<TaskExecutionWorkbenchProps> = ({
@@ -127,6 +50,8 @@ export const TaskExecutionWorkbench: FC<TaskExecutionWorkbenchProps> = ({
   const [inputs, setInputs] = useState<Record<string, string>>(() => getDefaultInputsForTask(task));
   const [isProcessing, setIsProcessing] = useState(false);
   const [executionResult, setExecutionResult] = useState<TaskExecutionResult | null>(null);
+  const [isStatutoryWizardOpen, setIsStatutoryWizardOpen] = useState(false);
+  const matchingFlow = getMatchingStatutoryFlow(task);
 
   if (!task) return null;
 
@@ -243,7 +168,19 @@ export const TaskExecutionWorkbench: FC<TaskExecutionWorkbenchProps> = ({
                   <FileText size={14} className="text-blue-400" />
                   Stage 1: Input Parameters
                 </span>
-                <span className="text-[10px] text-slate-500 font-mono">Turing Verified</span>
+                {matchingFlow ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsStatutoryWizardOpen(true)}
+                    data-testid="launch-statutory-wizard-btn"
+                    className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <ShieldCheck size={11} />
+                    <span>Statutory Wizard</span>
+                  </button>
+                ) : (
+                  <span className="text-[10px] text-slate-500 font-mono">Turing Verified</span>
+                )}
               </div>
               <div className="space-y-2">
                 {Object.entries(inputs).map(([k, v]) => (
@@ -341,6 +278,32 @@ export const TaskExecutionWorkbench: FC<TaskExecutionWorkbenchProps> = ({
           </div>
         </div>
       </div>
+
+      {matchingFlow && (
+        <StatutoryWizardModal
+          isOpen={isStatutoryWizardOpen}
+          onClose={() => setIsStatutoryWizardOpen(false)}
+          flowType={matchingFlow}
+          targetId={task.taskCode}
+          targetTitle={task.title}
+          onComplete={({ resultToken, formData }) => {
+            setInputs(prev => ({ ...prev, ...formData, deliverableResultToken: resultToken }));
+            setExecutionResult({
+              success: true,
+              taskId: task._id,
+              taskCode: task.taskCode,
+              status: 'COMPLETED',
+              awardedXp: task.priority === 'CRITICAL' ? 250 : 100,
+              outputs: { deliverableResultToken: resultToken, ...formData },
+              verificationPassed: true,
+              auditNotes: [
+                `Statutory Authority attestation successfully passed for ${resultToken}.`,
+                `Attested and signed by ${task.reportingChain?.supervisorName || 'Supervisory Lead'}.`,
+              ],
+            });
+          }}
+        />
+      )}
     </div>
   );
 };

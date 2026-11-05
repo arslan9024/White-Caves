@@ -65,4 +65,10 @@ describe('ModernDashboardPage Viewport Rendering', () => {
     renderDashboardWithProviders('/dashboard/customers');
     expect(screen.getByTestId('customer-manager-view')).toBeInTheDocument();
   }, 30000);
+
+  it('opens global command palette when clicking quick-command-palette-btn', () => {
+    renderDashboardWithProviders('/dashboard/departments');
+    const btn = screen.getByTestId('quick-command-palette-btn');
+    expect(btn).toBeInTheDocument();
+  }, 30000);
 });

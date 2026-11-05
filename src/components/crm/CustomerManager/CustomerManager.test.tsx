@@ -7,6 +7,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import { CustomerManagerView } from './CustomerManagerView';
 import {
   execute18StepPipelineTransition,
@@ -14,9 +15,11 @@ import {
 } from './CustomerManager.workflow';
 import { CANONICAL_CUSTOMERS } from './CustomerManager.data';
 
+const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
+
 describe('CustomerManager Module Tests', () => {
   it('renders CustomerManagerView with title and metric cards', () => {
-    render(<CustomerManagerView />);
+    renderWithRouter(<CustomerManagerView />);
     expect(screen.getByText(/Customer & Lead Management System/i)).toBeInTheDocument();
     expect(screen.getByTestId('metric-total-customers')).toBeInTheDocument();
     expect(screen.getByTestId('metric-qualified-leads')).toBeInTheDocument();
@@ -25,21 +28,21 @@ describe('CustomerManager Module Tests', () => {
   });
 
   it('filters customers when clicking category filters', () => {
-    render(<CustomerManagerView />);
+    renderWithRouter(<CustomerManagerView />);
     const leadBtn = screen.getByTestId('filter-lead');
     fireEvent.click(leadBtn);
     expect(screen.getByText(/Tariq Mansoor/i)).toBeInTheDocument();
   });
 
   it('filters customers based on search query', () => {
-    render(<CustomerManagerView />);
+    renderWithRouter(<CustomerManagerView />);
     const searchInput = screen.getByTestId('customer-search-input');
     fireEvent.change(searchInput, { target: { value: 'Hassan Al-Nuaimi' } });
     expect(screen.getByText(/Hassan Al-Nuaimi/i)).toBeInTheDocument();
   });
 
   it('opens detail modal when a customer card is clicked and closes it', () => {
-    render(<CustomerManagerView />);
+    renderWithRouter(<CustomerManagerView />);
     const card = screen.getByTestId('customer-card-CUST-001');
     fireEvent.click(card);
 
@@ -52,7 +55,7 @@ describe('CustomerManager Module Tests', () => {
   });
 
   it('advances customer to next step in 18-step transaction workflow', () => {
-    render(<CustomerManagerView />);
+    renderWithRouter(<CustomerManagerView />);
     const card = screen.getByTestId('customer-card-CUST-002');
     fireEvent.click(card);
 
@@ -62,7 +65,7 @@ describe('CustomerManager Module Tests', () => {
   });
 
   it('allows verifying KYC directly from the modal', () => {
-    render(<CustomerManagerView />);
+    renderWithRouter(<CustomerManagerView />);
     const card = screen.getByTestId('customer-card-CUST-006');
     fireEvent.click(card);
 
@@ -73,7 +76,7 @@ describe('CustomerManager Module Tests', () => {
   });
 
   it('logs a new touchpoint interaction via the modal form', () => {
-    render(<CustomerManagerView />);
+    renderWithRouter(<CustomerManagerView />);
     const card = screen.getByTestId('customer-card-CUST-001');
     fireEvent.click(card);
 
@@ -87,7 +90,7 @@ describe('CustomerManager Module Tests', () => {
   });
 
   it('opens registration drawer and onboards a new customer', () => {
-    render(<CustomerManagerView />);
+    renderWithRouter(<CustomerManagerView />);
     const onboardBtn = screen.getByTestId('onboard-client-btn');
     fireEvent.click(onboardBtn);
 

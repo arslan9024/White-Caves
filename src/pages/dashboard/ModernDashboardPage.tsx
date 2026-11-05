@@ -20,6 +20,7 @@ import { DealManagerView } from '../../components/crm/DealManager';
 import { DocumentManagerView } from '../../components/crm/DocumentManager';
 import { RelationshipManagerView } from '../../components/crm/RelationshipManager';
 import { CustomerManagerView } from '../../components/crm/CustomerManager';
+import { GlobalEntityCommandPalette } from '../../components/dashboard/GlobalEntityCommandPalette';
 import { CorporateDepartmentsProvider } from '../../context/CorporateDepartmentsContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
@@ -64,6 +65,18 @@ export const ModernDashboardPage: FC = () => {
   }, [location.pathname, navigate]);
 
   const [activeAgent, setActiveAgent] = useState<{ id: string; name: string } | null>(null);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
 
   const handleSelectSidebarTab = (tab: ActivityTab) => {
     navigate(`/dashboard/${tab}`);
@@ -116,8 +129,54 @@ export const ModernDashboardPage: FC = () => {
       data-testid="modern-dashboard-page"
     >
       <CorporateDepartmentsProvider>
+        {/* ── Global Entity Quick Switcher (Ctrl+K) ───────────────────────── */}
+        <GlobalEntityCommandPalette
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+          onSelectEntity={entity => {
+            navigate(entity.route);
+          }}
+        />
+
         {/* ── Top Executive Navbar ────────────────────────────────────────── */}
-        <ExecutiveTopNavbar sticky={true} />
+        <div style={{ position: 'relative' }}>
+          <ExecutiveTopNavbar sticky={true} />
+          <button
+            type="button"
+            onClick={() => setIsCommandPaletteOpen(true)}
+            data-testid="quick-command-palette-btn"
+            style={{
+              position: 'absolute',
+              right: '260px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 10,
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              borderRadius: '6px',
+              padding: '4px 10px',
+              color: '#EF4444',
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            <span>⌘ Quick Find</span>
+            <kbd
+              style={{
+                background: 'rgba(0, 0, 0, 0.3)',
+                padding: '1px 5px',
+                borderRadius: '4px',
+                fontSize: '0.65rem',
+              }}
+            >
+              Ctrl+K
+            </kbd>
+          </button>
+        </div>
 
         {/* ── Main Workspace Body (Sidebar + Viewport + AI Mesh) ──────────── */}
         <div

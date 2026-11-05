@@ -7,13 +7,16 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import { DealManagerView } from './DealManagerView';
 import { CANONICAL_DEALS } from './DealManager.data';
 import { executeValidateDealGates, calculateDealCommission } from './DealManager.workflow';
 
+const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
+
 describe('DealManager Suite (7-Category Architecture Standard)', () => {
   it('renders workspace title, metrics deck, and canonical deal cards', () => {
-    render(<DealManagerView initialDeals={CANONICAL_DEALS} />);
+    renderWithRouter(<DealManagerView initialDeals={CANONICAL_DEALS} />);
 
     expect(screen.getByText(/Deal Tracking & Revenue Pipeline/i)).toBeInTheDocument();
     expect(screen.getByText(/Total Deals Ledger/i)).toBeInTheDocument();
@@ -26,7 +29,7 @@ describe('DealManager Suite (7-Category Architecture Standard)', () => {
   });
 
   it('filters deals by type toggle (Leasing vs Sales)', () => {
-    render(<DealManagerView initialDeals={CANONICAL_DEALS} />);
+    renderWithRouter(<DealManagerView initialDeals={CANONICAL_DEALS} />);
 
     const salesBtn = screen.getByTestId('toggle-type-sales');
     fireEvent.click(salesBtn);
@@ -40,7 +43,7 @@ describe('DealManager Suite (7-Category Architecture Standard)', () => {
   });
 
   it('filters deals by search query', () => {
-    render(<DealManagerView initialDeals={CANONICAL_DEALS} />);
+    renderWithRouter(<DealManagerView initialDeals={CANONICAL_DEALS} />);
 
     const searchInput = screen.getByTestId('deal-search-input');
     fireEvent.change(searchInput, { target: { value: 'Il Primo' } });
@@ -50,7 +53,7 @@ describe('DealManager Suite (7-Category Architecture Standard)', () => {
   });
 
   it('opens deal inspection detail modal when clicking Inspect Deal', () => {
-    render(<DealManagerView initialDeals={CANONICAL_DEALS} />);
+    renderWithRouter(<DealManagerView initialDeals={CANONICAL_DEALS} />);
 
     const inspectBtn = screen.getByTestId('inspect-deal-DEAL-001');
     fireEvent.click(inspectBtn);
@@ -67,14 +70,14 @@ describe('DealManager Suite (7-Category Architecture Standard)', () => {
   });
 
   it('auto-opens detail modal when selectedDealId prop is provided (deep link)', () => {
-    render(<DealManagerView selectedDealId="DEAL-003" initialDeals={CANONICAL_DEALS} />);
+    renderWithRouter(<DealManagerView selectedDealId="DEAL-003" initialDeals={CANONICAL_DEALS} />);
 
     expect(screen.getByTestId('deal-detail-modal')).toBeInTheDocument();
     expect(screen.getAllByText(/Sir Arthur Pendelton/i).length).toBeGreaterThan(0);
   });
 
   it('advances deal stage via modal status select', () => {
-    render(<DealManagerView selectedDealId="DEAL-002" initialDeals={CANONICAL_DEALS} />);
+    renderWithRouter(<DealManagerView selectedDealId="DEAL-002" initialDeals={CANONICAL_DEALS} />);
 
     const statusSelect = screen.getByTestId('deal-status-select');
     fireEvent.change(statusSelect, { target: { value: 'COMPLETED' } });
@@ -83,7 +86,7 @@ describe('DealManager Suite (7-Category Architecture Standard)', () => {
   });
 
   it('opens create drawer and registers a new deal', () => {
-    render(<DealManagerView initialDeals={CANONICAL_DEALS} />);
+    renderWithRouter(<DealManagerView initialDeals={CANONICAL_DEALS} />);
 
     const createBtn = screen.getByTestId('create-deal-btn');
     fireEvent.click(createBtn);

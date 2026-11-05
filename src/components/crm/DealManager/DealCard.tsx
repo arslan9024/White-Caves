@@ -5,6 +5,7 @@
  */
 
 import React, { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Handshake, UserCheck, Building, CheckCircle2, FileCheck, Wallet } from 'lucide-react';
 import { DealItem } from './DealManager.types';
 
@@ -14,6 +15,7 @@ interface DealCardProps {
 }
 
 export const DealCard: FC<DealCardProps> = ({ deal, onInspect }) => {
+  const navigate = useNavigate();
   const isCompleted = deal.status === 'COMPLETED';
   const statusColorMap: Record<string, { bg: string; text: string; border: string }> = {
     INQUIRY: {
@@ -109,7 +111,7 @@ export const DealCard: FC<DealCardProps> = ({ deal, onInspect }) => {
         >
           {deal.title}
         </h3>
-        <span
+        <div
           style={{
             fontSize: '0.78rem',
             color: '#94A3B8',
@@ -119,8 +121,27 @@ export const DealCard: FC<DealCardProps> = ({ deal, onInspect }) => {
           }}
         >
           <Building size={12} color="#EF4444" />
-          {deal.propertyCommunity} · {deal.propertyId}
-        </span>
+          <span>{deal.propertyCommunity} · </span>
+          <button
+            type="button"
+            onClick={e => {
+              e.stopPropagation();
+              navigate(`/dashboard/REproperties/${deal.propertyId}`);
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              color: '#38BDF8',
+              fontWeight: 700,
+              textDecoration: 'underline',
+            }}
+            title={`Open property ${deal.propertyId}`}
+          >
+            {deal.propertyId}
+          </button>
+        </div>
       </div>
 
       {/* Participants */}
@@ -158,7 +179,25 @@ export const DealCard: FC<DealCardProps> = ({ deal, onInspect }) => {
             }}
           >
             <UserCheck size={12} color="#3B82F6" />
-            {deal.agentName}
+            <button
+              type="button"
+              onClick={e => {
+                e.stopPropagation();
+                navigate(`/dashboard/employees/${deal.agentId || 'EMP-001'}`);
+              }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                color: '#60A5FA',
+                fontWeight: 700,
+                textDecoration: 'underline',
+              }}
+              title={`View employee dossier for ${deal.agentName}`}
+            >
+              {deal.agentName}
+            </button>
           </div>
         </div>
 

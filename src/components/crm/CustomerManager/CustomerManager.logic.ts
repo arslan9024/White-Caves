@@ -12,6 +12,7 @@ import {
   CustomerInteraction,
 } from './CustomerManager.types';
 import { CANONICAL_CUSTOMERS } from './CustomerManager.data';
+import { v1CustomersApi } from '../../../services/api/v1ApiClient';
 
 export interface UseCustomerManagerProps {
   initialCustomers?: CustomerItem[];
@@ -134,6 +135,9 @@ export function useCustomerManager({
         }
         return prev;
       });
+
+      // Live REST API sync
+      v1CustomersApi.advanceStep(customerId, nextStep, nextStepName).catch(() => {});
     },
     []
   );
@@ -155,6 +159,9 @@ export function useCustomerManager({
       }
       return prev;
     });
+
+    // Live REST API sync
+    v1CustomersApi.verifyKyc(customerId).catch(() => {});
   }, []);
 
   const handleAddInteraction = useCallback(
@@ -186,6 +193,9 @@ export function useCustomerManager({
         }
         return prev;
       });
+
+      // Live REST API sync
+      v1CustomersApi.addInteraction(customerId, interaction).catch(() => {});
     },
     []
   );
@@ -222,6 +232,8 @@ export function useCustomerManager({
       };
       return [newCust, ...prev];
     });
+    // Live REST API sync
+    v1CustomersApi.create(custData).catch(() => {});
     setIsDrawerOpen(false);
   }, []);
 

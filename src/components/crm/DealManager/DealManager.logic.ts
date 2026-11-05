@@ -7,6 +7,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { DealItem, DealType, DealStatus } from './DealManager.types';
 import { CANONICAL_DEALS } from './DealManager.data';
+import { v1DealsApi } from '../../../services/api/v1ApiClient';
 
 export interface UseDealManagerProps {
   initialDeals?: DealItem[];
@@ -132,6 +133,9 @@ export function useDealManager({
       }
       return prev;
     });
+
+    // Fire live REST mutation in background
+    v1DealsApi.updateStatus(dealId, newStatus).catch(() => {});
   }, []);
 
   const handleSaveDeal = useCallback((dealData: Partial<DealItem>) => {
@@ -170,6 +174,8 @@ export function useDealManager({
       };
       return [newDeal, ...prev];
     });
+    // Fire live REST mutation in background
+    v1DealsApi.create(dealData).catch(() => {});
     setIsDrawerOpen(false);
     setEditingDeal(null);
   }, []);
