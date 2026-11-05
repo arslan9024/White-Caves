@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Sidebar108.tsx — Pure Presentational View (1-12-108 Command Panel)
  */
 
@@ -13,6 +13,7 @@ import {
   DragHandle,
 } from './styles/Sidebar108.style';
 import { useSidebar108Logic } from './logic/Sidebar108.logic';
+import { DepartmentManagerModal } from '../../crm/DepartmentManager';
 import { SIDEBAR_STATIC_DATA, FOUNDER_QUICK_ACTIONS } from './data/Sidebar108.data';
 import {
   Crown,
@@ -36,6 +37,7 @@ const ACTION_ICONS: Record<string, React.ReactNode> = {
 };
 
 export const Sidebar108: FC = () => {
+  const [isDeptManagerOpen, setIsDeptManagerOpen] = React.useState(false);
   const {
     user,
     isFounder,
@@ -122,8 +124,8 @@ export const Sidebar108: FC = () => {
                     currentPath === act.path
                       ? 'bg-red-500 text-white'
                       : isDark
-                      ? 'bg-slate-800/80 text-slate-300 hover:bg-red-500/20'
-                      : 'bg-white text-slate-700 hover:bg-red-50 shadow-sm'
+                        ? 'bg-slate-800/80 text-slate-300 hover:bg-red-500/20'
+                        : 'bg-white text-slate-700 hover:bg-red-50 shadow-sm'
                   }`}
                 >
                   {ACTION_ICONS[act.icon]}
@@ -266,8 +268,12 @@ export const Sidebar108: FC = () => {
                 {user?.name?.charAt(0) || 'A'}
               </div>
               <div className="truncate">
-                <div className="text-xs font-bold text-slate-200 truncate">{user?.name || 'Arsalan Malik'}</div>
-                <div className="text-[10px] text-red-400 font-semibold">{user?.role || 'Managing Director'}</div>
+                <div className="text-xs font-bold text-slate-200 truncate">
+                  {user?.name || 'Arsalan Malik'}
+                </div>
+                <div className="text-[10px] text-red-400 font-semibold">
+                  {user?.role || 'Managing Director'}
+                </div>
               </div>
             </div>
             <button
@@ -288,6 +294,10 @@ export const Sidebar108: FC = () => {
           </button>
         )}
       </SidebarFooter>
+      <DepartmentManagerModal
+        isOpen={isDeptManagerOpen}
+        onClose={() => setIsDeptManagerOpen(false)}
+      />
     </SidebarContainer>
   );
 };

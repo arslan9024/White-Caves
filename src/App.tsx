@@ -299,6 +299,7 @@ const LeasingAcquisition = lazy(() => import('./pages/LeasingAcquisition'));
 
 // Executive Dashboard (central command center)
 const CRMHubPage = lazy(() => import('./pages/crm/CRMHubPage'));
+const ModernDashboardPage = lazy(() => import('./pages/dashboard/ModernDashboardPage'));
 const ViewingsPage = lazy(() => import('./pages/crm/ViewingsPage'));
 const NadiaPage = lazy(() => import('./pages/NadiaPage'));
 
@@ -776,7 +777,14 @@ function App(): React.JSX.Element {
                           <main id="main-content" role="main">
                             <LocationKeyWrapper>
                               <Routes>
-                                <Route path="/henry-drive-callback" element={<RouteErrorBoundary><HenryDriveCallback /></RouteErrorBoundary>} />
+                                <Route
+                                  path="/henry-drive-callback"
+                                  element={
+                                    <RouteErrorBoundary>
+                                      <HenryDriveCallback />
+                                    </RouteErrorBoundary>
+                                  }
+                                />
                                 {publicRoutes.map(route => (
                                   <Route
                                     key={`public-${route.path}`}
@@ -835,9 +843,10 @@ function App(): React.JSX.Element {
                                   )}
                                 />
 
-                                {/* ==================== EXECUTIVE DASHBOARD ==================== */}
+                                {/* ==================== EXECUTIVE DASHBOARDS ==================== */}
+                                {/* Previous dashboard preserved at /dashboard2 and /crm */}
                                 <Route
-                                  path="/dashboard/*"
+                                  path="/dashboard2/*"
                                   element={
                                     <ProtectedRoute>
                                       <DashboardEntryRoute />
@@ -845,7 +854,7 @@ function App(): React.JSX.Element {
                                   }
                                 />
                                 <Route
-                                  path="/dashboard"
+                                  path="/dashboard2"
                                   element={
                                     <ProtectedRoute>
                                       <DashboardEntryRoute />
@@ -854,9 +863,34 @@ function App(): React.JSX.Element {
                                 />
                                 <Route
                                   path="/crm/*"
-                                  element={<Navigate to="/dashboard" replace />}
+                                  element={<Navigate to="/dashboard2" replace />}
                                 />
-                                <Route path="/crm" element={<Navigate to="/dashboard" replace />} />
+                                <Route
+                                  path="/crm"
+                                  element={<Navigate to="/dashboard2" replace />}
+                                />
+
+                                {/* NEW Blank Step-by-Step Modern Dashboard at /dashboard */}
+                                <Route
+                                  path="/dashboard/*"
+                                  element={
+                                    <ProtectedRoute>
+                                      <Suspense fallback={<SuspenseLoader />}>
+                                        <ModernDashboardPage />
+                                      </Suspense>
+                                    </ProtectedRoute>
+                                  }
+                                />
+                                <Route
+                                  path="/dashboard"
+                                  element={
+                                    <ProtectedRoute>
+                                      <Suspense fallback={<SuspenseLoader />}>
+                                        <ModernDashboardPage />
+                                      </Suspense>
+                                    </ProtectedRoute>
+                                  }
+                                />
 
                                 {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
                                 {roleSpecificAppRoutes.map(route => (

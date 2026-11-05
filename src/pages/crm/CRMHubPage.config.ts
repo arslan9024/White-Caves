@@ -1,7 +1,7 @@
 /**
  * CRMHubPage.config.ts — Layer 5: Configuration & Types
  *
- * Enforces the White Caves 5-Way Architecture Standard:
+ * Enforces the White Caves 7-Category Architecture Standard:
  * 1. View (*.view.tsx / *.tsx): Pure UI presentation & JSX rendering
  * 2. Logic (*.logic.ts): Custom hooks, state machines, business workflows
  * 3. Styles (*.styles.ts): Styled-components & visual tokens
@@ -77,4 +77,3 @@ export const CRM_HUB_CONFIG: CRMHubPageConfig = {
   defaultAiId: 'nadia',
   zenModeStorageKey: 'wc_crm_zen_mode_active',
 };
-

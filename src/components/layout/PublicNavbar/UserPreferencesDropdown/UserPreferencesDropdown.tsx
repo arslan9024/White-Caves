@@ -1,10 +1,13 @@
 /**
- * UserPreferencesDropdown.tsx — View Layer (4-Way Component Architecture)
+ * UserPreferencesDropdown.tsx — View Layer (7-Category Component Architecture)
  * Sits at folder root: Pure presentational shell drawing data variables and logic hooks.
  */
 
 import React, { FC } from 'react';
-import { useUserPreferencesDropdownLogic, UseUserPreferencesDropdownProps } from './logic/UserPreferencesDropdown.logic';
+import {
+  useUserPreferencesDropdownLogic,
+  UseUserPreferencesDropdownProps,
+} from './logic/UserPreferencesDropdown.logic';
 import { PREFERENCE_LABELS } from './data/UserPreferencesDropdown.data';
 import {
   DropdownContainer,
@@ -23,9 +26,15 @@ import { type LanguageType } from '../../../../context/LanguageContext';
 import { type CurrencyCode } from '../../../../context/CurrencyContext';
 import { type UserRole } from '../../../../context/UserRoleContext';
 
-export interface UserPreferencesDropdownProps extends UseUserPreferencesDropdownProps {}
+export interface UserPreferencesDropdownProps extends UseUserPreferencesDropdownProps {
+  hideThemeSelector?: boolean;
+}
 
-export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user, onClose = () => {} }) => {
+export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({
+  user,
+  onClose = () => {},
+  hideThemeSelector = false,
+}) => {
   const {
     dropdownRef,
     user: activeUser,
@@ -64,26 +73,32 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user
           <h4>{activeUser?.name || PREFERENCE_LABELS.guestName}</h4>
           <p>{activeUser?.email || activeUser?.role || PREFERENCE_LABELS.guestRole}</p>
           <RoleBadge $level={accessLevel} data-testid="active-role-badge">
-            {isFounder ? '👑 Founder (L5)' : `L${accessLevel} · ${roleLabels[currentRole] || currentRole}`}
+            {isFounder
+              ? '👑 Founder (L5)'
+              : `L${accessLevel} · ${roleLabels[currentRole] || currentRole}`}
           </RoleBadge>
         </UserDetails>
       </UserHeader>
 
-      {/* 1. Theme Triad Selector */}
-      <SectionTitle>{PREFERENCE_LABELS.themeTitle}</SectionTitle>
-      <ButtonGrid $cols={3}>
-        {themeItems.map(item => (
-          <SelectBtn
-            key={item.id}
-            $selected={themeMode === item.id}
-            onClick={() => setThemeMode(item.id as ThemeMode)}
-            data-testid={`pref-theme-${item.id}`}
-          >
-            <span>{item.icon}</span>
-            <span>{item.label}</span>
-          </SelectBtn>
-        ))}
-      </ButtonGrid>
+      {/* 1. Theme Triad Selector (omitted when top navbar provides master full-page theme toggle) */}
+      {!hideThemeSelector && (
+        <>
+          <SectionTitle>{PREFERENCE_LABELS.themeTitle}</SectionTitle>
+          <ButtonGrid $cols={3}>
+            {themeItems.map(item => (
+              <SelectBtn
+                key={item.id}
+                $selected={themeMode === item.id}
+                onClick={() => setThemeMode(item.id as ThemeMode)}
+                data-testid={`pref-theme-${item.id}`}
+              >
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </SelectBtn>
+            ))}
+          </ButtonGrid>
+        </>
+      )}
 
       {/* 2. 4-Language Universal Selector */}
       <SectionTitle>{PREFERENCE_LABELS.languageTitle}</SectionTitle>
@@ -120,7 +135,9 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user
       {/* 4. 14-Role Sovereign Simulator */}
       <SectionTitle>
         <span>🏛️ Operational Role / Portal</span>
-        <span style={{ fontSize: '0.65rem', color: 'var(--accent-red, #ef4444)' }}>14-Role Matrix</span>
+        <span style={{ fontSize: '0.65rem', color: 'var(--accent-red, #ef4444)' }}>
+          14-Role Matrix
+        </span>
       </SectionTitle>
       <RoleSelectBox
         value={currentRole}

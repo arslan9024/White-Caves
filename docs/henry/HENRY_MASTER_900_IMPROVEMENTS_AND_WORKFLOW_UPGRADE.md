@@ -38,6 +38,7 @@ flowchart TD
 ```
 
 ### Full Chronological Evolution
+
 1. **Initial Project State:** Henry served as an in-house real estate document generator for White Caves Real Estate LLC, featuring individual templates (Booking form, Viewing agreement, Key handover, SIF Payroll generator, Emirates ID and Title deed OCR extraction).
 2. **The `importantFolder/` Reference:** User requested integrating the exact tenancy contract preparation capabilities proven in `importantFolder/`, including the official Dubai Land Department (DLD) blueprint, exact 1pt coordinate stamping, 3-page RERA statutory addendum, cheque calculator, and payment receipt.
 3. **Early Implementation Roadblocks:** Early iterations suffered from:
@@ -58,7 +59,7 @@ flowchart TD
 
 ---
 
-## The 5-Way Category Architecture
+## The 7-Category Architecture
 
 To guarantee that UI/UX visual refactoring never breaks core business logic, PDF compilation, state persistence, or regulatory compliance, Henry enforces strict file segregation across 5 categories:
 
@@ -109,6 +110,7 @@ flowchart LR
 ## 6 Comprehensive Business Workflows & Scenarios
 
 ### Scenario 1: Standalone Tenancy Contract, RERA Addendum & Receipt Flow
+
 ```mermaid
 flowchart TD
     Start([User Initiates Tenancy Preparation]) --> A1[Col A: Input 24 DLD Fields or Autofill via OCR]
@@ -126,6 +128,7 @@ flowchart TD
 ```
 
 ### Scenario 2: KYC & Identity Ingestion (Emirates ID & Passport MRZ)
+
 ```mermaid
 flowchart TD
     K1([User Drops EID / Passport Scans]) --> K2[Tesseract OCR & Multilingual Parser Engine]
@@ -136,6 +139,7 @@ flowchart TD
 ```
 
 ### Scenario 3: Title Deed & Property Specification Ingestion
+
 ```mermaid
 flowchart TD
     T1([User Drops Title Deed Scan]) --> T2[Title Deed Multilingual Parser Engine]
@@ -146,6 +150,7 @@ flowchart TD
 ```
 
 ### Scenario 4: WPS SIF Payroll Operations Flow
+
 ```mermaid
 flowchart TD
     P1([HR Operator Opens Payroll]) --> P2[Input Employer EID, Routing Code, Pay Month]
@@ -159,6 +164,7 @@ flowchart TD
 ```
 
 ### Scenario 5: Universal Document Vault, Search & Diff Comparison
+
 ```mermaid
 flowchart TD
     V1([User Opens Document Vault]) --> V2[IndexedDB Queries Local Records Collection]
@@ -170,6 +176,7 @@ flowchart TD
 ```
 
 ### Scenario 6: Ad-Hoc Core Operations (Booking, Viewing, Handover)
+
 ```mermaid
 flowchart TD
     H1([Broker Prepares Ad-hoc Form]) --> H2[Select Template: Booking / Viewing Agreement / Key Handover]
@@ -195,7 +202,7 @@ pie title 900 Capabilities & Improvements Across 9 Domains
     "9. Design System & Accessibility" : 100
 ```
 
-*(See full 900-point breakdown in the artifact above for complete itemized details from Point 1 through Point 900 across all 9 operational domains).*
+_(See full 900-point breakdown in the artifact above for complete itemized details from Point 1 through Point 900 across all 9 operational domains)._
 
 ---
 
@@ -211,4 +218,3 @@ flowchart TD
 
     P1 --> P2 --> P3 --> P4 --> P5
 ```
-

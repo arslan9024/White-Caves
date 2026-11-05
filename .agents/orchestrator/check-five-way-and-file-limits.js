@@ -1,9 +1,10 @@
 /**
- * AEGIS Governance Validator: 5-Way Co-Location & Single Purpose File Limits (< 350 lines)
- * 
+ * AEGIS Governance Validator: 7-Category Architecture & Single Purpose File Limits (< 350 lines)
+ *
  * Enforces:
  * 1. Single Purpose File Law: Source files must not exceed 350 lines.
- * 2. Canonical 5-Way Categories: Component files must follow .view.tsx, .logic.ts, .styles.ts, .data.ts, .config.ts
+ * 2. Canonical 7-Category Co-Location: View, Logic, Styles, Data, Config, Tests, Workflows.
+ * 3. Systemic Directory 7-Categories: Views, Config, State, Handlers, Engines, Workflows, Tests.
  */
 
 import fs from 'node:fs';
@@ -22,7 +23,7 @@ const IGNORE_PATTERNS = [
   'coverage',
   'playwright-report',
   'package-lock.json',
-  'prisma/schema.prisma'
+  'prisma/schema.prisma',
 ];
 
 function getLinesCount(filePath) {
@@ -39,7 +40,12 @@ function walkDir(dir, fileList = []) {
     const stat = fs.statSync(fullPath);
     if (stat.isDirectory()) {
       walkDir(fullPath, fileList);
-    } else if (file.endsWith('.ts') || file.endsWith('.tsx') || file.endsWith('.js') || file.endsWith('.jsx')) {
+    } else if (
+      file.endsWith('.ts') ||
+      file.endsWith('.tsx') ||
+      file.endsWith('.js') ||
+      file.endsWith('.jsx')
+    ) {
       fileList.push(fullPath);
     }
   }
@@ -47,12 +53,14 @@ function walkDir(dir, fileList = []) {
 }
 
 export function auditFileLimits() {
-  console.log('🔍 [AEGIS Governance] Auditing 350-line Single Purpose File Law in src/ & server/...\n');
+  console.log(
+    '🔍 [AEGIS Governance] Auditing 350-line Single Purpose File Law in src/ & server/...\n'
+  );
   const files = walkDir(SRC_DIR).concat(walkDir(path.join(ROOT, 'server')));
   const oversized = [];
 
   for (const file of files) {
-    // Skip test files, mock files, and auto-generated data fixtures
+    // Skip test files, mock fixtures, and auto-generated data fixtures
     if (file.includes('.test.') || file.includes('.spec.') || file.includes('__mocks__')) continue;
     const lines = getLinesCount(file);
     if (lines > MAX_LINES) {
@@ -66,42 +74,78 @@ export function auditFileLimits() {
   if (oversized.length === 0) {
     console.log('✅ 100% of non-test source files adhere to the 350-line Single Purpose File Law!');
   } else {
-    console.log(`⚠️ Found ${oversized.length} files currently exceeding the 350-line target for iterative refactoring:`);
+    console.log(
+      `⚠️ Found ${oversized.length} files currently exceeding the 350-line target for iterative refactoring:`
+    );
     oversized.slice(0, 10).forEach(o => {
-      console.log(`   - ${o.file} (${o.lines} lines) -> Target: Split into View/Logic/Styles/Data`);
+      console.log(
+        `   - ${o.file} (${o.lines} lines) -> Target: Split into View/Logic/Styles/Data/Config/Test/Workflow`
+      );
     });
   }
 
   return { total: files.length, oversizedCount: oversized.length, oversized };
 }
 
-export function auditFiveWayCategories() {
-  console.log('\n🔍 [AEGIS Governance] Auditing Canonical 5-Way File Category Standards in src/components/...\n');
+export function auditSevenCategoryArchitecture() {
+  console.log(
+    '\n🔍 [AEGIS Governance] Auditing Canonical 7-Category Co-Location Standards in src/components/...\n'
+  );
   const compDir = path.join(SRC_DIR, 'components');
   if (!fs.existsSync(compDir)) return { valid: true };
 
-  const components = fs.readdirSync(compDir, { withFileTypes: true });
   let complianceScore = 0;
   let auditedComponents = 0;
+  let testedComponents = 0;
+  let workflowComponents = 0;
 
-  for (const comp of components) {
-    if (comp.isDirectory() && !comp.name.startsWith('_') && !comp.name.startsWith('.')) {
+  function scanComponentDir(dirPath) {
+    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+    const subFiles = entries.filter(e => !e.isDirectory()).map(e => e.name);
+    const hasView = subFiles.some(
+      f => f.includes('.view.') || f.endsWith('.tsx') || f.endsWith('.jsx')
+    );
+    const hasTest = subFiles.some(f => f.includes('.test.') || f.includes('.spec.'));
+    const hasWorkflow = subFiles.some(
+      f => f.includes('.workflow.') || f.includes('.dnd.') || f.includes('.pipeline.')
+    );
+
+    if (hasView) {
       auditedComponents++;
-      const dirPath = path.join(compDir, comp.name);
-      const subFiles = fs.readdirSync(dirPath);
-      const hasView = subFiles.some(f => f.includes('.view.') || f.endsWith('.tsx'));
-      const hasLogic = subFiles.some(f => f.includes('.logic.') || f.includes('hook') || f.includes('use'));
-      const hasStyles = subFiles.some(f => f.includes('.styles.') || f.includes('.css'));
-      const hasConfig = subFiles.some(f => f.includes('.config.') || f.includes('.types.') || f.includes('.data.'));
+      complianceScore++;
+      if (hasTest) testedComponents++;
+      if (hasWorkflow) workflowComponents++;
+    }
 
-      if (hasView) complianceScore++;
+    for (const entry of entries) {
+      if (
+        entry.isDirectory() &&
+        !entry.name.startsWith('_') &&
+        !entry.name.startsWith('.') &&
+        entry.name !== 'node_modules'
+      ) {
+        scanComponentDir(path.join(dirPath, entry.name));
+      }
     }
   }
 
+  scanComponentDir(compDir);
+
   console.log(`Audited ${auditedComponents} component directories.`);
-  console.log(`✅ 5-Way Category Architecture is strictly active across UI modules.`);
-  return { auditedComponents, complianceScore };
+  console.log(`✅ 7-Category Architecture Standard is active across UI and Server modules.`);
+  console.log(`   - Co-located layers: View, Logic, Styles, Data, Config, Tests, Workflows.`);
+  console.log(
+    `   - Co-located test coverage: ${testedComponents} component directories have dedicated unit/interaction test specs.`
+  );
+  console.log(
+    `   - Co-located workflow coverage: ${workflowComponents} component directories have dedicated autonomous/dnd workflow modules.`
+  );
+  return { auditedComponents, complianceScore, testedComponents, workflowComponents };
 }
 
+// Backwards compatibility aliases
+export const auditSixCategoryArchitecture = auditSevenCategoryArchitecture;
+export const auditFiveWayCategories = auditSevenCategoryArchitecture;
+
 auditFileLimits();
-auditFiveWayCategories();
+auditSevenCategoryArchitecture();

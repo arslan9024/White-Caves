@@ -4,15 +4,15 @@
 
 > **Updated by @Margaret after every session.** Senior coders MUST check this table before starting any premium coding sprint. If any gate is BLOCKED, route back to the relevant free agent before coding.
 
-| Agent     | Model            | Current Task                                              | File                                                       | Sections | Gate Status    | Last Updated |
-| --------- | ---------------- | --------------------------------------------------------- | ---------------------------------------------------------- | -------- | -------------- | ------------ |
-| @Margaret | Gemini 2.0 Flash | Wave 23 planning — Mobile CRM + PWA backlog               | `plans/waves/WAVE_23_IMPLEMENTATION_BACKLOG.md`            | 8/12     | ✅ READY       | 2026-07-14   |
-| @Victoria | Gemini 2.0 Flash | REVIEW: tenancy-ejari.md → PDC tracking + bounced cheque  | `business_docs/09_crm_features/tenancy-ejari.md`           | 14/14    | ✅ GATE PASSED | 2026-07-14   |
-| @Invoice  | Llama 3.1 70B    | REVIEW: financial-reporting.md → VAT 5% + AED calcs       | `business_docs/09_crm_features/financial-reporting.md`     | 11/11    | ✅ GATE PASSED | 2026-07-14   |
-| @Sofia    | Gemini 2.0 Flash | REVIEW: compliance-requirements.md → RERA 2024 updates    | `business_docs/05_requirements/compliance-requirements.md` | 12/12    | ✅ GATE PASSED | 2026-07-14   |
-| @Cassie   | DeepSeek V3      | EXPAND: analytics-dashboard.md → mobile view + CSV export | `business_docs/09_crm_features/analytics-dashboard.md`     | 22/22    | ✅ GATE PASSED | 2026-07-14   |
-| @Joelle   | Llama 3.1 70B    | EXPAND: 03_ai_assistants/README.md → FEEDS_ACK Phase N+1  | `plans/ai_assistants/README.md`                            | 6/8      | 🟡 IN PROGRESS | 2026-07-14   |
-| @Ada      | Claude Sonnet    | AEGIS Turn 60 — Autopilot Heartbeat 185/185 Tests 100% Passed | `PROJECT_PROGRESS.md`                               | —        | ✅ GATE PASSED | 2026-08-15   |
+| Agent     | Model            | Current Task                                                  | File                                                       | Sections | Gate Status    | Last Updated |
+| --------- | ---------------- | ------------------------------------------------------------- | ---------------------------------------------------------- | -------- | -------------- | ------------ |
+| @Margaret | Gemini 2.0 Flash | Wave 23 planning — Mobile CRM + PWA backlog                   | `plans/waves/WAVE_23_IMPLEMENTATION_BACKLOG.md`            | 8/12     | ✅ READY       | 2026-07-14   |
+| @Victoria | Gemini 2.0 Flash | REVIEW: tenancy-ejari.md → PDC tracking + bounced cheque      | `business_docs/09_crm_features/tenancy-ejari.md`           | 14/14    | ✅ GATE PASSED | 2026-07-14   |
+| @Invoice  | Llama 3.1 70B    | REVIEW: financial-reporting.md → VAT 5% + AED calcs           | `business_docs/09_crm_features/financial-reporting.md`     | 11/11    | ✅ GATE PASSED | 2026-07-14   |
+| @Sofia    | Gemini 2.0 Flash | REVIEW: compliance-requirements.md → RERA 2024 updates        | `business_docs/05_requirements/compliance-requirements.md` | 12/12    | ✅ GATE PASSED | 2026-07-14   |
+| @Cassie   | DeepSeek V3      | EXPAND: analytics-dashboard.md → mobile view + CSV export     | `business_docs/09_crm_features/analytics-dashboard.md`     | 22/22    | ✅ GATE PASSED | 2026-07-14   |
+| @Joelle   | Llama 3.1 70B    | EXPAND: 03_ai_assistants/README.md → FEEDS_ACK Phase N+1      | `plans/ai_assistants/README.md`                            | 6/8      | 🟡 IN PROGRESS | 2026-07-14   |
+| @Ada      | Claude Sonnet    | AEGIS Turn 60 — Autopilot Heartbeat 185/185 Tests 100% Passed | `PROJECT_PROGRESS.md`                                      | —        | ✅ GATE PASSED | 2026-08-15   |
 
 ### Wave Execution Roadmap (Subagent Upgrade V3)
 
@@ -96,7 +96,7 @@ The explicit Aegis control plane is now:
 - **300% Acceleration Protocol** — Enforces sub-10ms query execution via `MapIndexHash` indexing and client/server cache pools
 - **Express & REST API Consolidation** — Automated deduplication of redundant API route pipelines and database models
 - **Zero-Backlog Law** — Strict verification of 0 open sprint blockers and real-time synchronization with `plans/AEGIS_200_PROJECT_AUDIT_UPGRADE_CATALOG.md`
-- **Canonical 5-Way File Category Standard & Single Purpose File Law** — Pure view (`*.view.tsx`/`*.tsx`), logic (`*.logic.ts`), styles (`*.styles.ts`), static data (`*.data.ts`), and config/types (`*.config.ts`) with single-responsibility modularity (< 350 lines)
+- **Canonical 7-Category Architecture Standard & Single Purpose File Law** — Pure view (`*.view.tsx`/`*.tsx`), logic (`*.logic.ts`), styles (`*.styles.ts`), static data (`*.data.ts`), config/types (`*.config.ts`), tests (`*.test.tsx`/`*.spec.ts`), and workflows (`*.workflow.ts`/`*.dnd.ts`) with single-responsibility modularity (< 350 lines)
 - **Single Monolith Single Source of Truth** — Permanent elimination of ghost mirror directories (`business/`, `codebase/`, `scratch/`)
 
 **POLICY SOURCE:** `aegis/orchestrator/policy.json` v`2026.08.29-aegis-v4-supercharged-opt-v1`  
@@ -267,13 +267,13 @@ The legacy sections below are retained as historical roster/planning detail and 
 
 ## New Team E – Backlog Coordination & Ops
 
-| Agent      | Model            | Domain                                |
-| ---------- | ---------------- | ------------------------------------- |
+| Agent      | Model            | Domain                                                                                                                |
+| ---------- | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
 | **@Nova**  | Gemini 2.0 Flash | Backlog coordination, task triage. Commander of Protocol: Infinite Crucible (`aegis:nova:protocol:infinite:crucible`) |
-| **@Orion** | Llama 3.1 70B    | CI/CD automation, ops monitoring      |
-| **@Pulse** | DeepSeek V3      | Data pipelines, monitoring dashboards |
-| **@Quark** | Gemini 2.0 Flash | Analytics export, CSV/Excel API       |
-| **@Zara**  | Llama 3.1 70B    | Security audits, compliance checks    |
+| **@Orion** | Llama 3.1 70B    | CI/CD automation, ops monitoring                                                                                      |
+| **@Pulse** | DeepSeek V3      | Data pipelines, monitoring dashboards                                                                                 |
+| **@Quark** | Gemini 2.0 Flash | Analytics export, CSV/Excel API                                                                                       |
+| **@Zara**  | Llama 3.1 70B    | Security audits, compliance checks                                                                                    |
 
 ---
 
@@ -1676,21 +1676,24 @@ A task is not complete until it has:
 To maximize the autonomous capabilities of the primary agent, we have introduced explicit **Antigravity Skills** for key project management roles. These skills allow the primary agent to spawn specialized subagents that automatically load these rulebooks.
 
 ### Project Management Skills Map
+
 These skills reside in `.agents/skills/` and are automatically discovered by the IDE.
 
-*   **`git-manager`** (@Orion): Use this skill to orchestrate Git workflows, enforce Conventional Commits, manage `feature/wave-XX` branches, and ensure clean deployment logs.
-*   **`project-optimizer`** (@Nova): Use this skill to execute the Zero-Backlog Law, run algorithmic complexity sweeps (Map/Set enforcement), and prune dead code across the monorepo.
-*   **`strategic-planner`** (@Margaret): Use this skill to decompose large AEGIS Waves into dependency-safe daily milestones and synthesize Research Intelligence briefs before coding.
+- **`git-manager`** (@Orion): Use this skill to orchestrate Git workflows, enforce Conventional Commits, manage `feature/wave-XX` branches, and ensure clean deployment logs.
+- **`project-optimizer`** (@Nova): Use this skill to execute the Zero-Backlog Law, run algorithmic complexity sweeps (Map/Set enforcement), and prune dead code across the monorepo.
+- **`strategic-planner`** (@Margaret): Use this skill to decompose large AEGIS Waves into dependency-safe daily milestones and synthesize Research Intelligence briefs before coding.
 
-**How to trigger:** 
-Simply instruct the primary agent: *"Spawn Orion to commit these changes"* or *"Spawn Nova to optimize the backend."* The system will route the request to a subagent loaded with the precise operational rules defined in the corresponding `SKILL.md` file.
+**How to trigger:**
+Simply instruct the primary agent: _"Spawn Orion to commit these changes"_ or _"Spawn Nova to optimize the backend."_ The system will route the request to a subagent loaded with the precise operational rules defined in the corresponding `SKILL.md` file.
 
 ## 🚀 AEGIS GLOBAL SKILLS & MCP INTEGRATION (Active as of 2026-09-11)
+
 **UPGRADE:** Antigravity Global Customizations -> Aegis Local Workspace
 
 All 103 global AI coding skills, MCP server capabilities, and advanced agentic flows (including Dart/Flutter, GCP/BigQuery, Gemini API SDKs, and Science/Bioinformatics toolchains) have been natively synchronized to the .agents/skills repository.
 
 **IMPACT:**
-- Subagents (like @Joelle, @Ada, and @Mira) can now dynamically reference .agents/skills/* for advanced workflow resolution.
+
+- Subagents (like @Joelle, @Ada, and @Mira) can now dynamically reference .agents/skills/\* for advanced workflow resolution.
 - The 300% Acceleration Engine now natively encompasses data pipeline (dbt, Dataform) and Gemini model integration workflows.
 - Zero-Backlog operations now seamlessly span cross-domain tasks via localized capabilities.

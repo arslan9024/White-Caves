@@ -87,6 +87,7 @@ import valuationRoutes from './routes/valuation.js';
 import marketRoutes from './routes/market.js';
 import departmentsRoutes from './routes/departments.js';
 import corporateDepartmentsRoutes from './routes/corporateDepartments.js';
+import corporateHierarchyRoutes from './routes/corporateHierarchy.js';
 import homepageRoutes from './routes/homepage.js';
 import graphqlRoutes from './routes/graphql.js';
 import contactRoutes from './routes/contact.js';
@@ -591,6 +592,7 @@ app.use('/api/documents', documentsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/departments', departmentsRoutes);
 app.use('/api/corporate-departments', corporateDepartmentsRoutes);
+app.use('/api/corporate-hierarchy', corporateHierarchyRoutes);
 
 // Currency API (Phase 2E - Multi-Currency Support)
 app.use('/api/currency', currencyRoutes);

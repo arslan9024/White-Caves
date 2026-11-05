@@ -7,17 +7,33 @@
 
 ---
 
-## Law 1: The Canonical 5-Way File Category Standard
+## Law 1: The Canonical 7-Category Architecture Standard
 
-All frontend, dashboard, component, and full-stack feature modules MUST follow the **Canonical 5-Way Co-Location Standard**. A component or feature is not a monolithic single file; it is divided strictly into 5 co-located single-purpose files:
+All frontend, dashboard, component, and full-stack feature modules MUST follow the **Canonical 7-Category Architecture Standard**.
 
-| Category | File Extension | Responsibility & Restrictions |
-| :--- | :--- | :--- |
-| **View** | `*.view.tsx` or `*.tsx` | Pure presentational rendering and JSX layout. Zero complex business calculations. Zero direct external API calls. |
-| **Logic** | `*.logic.ts` | Custom React hooks, business state, handler callbacks, form submission, and event logic. Zero JSX/DOM rendering. |
-| **Styles** | `*.styles.ts` | Tailwind CSS class string maps, design token bindings, Framer Motion variants, and color constants. Zero logic. |
-| **Data** | `*.data.ts` | Static data records, mock fallback fixtures, table column configurations, initial option lists. Pure data structures only. |
-| **Config / Types** | `*.config.ts` or `*.types.ts` | TypeScript interfaces, Zod schemas, route metadata, feature flags, and environment constants. |
+### A. Co-Located 7-Way Component Structure
+
+Co-located under each feature or component folder:
+
+| Category              | File Extension                | Responsibility & Restrictions                                                                                              |
+| :-------------------- | :---------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| **1. View**           | `*.view.tsx` or `*.tsx`       | Pure presentational rendering and JSX layout. Zero complex business calculations. Zero direct external API calls.          |
+| **2. Logic**          | `*.logic.ts`                  | Custom React hooks, business state, handler callbacks, form submission, and event logic. Zero JSX/DOM rendering.           |
+| **3. Styles**         | `*.styles.ts`                 | Tailwind CSS class string maps, design token bindings, Framer Motion variants, and color constants. Zero logic.            |
+| **4. Data**           | `*.data.ts`                   | Static data records, mock fallback fixtures, table column configurations, initial option lists. Pure data structures only. |
+| **5. Config / Types** | `*.config.ts` or `*.types.ts` | TypeScript interfaces, Zod schemas, route metadata, feature flags, and environment constants.                              |
+| **6. Tests**          | `*.test.tsx` or `*.spec.ts`   | Co-located Vitest/Jest unit, interaction, and component specs. SQA verification matrices.                                  |
+
+### B. Systemic 7-Category Directory Architecture
+
+Every file in the repository belongs to one of the 7 canonical functional categories:
+
+1. **VIEWS:** Pure rendering & UI (`src/components/`, `src/pages/`, `src/templates/`)
+2. **CONFIG & CORE:** System constants, DLD maps, logger & service singletons (`src/config/`, `src/constants/`, `src/core/`)
+3. **STATE:** Central reactive store, Redux / Zustand slices, memoized selectors (`src/store/`)
+4. **HANDLERS & API:** Event bridges, REST routes, controller routers (`server/routes/`, `src/handlers/`)
+5. **ENGINES & SERVICES:** Pure computational logic, financial calculators (`src/services/`, `server/services/`, `src/engines/`)
+6. **WORKFLOWS & TESTS:** I-P-O-V state pipelines, SQA test matrices (`src/workflows/`, `tests/`)
 
 ---
 
@@ -65,7 +81,7 @@ All frontend, dashboard, component, and full-stack feature modules MUST follow t
 ## Automated Verification Commands
 
 ```bash
-# Verify 5-way co-location & file size limits:
+# Verify 7-category co-location & file size limits:
 node .agents/orchestrator/check-five-way-and-file-limits.js
 
 # Verify AEGIS health & policy compliance:
@@ -77,4 +93,3 @@ npm run aegis:dedup
 # Verify TypeScript compilation:
 npm run typecheck
 ```
-

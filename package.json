@@ -28,6 +28,8 @@
     "aegis:erp:supercharge": "node .agents/orchestrator/aegis-engine.js cycle",
     "aegis:md:sovereign": "node .agents/orchestrator/aegis-engine.js cycle",
     "dev:precheck": "node .agents/orchestrator/check-node-version.js",
+    "check:limits": "node .agents/orchestrator/check-five-way-and-file-limits.js",
+    "audit:architecture": "node .agents/orchestrator/check-five-way-and-file-limits.js",
     "dev:linda": "cross-env NODE_ENV=development tsx server/index.ts",
     "dev:henry": "cross-env NODE_ENV=development tsx server/index.ts",
     "dev:ai-modules": "cross-env NODE_ENV=development tsx server/index.ts",

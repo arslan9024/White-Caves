@@ -12,7 +12,7 @@
   },
   "contextVariables": {
     "systemRole": "Modern Coding Standards, Technological Excellence, and Framework Governance",
-    "fileCategoryStandard": "Canonical 5-Way (View, Logic, Style, Data, Config)",
+    "fileCategoryStandard": "Canonical 7-Category (View, Logic, Style, Data, Config, Tests, Workflows)",
     "fileLineCeiling": 350
   },
   "capabilities": [

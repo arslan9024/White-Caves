@@ -4,7 +4,7 @@
  * White Caves Real Estate LLC — Sovereign Managing Director & Founder Command Suite.
  * Reserved exclusively for Arslan Malik Bashir Ahmad (Managing Director & Founder).
  *
- * Decomposed under the Canonical 5-Way Standard & Single Purpose File Law (< 350 lines).
+ * Decomposed under the Canonical 7-Category Standard & Single Purpose File Law (< 350 lines).
  */
 
 import React, { FC, useState } from 'react';

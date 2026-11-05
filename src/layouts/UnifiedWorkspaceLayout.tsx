@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UnifiedWorkspaceLayout.tsx — View Layer (Atomic 3-Folder Pattern)
  *
  * Upgraded Sovereign Layout with Large Sidebar Tiles, Sub-Item Accordion Trees,
@@ -8,14 +8,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  PanelLeftClose,
-  PanelLeft,
-  Search,
-  ChevronDown,
-  ChevronUp,
-  Layers,
-} from 'lucide-react';
+import { PanelLeftClose, PanelLeft, Search, ChevronDown, ChevronUp, Layers } from 'lucide-react';
 import TopNavbar from '../components/TopNavbar/TopNavbar';
 import CavesFloatingSearch from '../components/CavesFloatingSearch/CavesFloatingSearch';
 import CavesWhatsAppWidget from '../components/CavesWhatsAppWidget/CavesWhatsAppWidget';
@@ -65,7 +58,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
   // Match active rich view data if available
   const richViewData: WorkspaceViewItem | undefined = React.useMemo(() => {
     return WORKSPACE_VIEWS.find(
-      (v) => v.code === activeViewCode || v.id === activeViewCode || v.id === activeView.id
+      v => v.code === activeViewCode || v.id === activeViewCode || v.id === activeView.id
     );
   }, [activeViewCode, activeView]);
 
@@ -98,8 +91,15 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
       <TopNavbar isMDMode={isLevel5} />
 
       {/* ── MAIN WORKSPACE BODY ─────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', flex: 1, paddingTop: '68px', height: 'calc(100vh - 68px)', overflow: 'hidden' }}>
-
+      <div
+        style={{
+          display: 'flex',
+          flex: 1,
+          paddingTop: '68px',
+          height: 'calc(100vh - 68px)',
+          overflow: 'hidden',
+        }}
+      >
         {/* ── UNIFIED RECURSIVE LEFT SIDEBAR (Red / White / Slate Theme with Big Tiles) ───────── */}
         <aside
           style={{
@@ -133,7 +133,8 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                     width: '38px',
                     height: '38px',
                     borderRadius: '10px',
-                    background: 'linear-gradient(135deg, var(--primary-red, #EF4444) 0%, var(--primary-red-hover, #DC2626) 100%)',
+                    background:
+                      'linear-gradient(135deg, var(--primary-red, #EF4444) 0%, var(--primary-red-hover, #DC2626) 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -147,10 +148,26 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   WC
                 </div>
                 <div>
-                  <h1 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: 'var(--white, #FFFFFF)', letterSpacing: '0.5px' }}>
+                  <h1
+                    style={{
+                      margin: 0,
+                      fontSize: '14px',
+                      fontWeight: 800,
+                      color: 'var(--white, #FFFFFF)',
+                      letterSpacing: '0.5px',
+                    }}
+                  >
                     WHITE CAVES
                   </h1>
-                  <span style={{ fontSize: '10px', color: 'var(--text-muted, #94A3B8)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      color: 'var(--text-muted, #94A3B8)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      fontWeight: 700,
+                    }}
+                  >
                     Sovereign ERP · L{userProfile.accessLevel}
                   </span>
                 </div>
@@ -186,7 +203,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
               }}
             >
               <button
-                onClick={() => setIsMdHubOpen((prev) => !prev)}
+                onClick={() => setIsMdHubOpen(prev => !prev)}
                 style={{
                   width: '100%',
                   padding: '12px 18px',
@@ -211,7 +228,14 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
               </button>
 
               {isMdHubOpen && (
-                <div style={{ padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div
+                  style={{
+                    padding: '10px 14px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                  }}
+                >
                   <button
                     onClick={() => {
                       setActiveViewCode('MD-BRIEF');
@@ -236,8 +260,12 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   >
                     <span style={{ fontSize: '16px' }}>📊</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ color: 'var(--white, #FFFFFF)', fontWeight: 800 }}>Morning Briefing (08:00 AM)</div>
-                      <div style={{ fontSize: '10px', color: 'var(--text-muted, #94A3B8)' }}>12-Department Overview</div>
+                      <div style={{ color: 'var(--white, #FFFFFF)', fontWeight: 800 }}>
+                        Morning Briefing (08:00 AM)
+                      </div>
+                      <div style={{ fontSize: '10px', color: 'var(--text-muted, #94A3B8)' }}>
+                        12-Department Overview
+                      </div>
                     </div>
                   </button>
 
@@ -264,8 +292,12 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   >
                     <span style={{ fontSize: '16px' }}>🏛️</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ color: 'var(--white, #FFFFFF)', fontWeight: 800 }}>DET & RERA License Monitor</div>
-                      <div style={{ fontSize: '10px', color: 'var(--accent-green, #10B981)' }}>License 1388443 Valid</div>
+                      <div style={{ color: 'var(--white, #FFFFFF)', fontWeight: 800 }}>
+                        DET & RERA License Monitor
+                      </div>
+                      <div style={{ fontSize: '10px', color: 'var(--accent-green, #10B981)' }}>
+                        License 1388443 Valid
+                      </div>
                     </div>
                   </button>
 
@@ -292,8 +324,12 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   >
                     <span style={{ fontSize: '16px' }}>🌟</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ color: 'var(--white, #FFFFFF)', fontWeight: 800 }}>Project Progress Telemetry</div>
-                      <div style={{ fontSize: '10px', color: 'var(--accent-blue, #3B82F6)' }}>Waves 1–68 · 100% Green</div>
+                      <div style={{ color: 'var(--white, #FFFFFF)', fontWeight: 800 }}>
+                        Project Progress Telemetry
+                      </div>
+                      <div style={{ fontSize: '10px', color: 'var(--accent-blue, #3B82F6)' }}>
+                        Waves 1–68 · 100% Green
+                      </div>
                     </div>
                   </button>
                 </div>
@@ -303,13 +339,15 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
 
           {/* Search & Category Filter (Visible when expanded) */}
           {!isSidebarCollapsed && (
-            <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--card-dark, #1E293B)' }}>
+            <div
+              style={{ padding: '14px 16px', borderBottom: '1px solid var(--card-dark, #1E293B)' }}
+            >
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <input
                   type="text"
                   placeholder="Search views & sub-items..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   aria-label="Search workspace views"
                   style={{
                     width: '100%',
@@ -323,10 +361,25 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                     boxSizing: 'border-box',
                   }}
                 />
-                <Search size={14} style={{ position: 'absolute', left: '11px', color: 'var(--text-muted, #94A3B8)' }} />
+                <Search
+                  size={14}
+                  style={{
+                    position: 'absolute',
+                    left: '11px',
+                    color: 'var(--text-muted, #94A3B8)',
+                  }}
+                />
               </div>
-              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginTop: '10px', paddingBottom: '4px' }}>
-                {categories.slice(0, 6).map((cat) => (
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '6px',
+                  overflowX: 'auto',
+                  marginTop: '10px',
+                  paddingBottom: '4px',
+                }}
+              >
+                {categories.slice(0, 6).map(cat => (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
@@ -338,13 +391,19 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                       fontSize: '11px',
                       fontWeight: 700,
                       cursor: 'pointer',
-                      backgroundColor: activeCategory === cat ? 'var(--primary-red, #EF4444)' : 'var(--card-dark, #1E293B)',
+                      backgroundColor:
+                        activeCategory === cat
+                          ? 'var(--primary-red, #EF4444)'
+                          : 'var(--card-dark, #1E293B)',
                       color: 'var(--white, #FFFFFF)',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.2s ease',
                       borderWidth: '1px',
                       borderStyle: 'solid',
-                      borderColor: activeCategory === cat ? 'var(--primary-red, #EF4444)' : 'var(--border-color, #334155)',
+                      borderColor:
+                        activeCategory === cat
+                          ? 'var(--primary-red, #EF4444)'
+                          : 'var(--border-color, #334155)',
                     }}
                   >
                     {cat}
@@ -355,25 +414,50 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
           )}
 
           {/* Large Card-Tile View Navigation */}
-          <nav style={{ flex: 1, overflowY: 'auto', padding: isSidebarCollapsed ? '12px 6px' : '14px 12px' }} aria-label="Workspace views navigation">
+          <nav
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              padding: isSidebarCollapsed ? '12px 6px' : '14px 12px',
+            }}
+            aria-label="Workspace views navigation"
+          >
             {!isSidebarCollapsed && (
-              <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--text-muted, #94A3B8)', padding: '4px 8px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', justifyContent: 'space-between' }}>
+              <div
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  color: 'var(--text-muted, #94A3B8)',
+                  padding: '4px 8px',
+                  marginBottom: '8px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                }}
+              >
                 <span>Operations Tiles</span>
                 <span>{filteredViews.length} Views</span>
               </div>
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {filteredViews.map((view) => {
+              {filteredViews.map(view => {
                 const isActive = view.code === activeViewCode || view.id === activeViewCode;
-                const viewRich = WORKSPACE_VIEWS.find(v => v.code === view.code || v.id === view.id);
+                const viewRich = WORKSPACE_VIEWS.find(
+                  v => v.code === view.code || v.id === view.id
+                );
 
                 return (
                   <div
                     key={view.id}
                     style={{
-                      backgroundColor: isActive ? 'rgba(239, 68, 68, 0.12)' : 'var(--card-dark, #1E293B)',
-                      border: isActive ? '1.5px solid var(--primary-red, #EF4444)' : '1px solid rgba(255, 255, 255, 0.05)',
+                      backgroundColor: isActive
+                        ? 'rgba(239, 68, 68, 0.12)'
+                        : 'var(--card-dark, #1E293B)',
+                      border: isActive
+                        ? '1.5px solid var(--primary-red, #EF4444)'
+                        : '1px solid rgba(255, 255, 255, 0.05)',
                       borderRadius: '10px',
                       padding: isSidebarCollapsed ? '10px 4px' : '12px 14px',
                       cursor: 'pointer',
@@ -385,14 +469,30 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                       setActiveSubItemId(null);
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', gap: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: isSidebarCollapsed ? 'center' : 'space-between',
+                        gap: '8px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          overflow: 'hidden',
+                        }}
+                      >
                         <span
                           style={{
                             fontSize: '9px',
                             padding: '3px 6px',
                             borderRadius: '4px',
-                            backgroundColor: isActive ? 'var(--primary-red, #EF4444)' : 'var(--border-color, #334155)',
+                            backgroundColor: isActive
+                              ? 'var(--primary-red, #EF4444)'
+                              : 'var(--border-color, #334155)',
                             color: 'var(--white, #FFFFFF)',
                             fontFamily: 'monospace',
                             fontWeight: 800,
@@ -416,7 +516,15 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                             >
                               {view.title}
                             </div>
-                            <div style={{ fontSize: '10px', color: isActive ? 'var(--red-light, #FCA5A5)' : 'var(--text-muted, #94A3B8)', marginTop: '2px' }}>
+                            <div
+                              style={{
+                                fontSize: '10px',
+                                color: isActive
+                                  ? 'var(--red-light, #FCA5A5)'
+                                  : 'var(--text-muted, #94A3B8)',
+                                marginTop: '2px',
+                              }}
+                            >
                               {viewRich?.departmentFloor || view.group}
                             </div>
                           </div>
@@ -429,8 +537,12 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                             fontSize: '9px',
                             padding: '2px 6px',
                             borderRadius: '9999px',
-                            backgroundColor: isActive ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.06)',
-                            color: isActive ? 'var(--primary-red, #EF4444)' : 'var(--text-secondary, #CBD5E1)',
+                            backgroundColor: isActive
+                              ? 'rgba(239, 68, 68, 0.25)'
+                              : 'rgba(255, 255, 255, 0.06)',
+                            color: isActive
+                              ? 'var(--primary-red, #EF4444)'
+                              : 'var(--text-secondary, #CBD5E1)',
                             fontWeight: 700,
                             textTransform: 'uppercase',
                           }}
@@ -441,56 +553,90 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                     </div>
 
                     {/* Sub-Items Tree when Expanded & Active */}
-                    {!isSidebarCollapsed && isActive && viewRich?.subItems && viewRich.subItems.length > 0 && (
-                      <div
-                        style={{
-                          marginTop: '10px',
-                          paddingTop: '8px',
-                          borderTop: '1px solid rgba(239, 68, 68, 0.25)',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '6px',
-                        }}
-                      >
-                        <div style={{ fontSize: '9px', fontWeight: 800, color: 'var(--red-light, #FCA5A5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          Nested Sub-Items & Modules
+                    {!isSidebarCollapsed &&
+                      isActive &&
+                      viewRich?.subItems &&
+                      viewRich.subItems.length > 0 && (
+                        <div
+                          style={{
+                            marginTop: '10px',
+                            paddingTop: '8px',
+                            borderTop: '1px solid rgba(239, 68, 68, 0.25)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '6px',
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: '9px',
+                              fontWeight: 800,
+                              color: 'var(--red-light, #FCA5A5)',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                            }}
+                          >
+                            Nested Sub-Items & Modules
+                          </div>
+                          {viewRich.subItems.map(sub => {
+                            const isSubActive = activeSubItemId === sub.id;
+                            return (
+                              <button
+                                key={sub.id}
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setActiveSubItemId(sub.id);
+                                }}
+                                style={{
+                                  width: '100%',
+                                  textAlign: 'left',
+                                  padding: '6px 10px',
+                                  borderRadius: '6px',
+                                  backgroundColor: isSubActive
+                                    ? 'var(--primary-red, #EF4444)'
+                                    : 'rgba(15, 23, 42, 0.6)',
+                                  border: isSubActive
+                                    ? '1px solid var(--primary-red, #EF4444)'
+                                    : '1px solid rgba(255, 255, 255, 0.05)',
+                                  color: isSubActive
+                                    ? 'var(--white, #FFFFFF)'
+                                    : 'var(--border-color, #E2E8F0)',
+                                  fontSize: '11px',
+                                  fontWeight: isSubActive ? 700 : 500,
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  transition: 'all 0.15s ease',
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span
+                                    style={{
+                                      opacity: 0.7,
+                                      fontFamily: 'monospace',
+                                      fontSize: '9px',
+                                    }}
+                                  >
+                                    {sub.code}
+                                  </span>
+                                  <span>{sub.label}</span>
+                                </div>
+                                <span
+                                  style={{
+                                    fontSize: '10px',
+                                    color: isSubActive
+                                      ? 'var(--white, #FFFFFF)'
+                                      : 'var(--accent-green, #10B981)',
+                                  }}
+                                >
+                                  ●
+                                </span>
+                              </button>
+                            );
+                          })}
                         </div>
-                        {viewRich.subItems.map((sub) => {
-                          const isSubActive = activeSubItemId === sub.id;
-                          return (
-                            <button
-                              key={sub.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveSubItemId(sub.id);
-                              }}
-                              style={{
-                                width: '100%',
-                                textAlign: 'left',
-                                padding: '6px 10px',
-                                borderRadius: '6px',
-                                backgroundColor: isSubActive ? 'var(--primary-red, #EF4444)' : 'rgba(15, 23, 42, 0.6)',
-                                border: isSubActive ? '1px solid var(--primary-red, #EF4444)' : '1px solid rgba(255, 255, 255, 0.05)',
-                                color: isSubActive ? 'var(--white, #FFFFFF)' : 'var(--border-color, #E2E8F0)',
-                                fontSize: '11px',
-                                fontWeight: isSubActive ? 700 : 500,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                transition: 'all 0.15s ease',
-                              }}
-                            >
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span style={{ opacity: 0.7, fontFamily: 'monospace', fontSize: '9px' }}>{sub.code}</span>
-                                <span>{sub.label}</span>
-                              </div>
-                              <span style={{ fontSize: '10px', color: isSubActive ? 'var(--white, #FFFFFF)' : 'var(--accent-green, #10B981)' }}>●</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
+                      )}
                   </div>
                 );
               })}
@@ -514,7 +660,9 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                backgroundColor: isLevel5 ? 'var(--primary-red, #EF4444)' : 'var(--border-color, #334155)',
+                backgroundColor: isLevel5
+                  ? 'var(--primary-red, #EF4444)'
+                  : 'var(--border-color, #334155)',
                 color: 'var(--white, #FFFFFF)',
                 display: 'flex',
                 alignItems: 'center',
@@ -529,11 +677,28 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
             </div>
             {!isSidebarCollapsed && (
               <div style={{ overflow: 'hidden' }}>
-                <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--white, #FFFFFF)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                <div
+                  style={{
+                    fontSize: '13px',
+                    fontWeight: 800,
+                    color: 'var(--white, #FFFFFF)',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {userProfile.name}
                 </div>
-                <div style={{ fontSize: '10px', color: isLevel5 ? 'var(--primary-red, #EF4444)' : 'var(--text-muted, #94A3B8)', fontWeight: 700 }}>
-                  {isLevel5 ? '👑 Managing Director (L5)' : `L${userProfile.accessLevel} · ${ROLE_LABELS[userProfile.role as keyof typeof ROLE_LABELS] || userProfile.role}`}
+                <div
+                  style={{
+                    fontSize: '10px',
+                    color: isLevel5 ? 'var(--primary-red, #EF4444)' : 'var(--text-muted, #94A3B8)',
+                    fontWeight: 700,
+                  }}
+                >
+                  {isLevel5
+                    ? '👑 Managing Director (L5)'
+                    : `L${userProfile.accessLevel} · ${ROLE_LABELS[userProfile.role as keyof typeof ROLE_LABELS] || userProfile.role}`}
                 </div>
               </div>
             )}
@@ -541,7 +706,15 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
         </aside>
 
         {/* ── MAIN CONTENT CANVAS ───────────────────────────────────────────── */}
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--white, #FFFFFF)', overflow: 'hidden' }}>
+        <main
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: 'var(--white, #FFFFFF)',
+            overflow: 'hidden',
+          }}
+        >
           {/* Content Header Banner */}
           <header
             style={{
@@ -556,13 +729,40 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
             }}
           >
             <div>
-              <div style={{ fontSize: '11px', color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+              <div
+                style={{
+                  fontSize: '11px',
+                  color: 'var(--text-secondary, #64748B)',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  letterSpacing: '0.05em',
+                }}
+              >
                 {richViewData?.departmentFloor || activeView.group} · {activeView.category}
               </div>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: 'var(--bg-dark, #0F172A)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: '18px',
+                  fontWeight: 800,
+                  color: 'var(--bg-dark, #0F172A)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
                 <span>{activeView.title}</span>
                 {richViewData?.assistantCode && (
-                  <span style={{ fontSize: '11px', background: 'var(--slate-100, #F1F5F9)', color: 'var(--border-color, #475569)', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      background: 'var(--slate-100, #F1F5F9)',
+                      color: 'var(--border-color, #475569)',
+                      padding: '2px 8px',
+                      borderRadius: '6px',
+                      fontWeight: 700,
+                    }}
+                  >
                     🤖 {richViewData.assistantCode}
                   </span>
                 )}
@@ -612,7 +812,14 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
           </header>
 
           {/* Content Body Viewport */}
-          <div style={{ flex: 1, padding: '28px', overflowY: 'auto', backgroundColor: 'var(--bg-light, #F8FAFC)' }}>
+          <div
+            style={{
+              flex: 1,
+              padding: '28px',
+              overflowY: 'auto',
+              backgroundColor: 'var(--bg-light, #F8FAFC)',
+            }}
+          >
             {children ? (
               children
             ) : (
@@ -627,18 +834,60 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                     boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      flexWrap: 'wrap',
+                      gap: '16px',
+                      marginBottom: '16px',
+                    }}
+                  >
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                        <span style={{ backgroundColor: 'var(--primary-red, #EF4444)', color: 'var(--white, #FFFFFF)', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800, fontFamily: 'monospace' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          marginBottom: '6px',
+                        }}
+                      >
+                        <span
+                          style={{
+                            backgroundColor: 'var(--primary-red, #EF4444)',
+                            color: 'var(--white, #FFFFFF)',
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            fontSize: '11px',
+                            fontWeight: 800,
+                            fontFamily: 'monospace',
+                          }}
+                        >
                           {activeView.code}
                         </span>
-                        <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: 'var(--bg-dark, #0F172A)' }}>
+                        <h3
+                          style={{
+                            margin: 0,
+                            fontSize: '20px',
+                            fontWeight: 800,
+                            color: 'var(--bg-dark, #0F172A)',
+                          }}
+                        >
                           {activeView.title}
                         </h3>
                       </div>
-                      <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '14px', maxWidth: '800px', lineHeight: 1.6 }}>
-                        {richViewData?.description || `Active RUP Sovereign module operating under Dubai DET license 1388443 and RERA Brokerage ORN 44483.`}
+                      <p
+                        style={{
+                          margin: 0,
+                          color: 'var(--text-secondary, #64748B)',
+                          fontSize: '14px',
+                          maxWidth: '800px',
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {richViewData?.description ||
+                          `Active RUP Sovereign module operating under Dubai DET license 1388443 and RERA Brokerage ORN 44483.`}
                       </p>
                     </div>
 
@@ -680,14 +929,35 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                             padding: '16px',
                           }}
                         >
-                          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase' }}>
+                          <div
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              color: 'var(--text-secondary, #64748B)',
+                              textTransform: 'uppercase',
+                            }}
+                          >
                             {kpi.label}
                           </div>
-                          <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--bg-dark, #0F172A)', marginTop: '4px' }}>
+                          <div
+                            style={{
+                              fontSize: '24px',
+                              fontWeight: 800,
+                              color: 'var(--bg-dark, #0F172A)',
+                              marginTop: '4px',
+                            }}
+                          >
                             {kpi.value}
                           </div>
                           {kpi.trend && (
-                            <div style={{ fontSize: '11px', color: 'var(--accent-green, #10B981)', fontWeight: 700, marginTop: '4px' }}>
+                            <div
+                              style={{
+                                fontSize: '11px',
+                                color: 'var(--accent-green, #10B981)',
+                                fontWeight: 700,
+                                marginTop: '4px',
+                              }}
+                            >
                               ✓ {kpi.trend}
                             </div>
                           )}
@@ -708,39 +978,97 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                       boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
                     }}
                   >
-                    <h4 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 800, color: 'var(--bg-dark, #0F172A)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h4
+                      style={{
+                        margin: '0 0 16px',
+                        fontSize: '16px',
+                        fontWeight: 800,
+                        color: 'var(--bg-dark, #0F172A)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                      }}
+                    >
                       <Layers size={18} style={{ color: 'var(--primary-red, #EF4444)' }} />
-                      <span>Sub-Items & Operational Capabilities ({richViewData.subItems.length})</span>
+                      <span>
+                        Sub-Items & Operational Capabilities ({richViewData.subItems.length})
+                      </span>
                     </h4>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
-                      {richViewData.subItems.map((sub) => {
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                        gap: '14px',
+                      }}
+                    >
+                      {richViewData.subItems.map(sub => {
                         const isSelected = activeSubItemId === sub.id;
                         return (
                           <div
                             key={sub.id}
                             onClick={() => setActiveSubItemId(sub.id)}
                             style={{
-                              backgroundColor: isSelected ? 'rgba(239, 68, 68, 0.04)' : 'var(--bg-light, #F8FAFC)',
-                              border: isSelected ? '1.5px solid var(--primary-red, #EF4444)' : '1px solid var(--border-color, #E2E8F0)',
+                              backgroundColor: isSelected
+                                ? 'rgba(239, 68, 68, 0.04)'
+                                : 'var(--bg-light, #F8FAFC)',
+                              border: isSelected
+                                ? '1.5px solid var(--primary-red, #EF4444)'
+                                : '1px solid var(--border-color, #E2E8F0)',
                               borderRadius: '12px',
                               padding: '16px',
                               cursor: 'pointer',
                               transition: 'all 0.2s ease',
                             }}
                           >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                              <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary-red, #EF4444)', fontFamily: 'monospace', backgroundColor: 'rgba(239,68,68,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                            <div
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginBottom: '8px',
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontSize: '10px',
+                                  fontWeight: 800,
+                                  color: 'var(--primary-red, #EF4444)',
+                                  fontFamily: 'monospace',
+                                  backgroundColor: 'rgba(239,68,68,0.1)',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                }}
+                              >
                                 {sub.code}
                               </span>
-                              <span style={{ fontSize: '11px', color: 'var(--accent-green, #10B981)', fontWeight: 700 }}>
+                              <span
+                                style={{
+                                  fontSize: '11px',
+                                  color: 'var(--accent-green, #10B981)',
+                                  fontWeight: 700,
+                                }}
+                              >
                                 ✓ Ready
                               </span>
                             </div>
-                            <div style={{ fontWeight: 800, fontSize: '14px', color: 'var(--bg-dark, #0F172A)', marginBottom: '4px' }}>
+                            <div
+                              style={{
+                                fontWeight: 800,
+                                fontSize: '14px',
+                                color: 'var(--bg-dark, #0F172A)',
+                                marginBottom: '4px',
+                              }}
+                            >
                               {sub.label}
                             </div>
-                            <div style={{ fontSize: '12px', color: 'var(--text-secondary, #64748B)', lineHeight: 1.4 }}>
+                            <div
+                              style={{
+                                fontSize: '12px',
+                                color: 'var(--text-secondary, #64748B)',
+                                lineHeight: 1.4,
+                              }}
+                            >
                               Integrated sovereign subsystem ready for instant execution.
                             </div>
                           </div>
@@ -756,8 +1084,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
       </div>
 
       {/* Floating Action Controls */}
-      <CavesFloatingSearch />
-      <CavesWhatsAppWidget />
+      {/* Disabled to ensure zero layout shift and clean desktop executive canvas */}
     </div>
   );
 };

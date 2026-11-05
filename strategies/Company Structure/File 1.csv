@@ -1,0 +1,109 @@
+dept_id,dept_name,director_role,manager_id,manager_name,manager_scope
+D01,Leasing Brokerage,Director of Leasing,M01,Residential Leasing Manager,Residential lease transactions and landlord representation
+D01,Leasing Brokerage,Director of Leasing,M02,Commercial Leasing Manager,Commercial and retail lease transactions
+D01,Leasing Brokerage,Director of Leasing,M03,Lease Renewal Manager,Renewal pipeline and rent escalation tracking
+D01,Leasing Brokerage,Director of Leasing,M04,Landlord Acquisition Manager,Landlord onboarding and Form A collection
+D01,Leasing Brokerage,Director of Leasing,M05,Tenant Sourcing Manager,Tenant lead qualification and viewing scheduling
+D01,Leasing Brokerage,Director of Leasing,M06,Listing Quality Manager,Portal listing accuracy and Trakheesi compliance
+D01,Leasing Brokerage,Director of Leasing,M07,Viewing Coordination Manager,Viewing logistics and access management
+D01,Leasing Brokerage,Director of Leasing,M08,Deal Closing Manager,Offer negotiation and commission confirmation
+D01,Leasing Brokerage,Director of Leasing,M09,Lease Documentation Manager,Form B and Ejari registration execution
+D02,Secondary Sales,Director of Sales,M10,Resale Listing Manager,Secondary market property listing lifecycle
+D02,Secondary Sales,Director of Sales,M11,Buyer Qualification Manager,Buyer pre-qualification and budget verification
+D02,Secondary Sales,Director of Sales,M12,Seller Representation Manager,Seller onboarding and Form A for sales
+D02,Secondary Sales,Director of Sales,M13,CMA & Pricing Manager,Comparative market analysis and price recommendations
+D02,Secondary Sales,Director of Sales,M14,Viewing & Access Manager,Property access and viewing coordination
+D02,Secondary Sales,Director of Sales,M15,Offer Negotiation Manager,Buyer-seller offer mediation
+D02,Secondary Sales,Director of Sales,M16,MOU & Form F Manager,Memorandum of Understanding execution
+D02,Secondary Sales,Director of Sales,M17,NOC & Transfer Manager,Developer NOC and DLD transfer coordination
+D02,Secondary Sales,Director of Sales,M18,Commission & Invoice Manager,Sales commission calculation and invoicing
+D03,Compliance & RERA,Director of Compliance,M19,Broker Card Manager,RERA broker card validity and renewal
+D03,Compliance & RERA,Director of Compliance,M20,Trakheesi Permit Manager,Advertising permit application per listing
+D03,Compliance & RERA,Director of Compliance,M21,Ejari Registration Manager,Ejari contract registration execution
+D03,Compliance & RERA,Director of Compliance,M22,Form A/B/F Archive Manager,RERA form archival and retrieval
+D03,Compliance & RERA,Director of Compliance,M23,AML & KYC Manager,Anti-money laundering and client verification
+D03,Compliance & RERA,Director of Compliance,M24,Source of Funds Manager,Funds origin verification for high-value deals
+D03,Compliance & RERA,Director of Compliance,M25,RERA Audit Manager,Internal audit against RERA standards
+D03,Compliance & RERA,Director of Compliance,M26,DLD Liaison Manager,Dubai Land Department correspondence
+D03,Compliance & RERA,Director of Compliance,M27,Policy Update Manager,Regulatory change monitoring and updates
+D04,Finance & Accounting,Director of Finance,M28,General Ledger Manager,Daily bookkeeping and ledger maintenance
+D04,Finance & Accounting,Director of Finance,M29,Commission Payout Manager,Agent and referral commission disbursement
+D04,Finance & Accounting,Director of Finance,M30,Invoice & AR Manager,Client invoicing and receivables collection
+D04,Finance & Accounting,Director of Finance,M31,VAT Compliance Manager,FTA VAT filing and records
+D04,Finance & Accounting,Director of Finance,M32,Corporate Tax Manager,Corporate tax computation and filing
+D04,Finance & Accounting,Director of Finance,M33,Cash Flow Manager,Treasury and working capital monitoring
+D04,Finance & Accounting,Director of Finance,M34,Expense Control Manager,Operating expense tracking and approval
+D04,Finance & Accounting,Director of Finance,M35,Payroll Manager,WPS payroll and salary processing
+D04,Finance & Accounting,Director of Finance,M36,Audit Liaison Manager,External auditor coordination
+D05,Property Management,Director of Property Management,M37,Tenant Relations Manager,Tenant communication and issue resolution
+D05,Property Management,Director of Property Management,M38,Maintenance Ticketing Manager,Repair request intake and dispatch
+D05,Property Management,Director of Property Management,M39,Vendor Coordination Manager,Contractor sourcing and performance tracking
+D05,Property Management,Director of Property Management,M40,Rent Collection Manager,Monthly rent collection and arrears follow-up
+D05,Property Management,Director of Property Management,M41,Utility Connection Manager,DEWA and Empower account setup
+D05,Property Management,Director of Property Management,M42,Deposit Management Manager,Security deposit holding and refund
+D05,Property Management,Director of Property Management,M43,Inspection Manager,Move-in and move-out property inspection
+D05,Property Management,Director of Property Management,M44,Owner Reporting Manager,Landlord monthly and quarterly reports
+D05,Property Management,Director of Property Management,M45,Lease Renewal Manager,PM client lease renewal pipeline
+D06,Marketing & Brand,Director of Marketing,M46,Portal Listing Manager,Bayut Property Finder Dubizzle listings
+D06,Marketing & Brand,Director of Marketing,M47,Social Media Manager,Instagram LinkedIn TikTok content
+D06,Marketing & Brand,Director of Marketing,M48,Content Writing Manager,Property descriptions and brochures
+D06,Marketing & Brand,Director of Marketing,M49,Photography Manager,Property photo and video production
+D06,Marketing & Brand,Director of Marketing,M50,Paid Ads Manager,Meta and Google ad campaign management
+D06,Marketing & Brand,Director of Marketing,M51,Brand Identity Manager,Visual identity and brand guidelines
+D06,Marketing & Brand,Director of Marketing,M52,SEO Manager,Website organic search optimization
+D06,Marketing & Brand,Director of Marketing,M53,Reputation Manager,Google reviews and client testimonials
+D06,Marketing & Brand,Director of Marketing,M54,Event Manager,Open house and networking events
+D07,Lead Generation,Director of Lead Generation,M55,Inbound Lead Manager,Website and portal inquiry handling
+D07,Lead Generation,Director of Lead Generation,M56,WhatsApp Response Manager,WhatsApp first-response and qualification
+D07,Lead Generation,Director of Lead Generation,M57,Cold Outreach Manager,Landlord cold outreach campaigns
+D07,Lead Generation,Director of Lead Generation,M58,Referral Program Manager,Client referral tracking and rewards
+D07,Lead Generation,Director of Lead Generation,M59,Lead Scoring Manager,AI-based lead prioritization
+D07,Lead Generation,Director of Lead Generation,M60,CRM Data Manager,Contact record hygiene and deduplication
+D07,Lead Generation,Director of Lead Generation,M61,Follow-up Sequence Manager,Automated nurture sequences
+D07,Lead Generation,Director of Lead Generation,M62,Lead Source Attribution Manager,Channel performance tracking
+D07,Lead Generation,Director of Lead Generation,M63,Conversion Analytics Manager,Lead-to-deal funnel analysis
+D08,Technology & AI,Director of Technology,M64,CRM Administration Manager,White Caves app user and data management
+D08,Technology & AI,Director of Technology,M65,AI Agent Orchestration Manager,AI employee task routing and monitoring
+D08,Technology & AI,Director of Technology,M66,WhatsApp Automation Manager,WhatsApp web.js session and automation
+D08,Technology & AI,Director of Technology,M67,Document Automation Manager,PDF generation and e-signature flows
+D08,Technology & AI,Director of Technology,M68,Database Manager,MongoDB schema and index maintenance
+D08,Technology & AI,Director of Technology,M69,Security Manager,Auth RBAC and PII protection
+D08,Technology & AI,Director of Technology,M70,Integration Manager,Third-party API connections
+D08,Technology & AI,Director of Technology,M71,Deployment Manager,CI/CD pipeline and releases
+D08,Technology & AI,Director of Technology,M72,Analytics Dashboard Manager,BI dashboards and KPI reporting
+D09,Human Resources,Director of HR,M73,Recruitment Manager,Hiring pipeline and job postings
+D09,Human Resources,Director of HR,M74,Onboarding Manager,New hire integration and setup
+D09,Human Resources,Director of HR,M75,Contract & WPS Manager,Labour contracts and WPS registration
+D09,Human Resources,Director of HR,M76,Performance Review Manager,KPI tracking and reviews
+D09,Human Resources,Director of HR,M77,Training Manager,Staff skill development programs
+D09,Human Resources,Director of HR,M78,Compensation Manager,Salary and benefits structuring
+D09,Human Resources,Director of HR,M79,Policy & Handbook Manager,HR policy documentation
+D09,Human Resources,Director of HR,M80,Grievance Manager,Employee complaint handling
+D09,Human Resources,Director of HR,M81,Culture Manager,Team engagement and retention
+D10,Legal & Contracts,Director of Legal,M82,Contract Drafting Manager,Sales and lease contract drafting
+D10,Legal & Contracts,Director of Legal,M83,Contract Review Manager,Contract review and risk flags
+D10,Legal & Contracts,Director of Legal,M84,Dispute Resolution Manager,RDC mediation and conflict handling
+D10,Legal & Contracts,Director of Legal,M85,POA & Notary Manager,Power of Attorney and notary coordination
+D10,Legal & Contracts,Director of Legal,M86,Developer Agreement Manager,Developer MOU and referral agreements
+D10,Legal & Contracts,Director of Legal,M87,Trademark & IP Manager,Brand and trademark protection
+D10,Legal & Contracts,Director of Legal,M88,Insurance Manager,Professional indemnity and liability
+D10,Legal & Contracts,Director of Legal,M89,Data Privacy Manager,UAE data protection compliance
+D10,Legal & Contracts,Director of Legal,M90,Regulatory Filing Manager,Government filings and submissions
+D11,Customer Success,Director of Customer Success,M91,Client Onboarding Manager,New client welcome and setup
+D11,Customer Success,Director of Customer Success,M92,Client Communication Manager,Ongoing client updates
+D11,Customer Success,Director of Customer Success,M93,Feedback Collection Manager,Post-deal satisfaction surveys
+D11,Customer Success,Director of Customer Success,M94,Complaint Resolution Manager,Escalation and resolution tracking
+D11,Customer Success,Director of Customer Success,M95,Retention Manager,Repeat business and loyalty
+D11,Customer Success,Director of Customer Success,M96,Referral Manager,Client referral capture
+D11,Customer Success,Director of Customer Success,M97,Portfolio Update Manager,Investor portfolio reporting
+D11,Customer Success,Director of Customer Success,M98,Concierge Manager,Post-handover client support
+D11,Customer Success,Director of Customer Success,M99,Loyalty Program Manager,Repeat client rewards
+D12,Operations & Admin,Director of Operations,M100,Office Administration Manager,Workspace and facilities
+D12,Operations & Admin,Director of Operations,M101,Document Archiving Manager,Physical and digital file storage
+D12,Operations & Admin,Director of Operations,M102,Procurement Manager,Office supplies and vendor contracts
+D12,Operations & Admin,Director of Operations,M103,Asset Management Manager,Equipment and asset tracking
+D12,Operations & Admin,Director of Operations,M104,PRO Services Manager,Visa and licensing coordination
+D12,Operations & Admin,Director of Operations,M105,Calendar & Scheduling Manager,MD calendar and meeting coordination
+D12,Operations & Admin,Director of Operations,M106,Reporting Manager,Weekly and monthly internal reports
+D12,Operations & Admin,Director of Operations,M107,Process Improvement Manager,Workflow optimization
+D12,Operations & Admin,Director of Operations,M108,Knowledge Base Manager,SOP and internal wiki maintenance

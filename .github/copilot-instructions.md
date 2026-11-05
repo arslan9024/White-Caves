@@ -54,16 +54,28 @@ Always align implementations with these concrete technologies and existing scrip
 - Do not create duplicate abstractions for store, logging, error handling, routing, or validation.
 - Extend existing modules before creating new parallel systems.
 
-### 2.4 The 5-Way File Category Standard & Single Purpose File Law (MANDATORY)
+### 2.4 The 7-Category Architecture Standard & Single Purpose File Law (MANDATORY)
 
-Every feature, page, and domain module MUST adhere to the **5-Way File Category Division**:
+Every feature, page, and domain module MUST adhere to the **7-Way Co-Location Standard**:
+
 1. **View (`*.view.tsx` / `Component.tsx`):** Pure presentation and JSX rendering only. Zero inline business logic or heavy math.
 2. **Logic (`*.logic.ts`):** Custom hooks, state management, event handlers, and pure domain rules.
 3. **Styles (`*.styles.ts`):** Styled-components, design tokens, responsive breakpoints, and layout styles.
 4. **Data (`*.data.ts` / `*.registries.ts`):** Static datasets, lists, options registries, and seed constants.
-5. **Config (`*.config.ts`):** TypeScript interfaces, types, schemas (Zod), environment bindings, and feature flags.
+5. **Config (`*.config.ts` / `*.types.ts`):** TypeScript interfaces, types, schemas (Zod), environment bindings, and feature flags.
+6. **Tests (`*.test.tsx` / `*.spec.ts`):** Co-located unit, interaction, and component tests.
+
+#### Systemic 7-Category Directory Architecture:
+
+1. **Views:** UI components, pages, templates (`src/components/`, `src/pages/`)
+2. **Config & Core:** System constants, DLD maps, logger & singletons (`src/config/`, `src/core/`)
+3. **State:** Central reactive stores, slices, memoized selectors (`src/store/`)
+4. **Handlers & API:** Express routes, controllers, middleware (`server/routes/`, `src/handlers/`)
+5. **Engines & Services:** Deterministic calculation engines, PDF/crypto services (`src/services/`, `server/services/`)
+6. **Workflows & Tests:** I-P-O-V state pipelines, SQA test suites (`src/workflows/`, `tests/`)
 
 #### The Single Purpose File Law:
+
 - **One functionality per file:** Every file must have a single, well-defined responsibility.
 - **Minimum file size:** Large files (> 300–400 lines) must be broken down into cohesive, single-purpose sub-modules.
 - **Shared UI Component Reuse:** All components must maximize reuse of shared design-system components (`Button`, `Badge`, `Card`, `Modal`, `SearchableSelect`).

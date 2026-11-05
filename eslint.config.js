@@ -34,6 +34,8 @@ export default [
       'test-leasing-inventory.js',
       'test-relational-sidebar-api.js',
       'test/sidebar-enhancements.test.ts',
+      '.agents/scripts/**',
+      'sessions/**',
     ],
   },
   {

@@ -1,11 +1,15 @@
-import { DepartmentNode, IDepartmentNode } from '../../../models/DepartmentNode';
+﻿import { DepartmentNode, IDepartmentNode } from '../../../models/DepartmentNode';
 import { Personnel, IPersonnel } from '../../../models/Personnel';
 import { TeamSquad, ITeamSquad } from '../../../models/TeamSquad';
 import { AppError } from '../../../../server/middleware/errorHandler';
 
 export function assertSuperUser(sessionUserEmail?: string): void {
   const superEmail = process.env.SUPER_USER_EMAIL;
-  if (!superEmail || !sessionUserEmail || sessionUserEmail.toLowerCase() !== superEmail.toLowerCase()) {
+  if (
+    !superEmail ||
+    !sessionUserEmail ||
+    sessionUserEmail.toLowerCase() !== superEmail.toLowerCase()
+  ) {
     throw new AppError('Unauthorized: Action restricted to Super User', 403);
   }
 }
@@ -190,10 +194,98 @@ export async function updateAIPersonaPrompt(
   assertSuperUser(userEmail);
   const member = await Personnel.findById(personnelId);
   if (!member) throw new AppError('Personnel not found', 404);
-  if (!member.isVirtual) throw new AppError('Only virtual AI assistants have prompt overrides', 400);
+  if (!member.isVirtual)
+    throw new AppError('Only virtual AI assistants have prompt overrides', 400);
 
   member.systemPrompt = newPrompt;
   await member.save();
   return member;
 }
 
+export async function createDepartment(
+  title: string,
+  slug: string,
+  code: string,
+  color?: string,
+  icon?: string,
+  description?: string,
+  userEmail?: string
+): Promise<IDepartmentNode> {
+  assertSuperUser(userEmail);
+  if (!title || !slug || !code) {
+    throw new AppError('Title, slug, and code are required', 400);
+  }
+  const cleanCode = code.toUpperCase().trim();
+  const cleanSlug = slug.toLowerCase().trim();
+  const existing = await DepartmentNode.findOne({
+    $or: [{ code: cleanCode }, { slug: cleanSlug }],
+  });
+  if (existing) {
+    throw new AppError('Department code or slug already exists', 409);
+  }
+  const order = await DepartmentNode.countDocuments({ level: 'DEPARTMENT' });
+  const dept = await DepartmentNode.create({
+    code: cleanCode,
+    slug: cleanSlug,
+    title: title.trim(),
+    level: 'DEPARTMENT',
+    parentDeptId: null,
+    order,
+    color: color || '#EF4444',
+    icon: icon || 'Briefcase',
+    description: description?.trim() || '',
+  });
+  return dept;
+}
+
+export async function updateDepartmentDetails(
+  nodeId: string,
+  updates: {
+    title?: string;
+    description?: string;
+    color?: string;
+    icon?: string;
+  },
+  userEmail?: string
+): Promise<IDepartmentNode> {
+  assertSuperUser(userEmail);
+  const node = await DepartmentNode.findById(nodeId);
+  if (!node) throw new AppError('Department node not found', 404);
+
+  if (updates.title?.trim()) node.title = updates.title.trim();
+  if (updates.description !== undefined) node.description = updates.description.trim();
+  if (updates.color?.trim()) node.color = updates.color.trim();
+  if (updates.icon?.trim()) node.icon = updates.icon.trim();
+
+  await node.save();
+  return node;
+}
+
+export async function deleteDepartmentNode(
+  nodeId: string,
+  userEmail?: string
+): Promise<{ success: boolean; message: string }> {
+  assertSuperUser(userEmail);
+  const node = await DepartmentNode.findById(nodeId);
+  if (!node) throw new AppError('Department node not found', 404);
+
+  if (node.level === 'DEPARTMENT') {
+    const subDepts = await DepartmentNode.find({ parentDeptId: node._id });
+    const subDeptIds = subDepts.map(s => s._id);
+    await TeamSquad.deleteMany({ subDepartmentId: { $in: subDeptIds } });
+    await DepartmentNode.deleteMany({ parentDeptId: node._id });
+    await Personnel.updateMany(
+      { departmentId: node._id },
+      { $set: { departmentId: null, subDepartmentId: null, teamSquadId: null, status: 'STANDBY' } }
+    );
+  } else {
+    await TeamSquad.deleteMany({ subDepartmentId: node._id });
+    await Personnel.updateMany(
+      { subDepartmentId: node._id },
+      { $set: { subDepartmentId: null, teamSquadId: null, status: 'STANDBY' } }
+    );
+  }
+
+  await DepartmentNode.findByIdAndDelete(nodeId);
+  return { success: true, message: 'Department node and nested children pruned successfully' };
+}
