@@ -40,36 +40,49 @@ No off-palette colours in product UI. Motion via Framer Motion with reduced-moti
 
 ---
 
-## 👥 Fixed Staff Hierarchy: Bhakti Protocol 1 – 12 – 108
+## 👥 Fixed Staff Hierarchy: Bhakti 5-Tier Lineage Protocol
 
-The **Bhakti (1-12-108) Layout Philosophy** is the foundational structural law scaling our enterprise infrastructure without architectural drift:
+The **Bhakti Protocol Hierarchy** is the foundational, multi-layered structural law scaling our enterprise infrastructure. Every entity and task in the system carries strict hierarchical ID lineage:
 
-1. **1 Managing Director (MD Sovereign Engine):** Level 5 sovereign authority overseeing capital allocations, escrow oversight, statutory executive signing, and automated AI orchestration bypass.
-2. **12 Core Corporate Departments:** Level 4 department managers overseeing discrete business verticals (Executive Architecture, Research Intelligence, Frontend/UX, Backend/API, Database/Data, Security/Compliance, DevOps, SQA Testing, Finance/VAT, Sales/CRM, Communications/Marketing, Operations/Maintenance).
-3. **108 Operational Supervisors:** Level 3 supervisors (exactly 9 per department) safeguarding execution accuracy, SLA governance (sub-2h/4h/24h turnaround), RERA statutory checklists, and zero-defect delivery.
+1. **Level 5: Managing Director (`MD-01` / `EMP-001` — Arslan Malik Bashir Ahmad):**
+   - Sovereign executive engine holding capital allocation, escrow oversight, statutory signing, and system bypass authority.
+   - Primary active human actor driving enterprise execution.
+2. **Level 4: 12 Corporate Departments (`DEPT-01` to `DEPT-12`):**
+   - Headed by **12 Department Directors** (`DIR-01` to `DIR-12`).
+   - Each Director oversees their strategic operational domain.
+3. **Level 3: 9 Sub-Departments per Department (`SUB-01` to `SUB-09`):**
+   - Headed by **9 Managers** (`MGR-01` to `MGR-09`) per department.
+   - Each Director directly commands 9 Department Managers.
+4. **Level 2: 12 Squads per Sub-Department (`SQD-01` to `SQD-12`):**
+   - Headed by Squad Leaders titled **Supervisors** (`SUP-01` to `SUP-12`).
+   - Each Supervisor commands 1 or more operational Teams.
+5. **Level 1: Teams & Modular Tasks (`TSK-001+` & `T-xxx`):**
+   - Tasks are technically independent modules tagged with lineage labels (`deptId`, `directorId`, `subDeptId`, `managerId`, `squadId`, `supervisorId`, `teamId`).
+   - Tasks not yet assigned to an active squad reside in the **Unassigned Task Pool** (`isUnassignedPool: true`).
+   - Tasks can be reassigned, swapped, or moved up/down the hierarchy simply by changing their lineage label IDs.
 
-| Level | Title                 | Count    | Rule                                              |
-| ----- | --------------------- | -------- | ------------------------------------------------- |
-| **5** | Managing Director     | **1**    | Sovereign authority, capital, system bypass       |
-| **4** | Department Managers   | **12**   | One head per department                           |
-| **3** | Supervisors           | **108**  | **Exactly 9 supervisors per department** (12 × 9) |
-| **2** | Junior Agents (human) | Variable | Sales, leasing, off-plan pipelines                |
-| **1** | Interns & Trainees    | Variable | Onboarding                                        |
+| Level | Tier Title                     | ID Schema                         | Count          | Lineage Governance Rule                                              |
+| ----- | ------------------------------ | --------------------------------- | -------------- | -------------------------------------------------------------------- |
+| **5** | **Managing Director**          | `MD-01` (`EMP-001`)               | **1**          | Sovereign executive authority & primary system actor                 |
+| **4** | **Departments & Directors**    | `DEPT-01`–`12` / `DIR-01`–`12`    | **12**         | 12 Executive Directors governing discrete business domains           |
+| **3** | **Sub-Departments & Managers** | `SUB-01`–`09` / `MGR-01`–`09`     | **108**        | Exactly 9 Managers per Director (12 × 9)                             |
+| **2** | **Squads & Supervisors**       | `SQD-01`–`12` / `SUP-01`–`12`     | **1,296**      | 12 Squads per Sub-Department; Supervisors lead operational teams     |
+| **1** | **Teams & Tasks**              | `TSK-001+` / `T-xxx` / `TEAM-01+` | Catalog / Pool | Independent tasks tagged with lineage IDs or held in Unassigned Pool |
 
-### The 12 Corporate Departments (fixed)
+### The 12 Corporate Departments & Directors (fixed)
 
-1. Executive & Architecture
-2. Research Intelligence
-3. Frontend & UX Architecture
-4. Backend & API Systems
-5. Database & Data Pipelines
-6. Security, Compliance & Legal
-7. DevOps & Infrastructure
-8. **Software Quality & Testing (SQA)**
-9. Finance & VAT Analytics
-10. Sales & CRM Operations
-11. Communications & Marketing
-12. Operations & Facility Maintenance
+1. `DEPT-01` (`DIR-01`): Executive & Architecture
+2. `DEPT-02` (`DIR-02`): Research Intelligence
+3. `DEPT-03` (`DIR-03`): Frontend & UX Architecture
+4. `DEPT-04` (`DIR-04`): Backend & API Systems
+5. `DEPT-05` (`DIR-05`): Database & Data Pipelines
+6. `DEPT-06` (`DIR-06`): Security, Compliance & Legal
+7. `DEPT-07` (`DIR-07`): DevOps & Infrastructure
+8. `DEPT-08` (`DIR-08`): **Software Quality & Testing (SQA)**
+9. `DEPT-09` (`DIR-09`): Finance & VAT Analytics
+10. `DEPT-10` (`DIR-10`): Sales & CRM Operations
+11. `DEPT-11` (`DIR-11`): Communications & Marketing
+12. `DEPT-12` (`DIR-12`): Operations & Facility Maintenance
 
 > **Note:** Department 8 is explicitly the **Software Quality & Testing** domain so testing is owned, measured, and not buried inside generic “Compliance”.
 

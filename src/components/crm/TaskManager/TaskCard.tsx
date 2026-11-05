@@ -109,6 +109,30 @@ export const TaskCard: FC<TaskCardProps> = ({
           </div>
         </div>
 
+        {/* Bhakti 5-Tier Lineage Tag */}
+        {task.lineage && (
+          <div className="my-1.5 px-2 py-1 rounded bg-slate-950/70 border border-slate-800/60 flex items-center gap-1.5 text-[10px] font-mono text-amber-400/90 flex-wrap">
+            <span className="text-slate-500 font-sans font-bold uppercase text-[9px]">
+              Lineage:
+            </span>
+            <span className="px-1.5 py-0.2 rounded bg-red-950/40 text-red-400 border border-red-900/40 font-bold">
+              {task.lineage.deptId}
+            </span>
+            <span className="text-slate-600">›</span>
+            <span className="px-1.5 py-0.2 rounded bg-blue-950/40 text-blue-400 border border-blue-900/40 font-bold">
+              {task.lineage.subDeptId}
+            </span>
+            <span className="text-slate-600">›</span>
+            <span className="px-1.5 py-0.2 rounded bg-amber-950/40 text-amber-400 border border-amber-900/40 font-bold">
+              {task.lineage.squadId}
+            </span>
+            <span className="text-slate-600">›</span>
+            <span className="px-1.5 py-0.2 rounded bg-emerald-950/40 text-emerald-400 border border-emerald-900/40 font-bold">
+              {task.lineage.supervisorId}
+            </span>
+          </div>
+        )}
+
         {/* Reporting Escalation Chain */}
         <div className={s.escalationCard}>
           <div className={s.escalationTitle}>

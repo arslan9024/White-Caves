@@ -4,7 +4,14 @@
  * Complete 200 Statutory, Financial, Sales, and Operational Tasks for Dubai Real Estate LLC
  */
 
-import type { TaskNode, TaskReportingChain, TaskPriority, TaskStatus } from './TaskManager.types';
+import type {
+  TaskNode,
+  TaskReportingChain,
+  TaskPriority,
+  TaskStatus,
+  TaskHierarchyLineage,
+  RUPUseCaseDossier,
+} from './TaskManager.types';
 
 interface RawTaskDef {
   code: string;
@@ -1367,7 +1374,52 @@ export function buildTaskFromDef(
     managerCode: `MGR-${String((index % 3) + 1).padStart(2, '0')}`,
     directorName: dir,
     directorCode: `DIR-${pillarId}`,
-    executiveReviewer: 'Sophia Al-Hashemi (Managing Director)',
+    executiveReviewer: 'Arslan Malik Bashir Ahmad (MD-01)',
+  };
+
+  const deptNum = (index % 12) + 1;
+  const subDeptNum = (index % 9) + 1;
+  const squadNum = (index % 12) + 1;
+  const supNum = (index % 12) + 1;
+
+  const lineage: TaskHierarchyLineage = {
+    deptId: `DEPT-${String(deptNum).padStart(2, '0')}`,
+    deptName: `Department ${deptNum}`,
+    directorId: `DIR-${String(deptNum).padStart(2, '0')}`,
+    directorName: dir,
+    subDeptId: `SUB-${String(subDeptNum).padStart(2, '0')}`,
+    subDeptName: `Sub-Department ${subDeptNum}`,
+    managerId: `MGR-${String(subDeptNum).padStart(2, '0')}`,
+    managerName: mgr,
+    squadId: `SQD-${String(squadNum).padStart(2, '0')}`,
+    squadName: `Squad ${squadNum}`,
+    supervisorId: `SUP-${String(supNum).padStart(2, '0')}`,
+    supervisorName: sup,
+    teamId: `TEAM-${String((index % 4) + 1).padStart(2, '0')}`,
+    teamName: `Team ${(index % 4) + 1}`,
+    isUnassignedPool: false,
+  };
+
+  const useCase: RUPUseCaseDossier = {
+    useCaseId: `UC-${code}`,
+    primaryActor: 'Managing Director Arslan Malik Bashir Ahmad (EMP-001)',
+    secondaryActors: [authority || 'Dubai Land Department (DLD)'],
+    preconditions: [
+      'Actor authenticated with L0/Managing Director clearance',
+      `Entity data record initialized under ${authority || 'White Caves SOP'}`,
+    ],
+    trigger: `Manual execution dispatch or scheduled trigger for ${title}`,
+    mainSuccessScenario: {
+      input: `Input parameters and verification credentials collected for ${code}`,
+      processing: `Algorithmic validation and compliance verification against ${authority || 'RERA standards'}`,
+      output: `Generated verified artifact and statutory output document for ${title}`,
+      persistence: `Committed transaction state to sovereign ledger and credited Merit XP`,
+    },
+    postconditions: [
+      `Task status shifted to COMPLETED with verified timestamp`,
+      `Audit telemetry emitted to Right Sidebar stream`,
+    ],
+    statutoryMandate: authority ? `${authority} Statutory Mandate` : 'White Caves Quality SOP',
   };
 
   const statuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'REVIEW', 'COMPLETED'];
@@ -1383,7 +1435,7 @@ export function buildTaskFromDef(
     OPERATIONS: 'Property & PMS Operations Lead',
   };
 
-  const actor = `${sup} (${roleByCat[category] || 'Operations Lead'})`;
+  const actor = 'Managing Director Arslan Malik Bashir Ahmad (EMP-001)';
   const action = `Execute operational workflow: ${title} under ${authority || 'White Caves SOP'} standards`;
   const results = `Verified ${code} compliance dossier, authenticated telemetry logs, and ledger updated`;
 
@@ -1395,7 +1447,7 @@ export function buildTaskFromDef(
     pillarName,
     category,
     statutoryAuthority: authority,
-    description: `Statutory and operational execution task ${code} for White Caves Real Estate LLC in Dubai. Governed under 1-12-108 Protocol.`,
+    description: `Statutory and operational execution task ${code} for White Caves Real Estate LLC in Dubai. Governed under Bhakti 5-Tier Lineage Protocol.`,
     priority,
     status,
     defaultSla: sla,
@@ -1403,6 +1455,8 @@ export function buildTaskFromDef(
     actor,
     action,
     results,
+    lineage,
+    useCase,
     dueDate: '2026-11-30',
     createdAt: '2026-11-01',
     completionRate:
