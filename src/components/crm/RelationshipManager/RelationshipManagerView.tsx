@@ -4,17 +4,24 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { Network, Database, Layers, GitFork } from 'lucide-react';
 import { useRelationshipManager, UseRelationshipManagerProps } from './RelationshipManager.logic';
 import { RelationshipEntitiesHub } from './RelationshipEntitiesHub';
 import { RelationshipErdVisualizer } from './RelationshipErdVisualizer';
 import { RelationshipMatrixFlow } from './RelationshipMatrixFlow';
+import { RelationshipSingleLinkView } from './RelationshipSingleLinkView';
 import type { RelationshipTab } from './RelationshipManager.types';
 import { RelationshipContainer, RelationshipHeader } from './RelationshipManager.styles';
 
 export const RelationshipManagerView: FC<UseRelationshipManagerProps> = props => {
   const [activeTab, setActiveTab] = useState<RelationshipTab>(props.initialTab || 'relationships');
+
+  useEffect(() => {
+    if (props.initialTab) {
+      setActiveTab(props.initialTab);
+    }
+  }, [props.initialTab]);
   const {
     chains,
     activeChain,
@@ -162,22 +169,43 @@ export const RelationshipManagerView: FC<UseRelationshipManagerProps> = props =>
       </div>
 
       {/* ── 3. Tab Body Viewports ───────────────────────────────────── */}
-      {activeTab === 'entities' && <RelationshipEntitiesHub />}
-
-      {activeTab === 'erd' && <RelationshipErdVisualizer />}
-
-      {activeTab === 'relationships' && (
-        <RelationshipMatrixFlow
-          activeChain={activeChain}
-          stats={stats}
-          visibleNodes={visibleNodes}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          selectedNode={selectedNode}
-          handleSelectNode={handleSelectNode}
-          handleCloseNodeModal={handleCloseNodeModal}
-          handleJumpToDeepRoute={handleJumpToDeepRoute}
+      {props.selectedRelationshipId ? (
+        <RelationshipSingleLinkView
+          relationshipId={props.selectedRelationshipId}
+          onBack={() => {
+            props.onSelectRelationship?.('');
+            props.onNavigateToDeepRoute?.('/dashboard/erms/relationships');
+          }}
+          onNavigateToEntity={() => {
+            setActiveTab('entities');
+            props.onNavigateToDeepRoute?.('/dashboard/erms/entities');
+          }}
         />
+      ) : (
+        <>
+          {activeTab === 'entities' && (
+            <RelationshipEntitiesHub
+              selectedEntityId={props.selectedEntityId}
+              onSelectEntity={props.onSelectEntity}
+            />
+          )}
+
+          {activeTab === 'erd' && <RelationshipErdVisualizer />}
+
+          {activeTab === 'relationships' && (
+            <RelationshipMatrixFlow
+              activeChain={activeChain}
+              stats={stats}
+              visibleNodes={visibleNodes}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedNode={selectedNode}
+              handleSelectNode={handleSelectNode}
+              handleCloseNodeModal={handleCloseNodeModal}
+              handleJumpToDeepRoute={handleJumpToDeepRoute}
+            />
+          )}
+        </>
       )}
     </RelationshipContainer>
   );

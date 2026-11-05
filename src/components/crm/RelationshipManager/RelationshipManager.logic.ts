@@ -12,7 +12,9 @@ export interface UseRelationshipManagerProps {
   initialChains?: RelationshipChain[];
   initialTab?: RelationshipTab;
   selectedEntityId?: string | null;
+  selectedRelationshipId?: string | null;
   onSelectEntity?: (id: string) => void;
+  onSelectRelationship?: (id: string) => void;
   onNavigateToDeepRoute?: (route: string) => void;
 }
 

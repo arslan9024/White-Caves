@@ -49,7 +49,11 @@ const TAB_HEADER_MAP: Record<string, { icon: React.ReactNode; label: string }> =
   REproperties: { icon: <Home size={14} color="#8B5CF6" />, label: 'RE Properties Inventory' },
   deals: { icon: <Handshake size={14} color="#C084FC" />, label: 'Deals & Pipeline' },
   documents: { icon: <FileText size={14} color="#38BDF8" />, label: 'Document Vault' },
-  relationships: { icon: <Network size={14} color="#10B981" />, label: 'Relational Matrix' },
+  relationships: {
+    icon: <Network size={14} color="#10B981" />,
+    label: 'ERMS (Entities & Relationships)',
+  },
+  erms: { icon: <Network size={14} color="#10B981" />, label: 'ERMS (Entities & Relationships)' },
   customers: { icon: <Contact size={14} color="#34D399" />, label: 'Customers Hub (CRM)' },
 };
 
@@ -61,7 +65,8 @@ const SEARCH_PLACEHOLDER_MAP: Record<string, string> = {
   REproperties: 'Filter properties & units...',
   deals: 'Filter deals & pipelines...',
   documents: 'Filter vault documents...',
-  relationships: 'Filter relational matrix...',
+  relationships: 'Filter entities & relational matrix...',
+  erms: 'Filter entities & relational matrix...',
   customers: 'Filter clients & leads...',
 };
 
@@ -189,9 +194,9 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
           </ActivityIconBtn>
 
           <ActivityIconBtn
-            $isActive={activeTab === 'relationships'}
+            $isActive={activeTab === 'relationships' || activeTab === 'erms'}
             onClick={() => handleSelectTab('relationships')}
-            title="Entities & Relational Matrix (relationships)"
+            title="ERMS: Entities & Relational Matrix Hub"
             data-testid="activity-btn-relationships"
           >
             <Network size={18} />
@@ -287,10 +292,12 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             filterQuery={filterQuery}
             onSelectDoc={(id, title) => handleLeafClick(`doc-${id}`, `Doc: ${title}`)}
           />
-        ) : activeTab === 'relationships' ? (
+        ) : activeTab === 'relationships' || activeTab === 'erms' ? (
           <SidebarRelationshipsList
             filterQuery={filterQuery}
             onSelectChain={(id, name) => handleLeafClick(`rel-${id}`, `Chain: ${name}`)}
+            onSelectEntity={(id, name) => handleLeafClick(`entity-${id}`, `Entity: ${name}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : (
           <SidebarDepartmentsList filterQuery={filterQuery} onOpenCreate={onOpenDeptManager} />

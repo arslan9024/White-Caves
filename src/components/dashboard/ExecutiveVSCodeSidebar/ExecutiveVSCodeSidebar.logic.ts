@@ -14,6 +14,7 @@ export type ActivityTab =
   | 'customers'
   | 'documents'
   | 'relationships'
+  | 'erms'
   | 'audit'
   | 'settings';
 

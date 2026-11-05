@@ -49,6 +49,7 @@ export const ModernDashboardPage: FC = () => {
     'deals',
     'documents',
     'relationships',
+    'erms',
     'customers',
     'audit',
     'settings',
@@ -57,6 +58,31 @@ export const ModernDashboardPage: FC = () => {
   const activeTab: ActivityTab = validTabs.includes(rawTab as ActivityTab)
     ? (rawTab as ActivityTab)
     : 'departments';
+
+  // ERMS double-layer route extraction: /dashboard/erms/entities/:id or /dashboard/erms/relationships/:id
+  let ermsSubTab: 'entities' | 'relationships' | 'erd' = 'entities';
+  let ermsEntityId: string | null = null;
+  let ermsRelationshipId: string | null = null;
+
+  if (rawTab === 'erms' || rawTab === 'relationships') {
+    const layer1 = pathParts[1];
+    const layer2 = pathParts[2];
+    if (layer1 === 'entities') {
+      ermsSubTab = 'entities';
+      ermsEntityId = layer2 || null;
+    } else if (layer1 === 'relationships') {
+      ermsSubTab = 'relationships';
+      ermsRelationshipId = layer2 || null;
+    } else if (layer1 === 'erd') {
+      ermsSubTab = 'erd';
+    } else if (layer1 && (layer1.startsWith('rel-') || layer1.startsWith('REL-'))) {
+      ermsSubTab = 'relationships';
+      ermsRelationshipId = layer1;
+    } else if (layer1) {
+      ermsSubTab = 'entities';
+      ermsEntityId = layer1;
+    }
+  }
 
   // Auto-redirect /dashboard to /dashboard/departments
   useEffect(() => {
@@ -80,60 +106,51 @@ export const ModernDashboardPage: FC = () => {
   }, []);
 
   const handleSelectSidebarTab = (tab: ActivityTab) => {
-    navigate(`/dashboard/${tab}`);
+    if (tab === 'erms' || tab === 'relationships') {
+      navigate('/dashboard/erms/entities');
+    } else {
+      navigate(`/dashboard/${tab}`);
+    }
   };
 
   const handleSelectSidebarItem = (key: string, label: string) => {
-    if (key === 'departments-crud') {
-      navigate('/dashboard/departments');
-    } else if (key.startsWith('emp-')) {
-      const empId = key.replace('emp-', '');
-      navigate(`/dashboard/employees/${empId}`);
-    } else if (key.startsWith('task-')) {
-      const taskId = key.replace('task-', '');
-      navigate(`/dashboard/tasks/${taskId}`);
-    } else if (key.startsWith('lead-')) {
-      const leadId = key.replace('lead-', '');
-      navigate(`/dashboard/leaderboard/${leadId}`);
-    } else if (key.startsWith('prop-')) {
-      const propId = key.replace('prop-', '');
-      navigate(`/dashboard/REproperties/${propId}`);
-    } else if (key.startsWith('deal-')) {
-      const dealId = key.replace('deal-', '');
-      navigate(`/dashboard/deals/${dealId}`);
-    } else if (key.startsWith('doc-')) {
-      const docId = key.replace('doc-', '');
-      navigate(`/dashboard/documents/${docId}`);
-    } else if (key.startsWith('rel-')) {
-      const relId = key.replace('rel-', '');
-      navigate(`/dashboard/relationships/${relId}`);
-    } else if (key.startsWith('cust-')) {
-      const custId = key.replace('cust-', '');
-      navigate(`/dashboard/customers/${custId}`);
-    } else {
-      navigate(`/dashboard/${activeTab}`);
+    if (key === 'departments-crud') return navigate('/dashboard/departments');
+    if (key.startsWith('route-')) return navigate(key.replace('route-', ''));
+    if (key.startsWith('entity-'))
+      return navigate(`/dashboard/erms/entities/${key.replace('entity-', '')}`);
+    if (key.startsWith('rel-'))
+      return navigate(`/dashboard/erms/relationships/${key.replace('rel-', '')}`);
+    const prefixes: Record<string, string> = {
+      'emp-': '/dashboard/employees/',
+      'task-': '/dashboard/tasks/',
+      'lead-': '/dashboard/leaderboard/',
+      'prop-': '/dashboard/REproperties/',
+      'deal-': '/dashboard/deals/',
+      'doc-': '/dashboard/documents/',
+      'cust-': '/dashboard/customers/',
+    };
+    for (const [pfx, route] of Object.entries(prefixes)) {
+      if (key.startsWith(pfx)) return navigate(`${route}${key.replace(pfx, '')}`);
     }
+    navigate(`/dashboard/${activeTab}`);
   };
 
   const handleSelectRightExplorerItem = (key: string, label: string) => {
-    if (key.startsWith('dept-')) {
-      const deptId = key.replace('dept-', '');
-      navigate(`/dashboard/departments/${deptId}?mode=view`);
-    } else if (key.startsWith('task-')) {
-      const taskId = key.replace('task-', '');
-      navigate(`/dashboard/tasks/${taskId}?mode=execution`);
-    } else if (key.startsWith('prop-')) {
-      const propId = key.replace('prop-', '');
-      navigate(`/dashboard/REproperties/${propId}?mode=view`);
-    } else if (key.startsWith('deal-')) {
-      const dealId = key.replace('deal-', '');
-      navigate(`/dashboard/deals/${dealId}?mode=view`);
-    } else if (key.startsWith('emp-')) {
-      const empId = key.replace('emp-', '');
-      navigate(`/dashboard/employees/${empId}?mode=view`);
-    } else {
-      handleSelectSidebarItem(key, label);
+    const viewPrefixes: Record<string, string> = {
+      'dept-': '/dashboard/departments/',
+      'task-': '/dashboard/tasks/',
+      'prop-': '/dashboard/REproperties/',
+      'deal-': '/dashboard/deals/',
+      'emp-': '/dashboard/employees/',
+    };
+    for (const [pfx, route] of Object.entries(viewPrefixes)) {
+      if (key.startsWith(pfx)) {
+        const id = key.replace(pfx, '');
+        const mode = pfx === 'task-' ? 'execution' : 'view';
+        return navigate(`${route}${id}?mode=${mode}`);
+      }
     }
+    handleSelectSidebarItem(key, label);
   };
 
   return (
@@ -259,10 +276,13 @@ export const ModernDashboardPage: FC = () => {
                 selectedDocId={activeItemId}
                 onSelectDoc={id => navigate(`/dashboard/documents/${id}`)}
               />
-            ) : activeTab === 'relationships' ? (
+            ) : activeTab === 'relationships' || activeTab === 'erms' ? (
               <RelationshipManagerView
-                selectedEntityId={activeItemId}
-                onSelectEntity={id => navigate(`/dashboard/relationships/${id}`)}
+                initialTab={ermsSubTab}
+                selectedEntityId={ermsEntityId}
+                selectedRelationshipId={ermsRelationshipId}
+                onSelectEntity={id => navigate(`/dashboard/erms/entities/${id}`)}
+                onSelectRelationship={id => navigate(`/dashboard/erms/relationships/${id}`)}
                 onNavigateToDeepRoute={route => navigate(route)}
               />
             ) : activeTab === 'customers' ? (

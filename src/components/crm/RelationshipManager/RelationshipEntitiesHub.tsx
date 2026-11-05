@@ -5,10 +5,11 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import React, { FC, useState, useMemo } from 'react';
-import { Plus, Search, Edit2, Trash2, Eye, ShieldCheck, Database, X } from 'lucide-react';
+import React, { FC, useState, useMemo, useEffect } from 'react';
+import { Plus, Search, Edit2, Trash2, Eye } from 'lucide-react';
 import type { EntityNode, EntityType } from './RelationshipManager.types';
 import { CANONICAL_ALL_ENTITIES } from './RelationshipEntities.data';
+import { EntityFormModal, EntityInspectModal } from './RelationshipEntityModals';
 
 const STORAGE_KEY = 'whitecaves_all_entities_store';
 
@@ -31,12 +32,20 @@ function saveStoredEntities(entities: EntityNode[]) {
   } catch {}
 }
 
-export const RelationshipEntitiesHub: FC = () => {
+export interface RelationshipEntitiesHubProps {
+  selectedEntityId?: string | null;
+  onSelectEntity?: (id: string) => void;
+}
+
+export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
+  selectedEntityId,
+  onSelectEntity,
+}) => {
   const [entities, setEntities] = useState<EntityNode[]>(loadStoredEntities);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
 
-  // Modal / Drawer state
+  // Modal state
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeViewNode, setActiveViewNode] = useState<EntityNode | null>(null);
@@ -49,6 +58,15 @@ export const RelationshipEntitiesHub: FC = () => {
     description: '',
     status: 'ACTIVE',
   });
+
+  useEffect(() => {
+    if (selectedEntityId) {
+      const match = entities.find(e => e.id.toLowerCase() === selectedEntityId.toLowerCase());
+      if (match) {
+        setActiveViewNode(match);
+      }
+    }
+  }, [selectedEntityId, entities]);
 
   const handleOpenCreate = () => {
     setEditingId(null);
@@ -75,10 +93,12 @@ export const RelationshipEntitiesHub: FC = () => {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this entity instance?')) {
-      const next = entities.filter(e => e.id !== id);
-      setEntities(next);
-      saveStoredEntities(next);
+    if (typeof window !== 'undefined' && !window.confirm(`Delete entity ${id}?`)) return;
+    const next = entities.filter(e => e.id !== id);
+    setEntities(next);
+    saveStoredEntities(next);
+    if (activeViewNode?.id === id) {
+      setActiveViewNode(null);
     }
   };
 
@@ -186,15 +206,15 @@ export const RelationshipEntitiesHub: FC = () => {
         </div>
       </div>
 
-      {/* ── Entities Data Table ──────────────────────────────────────────── */}
-      <div className="rounded-xl bg-slate-950/80 border border-slate-800 overflow-hidden">
+      {/* ── Table Container ──────────────────────────────────────────────── */}
+      <div className="rounded-xl border border-slate-800 bg-slate-950/70 overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead>
-            <tr className="bg-slate-900 border-b border-slate-800 text-slate-400 text-[10px] uppercase font-mono">
-              <th className="py-2.5 px-4">Entity Key</th>
-              <th className="py-2.5 px-4">Entity Name & Scope</th>
+          <thead className="bg-slate-900/80 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono text-[10px]">
+            <tr>
+              <th className="py-2.5 px-4">Entity ID</th>
+              <th className="py-2.5 px-4">Name / Label</th>
               <th className="py-2.5 px-4">Type</th>
-              <th className="py-2.5 px-4">Badge / Role</th>
+              <th className="py-2.5 px-4">Role Badge</th>
               <th className="py-2.5 px-4">Status</th>
               <th className="py-2.5 px-4 text-right">Actions</th>
             </tr>
@@ -225,9 +245,13 @@ export const RelationshipEntitiesHub: FC = () => {
                 <td className="py-3 px-4 text-right">
                   <div className="flex items-center justify-end gap-1.5">
                     <button
-                      onClick={() => setActiveViewNode(node)}
+                      onClick={() => {
+                        setActiveViewNode(node);
+                        onSelectEntity?.(node.id);
+                      }}
                       className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white"
                       title="Inspect Details"
+                      data-testid={`inspect-entity-${node.id}`}
                     >
                       <Eye size={13} />
                     </button>
@@ -235,6 +259,7 @@ export const RelationshipEntitiesHub: FC = () => {
                       onClick={() => handleOpenEdit(node)}
                       className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-sky-400"
                       title="Edit Entity"
+                      data-testid={`edit-entity-${node.id}`}
                     >
                       <Edit2 size={13} />
                     </button>
@@ -242,6 +267,7 @@ export const RelationshipEntitiesHub: FC = () => {
                       onClick={() => handleDelete(node.id)}
                       className="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-rose-400"
                       title="Delete Entity"
+                      data-testid={`delete-entity-${node.id}`}
                     >
                       <Trash2 size={13} />
                     </button>
@@ -254,112 +280,18 @@ export const RelationshipEntitiesHub: FC = () => {
       </div>
 
       {/* ── Create / Edit Entity Modal ────────────────────────────────────── */}
-      {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-xl bg-slate-900 border border-slate-800 p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-              <h3 className="text-sm font-bold text-white">
-                {editingId ? 'Edit Entity Instance' : 'Register New Entity'}
-              </h3>
-              <button
-                onClick={() => setIsFormOpen(false)}
-                className="text-slate-400 hover:text-white"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            <form onSubmit={handleFormSubmit} className="space-y-3 text-xs">
-              <div>
-                <label className="text-slate-400 block mb-1">Entity Name</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-white"
-                />
-              </div>
-              <div>
-                <label className="text-slate-400 block mb-1">Entity Type</label>
-                <select
-                  value={formData.type}
-                  onChange={e => setFormData({ ...formData, type: e.target.value as EntityType })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-white"
-                >
-                  {typeOptions
-                    .filter(t => t.id !== 'ALL')
-                    .map(t => (
-                      <option key={t.id} value={t.id}>
-                        {t.label}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-slate-400 block mb-1">Badge / Role Label</label>
-                <input
-                  type="text"
-                  value={formData.badge}
-                  onChange={e => setFormData({ ...formData, badge: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-white"
-                />
-              </div>
-              <div>
-                <label className="text-slate-400 block mb-1">Description</label>
-                <textarea
-                  rows={2}
-                  value={formData.description}
-                  onChange={e => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-white"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsFormOpen(false)}
-                  className="px-3 py-1.5 rounded bg-slate-800 text-slate-300 font-bold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
-                >
-                  {editingId ? 'Save Changes' : 'Create Entity'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <EntityFormModal
+        isOpen={isFormOpen}
+        editingId={editingId}
+        formData={formData}
+        typeOptions={typeOptions}
+        onClose={() => setIsFormOpen(false)}
+        onSubmit={handleFormSubmit}
+        onChangeField={(field, val) => setFormData(prev => ({ ...prev, [field]: val }))}
+      />
 
       {/* ── View Details Modal ────────────────────────────────────────────── */}
-      {activeViewNode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-xl bg-slate-900 border border-slate-800 p-5 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-              <span className="font-mono text-xs font-bold text-sky-400">{activeViewNode.id}</span>
-              <button
-                onClick={() => setActiveViewNode(null)}
-                className="text-slate-400 hover:text-white"
-              >
-                <X size={16} />
-              </button>
-            </div>
-            <h3 className="text-base font-bold text-white">{activeViewNode.name}</h3>
-            <p className="text-xs text-slate-300">{activeViewNode.description}</p>
-            <div className="p-3 rounded bg-slate-950 border border-slate-800 text-xs font-mono space-y-1">
-              {Object.entries(activeViewNode.details || {}).map(([k, v]) => (
-                <div key={k} className="flex justify-between">
-                  <span className="text-slate-400">{k}:</span>
-                  <span className="text-emerald-400">{String(v)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <EntityInspectModal node={activeViewNode} onClose={() => setActiveViewNode(null)} />
     </div>
   );
 };

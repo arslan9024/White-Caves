@@ -61,6 +61,16 @@ describe('ModernDashboardPage Viewport Rendering', () => {
     expect(screen.getByTestId('relationship-manager-view')).toBeInTheDocument();
   }, 30000);
 
+  it('renders ERMS double-layer route /dashboard/erms/entities', () => {
+    renderDashboardWithProviders('/dashboard/erms/entities');
+    expect(screen.getByTestId('relationship-entities-hub')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders ERMS single relationship edge /dashboard/erms/relationships/rel-1', () => {
+    renderDashboardWithProviders('/dashboard/erms/relationships/rel-1');
+    expect(screen.getByTestId('relationship-single-link-view')).toBeInTheDocument();
+  }, 30000);
+
   it('renders customers viewport when navigating to /dashboard/customers', () => {
     renderDashboardWithProviders('/dashboard/customers');
     expect(screen.getByTestId('customer-manager-view')).toBeInTheDocument();

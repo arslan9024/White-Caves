@@ -25,7 +25,7 @@ export interface RelationshipMatrixFlowProps {
   selectedNode: EntityNode | null;
   handleSelectNode: (node: EntityNode) => void;
   handleCloseNodeModal: () => void;
-  handleJumpToDeepRoute: (deepRoute: string) => void;
+  handleJumpToDeepRoute: (route: string) => void;
 }
 
 export const RelationshipMatrixFlow: FC<RelationshipMatrixFlowProps> = ({

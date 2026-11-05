@@ -261,6 +261,31 @@ System actions are cataloged with globally unique deterministic task codes, stri
 - `WC-FIN-*` (Financial Ledger Triggers):
   - `WC-FIN-302`: Generate Receipt Ledger Entries — Escrow & Zoho Books VAT Reconciliation.
 
+### 4. The 9 Core Management Systems & ERMS Double-Layer Law
+
+The sovereign enterprise CRM architecture strictly distinguishes between 9 independent management systems:
+
+1. **DMS** (`/dashboard/departments`): Department Management System (12 Slots, 108 Divisions, 7 Pillars)
+2. **EMS** (`/dashboard/employees`): Employee Management System (121 Staff Roster, Merit XP, 50%–70% Commission)
+3. **TMS** (`/dashboard/tasks`): Task Management System (200+ Core Operational Tasks, I-P-O-V Engines)
+4. **PMS** (`/dashboard/REproperties`): Property Portfolio Management System (Luxury Units, Plot Masking)
+5. **Deals System** (`/dashboard/deals`): Deals & Pipeline Management System (Escrow, Closings)
+6. **CMS** (`/dashboard/customers`): Customer & Lead Management System (UHNW CRM, KYC)
+7. **DVS** (`/dashboard/documents`): Document Vault Management System (OCR Vault, MRZ Verification)
+8. **LMS** (`/dashboard/leaderboard`): Leaderboard & Gamification System (Tiers L0–L5, Merit Matrix)
+9. **ERMS** (`/dashboard/erms`): Entities & Relationships Management System (**System #9**)
+
+#### ERMS Double-Layer Routing Law
+
+- **Layer 1: Entities CRUD Hub**
+  - Route: `/dashboard/erms/entities`
+  - Single Entity: `/dashboard/erms/entities/:entityId` (Turing ID: `ENT-[DOMAIN]-[000]`)
+  - Features: Complete CRUD operations, real-time search, domain filters, inline create drawer, edit modal, delete confirmation, persistent local storage.
+- **Layer 2: Relational Matrix & UML ERD**
+  - Route: `/dashboard/erms/relationships`
+  - Single Edge Link: `/dashboard/erms/relationships/:relationshipId` (Turing ID: `REL-[TYPE]-[000]`)
+  - Features: Multi-node visual flow, metrics deck, UML ERD visualizer, focused binary 2-entity edge inspector with multiplicity and cascade delete indicators.
+
 ---
 
 ## 🔱 AEGIS
