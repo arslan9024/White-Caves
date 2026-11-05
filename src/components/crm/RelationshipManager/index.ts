@@ -6,5 +6,7 @@
 export * from './RelationshipManager.types';
 export * from './RelationshipManager.data';
 export * from './RelationshipManager.logic';
-export { RelationshipManagerView } from './RelationshipManagerView';
-export default RelationshipManagerView;
+export * from './RelationshipManager.styles';
+export * from './EntityNodeModal';
+export * from './RelationshipManagerView';
+export { RelationshipManagerView as default } from './RelationshipManagerView';
