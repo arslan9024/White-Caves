@@ -26,12 +26,13 @@ export const SidebarREPropertiesList: FC<SidebarREPropertiesListProps> = ({
 
   const visibleProperties = CANONICAL_RE_PROPERTIES.filter(prop => {
     if (!query) return true;
+    const propId = prop.repropertyId || prop._id;
     return (
-      prop.id.toLowerCase().includes(query) ||
+      propId.toLowerCase().includes(query) ||
       prop.title.toLowerCase().includes(query) ||
-      prop.location.community.toLowerCase().includes(query) ||
-      prop.type.toLowerCase().includes(query) ||
-      prop.dldPermitNumber.toLowerCase().includes(query) ||
+      prop.location.toLowerCase().includes(query) ||
+      prop.propertyType.toLowerCase().includes(query) ||
+      prop.trakheesiPermit.toLowerCase().includes(query) ||
       prop.status.toLowerCase().includes(query)
     );
   });
@@ -81,7 +82,8 @@ export const SidebarREPropertiesList: FC<SidebarREPropertiesListProps> = ({
       </div>
 
       {visibleProperties.map(prop => {
-        const isSelected = selectedPropertyId === prop.id;
+        const propId = prop.repropertyId || prop._id;
+        const isSelected = selectedPropertyId === propId;
         const statusColors: Record<string, { bg: string; text: string }> = {
           AVAILABLE: { bg: 'rgba(16, 185, 129, 0.15)', text: '#34D399' },
           UNDER_OFFER: { bg: 'rgba(245, 158, 11, 0.15)', text: '#FBBF24' },
@@ -98,8 +100,8 @@ export const SidebarREPropertiesList: FC<SidebarREPropertiesListProps> = ({
         return (
           <div
             key={prop._id}
-            onClick={() => onSelectProperty?.(prop.id, prop.title)}
-            data-testid={`sidebar-prop-${prop.id}`}
+            onClick={() => onSelectProperty?.(propId, prop.title)}
+            data-testid={`sidebar-prop-${propId}`}
             style={{
               padding: '10px 12px',
               borderRadius: '8px',
@@ -129,7 +131,7 @@ export const SidebarREPropertiesList: FC<SidebarREPropertiesListProps> = ({
                     borderRadius: '4px',
                   }}
                 >
-                  {prop.id}
+                  {propId}
                 </span>
                 <span
                   style={{
@@ -192,7 +194,7 @@ export const SidebarREPropertiesList: FC<SidebarREPropertiesListProps> = ({
                 }}
               >
                 <MapPin size={10} color="#EF4444" />
-                {prop.location.community}
+                {prop.location}
               </span>
               <span style={{ fontWeight: 800, color: '#38BDF8' }}>
                 AED {(prop.priceAED / 1_000_000).toFixed(1)}M

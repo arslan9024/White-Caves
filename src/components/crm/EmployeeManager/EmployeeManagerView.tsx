@@ -41,7 +41,7 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({ select
     if (!selectedEmpId || filteredEmployees.length === 0) return;
     const cleanId = selectedEmpId.toUpperCase();
     const target = filteredEmployees.find(
-      e => e.id?.toUpperCase() === cleanId || e.employeeCode?.toUpperCase() === cleanId
+      e => e._id?.toUpperCase() === cleanId || e.employeeCode?.toUpperCase() === cleanId
     );
     if (target) {
       handleOpenEdit(target);

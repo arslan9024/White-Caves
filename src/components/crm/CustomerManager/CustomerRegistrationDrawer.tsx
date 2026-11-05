@@ -6,7 +6,7 @@
 
 import React, { FC, useState, CSSProperties } from 'react';
 import { X, UserPlus } from 'lucide-react';
-import { CustomerItem, CustomerType } from './CustomerManager.types';
+import { CustomerItem, CustomerType, LeadSource } from './CustomerManager.types';
 
 const lbl: CSSProperties = {
   fontSize: '0.72rem',
@@ -28,7 +28,7 @@ const inp: CSSProperties = {
 interface CustomerRegistrationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (customer: Omit<CustomerItem, 'id' | 'createdAt' | 'interactions'>) => void;
+  onSubmit: (customer: Partial<CustomerItem>) => void;
 }
 
 export const CustomerRegistrationDrawer: FC<CustomerRegistrationDrawerProps> = ({
@@ -44,7 +44,7 @@ export const CustomerRegistrationDrawer: FC<CustomerRegistrationDrawerProps> = (
   const [preferredCommunity, setPreferredCommunity] = useState('DAMAC Hills 2');
   const [budgetAED, setBudgetAED] = useState<number>(150000);
   const [assignedAgentName, setAssignedAgentName] = useState('Arslan Malik');
-  const [source, setSource] = useState('PROPERTY_FINDER');
+  const [source, setSource] = useState<LeadSource>('PROPERTY_FINDER');
 
   if (!isOpen) return null;
 
@@ -212,12 +212,17 @@ export const CustomerRegistrationDrawer: FC<CustomerRegistrationDrawerProps> = (
             </div>
             <div>
               <label style={lbl}>Lead Source</label>
-              <select value={source} onChange={e => setSource(e.target.value)} style={inp}>
+              <select
+                value={source}
+                onChange={e => setSource(e.target.value as LeadSource)}
+                style={inp}
+              >
                 <option value="PROPERTY_FINDER">Property Finder</option>
-                <option value="BAYUT">Bayut / Dubizzle</option>
-                <option value="DIRECT_REFERRAL">Direct Referral</option>
-                <option value="WHATSAPP_CAMPAIGN">WhatsApp Campaign</option>
-                <option value="WEBSITE_ORGANIC">Website Organic</option>
+                <option value="BAYUT">Bayut</option>
+                <option value="DUBIZZLE">Dubizzle</option>
+                <option value="REFERRAL">Referral</option>
+                <option value="WHATSAPP">WhatsApp</option>
+                <option value="DIRECT">Direct</option>
               </select>
             </div>
           </div>

@@ -77,10 +77,11 @@ export const DepartmentManagementWorkspace: FC<DepartmentManagementWorkspaceProp
     const cleanId = selectedDeptId.toUpperCase();
     const targetDept = departments.find(
       d =>
-        d.id?.toUpperCase() === cleanId ||
+        d._id?.toUpperCase() === cleanId ||
         d.code?.toUpperCase() === cleanId ||
-        `D${d.slotNumber}`.padStart(3, '0').toUpperCase() === cleanId ||
-        `D${d.slotNumber}` === cleanId
+        d.slug?.toUpperCase() === cleanId ||
+        `D${d.order}`.padStart(3, '0').toUpperCase() === cleanId ||
+        `D${d.order}` === cleanId
     );
     if (targetDept) {
       handleOpenSubItems(targetDept);

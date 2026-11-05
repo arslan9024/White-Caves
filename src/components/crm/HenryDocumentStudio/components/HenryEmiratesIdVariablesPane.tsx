@@ -24,7 +24,7 @@ import {
   ActionButton,
 } from '../styles/HenryEmiratesIdScannerView.style';
 import { EmiratesIdExtractedData } from '../../../../services/HenryEmiratesIdScannerService';
-import { canUseScan, scanExpiry } from '../../../../services/henryScanReview';
+import { canUseScan, scanExpiry, validScanDate } from '../../../../services/henryScanReview';
 
 export interface HenryEmiratesIdVariablesPaneProps {
   extractedData: EmiratesIdExtractedData;

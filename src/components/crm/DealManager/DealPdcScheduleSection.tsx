@@ -6,10 +6,10 @@
 
 import React, { FC } from 'react';
 import { CreditCard } from 'lucide-react';
-import { PdcChequeItem } from './DealManager.types';
+import { DealPDC } from './DealManager.types';
 
 interface DealPdcScheduleSectionProps {
-  pdcSchedule: PdcChequeItem[];
+  pdcSchedule: DealPDC[];
 }
 
 export const DealPdcScheduleSection: FC<DealPdcScheduleSectionProps> = ({ pdcSchedule }) => {

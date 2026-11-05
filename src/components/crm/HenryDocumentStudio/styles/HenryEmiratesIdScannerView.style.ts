@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
-const StudioContainer = styled.div`
+export const StudioContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 `;
 
-const TopActionBar = styled.div`
+export const TopActionBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -70,7 +70,7 @@ export const LeftDocumentPane = styled.div`
   top: 1rem;
 `;
 
-const PaneHeader = styled.div`
+export const PaneHeader = styled.div`
   background: #0f172a;
   color: #ffffff;
   padding: 12px 18px;
@@ -92,7 +92,7 @@ const PaneHeader = styled.div`
   }
 `;
 
-const DocumentCanvasViewer = styled.div<{ $zoom: number }>`
+export const DocumentCanvasViewer = styled.div<{ $zoom: number }>`
   padding: 1.5rem;
   background: #e2e8f0;
   min-height: 480px;
@@ -118,13 +118,13 @@ const DocumentCanvasViewer = styled.div<{ $zoom: number }>`
   }
 `;
 
-const RightVariablesPane = styled.div`
+export const RightVariablesPane = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
 `;
 
-const VariableSectionCard = styled.div<{ $verified?: boolean }>`
+export const VariableSectionCard = styled.div<{ $verified?: boolean }>`
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-left: 4px solid #ef4444;
@@ -219,7 +219,7 @@ const VariableSectionCard = styled.div<{ $verified?: boolean }>`
   }
 `;
 
-const MrzTerminal = styled.div`
+export const MrzTerminal = styled.div`
   background: #0f172a;
   border: 1px solid #334155;
   border-radius: 8px;
@@ -232,7 +232,7 @@ const MrzTerminal = styled.div`
   word-break: break-all;
 `;
 
-const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' }>`
+export const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' }>`
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -270,7 +270,7 @@ const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' | 'dange
   }}
 `;
 
-const ZoomBtn = styled.button`
+export const ZoomBtn = styled.button`
   background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
   border: none;

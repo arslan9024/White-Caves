@@ -211,7 +211,7 @@ export const HenryEmiratesIdScannerView: FC<{ importedSource?: DriveImport }> = 
           extractedData={extractedData}
           handleFileUpload={handleFileUpload}
           handleLoadDemo={handleLoadDemo}
-          onLoadMansoorDemo={() => handleLoadDemo('mansoor')}
+          onLoadMansoorDemo={handleLoadDemo}
         />
 
         <HenryEmiratesIdVariablesPane

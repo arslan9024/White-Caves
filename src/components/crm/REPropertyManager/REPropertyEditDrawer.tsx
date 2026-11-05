@@ -6,7 +6,12 @@
 
 import React, { FC, useState, useEffect } from 'react';
 import { X, Save, Plus } from 'lucide-react';
-import type { REPropertyNode, REPropertyType, REPropertyPurpose } from './REPropertyManager.types';
+import type {
+  REPropertyNode,
+  REPropertyType,
+  REPropertyPurpose,
+  REPropertyStatus,
+} from './REPropertyManager.types';
 import { PROPERTY_TYPES, PROPERTY_LOCATIONS } from './REPropertyManager.data';
 
 interface REPropertyEditDrawerProps {
@@ -28,7 +33,7 @@ export const REPropertyEditDrawer: FC<REPropertyEditDrawerProps> = ({
     title: '',
     propertyType: 'VILLA' as REPropertyType,
     purpose: 'BUY' as REPropertyPurpose,
-    status: 'AVAILABLE' as const,
+    status: 'AVAILABLE' as REPropertyStatus,
     location: 'Palm Jumeirah',
     subLocation: 'Beachfront',
     priceAED: 25000000,
@@ -36,7 +41,7 @@ export const REPropertyEditDrawer: FC<REPropertyEditDrawerProps> = ({
     bedrooms: 5,
     bathrooms: 6,
     developer: 'Emaar Properties',
-    completionStatus: 'READY' as const,
+    completionStatus: 'READY' as 'READY' | 'OFF_PLAN',
     trakheesiPermit: 'TRAK-8810294-A',
     dldTitleDeedNumber: 'TD-991024',
     assignedBroker: 'Layla Mansoori',

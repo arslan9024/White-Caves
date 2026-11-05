@@ -117,12 +117,7 @@ export const ModernDashboardPage: FC = () => {
     >
       <CorporateDepartmentsProvider>
         {/* ── Top Executive Navbar ────────────────────────────────────────── */}
-        <ExecutiveTopNavbar
-          activeTab={activeTab}
-          currentRouteLabel={`White Caves Sovereign CRM / ${activeTab.toUpperCase()}${
-            activeItemId ? ` / ${activeItemId}` : ''
-          }`}
-        />
+        <ExecutiveTopNavbar sticky={true} />
 
         {/* ── Main Workspace Body (Sidebar + Viewport + AI Mesh) ──────────── */}
         <div
@@ -155,9 +150,9 @@ export const ModernDashboardPage: FC = () => {
           >
             {/* ── Active Viewport Switcher ── */}
             {activeTab === 'departments' ? (
-              <DepartmentManagementWorkspace selectedDeptId={activeItemId} />
+              <DepartmentManagementWorkspace selectedDeptId={activeItemId || undefined} />
             ) : activeTab === 'employees' ? (
-              <EmployeeManagerView selectedEmpId={activeItemId} />
+              <EmployeeManagerView selectedEmpId={activeItemId || undefined} />
             ) : activeTab === 'tasks' ? (
               <TaskManagerView
                 selectedTaskId={activeItemId}

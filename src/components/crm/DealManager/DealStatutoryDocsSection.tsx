@@ -6,10 +6,10 @@
 
 import React, { FC } from 'react';
 import { FileText, ShieldCheck } from 'lucide-react';
-import { DealDocumentItem } from './DealManager.types';
+import { DealDocumentRef } from './DealManager.types';
 
 interface DealStatutoryDocsSectionProps {
-  documents: DealDocumentItem[];
+  documents: DealDocumentRef[];
   onNavigateToDoc?: (docId: string) => void;
 }
 
