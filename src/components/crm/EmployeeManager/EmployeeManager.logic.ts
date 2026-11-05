@@ -154,3 +154,37 @@ export function useEmployeeManager() {
     handleCloseDrawer,
   };
 }
+
+/**
+ * Progressive Employee Commission Slab Formula (Bhakti Protocol)
+ * AED 1 - 25,000       = 50%
+ * AED 25,001 - 50,000  = 55%
+ * AED 50,001 - 75,000  = 60%
+ * AED 75,001 - 100,000 = 65%
+ * AED 100,001+         = 70%
+ */
+export function calculateEmployeeCommissionSplit(grossCommissionAED: number): number {
+  if (grossCommissionAED > 100000) return 0.7;
+  if (grossCommissionAED > 75000) return 0.65;
+  if (grossCommissionAED > 50000) return 0.6;
+  if (grossCommissionAED > 25000) return 0.55;
+  return 0.5;
+}
+
+/**
+ * Client Performance Loyalty Milestone
+ * Repeat clients (e.g. 3rd lease renewal or 2nd purchase) unlock 10% cashback voucher
+ */
+export function calculateClientLoyaltyVoucher(
+  completedTransactions: number,
+  serviceChargeOrCommissionAED: number
+): { eligible: boolean; cashbackAED: number; voucherCode?: string } {
+  if (completedTransactions >= 2) {
+    return {
+      eligible: true,
+      cashbackAED: Math.round(serviceChargeOrCommissionAED * 0.1),
+      voucherCode: `LOYALTY-10-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+    };
+  }
+  return { eligible: false, cashbackAED: 0 };
+}

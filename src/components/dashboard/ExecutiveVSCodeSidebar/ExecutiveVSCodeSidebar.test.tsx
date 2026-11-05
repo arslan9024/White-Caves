@@ -4,18 +4,20 @@ import { describe, it, expect, vi } from 'vitest';
 import ExecutiveVSCodeSidebar from './ExecutiveVSCodeSidebar';
 
 describe('ExecutiveVSCodeSidebar Component (7-Category Co-Location Spec)', () => {
-  it('renders Explorer drawer and corporate activity bar', () => {
+  it('renders Departments Hub drawer and corporate activity bar by default', () => {
     render(<ExecutiveVSCodeSidebar />);
-    expect(screen.getByText(/White Caves Explorer/i)).toBeInTheDocument();
+    expect(screen.getByText(/Departments Hub/i)).toBeInTheDocument();
   });
 
   it('renders 5th Activity Bar icon for Corporate Departments and switches tabs', () => {
     const onSelectTab = vi.fn();
     render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
 
-    const deptBtn = screen.getByTestId('activity-btn-departments');
-    expect(deptBtn).toBeInTheDocument();
+    const empBtn = screen.getByTestId('activity-btn-employees');
+    fireEvent.click(empBtn);
+    expect(onSelectTab).toHaveBeenCalledWith('employees');
 
+    const deptBtn = screen.getByTestId('activity-btn-departments');
     fireEvent.click(deptBtn);
     expect(onSelectTab).toHaveBeenCalledWith('departments');
     expect(screen.getByText(/Departments Hub/i)).toBeInTheDocument();

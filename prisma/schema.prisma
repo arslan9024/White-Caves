@@ -254,6 +254,13 @@ model Property {
   verificationNotes String?    // evidence notes
   lastRefreshedAt   DateTime?  // when agent last confirmed details are current
 
+  // Sovereign Relational & Municipal Tracking
+  uid                 String?              // Unique Municipal Property Identifier
+  clusterName         String?              // Cluster Name
+  unitDoorNotation    String?              // Exact Unit Door Notation
+  dewaPremiseNumber   String?              // Unique DEWA Premise Number
+  dealPipelines       DealPipeline[]
+
   // Relations
   userId      String   @db.ObjectId
   user        User     @relation(fields: [userId], references: [id])
@@ -2145,4 +2152,107 @@ model KycRecord {
 
   @@index([clientId])
   @@index([status])
+}
+
+
+// ─── BHAKTI & TURING UNIFIED RELATIONAL DATA MODELS ──────────────────────
+
+model ClientProfile {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  customerCode    String         @unique
+  fullName        String
+  email           String         @unique
+  phone           String
+  role            String         // "LANDLORD" | "TENANT" | "BUYER" | "SELLER"
+  kycStatus       String         @default("VERIFIED")
+  loyaltyVouchers Json?          // 10% cashback vouchers history & balance
+  deals           DealPipeline[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([role])
+}
+
+model DealPipeline {
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
+  dealNumber         String        @unique
+  title              String
+  stage              String        @default("DRAFTING") // DRAFTING | SIGNATURE_PENDING | CLEARANCE_RUN | COMPLETED
+  dealType           String        @default("LEASE") // LEASE | SALE
+  valueAED           Float
+  commissionAED      Float
+  vatAED             Float         @default(0)
+  agentCommissionAED Float         @default(0)
+  rewardTierSplit    Float         @default(0.50)
+  propertyId         String        @db.ObjectId
+  property           Property      @relation(fields: [propertyId], references: [id])
+  clientId           String        @db.ObjectId
+  client             ClientProfile @relation(fields: [clientId], references: [id])
+  agentId            String?
+  leases             LeaseLedger[]
+  cheques            Cheque[]
+  taxInvoices        TaxInvoice[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([stage])
+  @@index([propertyId])
+  @@index([clientId])
+}
+
+model LeaseLedger {
+  id                 String       @id @default(auto()) @map("_id") @db.ObjectId
+  ejariNumber        String       @unique
+  contractNumber     String
+  annualRentAED      Float
+  securityDepositAED Float
+  startDate          DateTime
+  endDate            DateTime
+  dewaPremiseNumber  String
+  renewalAlertDays   Int          @default(90) // 90 | 60 | 30 day expiration alert timers
+  status             String       @default("ACTIVE")
+  dealId             String       @db.ObjectId
+  deal               DealPipeline @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@index([dealId])
+}
+
+model Cheque {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  chequeNumber String
+  bankName     String
+  iban         String
+  amountAED    Float
+  maturityDate DateTime
+  status       String       @default("HOLDING") // HOLDING | DEPOSITED | CLEARED | BOUNCED
+  bounceReason String?
+  dealId       String       @db.ObjectId
+  deal         DealPipeline @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([chequeNumber])
+  @@index([status])
+  @@index([dealId])
+}
+
+model TaxInvoice {
+  id                     String       @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceNumber          String       @unique
+  trn                    String       // Mandatory Federal Tax Authority (FTA) TRN
+  taxableAmountAED       Float
+  vatRatePct             Float        @default(5.0)
+  vatAmountAED           Float        // 5% FTA VAT
+  corporateTaxReserveAED Float        // 9% Corporate Tax Reserve
+  totalAmountAED         Float
+  status                 String       @default("ISSUED") // ISSUED | PAID | CANCELLED
+  dealId                 String       @db.ObjectId
+  deal                   DealPipeline @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  @@index([trn])
+  @@index([dealId])
 }

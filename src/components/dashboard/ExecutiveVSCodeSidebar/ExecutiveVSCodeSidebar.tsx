@@ -1,7 +1,5 @@
 import React, { FC } from 'react';
 import {
-  Files,
-  Cpu,
   FileText,
   ShieldCheck,
   Building2,
@@ -29,7 +27,6 @@ import { SidebarDealsList } from './SidebarDealsList';
 import { SidebarDocumentsList } from './SidebarDocumentsList';
 import { SidebarRelationshipsList } from './SidebarRelationshipsList';
 import { SidebarCustomersList } from './SidebarCustomersList';
-import { SidebarExplorerTree } from './SidebarExplorerTree';
 import {
   SidebarLayoutContainer,
   ActivityBar,
@@ -107,7 +104,7 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
 
   const headerInfo = TAB_HEADER_MAP[activeTab] || {
     icon: <Building size={14} color="#EF4444" />,
-    label: 'White Caves Explorer',
+    label: 'Departments Hub (12 Slots)',
   };
 
   return (
@@ -119,15 +116,6 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
       {/* ── 1. Vertical Activity Bar (48px) ────────────────────────── */}
       <ActivityBar>
         <ActivityGroup>
-          <ActivityIconBtn
-            $isActive={activeTab === 'explorer'}
-            onClick={() => handleSelectTab('explorer')}
-            title="Explorer (1-12-108 Hierarchy & Modules)"
-            data-testid="activity-btn-explorer"
-          >
-            <Files size={18} />
-          </ActivityIconBtn>
-
           <ActivityIconBtn
             $isActive={activeTab === 'departments'}
             onClick={() => handleSelectTab('departments')}
@@ -207,14 +195,6 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             data-testid="activity-btn-relationships"
           >
             <Network size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'ai-mesh'}
-            onClick={() => handleSelectTab('ai-mesh')}
-            title="AI Mesh Command (Zoe + 120 Agents)"
-          >
-            <Cpu size={18} />
           </ActivityIconBtn>
 
           <ActivityIconBtn
@@ -313,13 +293,7 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             onSelectChain={(id, name) => handleLeafClick(`rel-${id}`, `Chain: ${name}`)}
           />
         ) : (
-          <SidebarExplorerTree
-            departments={departments}
-            expandedFolders={expandedFolders}
-            activeItemKey={activeItemKey}
-            toggleFolder={toggleFolder}
-            onLeafClick={handleLeafClick}
-          />
+          <SidebarDepartmentsList filterQuery={filterQuery} onOpenCreate={onOpenDeptManager} />
         )}
       </ExplorerDrawer>
 

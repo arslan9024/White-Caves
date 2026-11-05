@@ -4,10 +4,16 @@ import {
   EXECUTIVE_COMMAND_1,
 } from '../../../data/assistants108Registry.data';
 
-export type AIActivityTab = 'zoe-chat' | 'agent-mesh' | 'organogram' | 'prompts';
+export type AIActivityTab =
+  | 'ai-command'
+  | 'explorer'
+  | 'agent-mesh'
+  | 'zoe-chat'
+  | 'organogram'
+  | 'prompts';
 
 export function useExecutiveAIVSCodeSidebarLogic() {
-  const [activeTab, setActiveTab] = useState<AIActivityTab>('agent-mesh');
+  const [activeTab, setActiveTab] = useState<AIActivityTab>('ai-command');
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [width, setWidth] = useState(320);
   const [searchQuery, setSearchQuery] = useState('');

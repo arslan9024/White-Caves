@@ -30,42 +30,78 @@
 
 **High-Density Quiet Luxury** — brand lockdown is mandatory:
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| White Caves Red | `#EF4444` | Primary accent, CTAs, active states |
-| Crisp White | `#FFFFFF` | Light canvas, elevated surfaces |
-| Deep Slate | `#0F172A` / `#1E293B` | Dark luxury backdrops, contrast text |
+| Token           | Hex                   | Use                                  |
+| --------------- | --------------------- | ------------------------------------ |
+| White Caves Red | `#EF4444`             | Primary accent, CTAs, active states  |
+| Crisp White     | `#FFFFFF`             | Light canvas, elevated surfaces      |
+| Deep Slate      | `#0F172A` / `#1E293B` | Dark luxury backdrops, contrast text |
 
 No off-palette colours in product UI. Motion via Framer Motion with reduced-motion respect.
 
 ---
 
-## 👥 Fixed Staff Hierarchy: 1 – 12 – 108
+## 👥 Fixed Staff Hierarchy: Bhakti Protocol 1 – 12 – 108
 
-| Level | Title | Count | Rule |
-|-------|--------|-------|------|
-| **5** | Managing Director | **1** | Sovereign authority, capital, system bypass |
-| **4** | Department Managers | **12** | One head per department |
-| **3** | Supervisors | **108** | **Exactly 9 supervisors per department** (12 × 9) |
-| **2** | Junior Agents (human) | Variable | Sales, leasing, off-plan pipelines |
-| **1** | Interns & Trainees | Variable | Onboarding |
+The **Bhakti (1-12-108) Layout Philosophy** is the foundational structural law scaling our enterprise infrastructure without architectural drift:
+
+1. **1 Managing Director (MD Sovereign Engine):** Level 5 sovereign authority overseeing capital allocations, escrow oversight, statutory executive signing, and automated AI orchestration bypass.
+2. **12 Core Corporate Departments:** Level 4 department managers overseeing discrete business verticals (Executive Architecture, Research Intelligence, Frontend/UX, Backend/API, Database/Data, Security/Compliance, DevOps, SQA Testing, Finance/VAT, Sales/CRM, Communications/Marketing, Operations/Maintenance).
+3. **108 Operational Supervisors:** Level 3 supervisors (exactly 9 per department) safeguarding execution accuracy, SLA governance (sub-2h/4h/24h turnaround), RERA statutory checklists, and zero-defect delivery.
+
+| Level | Title                 | Count    | Rule                                              |
+| ----- | --------------------- | -------- | ------------------------------------------------- |
+| **5** | Managing Director     | **1**    | Sovereign authority, capital, system bypass       |
+| **4** | Department Managers   | **12**   | One head per department                           |
+| **3** | Supervisors           | **108**  | **Exactly 9 supervisors per department** (12 × 9) |
+| **2** | Junior Agents (human) | Variable | Sales, leasing, off-plan pipelines                |
+| **1** | Interns & Trainees    | Variable | Onboarding                                        |
 
 ### The 12 Corporate Departments (fixed)
 
-1. Executive & Architecture  
-2. Research Intelligence  
-3. Frontend & UX Architecture  
-4. Backend & API Systems  
-5. Database & Data Pipelines  
-6. Security, Compliance & Legal  
-7. DevOps & Infrastructure  
-8. **Software Quality & Testing (SQA)**  
-9. Finance & VAT Analytics  
-10. Sales & CRM Operations  
-11. Communications & Marketing  
-12. Operations & Facility Maintenance  
+1. Executive & Architecture
+2. Research Intelligence
+3. Frontend & UX Architecture
+4. Backend & API Systems
+5. Database & Data Pipelines
+6. Security, Compliance & Legal
+7. DevOps & Infrastructure
+8. **Software Quality & Testing (SQA)**
+9. Finance & VAT Analytics
+10. Sales & CRM Operations
+11. Communications & Marketing
+12. Operations & Facility Maintenance
 
 > **Note:** Department 8 is explicitly the **Software Quality & Testing** domain so testing is owned, measured, and not buried inside generic “Compliance”.
+
+---
+
+## 💰 Bhakti Gamified Merit Matrix & Statutory Commission Slabs
+
+To align corporate growth with meritocratic loyalty and Dubai real estate statutory transparency, the CRM enforces automated commission splits and gamified loyalty milestones:
+
+### 1. Progressive Employee Commission Slabs
+
+Employees progress through dynamic reward splits based on cumulative gross deal commissions closed within the rolling fiscal cycle:
+
+| Gross Commission Tier (AED) | Base Split Rate | Merit Reward Tier         |
+| --------------------------- | --------------- | ------------------------- |
+| **AED 1 – 25,000**          | **50%**         | Standard Associate (L1)   |
+| **AED 25,001 – 50,000**     | **55%**         | Senior Associate (L2)     |
+| **AED 50,001 – 75,000**     | **60%**         | Enterprise Broker (L3)    |
+| **AED 75,001 – 100,000**    | **65%**         | Principal Negotiator (L4) |
+| **AED 100,001+**            | **70%**         | Sovereign Partner (L5)    |
+
+- **Dynamic Metrics Managed**:
+  - `merit_xp_count` (Int): Accumulated experience points earned through task completions, checklist audits, and zero-defect SLA execution.
+  - `reward_tier_split` (Float): Real-time fractional split multiplier (0.50 to 0.70) applied directly during invoice clearance runs.
+
+### 2. Client Performance Loyalty Milestones
+
+Rewarding customer retention and high-frequency real estate portfolio growth:
+
+- **Tenancy Loyalty:** Tenants completing their **3rd annual lease renewal** unlock a **10% cashback voucher** on agency service charges.
+- **Investor Loyalty:** High-net-worth investors executing their **2nd asset acquisition** unlock a **10% commission cashback voucher** redeemable against future property conveyancing, conveyancing escrow management, or property staging services.
+- **Voucher Attributes:** Tracked within `ClientProfile.loyaltyVouchers` with cryptographic validation codes, expiry timestamps, and FTA VAT adjustment records.
 
 ---
 
@@ -77,7 +113,7 @@ No off-palette colours in product UI. Motion via Framer Motion with reduced-moti
   - **12** department lead agents (one per department)
   - **108** supervisor-aligned agents (9 per department)
   - **≥1** cross-cutting orchestrator / AEGIS core agent  
-  → **≥121** agents total
+    → **≥121** agents total
 
 Additional specialist agents may be added; they must still map to a department and reporting lane.
 
@@ -87,10 +123,10 @@ Full named registry lives in `docs/governance/AGENT_ROSTER_1_12_108.md` and unde
 
 ## 🌐 4-Language Universal Accessibility (i18n)
 
-- **English (`en`)** — LTR primary  
-- **Arabic (`ar`)** — RTL native UAE  
-- **Spanish (`es`)** — LTR international  
-- **Russian (`ru`)** — LTR international  
+- **English (`en`)** — LTR primary
+- **Arabic (`ar`)** — RTL native UAE
+- **Spanish (`es`)** — LTR international
+- **Russian (`ru`)** — LTR international
 
 No hardcoded product strings; use locale keys.
 
@@ -118,9 +154,9 @@ Redux Toolkit with domain slices and memoized selectors (`createSelector`).
 
 ### 3. Quality gates
 
-- `npm run typecheck` → **0** TypeScript errors  
-- Unit/integration tests via Vitest (lean, high-value)  
-- Critical path E2E via Playwright  
+- `npm run typecheck` → **0** TypeScript errors
+- Unit/integration tests via Vitest (lean, high-value)
+- Critical path E2E via Playwright
 - See `docs/governance/TESTING_POLICY.md`
 
 ### 4. Brand & z-index tokens
@@ -131,9 +167,9 @@ Only design tokens; no raw hex or ad-hoc z-index in feature code.
 
 ## 📦 Sibling repositories (retained for future)
 
-| Repo | Role |
-|------|------|
-| `White-Caves-DB` | Future database / data tooling |
+| Repo                      | Role                                  |
+| ------------------------- | ------------------------------------- |
+| `White-Caves-DB`          | Future database / data tooling        |
 | `white-caves-real-estate` | Future product surface / split deploy |
 
 Do not delete; leave idle until a dedicated milestone activates them.

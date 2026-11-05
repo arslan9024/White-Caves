@@ -35,6 +35,8 @@ export interface EmployeeNode {
   skills: string[];
   joinedDate: string;
   dealsClosed?: number;
+  merit_xp_count?: number; // Active task and statutory checklist completions
+  reward_tier_split?: number; // Dynamic commission split (0.50 to 0.70) based on slab
 }
 
 export interface EmployeeFilterState {

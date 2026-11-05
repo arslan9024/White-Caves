@@ -47,8 +47,6 @@ export const ModernDashboardPage: FC = () => {
     'documents',
     'relationships',
     'customers',
-    'explorer',
-    'ai-mesh',
     'audit',
     'settings',
   ];
@@ -293,6 +291,7 @@ export const ModernDashboardPage: FC = () => {
           {/* ── Right VS Code-Style AI Command Center Sidebar ─────────────────── */}
           <ExecutiveAIVSCodeSidebar
             onSelectAgent={(agentId, agentName) => setActiveAgent({ id: agentId, name: agentName })}
+            onSelectItem={handleSelectSidebarItem}
           />
         </div>
       </CorporateDepartmentsProvider>

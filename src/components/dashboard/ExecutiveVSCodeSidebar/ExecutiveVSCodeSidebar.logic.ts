@@ -5,10 +5,6 @@ import {
 } from '../../../data/assistants108Registry.data';
 
 export type ActivityTab =
-  | 'explorer'
-  | 'ai-mesh'
-  | 'documents'
-  | 'audit'
   | 'departments'
   | 'employees'
   | 'tasks'
@@ -16,7 +12,9 @@ export type ActivityTab =
   | 'REproperties'
   | 'deals'
   | 'customers'
+  | 'documents'
   | 'relationships'
+  | 'audit'
   | 'settings';
 
 export interface UseExecutiveVSCodeSidebarProps {
@@ -25,7 +23,7 @@ export interface UseExecutiveVSCodeSidebarProps {
 }
 
 export function useExecutiveVSCodeSidebarLogic(props?: UseExecutiveVSCodeSidebarProps) {
-  const [internalTab, setInternalTab] = useState<ActivityTab>('explorer');
+  const [internalTab, setInternalTab] = useState<ActivityTab>('departments');
   const activeTab = props?.activeTab !== undefined ? props.activeTab : internalTab;
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [width, setWidth] = useState(280);

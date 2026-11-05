@@ -8,6 +8,10 @@ import {
   executeUpdateEmployeeWorkflow,
   executeDemoteEmployeeWorkflow,
 } from './EmployeeManager.workflow';
+import {
+  calculateEmployeeCommissionSplit,
+  calculateClientLoyaltyVoucher,
+} from './EmployeeManager.logic';
 import { INITIAL_EMPLOYEES_SEED } from './EmployeeManager.data';
 
 describe('EmployeeManager 7-Category Suite', () => {
@@ -116,6 +120,26 @@ describe('EmployeeManager 7-Category Suite', () => {
       const demoted = result.employees.find(e => e._id === 'emp-002')!;
       expect(demoted.status).toBe('standby');
       expect(demoted.designation).toContain('[Standby Reserve]');
+    });
+
+    it('calculates employee commission slabs according to Bhakti Protocol (50% to 70%)', () => {
+      expect(calculateEmployeeCommissionSplit(15000)).toBe(0.5);
+      expect(calculateEmployeeCommissionSplit(25000)).toBe(0.5);
+      expect(calculateEmployeeCommissionSplit(35000)).toBe(0.55);
+      expect(calculateEmployeeCommissionSplit(65000)).toBe(0.6);
+      expect(calculateEmployeeCommissionSplit(85000)).toBe(0.65);
+      expect(calculateEmployeeCommissionSplit(120000)).toBe(0.7);
+    });
+
+    it('calculates client performance loyalty milestone cashback vouchers (10%)', () => {
+      const singleTx = calculateClientLoyaltyVoucher(1, 10000);
+      expect(singleTx.eligible).toBe(false);
+      expect(singleTx.cashbackAED).toBe(0);
+
+      const repeatTx = calculateClientLoyaltyVoucher(3, 50000);
+      expect(repeatTx.eligible).toBe(true);
+      expect(repeatTx.cashbackAED).toBe(5000);
+      expect(repeatTx.voucherCode).toMatch(/^LOYALTY-10-/);
     });
   });
 });

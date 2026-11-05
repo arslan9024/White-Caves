@@ -4,726 +4,2299 @@
     "name": "Arslan Malik Bashir Ahmad",
     "role": "Managing Director",
     "email": "arslanmalikgoraha@gmail.com",
-    "level": 5
+    "level": 5,
+    "merit_xp_count": 12500,
+    "reward_tier_split": 0.7,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-EMP-001",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-1",
     "name": "Manager 1",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-1",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-2",
     "name": "Manager 2",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-2",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-3",
     "name": "Manager 3",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-3",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-4",
     "name": "Manager 4",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-4",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-5",
     "name": "Manager 5",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-5",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-6",
     "name": "Manager 6",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-6",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-7",
     "name": "Manager 7",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-7",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-8",
     "name": "Manager 8",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-8",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-9",
     "name": "Manager 9",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-9",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-10",
     "name": "Manager 10",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-10",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-11",
     "name": "Manager 11",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-11",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "MGR-12",
     "name": "Manager 12",
     "role": "Department Manager",
-    "level": 4
+    "level": 4,
+    "merit_xp_count": 4500,
+    "reward_tier_split": 0.65,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-MGR-12",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-1",
     "name": "Supervisor 1",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-1",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-2",
     "name": "Supervisor 2",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-2",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-3",
     "name": "Supervisor 3",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-3",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-4",
     "name": "Supervisor 4",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-4",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-5",
     "name": "Supervisor 5",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-5",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-6",
     "name": "Supervisor 6",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-6",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-7",
     "name": "Supervisor 7",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-7",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-8",
     "name": "Supervisor 8",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-8",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-9",
     "name": "Supervisor 9",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-9",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-10",
     "name": "Supervisor 10",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-10",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-11",
     "name": "Supervisor 11",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-11",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-12",
     "name": "Supervisor 12",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-12",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-13",
     "name": "Supervisor 13",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-13",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-14",
     "name": "Supervisor 14",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-14",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-15",
     "name": "Supervisor 15",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-15",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-16",
     "name": "Supervisor 16",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-16",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-17",
     "name": "Supervisor 17",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-17",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-18",
     "name": "Supervisor 18",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-18",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-19",
     "name": "Supervisor 19",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-19",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-20",
     "name": "Supervisor 20",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-20",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-21",
     "name": "Supervisor 21",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-21",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-22",
     "name": "Supervisor 22",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-22",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-23",
     "name": "Supervisor 23",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-23",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-24",
     "name": "Supervisor 24",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-24",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-25",
     "name": "Supervisor 25",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 2800,
+    "reward_tier_split": 0.6,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-25",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-26",
     "name": "Supervisor 26",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-26",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-27",
     "name": "Supervisor 27",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-27",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-28",
     "name": "Supervisor 28",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-28",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-29",
     "name": "Supervisor 29",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-29",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-30",
     "name": "Supervisor 30",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-30",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-31",
     "name": "Supervisor 31",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-31",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-32",
     "name": "Supervisor 32",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-32",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-33",
     "name": "Supervisor 33",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-33",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-34",
     "name": "Supervisor 34",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-34",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-35",
     "name": "Supervisor 35",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-35",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-36",
     "name": "Supervisor 36",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-36",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-37",
     "name": "Supervisor 37",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-37",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-38",
     "name": "Supervisor 38",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-38",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-39",
     "name": "Supervisor 39",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-39",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-40",
     "name": "Supervisor 40",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-40",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-41",
     "name": "Supervisor 41",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-41",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-42",
     "name": "Supervisor 42",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-42",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-43",
     "name": "Supervisor 43",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-43",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-44",
     "name": "Supervisor 44",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-44",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-45",
     "name": "Supervisor 45",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-45",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-46",
     "name": "Supervisor 46",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-46",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-47",
     "name": "Supervisor 47",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-47",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-48",
     "name": "Supervisor 48",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-48",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-49",
     "name": "Supervisor 49",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-49",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-50",
     "name": "Supervisor 50",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 1400,
+    "reward_tier_split": 0.55,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-50",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-51",
     "name": "Supervisor 51",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-51",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-52",
     "name": "Supervisor 52",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-52",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-53",
     "name": "Supervisor 53",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-53",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-54",
     "name": "Supervisor 54",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-54",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-55",
     "name": "Supervisor 55",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-55",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-56",
     "name": "Supervisor 56",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-56",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-57",
     "name": "Supervisor 57",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-57",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-58",
     "name": "Supervisor 58",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-58",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-59",
     "name": "Supervisor 59",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-59",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-60",
     "name": "Supervisor 60",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-60",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-61",
     "name": "Supervisor 61",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-61",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-62",
     "name": "Supervisor 62",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-62",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-63",
     "name": "Supervisor 63",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-63",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-64",
     "name": "Supervisor 64",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-64",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-65",
     "name": "Supervisor 65",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-65",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-66",
     "name": "Supervisor 66",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-66",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-67",
     "name": "Supervisor 67",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-67",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-68",
     "name": "Supervisor 68",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-68",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-69",
     "name": "Supervisor 69",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-69",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-70",
     "name": "Supervisor 70",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-70",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-71",
     "name": "Supervisor 71",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-71",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-72",
     "name": "Supervisor 72",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-72",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-73",
     "name": "Supervisor 73",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-73",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-74",
     "name": "Supervisor 74",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-74",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-75",
     "name": "Supervisor 75",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-75",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-76",
     "name": "Supervisor 76",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-76",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-77",
     "name": "Supervisor 77",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-77",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-78",
     "name": "Supervisor 78",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-78",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-79",
     "name": "Supervisor 79",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-79",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-80",
     "name": "Supervisor 80",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-80",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-81",
     "name": "Supervisor 81",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-81",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-82",
     "name": "Supervisor 82",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-82",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-83",
     "name": "Supervisor 83",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-83",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-84",
     "name": "Supervisor 84",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-84",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-85",
     "name": "Supervisor 85",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-85",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-86",
     "name": "Supervisor 86",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-86",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-87",
     "name": "Supervisor 87",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-87",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-88",
     "name": "Supervisor 88",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-88",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-89",
     "name": "Supervisor 89",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-89",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-90",
     "name": "Supervisor 90",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-90",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-91",
     "name": "Supervisor 91",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-91",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-92",
     "name": "Supervisor 92",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-92",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-93",
     "name": "Supervisor 93",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-93",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-94",
     "name": "Supervisor 94",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-94",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-95",
     "name": "Supervisor 95",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-95",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-96",
     "name": "Supervisor 96",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-96",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-97",
     "name": "Supervisor 97",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-97",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-98",
     "name": "Supervisor 98",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-98",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-99",
     "name": "Supervisor 99",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-99",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-100",
     "name": "Supervisor 100",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-100",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-101",
     "name": "Supervisor 101",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-101",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-102",
     "name": "Supervisor 102",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-102",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-103",
     "name": "Supervisor 103",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-103",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-104",
     "name": "Supervisor 104",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-104",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-105",
     "name": "Supervisor 105",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-105",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-106",
     "name": "Supervisor 106",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-106",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-107",
     "name": "Supervisor 107",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-107",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   },
   {
     "id": "SUP-108",
     "name": "Supervisor 108",
     "role": "Supervisor",
-    "level": 3
+    "level": 3,
+    "merit_xp_count": 750,
+    "reward_tier_split": 0.5,
+    "clientLoyaltyVouchers": [
+      {
+        "voucherCode": "LOYALTY-10-SUP-108",
+        "cashbackAED": 2500,
+        "unlockedAt": "2026-10-01T08:00:00Z",
+        "expiresAt": "2027-10-01T08:00:00Z",
+        "redeemed": false,
+        "qualifyingDealNumber": "WC-D-2026-001",
+        "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
+      }
+    ]
   }
 ]
