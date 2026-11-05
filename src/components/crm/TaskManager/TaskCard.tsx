@@ -90,6 +90,25 @@ export const TaskCard: FC<TaskCardProps> = ({
         <h3 className={s.taskTitle}>{task.title}</h3>
         <p className={s.taskDesc}>{task.description}</p>
 
+        {/* Execution Triad: Actor • Action • Results */}
+        <div
+          className="my-2 p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 text-[11px] space-y-1"
+          data-testid={`task-triad-${task.taskCode}`}
+        >
+          <div>
+            <span className="text-sky-400 font-bold">Actor: </span>
+            <span className="text-slate-200 font-medium">{task.actor}</span>
+          </div>
+          <div>
+            <span className="text-amber-400 font-bold">Action: </span>
+            <span className="text-slate-300">{task.action}</span>
+          </div>
+          <div>
+            <span className="text-emerald-400 font-bold">Results: </span>
+            <span className="text-slate-400">{task.results}</span>
+          </div>
+        </div>
+
         {/* Reporting Escalation Chain */}
         <div className={s.escalationCard}>
           <div className={s.escalationTitle}>

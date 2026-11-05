@@ -1373,6 +1373,20 @@ export function buildTaskFromDef(
   const statuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'REVIEW', 'COMPLETED'];
   const status = statuses[index % statuses.length];
 
+  const roleByCat: Record<TaskNode['category'], string> = {
+    REGULATORY: 'Statutory Compliance Officer',
+    FINANCE: 'Treasury & VAT Controller',
+    HR: 'Licensing & People Operations Lead',
+    SALES: 'Certified Luxury Property Broker',
+    MARKETING: 'Digital Syndication Specialist',
+    TECH: 'Core Systems & AI Engineer',
+    OPERATIONS: 'Property & PMS Operations Lead',
+  };
+
+  const actor = `${sup} (${roleByCat[category] || 'Operations Lead'})`;
+  const action = `Execute operational workflow: ${title} under ${authority || 'White Caves SOP'} standards`;
+  const results = `Verified ${code} compliance dossier, authenticated telemetry logs, and ledger updated`;
+
   return {
     _id: `task-${code.toLowerCase()}`,
     taskCode: code,
@@ -1386,6 +1400,9 @@ export function buildTaskFromDef(
     status,
     defaultSla: sla,
     reportingChain,
+    actor,
+    action,
+    results,
     dueDate: '2026-11-30',
     createdAt: '2026-11-01',
     completionRate:

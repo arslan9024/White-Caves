@@ -37,6 +37,9 @@ export const TaskEditDrawer: React.FC<TaskEditDrawerProps> = ({
         priority: 'HIGH' as TaskPriority,
         status: 'PENDING' as TaskStatus,
         defaultSla: '4 Hours',
+        actor: 'Supervisor Amira (Statutory Compliance Officer)',
+        action: 'Execute operational and statutory task workflow',
+        results: 'Verified compliance artifact and updated ledger state',
         reportingChain: {
           supervisorName: 'Supervisor Amira',
           supervisorCode: 'SUP-01',
@@ -212,6 +215,45 @@ export const TaskEditDrawer: React.FC<TaskEditDrawerProps> = ({
                   <option value="COMPLETED">Completed</option>
                   <option value="BLOCKED">Blocked (Escalated)</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Execution Triad (Actor, Action, Results) */}
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 mt-1 flex flex-col gap-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-sky-400 font-bold">
+                Task Execution Triad (Actor • Action • Results)
+              </span>
+              <div>
+                <label className="block text-[10px] text-slate-400">Designated Actor</label>
+                <input
+                  type="text"
+                  value={formData.actor || ''}
+                  onChange={e => handleChange('actor', e.target.value)}
+                  placeholder="e.g. Supervisor Amira (Compliance Officer)"
+                  className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-sky-500"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] text-slate-400">Operational Action</label>
+                <input
+                  type="text"
+                  value={formData.action || ''}
+                  onChange={e => handleChange('action', e.target.value)}
+                  placeholder="e.g. Execute statutory verification"
+                  className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] text-slate-400">
+                  Expected Result / Artifact
+                </label>
+                <input
+                  type="text"
+                  value={formData.results || ''}
+                  onChange={e => handleChange('results', e.target.value)}
+                  placeholder="e.g. Verified compliance certificate issued"
+                  className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+                />
               </div>
             </div>
 

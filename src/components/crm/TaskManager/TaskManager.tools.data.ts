@@ -1,6 +1,6 @@
 import type { TaskNode } from './TaskManager.types';
 
-export const OPERATIONAL_TOOL_TASKS: TaskNode[] = [
+const RAW_OPERATIONAL_TOOL_TASKS: Array<Omit<TaskNode, 'actor' | 'action' | 'results'>> = [
   {
     _id: 'task-t-doc-001',
     taskCode: 'T-DOC-001',
@@ -340,3 +340,10 @@ export const OPERATIONAL_TOOL_TASKS: TaskNode[] = [
     completionRate: 100,
   },
 ];
+
+export const OPERATIONAL_TOOL_TASKS: TaskNode[] = RAW_OPERATIONAL_TOOL_TASKS.map(t => ({
+  ...t,
+  actor: `${t.reportingChain.supervisorName} (Execution Actor)`,
+  action: `Execute automated tool pipeline: ${t.title}`,
+  results: `Verified output artifact and telemetry log generated for ${t.taskCode}`,
+}));

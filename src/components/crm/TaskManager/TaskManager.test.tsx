@@ -78,6 +78,15 @@ describe('TaskManager 200+ Statutory & Operational Suite', () => {
       expect(t.reportingChain.managerName).toBeTruthy();
       expect(t.reportingChain.directorName).toBeTruthy();
       expect(t.reportingChain.executiveReviewer).toBeTruthy();
+      expect(t.actor).toBeDefined();
+      expect(typeof t.actor).toBe('string');
+      expect(t.actor.trim().length).toBeGreaterThan(0);
+      expect(t.action).toBeDefined();
+      expect(typeof t.action).toBe('string');
+      expect(t.action.trim().length).toBeGreaterThan(0);
+      expect(t.results).toBeDefined();
+      expect(typeof t.results).toBe('string');
+      expect(t.results.trim().length).toBeGreaterThan(0);
     });
   });
 

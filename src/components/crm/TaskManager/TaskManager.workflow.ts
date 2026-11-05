@@ -45,6 +45,11 @@ export function executeCreateTaskWorkflow(
     _id: `task-custom-${Date.now()}`,
     taskCode: newCode,
     status: payload.status || 'PENDING',
+    actor:
+      payload.actor ||
+      `${payload.reportingChain?.supervisorName || 'Supervisor'} (Designated Lead)`,
+    action: payload.action || `Execute operational workflow: ${payload.title}`,
+    results: payload.results || `Verified artifact and ledger record for ${newCode}`,
     createdAt: new Date().toISOString().split('T')[0],
     completionRate: 0,
   };

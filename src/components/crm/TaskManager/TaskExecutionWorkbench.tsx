@@ -212,6 +212,28 @@ export const TaskExecutionWorkbench: FC<TaskExecutionWorkbenchProps> = ({
             </div>
           </div>
 
+          {/* Execution Triad: Actor • Action • Results */}
+          <div className="p-3 bg-slate-950/90 rounded-xl border border-slate-800 text-xs grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-sky-400 block">
+                Designated Actor
+              </span>
+              <span className="text-slate-200 font-medium">{task.actor}</span>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-amber-400 block">
+                Operational Action
+              </span>
+              <span className="text-slate-300">{task.action}</span>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-emerald-400 block">
+                Expected Results
+              </span>
+              <span className="text-slate-400">{task.results}</span>
+            </div>
+          </div>
+
           {/* 4-Stage Workflow Canvas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Stage 1: Inputs */}

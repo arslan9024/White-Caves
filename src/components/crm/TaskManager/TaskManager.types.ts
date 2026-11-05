@@ -30,6 +30,9 @@ export interface TaskNode {
   status: TaskStatus;
   defaultSla: string;
   reportingChain: TaskReportingChain;
+  actor: string; // Designated executor / agent / system actor
+  action: string; // Specific operational or statutory action executed
+  results: string; // Measurable outcome, verified artifact, or state change
   dueDate?: string;
   createdAt: string;
   completionRate?: number;
