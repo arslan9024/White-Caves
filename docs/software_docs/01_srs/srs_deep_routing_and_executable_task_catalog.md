@@ -55,48 +55,84 @@ Under **Turing Law T1 & Law T3**, all existing CRM tools and capabilities are co
 #### 3.1 Document Scanning & Computer Vision Tasks
 
 1. **`T-DOC-001` — Scan Title Deed and Extract Coordinates:**
-   - _Input:_ PDF/JPEG Title Deed scan from DLD.
+   - _Input:_ PDF/JPEG Title Deed scan from DLD (`plotNumber`, `ownerName`).
    - _Process:_ OCR parser extracting plot number, municipality, area name, owner name, and share percentage.
-   - _Output:_ Normalized Title Deed JSON object.
-   - _Verify:_ Validate DLD registration number format and ownership validity.
+   - _Output:_ Normalized Title Deed JSON object with geocodes.
+   - _Verify:_ Validate DLD electronic registry query returned 100% clean title status.
 2. **`T-DOC-002` — Scan Emirates ID and Extract Identity:**
-   - _Input:_ Front and back Emirates ID image.
+   - _Input:_ Front and back Emirates ID image (`idNumber`, `holderName`).
    - _Process:_ Henry OCR parser extracting EID number, full name (EN/AR), nationality, DOB, and expiry.
    - _Output:_ Verified identity dossier with photo extraction.
    - _Verify:_ Check checksum digits and validity against GDRFA/ICP rules.
 3. **`T-DOC-003` — Scan Passport and Extract Travel Details:**
-   - _Input:_ Passport photo page scan.
+   - _Input:_ Passport photo page scan (`passportNumber`, `nationality`).
    - _Process:_ MRZ reader extracting passport number, issuing country, nationality, and expiry.
    - _Output:_ Identity and international client profile.
-   - _Verify:_ MRZ checksum verification.
-4. **`T-DOC-004` — Scan Old Tenancy Contract and Extract Clauses:**
-   - _Input:_ Signed legacy tenancy contract PDF.
-   - _Process:_ NLP clause extractor identifying annual rent, cheque cadence, security deposit, maintenance cap, and special terms.
+   - _Verify:_ MRZ line 1 & line 2 checksums verified with GDRFA standards.
+4. **`T-DOC-004` — Scan Tenancy Contract and Extract Clauses:**
+   - _Input:_ Signed legacy tenancy contract PDF (`annualRent`, `cheques`).
+   - _Process:_ NLP clause extractor identifying annual rent, cheque cadence, security deposit, and special terms.
    - _Output:_ Structured tenancy term sheet.
-   - _Verify:_ Ensure rent amount matches written word amounts.
+   - _Verify:_ RERA rental index brackets applied; digital signature logged.
 
-#### 3.2 Statutory, Escrow & Brokerage Operational Tasks
+#### 3.2 Finance, Accounting & Statutory Compliance Tasks
 
-5. **`T-FIN-001` — Escrow Account Balance & Milestone Verification:**
-   - _Input:_ Developer project escrow ID & DLD project code.
-   - _Process:_ Audit account balance against approved construction milestone percentage.
-   - _Output:_ Escrow safety certificate & alert flags.
-   - _Verify:_ Ensure project escrow balance $\ge$ required statutory retention.
-6. **`T-REG-001` — Generate DLD Ejari Tenancy Contract & Certificate:**
-   - _Input:_ Approved lease term sheet, tenant EID, landlord title deed.
-   - _Process:_ Automated PDF generation conforming to unified Dubai Ejari standard.
-   - _Output:_ Official Ejari draft ready for digital signature.
-   - _Verify:_ Check all required Form B fields and RERA permit stamp.
-7. **`T-CRM-001` — Trigger Automated WhatsApp Follow-Up Broadcast:**
-   - _Input:_ Qualified lead ID, selected property brochure, agent schedule link.
-   - _Process:_ Automated personalized message dispatch via `whatsapp-web.js`.
-   - _Output:_ Message delivery status and thread initiation.
-   - _Verify:_ Confirm valid UAE telephone formatting (`+971...`).
+5. **`T-FIN-001` — Escrow Account Milestone & Liquidity Audit:**
+   - _Input:_ Project escrow ID, statutory retention rate, milestone completion percentage.
+   - _Process:_ Audit bank escrow balance against certified project construction milestones.
+   - _Output:_ Escrow liquidity certificate & release authorization status.
+   - _Verify:_ Bank escrow balance $\ge$ statutory retention requirement.
+6. **`T-FIN-002` — Corporate VAT 5% Quarterly Return Generator:**
+   - _Input:_ Standard rated supplies AED, zero-rated supplies AED, input tax recovery AED.
+   - _Process:_ Computes 5% VAT on supplies, deducts recoverable input tax, calculates net payable/refundable.
+   - _Output:_ Official FTA Form VAT201 filing payload with TRN verification.
+   - _Verify:_ FTA TRN format verified (`100-XXXX-XXXX-XXXX`).
+7. **`T-FIN-003` — PDC Post-Dated Cheque Batch Clearing & Bounced Cheque Tracking:**
+   - _Input:_ Cheques count, batch total AED, drawer bank code, tenor date.
+   - _Process:_ Central Bank of UAE Image Cheque Clearing System (ICCS) simulation and risk scoring.
+   - _Output:_ Clearing batch manifest with bounced cheque early warning flag.
+   - _Verify:_ Cheque serials and MICR band checksum validated.
+
+#### 3.3 Regulatory, Ejari & Brokerage Operations
+
+8. **`T-REG-001` — DLD Ejari Tenancy Contract & Certificate Electronic Registration:**
+   - _Input:_ Tenancy term sheet, tenant EID, landlord title deed, premises number.
+   - _Process:_ Automated Ejari registration payload generation with official barcoded certificate.
+   - _Output:_ Official Ejari contract number and unified QR code verification hash.
+   - _Verify:_ RERA rental index compliance threshold satisfied.
+9. **`T-REG-002` — RERA Broker Card Electronic Verification & License Renewal Desk:**
+   - _Input:_ Broker card number, broker name, CPD points accumulated.
+   - _Process:_ Real-time validation against DLD Trakheesi broker registry.
+   - _Output:_ Broker compliance clearance and renewal eligibility badge.
+   - _Verify:_ Mandatory 20 CPD training hours confirmed.
+
+#### 3.4 Omnichannel Marketing, Syndication & Security
+
+10. **`T-CRM-001` — Omnichannel WhatsApp Client Follow-Up Broadcast:**
+    - _Input:_ Recipient telephone (`+971...`), client name, property brochure ID.
+    - _Process:_ Meta WhatsApp Business API template dispatch and webhook callback logging.
+    - _Output:_ Message dispatch receipt with delivery timestamp and status tracking ID.
+    - _Verify:_ E.164 UAE telephone formatting verified.
+11. **`T-PORTAL-001` — Syndicated Bayut & Dubizzle XML/JSON Feed Sync with Trakheesi Permit:**
+    - _Input:_ Listing ID, Trakheesi permit number, portal targets (`bayut`, `dubizzle`).
+    - _Process:_ Validation of listing photos, floor plans, and XML/JSON syndication payload push.
+    - _Output:_ Syndication feed status with live listing URLs.
+    - _Verify:_ Trakheesi permit QR verified and active in DLD system.
+12. **`T-VAL-001` — AI Automated Valuation Model (AVM) & Comparative Market Analysis (CMA):**
+    - _Input:_ Property location, built-up area sqft, bedrooms, view type.
+    - _Process:_ Hedonic price regression against DLD recorded transactions in past 90 days.
+    - _Output:_ Estimated fair market value AED, price per sqft, and confidence index.
+    - _Verify:_ DLD transaction sample size $\ge 15$ comparable units.
+13. **`T-SEC-001` — UAE Pass / Multi-Factor Biometric Session Integrity Audit:**
+    - _Input:_ User email, session token, WebAuthn credential public key.
+    - _Process:_ Cryptographic challenge verification and hardware authenticator audit.
+    - _Output:_ High-assurance session stamp with FIDO2 Level 2 certification.
+    - _Verify:_ Nonce timestamp freshness $< 60$ seconds.
 
 ---
 
 ### 4. Turing Law T7: Migration & Zero-Breakage Standard
 
-- Legacy `/dashboard2` remains intact as a fallback route.
-- Each feature is cleanly wrapped as an executable task in `/dashboard/tasks`.
-- Deletions in legacy code only occur after the task execution workbench passes automated tests.
+1. **Atomic Parity Precondition:** No legacy route or service is pruned until its atomic Level 5 Task equivalent is verified with 100% green test coverage.
+2. **Graceful Backward Compatibility:** `/dashboard2` remains a functional secondary route, routing to the executive workspace, while modern URL-first `/dashboard` is the default landing for all new user sessions.
+3. **Composable Enterprise Modules:** Once tools are atomic tasks, they can be composed into multi-step journeys (e.g. Journey J-01: Onboarding Tenant executes `T-DOC-002` $\rightarrow$ `T-REG-001` $\rightarrow$ `T-CRM-001`).

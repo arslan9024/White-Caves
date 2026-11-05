@@ -1,12 +1,14 @@
 /**
  * TaskManager.data.ts
  * 7-Category Architecture: Data Layer
- * Master Catalog of 200 Tasks with Escalation Chains
+ * Master Catalog of Tasks with Escalation Chains
+ * Single Purpose File Law: < 350 lines
  */
 
 import type { TaskNode } from './TaskManager.types';
 import { getRawTaskDefinitions, buildTaskFromDef } from './TaskManager.tasks.data';
 import { RAW_TASKS_PART2 } from './TaskManager.tasks2.data';
+import { OPERATIONAL_TOOL_TASKS } from './TaskManager.tools.data';
 
 export const TASK_PILLARS = [
   { id: 'all', name: 'All Pillars' },
@@ -38,5 +40,5 @@ export function buildCanonical200Tasks(): TaskNode[] {
   const tasks1: TaskNode[] = part1.map((row, idx) => buildTaskFromDef(row, idx));
   const tasks2: TaskNode[] = part2.map((row, idx) => buildTaskFromDef(row, idx + 100));
 
-  return [...tasks1, ...tasks2];
+  return [...OPERATIONAL_TOOL_TASKS, ...tasks1, ...tasks2];
 }

@@ -2,9 +2,26 @@
  * TaskManager.workflow.ts
  * 7-Category Architecture: Workflow Engine Layer
  * Universal 4-Stage I-P-O-V Protocol for 200+ Tasks Execution & Escalation
+ * Single Purpose File Law: < 350 lines
  */
 
 import type { TaskNode, TaskStatus, TaskReportingChain } from './TaskManager.types';
+import {
+  executeTitleDeedTask,
+  executeEmiratesIdTask,
+  executePassportTask,
+  executeTenancyContractTask,
+  executeEscrowAuditTask,
+  executeVatReturnTask,
+  executePdcTrackingTask,
+  executeEjariGenerationTask,
+  executeReraBrokerCardTask,
+  executeWhatsAppBroadcastTask,
+  executePortalSyndicationTask,
+  executePropertyValuationTask,
+  executeBiometricSecurityTask,
+  ExecutedTaskPayload,
+} from './taskExecutors.workflow';
 
 export interface TaskWorkflowResult {
   success: boolean;
@@ -13,9 +30,6 @@ export interface TaskWorkflowResult {
   awardedXp?: number;
 }
 
-/**
- * Stage 1-4 I-P-O-V: Create new statutory or operational task
- */
 export function executeCreateTaskWorkflow(
   tasks: TaskNode[],
   payload: Omit<TaskNode, '_id' | 'taskCode'>
@@ -42,9 +56,6 @@ export function executeCreateTaskWorkflow(
   };
 }
 
-/**
- * Stage 1-4 I-P-O-V: Update existing task details
- */
 export function executeUpdateTaskWorkflow(
   tasks: TaskNode[],
   id: string,
@@ -65,9 +76,6 @@ export function executeUpdateTaskWorkflow(
   };
 }
 
-/**
- * Stage 1-4 I-P-O-V: Advance task status through reporting hierarchy
- */
 export function executeAdvanceTaskStatusWorkflow(
   tasks: TaskNode[],
   id: string,
@@ -89,11 +97,11 @@ export function executeAdvanceTaskStatusWorkflow(
 
   const awardedXp =
     newStatus === 'COMPLETED'
-      ? target.priority === 'P0'
+      ? target.priority === 'CRITICAL'
         ? 135
-        : target.priority === 'P1'
+        : target.priority === 'HIGH'
           ? 68
-          : target.priority === 'P2'
+          : target.priority === 'MEDIUM'
             ? 34
             : 14
       : 0;
@@ -113,9 +121,6 @@ export function executeAdvanceTaskStatusWorkflow(
   };
 }
 
-/**
- * Stage 1-4 I-P-O-V: Reassign Reporting Escalation Chain
- */
 export function executeReassignTaskChainWorkflow(
   tasks: TaskNode[],
   id: string,
@@ -158,41 +163,50 @@ export function executeTaskFunctionalRunWorkflow(
   }
 
   const code = task.taskCode.toUpperCase();
-  const outputs: Record<string, any> = {};
-  const auditNotes: string[] = [];
+  let payload: ExecutedTaskPayload;
 
-  if (code.includes('001') || code.includes('TITLE')) {
-    outputs.documentType = 'Dubai Land Department Title Deed';
-    outputs.plotNumber = inputs.plotNumber || 'PLT-58204-DH2';
-    outputs.municipality = 'DAMAC Hills 2 (Akoya Oxygen)';
-    outputs.ownerName = inputs.ownerName || 'White Caves Real Estate Holdings LLC';
-    outputs.verifiedOwnership = true;
-    auditNotes.push('DLD electronic registry query returned 100% clean title status.');
-  } else if (code.includes('002') || code.includes('EID')) {
-    outputs.documentType = 'Federal Authority for Identity & Citizenship (ICP) Emirates ID';
-    outputs.idNumber = inputs.idNumber || '784-1988-1234567-1';
-    outputs.cardHolderName = inputs.holderName || 'Rashid Bin Dhaen';
-    outputs.expiryDate = '2028-11-05';
-    outputs.status = 'VALID';
-    auditNotes.push('Emirates ID optical barcode parsed with zero OCR errors.');
-  } else if (code.includes('003') || code.includes('PASSPORT')) {
-    outputs.documentType = 'International Machine-Readable Passport';
-    outputs.passportNumber = inputs.passportNumber || 'N9824102';
-    outputs.nationality = inputs.nationality || 'United Kingdom';
-    outputs.mrzChecksumVerified = true;
-    auditNotes.push('MRZ line 1 & line 2 checksums verified with GDRFA standards.');
-  } else if (code.includes('004') || code.includes('CONTRACT') || code.includes('EJARI')) {
-    outputs.documentType = 'Unified Dubai Tenancy Contract';
-    outputs.annualRentAED = inputs.annualRent || 145000;
-    outputs.cheques = inputs.cheques || 4;
-    outputs.ejariNumber = `EJ-${Date.now().toString().slice(-6)}`;
-    outputs.status = 'REGISTERED';
-    auditNotes.push('RERA rental index brackets applied; Form B digital signature logged.');
+  if (code.includes('T-DOC-001') || code.includes('TITLE')) {
+    payload = executeTitleDeedTask(inputs);
+  } else if (code.includes('T-DOC-002') || code.includes('EID') || code.includes('EMIRATES')) {
+    payload = executeEmiratesIdTask(inputs);
+  } else if (code.includes('T-DOC-003') || code.includes('PASSPORT')) {
+    payload = executePassportTask(inputs);
+  } else if (code.includes('T-DOC-004') || code.includes('CONTRACT') || code.includes('TENANCY')) {
+    payload = executeTenancyContractTask(inputs);
+  } else if (code.includes('T-FIN-001') || code.includes('ESCROW')) {
+    payload = executeEscrowAuditTask(inputs);
+  } else if (code.includes('T-FIN-002') || code.includes('VAT')) {
+    payload = executeVatReturnTask(inputs);
+  } else if (code.includes('T-FIN-003') || code.includes('PDC') || code.includes('CHEQUE')) {
+    payload = executePdcTrackingTask(inputs);
+  } else if (code.includes('T-REG-001') || code.includes('EJARI')) {
+    payload = executeEjariGenerationTask(inputs);
+  } else if (code.includes('T-REG-002') || code.includes('BROKER') || code.includes('RERA')) {
+    payload = executeReraBrokerCardTask(inputs);
+  } else if (code.includes('T-CRM-001') || code.includes('WHATSAPP')) {
+    payload = executeWhatsAppBroadcastTask(inputs);
+  } else if (code.includes('T-PORTAL-001') || code.includes('PORTAL') || code.includes('BAYUT')) {
+    payload = executePortalSyndicationTask(inputs);
+  } else if (code.includes('T-VAL-001') || code.includes('VALUATION')) {
+    payload = executePropertyValuationTask(inputs);
+  } else if (
+    code.includes('T-SEC-001') ||
+    code.includes('BIOMETRIC') ||
+    code.includes('UAE-PASS')
+  ) {
+    payload = executeBiometricSecurityTask(inputs);
   } else {
-    outputs.executionStatus = 'RESOLVED';
-    outputs.timestamp = new Date().toISOString();
-    outputs.payload = inputs;
-    auditNotes.push('Operational task processed according to SOP specifications.');
+    payload = {
+      outputs: {
+        executionStatus: 'RESOLVED',
+        timestamp: new Date().toISOString(),
+        payload: inputs,
+      },
+      auditNotes: [
+        'Operational task processed according to SOP specifications.',
+        'Escalation chain confirmed and verified with L3 Supervisor.',
+      ],
+    };
   }
 
   const awardedXp =
@@ -204,16 +218,16 @@ export function executeTaskFunctionalRunWorkflow(
           ? 34
           : 14;
 
-  const verificationPassed = auditNotes.length > 0;
+  const verificationPassed = payload.auditNotes.length > 0;
 
   return {
     success: true,
     taskId: task._id,
     taskCode: task.taskCode,
     status: 'COMPLETED',
-    outputs,
+    outputs: payload.outputs,
     verificationPassed,
-    auditNotes,
+    auditNotes: payload.auditNotes,
     awardedXp,
   };
 }
