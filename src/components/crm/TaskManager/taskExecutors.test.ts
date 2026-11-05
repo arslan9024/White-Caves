@@ -26,9 +26,9 @@ import { OPERATIONAL_TOOL_TASKS } from './TaskManager.tools.data';
 import { buildCanonical200Tasks } from './TaskManager.data';
 
 describe('Feature-as-a-Task Functional Executors Suite (Law T1 & T7)', () => {
-  it('verifies that buildCanonical200Tasks prepends operational tool tasks', () => {
+  it('verifies that buildCanonical200Tasks generates 600+ tasks covering all 6 parts & operational tools', () => {
     const tasks = buildCanonical200Tasks();
-    expect(tasks.length).toBeGreaterThan(200);
+    expect(tasks.length).toBeGreaterThanOrEqual(600);
 
     const titleTask = tasks.find(t => t.taskCode === 'T-DOC-001');
     expect(titleTask).toBeDefined();
@@ -37,6 +37,22 @@ describe('Feature-as-a-Task Functional Executors Suite (Law T1 & T7)', () => {
     const vatTask = tasks.find(t => t.taskCode === 'T-FIN-002');
     expect(vatTask).toBeDefined();
     expect(vatTask?.category).toBe('FINANCE');
+
+    // Part 3 checks (201-300)
+    expect(tasks.find(t => t.taskCode === 'TSK-201')).toBeDefined();
+    expect(tasks.find(t => t.taskCode === 'TSK-300')).toBeDefined();
+
+    // Part 4 checks (301-400)
+    expect(tasks.find(t => t.taskCode === 'TSK-301')).toBeDefined();
+    expect(tasks.find(t => t.taskCode === 'TSK-400')).toBeDefined();
+
+    // Part 5 checks (401-500)
+    expect(tasks.find(t => t.taskCode === 'TSK-401')).toBeDefined();
+    expect(tasks.find(t => t.taskCode === 'TSK-500')).toBeDefined();
+
+    // Part 6 checks (501-600)
+    expect(tasks.find(t => t.taskCode === 'TSK-511')).toBeDefined();
+    expect(tasks.find(t => t.taskCode === 'TSK-600')).toBeDefined();
   });
 
   it('executes T-DOC-001: Title Deed scan with square footage and clean title audit', () => {
