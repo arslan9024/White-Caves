@@ -13,6 +13,7 @@ export type ActivityTab =
   | 'employees'
   | 'tasks'
   | 'leaderboard'
+  | 'REproperties'
   | 'settings';
 
 export interface UseExecutiveVSCodeSidebarProps {

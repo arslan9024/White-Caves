@@ -56,4 +56,16 @@ describe('ExecutiveVSCodeSidebar Component (7-Category Co-Location Spec)', () =>
     expect(onSelectTab).toHaveBeenCalledWith('leaderboard');
     expect(screen.getByText(/Merit Leaderboard & Tiers/i)).toBeInTheDocument();
   }, 15000);
+
+  it('renders 9th Activity Bar icon for REproperties and switches tabs', () => {
+    const onSelectTab = vi.fn();
+    render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
+
+    const propBtn = screen.getByTestId('activity-btn-reproperties');
+    expect(propBtn).toBeInTheDocument();
+
+    fireEvent.click(propBtn);
+    expect(onSelectTab).toHaveBeenCalledWith('REproperties');
+    expect(screen.getByText(/RE Properties Inventory/i)).toBeInTheDocument();
+  }, 15000);
 });

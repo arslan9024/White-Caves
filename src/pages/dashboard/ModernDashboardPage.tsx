@@ -15,6 +15,7 @@ import { DepartmentManagementWorkspace } from '../../components/crm/DepartmentMa
 import { EmployeeManagerView } from '../../components/crm/EmployeeManager';
 import { TaskManagerView } from '../../components/crm/TaskManager';
 import { LeaderboardView } from '../../components/crm/Leaderboard';
+import { REPropertyManagerView } from '../../components/crm/REPropertyManager';
 import { CorporateDepartmentsProvider } from '../../context/CorporateDepartmentsContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
@@ -36,6 +37,7 @@ export const ModernDashboardPage: FC = () => {
     'employees',
     'tasks',
     'leaderboard',
+    'REproperties',
     'explorer',
     'ai-mesh',
     'documents',
@@ -72,6 +74,9 @@ export const ModernDashboardPage: FC = () => {
     } else if (key.startsWith('lead-')) {
       const leadId = key.replace('lead-', '');
       navigate(`/dashboard/leaderboard/${leadId}`);
+    } else if (key.startsWith('prop-')) {
+      const propId = key.replace('prop-', '');
+      navigate(`/dashboard/REproperties/${propId}`);
     } else {
       navigate(`/dashboard/${activeTab}`);
     }
@@ -141,6 +146,11 @@ export const ModernDashboardPage: FC = () => {
               />
             ) : activeTab === 'leaderboard' ? (
               <LeaderboardView />
+            ) : activeTab === 'REproperties' ? (
+              <REPropertyManagerView
+                selectedPropertyId={activeItemId}
+                onSelectProperty={id => navigate(`/dashboard/REproperties/${id}`)}
+              />
             ) : (
               <div
                 style={{

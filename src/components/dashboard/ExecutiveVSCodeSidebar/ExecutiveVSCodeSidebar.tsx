@@ -8,23 +8,21 @@ import {
   Users,
   CheckSquare,
   Trophy,
+  Home,
   Settings,
-  ChevronRight,
   Search,
-  Crown,
   Building,
   Plus,
   PanelLeftClose,
   PanelLeft,
-  Sparkles,
-  Zap,
-  Folder,
 } from 'lucide-react';
 import { useExecutiveVSCodeSidebarLogic, ActivityTab } from './ExecutiveVSCodeSidebar.logic';
 import { SidebarDepartmentsList } from './SidebarDepartmentsList';
 import { SidebarEmployeesList } from './SidebarEmployeesList';
 import { SidebarTasksList } from './SidebarTasksList';
 import { SidebarLeaderboardList } from './SidebarLeaderboardList';
+import { SidebarREPropertiesList } from './SidebarREPropertiesList';
+import { SidebarExplorerTree } from './SidebarExplorerTree';
 import {
   SidebarLayoutContainer,
   ActivityBar,
@@ -33,11 +31,6 @@ import {
   ExplorerDrawer,
   ExplorerHeader,
   FilterBarWrapper,
-  TreeScrollArea,
-  FolderNode,
-  FolderHeaderBtn,
-  FolderChildrenList,
-  TreeLeafItem,
   ResizeHandle,
 } from './ExecutiveVSCodeSidebar.styles';
 
@@ -159,6 +152,16 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
           >
             <Trophy size={18} />
           </ActivityIconBtn>
+
+          {/* 9th Icon: Real Estate Properties Inventory */}
+          <ActivityIconBtn
+            $isActive={activeTab === 'REproperties'}
+            onClick={() => handleSelectTab('REproperties')}
+            title="Real Estate Inventory & Portfolio (REproperties)"
+            data-testid="activity-btn-reproperties"
+          >
+            <Home size={18} />
+          </ActivityIconBtn>
         </ActivityGroup>
 
         <ActivityGroup>
@@ -201,7 +204,15 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
                 <span>Merit Leaderboard & Tiers</span>
               </>
             )}
-            {!['departments', 'employees', 'tasks', 'leaderboard'].includes(activeTab) && (
+            {activeTab === 'REproperties' && (
+              <>
+                <Home size={14} color="#8B5CF6" />
+                <span>RE Properties Inventory</span>
+              </>
+            )}
+            {!['departments', 'employees', 'tasks', 'leaderboard', 'REproperties'].includes(
+              activeTab
+            ) && (
               <>
                 <Building size={14} color="#EF4444" />
                 <span>White Caves Explorer</span>
@@ -235,7 +246,9 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
                       ? 'Filter 200 tasks & SLAs...'
                       : activeTab === 'leaderboard'
                         ? 'Filter leaderboard & tiers...'
-                        : 'Filter modules & squads...'
+                        : activeTab === 'REproperties'
+                          ? 'Filter properties & communities...'
+                          : 'Filter modules & squads...'
               }
               value={filterQuery}
               onChange={e => setFilterQuery(e.target.value)}
@@ -261,95 +274,19 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             filterQuery={filterQuery}
             onSelectMember={(id, name) => handleLeafClick(`lead-${id}`, `Leaderboard: ${name}`)}
           />
+        ) : activeTab === 'REproperties' ? (
+          <SidebarREPropertiesList
+            filterQuery={filterQuery}
+            onSelectProperty={(id, title) => handleLeafClick(`prop-${id}`, `Property: ${title}`)}
+          />
         ) : (
-          <TreeScrollArea>
-            {/* MD Sovereign Founder Section */}
-            <FolderNode>
-              <FolderHeaderBtn
-                $isExpanded={expandedFolders['md-hub']}
-                $isSpecial={true}
-                onClick={() => toggleFolder('md-hub')}
-              >
-                <span className="caret">
-                  <ChevronRight size={13} />
-                </span>
-                <Crown size={14} color="#EF4444" />
-                <span className="label">Managing Director Hub</span>
-                <span className="badge">L5</span>
-              </FolderHeaderBtn>
-
-              {expandedFolders['md-hub'] && (
-                <FolderChildrenList>
-                  <TreeLeafItem
-                    $isActive={activeItemKey === 'morning-briefing'}
-                    onClick={() =>
-                      handleLeafClick('morning-briefing', 'Morning Executive Briefing')
-                    }
-                  >
-                    <Sparkles size={12} color="#EF4444" />
-                    <span>Morning Briefing</span>
-                    <span className="sla-pill">08:00</span>
-                  </TreeLeafItem>
-                  <TreeLeafItem
-                    $isActive={activeItemKey === 'escrow-oversight'}
-                    onClick={() =>
-                      handleLeafClick('escrow-oversight', 'DLD Escrow Accounts Oversight')
-                    }
-                  >
-                    <Zap size={12} color="#10B981" />
-                    <span>Escrow Oversight</span>
-                    <span className="sla-pill">AED 42M</span>
-                  </TreeLeafItem>
-                  <TreeLeafItem
-                    $isActive={activeItemKey === 'departments-crud'}
-                    onClick={() =>
-                      handleLeafClick('departments-crud', 'Corporate Departments Management')
-                    }
-                  >
-                    <Building2 size={12} color="#3B82F6" />
-                    <span>Departments CRUD</span>
-                    <span className="sla-pill">12 Depts</span>
-                  </TreeLeafItem>
-                </FolderChildrenList>
-              )}
-            </FolderNode>
-
-            {/* 12 Corporate Departments Tree */}
-            {departments.map((dept, idx) => {
-              const folderKey = `dept-${dept.id}`;
-              const isExpanded = expandedFolders[folderKey];
-
-              return (
-                <FolderNode key={dept.id}>
-                  <FolderHeaderBtn $isExpanded={isExpanded} onClick={() => toggleFolder(folderKey)}>
-                    <span className="caret">
-                      <ChevronRight size={13} />
-                    </span>
-                    <span className="label">
-                      {(dept as any).order || idx + 1}. {dept.name}
-                    </span>
-                    <span className="badge">{dept.supervisors.length}</span>
-                  </FolderHeaderBtn>
-
-                  {isExpanded && (
-                    <FolderChildrenList>
-                      {dept.supervisors.map(sup => (
-                        <TreeLeafItem
-                          key={sup.id}
-                          $isActive={activeItemKey === sup.id}
-                          onClick={() => handleLeafClick(sup.id, `${dept.name} · ${sup.name}`)}
-                        >
-                          <span>🤖</span>
-                          <span>{sup.name}</span>
-                          <span className="sla-pill">L3</span>
-                        </TreeLeafItem>
-                      ))}
-                    </FolderChildrenList>
-                  )}
-                </FolderNode>
-              );
-            })}
-          </TreeScrollArea>
+          <SidebarExplorerTree
+            departments={departments}
+            expandedFolders={expandedFolders}
+            activeItemKey={activeItemKey}
+            toggleFolder={toggleFolder}
+            onLeafClick={handleLeafClick}
+          />
         )}
       </ExplorerDrawer>
 
