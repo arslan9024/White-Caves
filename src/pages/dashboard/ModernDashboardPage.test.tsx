@@ -61,6 +61,14 @@ describe('ModernDashboardPage Viewport Rendering', () => {
     expect(screen.getByTestId('relationship-manager-view')).toBeInTheDocument();
   }, 30000);
 
+  it('renders ERMS root overview when navigating to /dashboard/erms from icon only route', () => {
+    renderDashboardWithProviders('/dashboard/erms');
+    expect(screen.getByTestId('erms-overview-view')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Enterprise Relational Mesh & Entity Control Center/i)
+    ).toBeInTheDocument();
+  }, 30000);
+
   it('renders ERMS double-layer route /dashboard/erms/entities', () => {
     renderDashboardWithProviders('/dashboard/erms/entities');
     expect(screen.getByTestId('relationship-entities-hub')).toBeInTheDocument();

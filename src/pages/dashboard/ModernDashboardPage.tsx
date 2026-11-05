@@ -19,9 +19,11 @@ import { REPropertyManagerView } from '../../components/crm/REPropertyManager';
 import { DealManagerView } from '../../components/crm/DealManager';
 import { DocumentManagerView } from '../../components/crm/DocumentManager';
 import { RelationshipManagerView } from '../../components/crm/RelationshipManager';
+import { ErmsOverviewView } from '../../components/crm/RelationshipManager/ErmsOverviewView';
 import { CustomerManagerView } from '../../components/crm/CustomerManager';
 import { GlobalEntityCommandPalette } from '../../components/dashboard/GlobalEntityCommandPalette';
 import { CorporateDepartmentsProvider } from '../../context/CorporateDepartmentsContext';
+import { ErmsProvider } from '../../context/ErmsContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
 export const ModernDashboardPage: FC = () => {
@@ -60,7 +62,9 @@ export const ModernDashboardPage: FC = () => {
     : 'departments';
 
   // ERMS double-layer route extraction: /dashboard/erms/entities/:id or /dashboard/erms/relationships/:id
-  let ermsSubTab: 'entities' | 'relationships' | 'erd' = 'entities';
+  const isErmsRootOverview = rawTab === 'erms' && !pathParts[1];
+  let ermsSubTab: 'entities' | 'relationships' | 'erd' =
+    rawTab === 'relationships' ? 'relationships' : 'entities';
   let ermsEntityId: string | null = null;
   let ermsRelationshipId: string | null = null;
 
@@ -106,11 +110,7 @@ export const ModernDashboardPage: FC = () => {
   }, []);
 
   const handleSelectSidebarTab = (tab: ActivityTab) => {
-    if (tab === 'erms' || tab === 'relationships') {
-      navigate('/dashboard/erms/entities');
-    } else {
-      navigate(`/dashboard/${tab}`);
-    }
+    navigate(`/dashboard/${tab}`);
   };
 
   const handleSelectSidebarItem = (key: string, label: string) => {
@@ -168,179 +168,187 @@ export const ModernDashboardPage: FC = () => {
       data-testid="modern-dashboard-page"
     >
       <CorporateDepartmentsProvider>
-        {/* ── Global Entity Quick Switcher (Ctrl+K) ───────────────────────── */}
-        <GlobalEntityCommandPalette
-          isOpen={isCommandPaletteOpen}
-          onClose={() => setIsCommandPaletteOpen(false)}
-          onSelectEntity={entity => {
-            navigate(entity.route);
-          }}
-        />
-
-        {/* ── Top Executive Navbar ────────────────────────────────────────── */}
-        <div style={{ position: 'relative' }}>
-          <ExecutiveTopNavbar sticky={true} />
-          <button
-            type="button"
-            onClick={() => setIsCommandPaletteOpen(true)}
-            data-testid="quick-command-palette-btn"
-            style={{
-              position: 'absolute',
-              right: '260px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              zIndex: 10,
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: '6px',
-              padding: '4px 10px',
-              color: '#EF4444',
-              fontSize: '0.72rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
+        <ErmsProvider>
+          {/* ── Global Entity Quick Switcher (Ctrl+K) ───────────────────────── */}
+          <GlobalEntityCommandPalette
+            isOpen={isCommandPaletteOpen}
+            onClose={() => setIsCommandPaletteOpen(false)}
+            onSelectEntity={entity => {
+              navigate(entity.route);
             }}
-          >
-            <span>⌘ Quick Find</span>
-            <kbd
+          />
+
+          {/* ── Top Executive Navbar ────────────────────────────────────────── */}
+          <div style={{ position: 'relative' }}>
+            <ExecutiveTopNavbar sticky={true} />
+            <button
+              type="button"
+              onClick={() => setIsCommandPaletteOpen(true)}
+              data-testid="quick-command-palette-btn"
               style={{
-                background: 'rgba(0, 0, 0, 0.3)',
-                padding: '1px 5px',
-                borderRadius: '4px',
-                fontSize: '0.65rem',
+                position: 'absolute',
+                right: '260px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '6px',
+                padding: '4px 10px',
+                color: '#EF4444',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
               }}
             >
-              Ctrl+K
-            </kbd>
-          </button>
-        </div>
-
-        {/* ── Main Workspace Body (Sidebar + Viewport + AI Mesh) ──────────── */}
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            overflow: 'hidden',
-            position: 'relative',
-          }}
-        >
-          {/* ── Left VS Code-Style Explorer Sidebar ────────────────────────── */}
-          <ExecutiveVSCodeSidebar
-            activeTab={activeTab}
-            onSelectTab={handleSelectSidebarTab}
-            onSelectItem={handleSelectSidebarItem}
-          />
-
-          {/* ── Center Working Canvas (Viewport Switcher) ─────────────────── */}
-          <main
-            style={{
-              flex: 1,
-              height: '100%',
-              overflowY: 'auto',
-              backgroundColor: isDark ? '#020617' : '#FFFFFF',
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-            data-testid="viewport-main-area"
-          >
-            {/* ── Active Viewport Switcher ── */}
-            {activeTab === 'departments' ? (
-              <DepartmentManagementWorkspace
-                selectedDeptId={activeItemId || undefined}
-                isReadOnly={isReadOnly}
-              />
-            ) : activeTab === 'employees' ? (
-              <EmployeeManagerView selectedEmpId={activeItemId || undefined} />
-            ) : activeTab === 'tasks' ? (
-              <TaskManagerView
-                selectedTaskId={activeItemId}
-                onSelectTask={id => navigate(`/dashboard/tasks/${id}`)}
-              />
-            ) : activeTab === 'leaderboard' ? (
-              <LeaderboardView />
-            ) : activeTab === 'REproperties' ? (
-              <REPropertyManagerView
-                selectedPropertyId={activeItemId}
-                onSelectProperty={id => navigate(`/dashboard/REproperties/${id}`)}
-              />
-            ) : activeTab === 'deals' ? (
-              <DealManagerView
-                selectedDealId={activeItemId}
-                onSelectDeal={id => navigate(`/dashboard/deals/${id}`)}
-              />
-            ) : activeTab === 'documents' ? (
-              <DocumentManagerView
-                selectedDocId={activeItemId}
-                onSelectDoc={id => navigate(`/dashboard/documents/${id}`)}
-              />
-            ) : activeTab === 'relationships' || activeTab === 'erms' ? (
-              <RelationshipManagerView
-                initialTab={ermsSubTab}
-                selectedEntityId={ermsEntityId}
-                selectedRelationshipId={ermsRelationshipId}
-                onSelectEntity={id => navigate(`/dashboard/erms/entities/${id}`)}
-                onSelectRelationship={id => navigate(`/dashboard/erms/relationships/${id}`)}
-                onNavigateToDeepRoute={route => navigate(route)}
-              />
-            ) : activeTab === 'customers' ? (
-              <CustomerManagerView
-                selectedCustomerId={activeItemId}
-                onSelectCustomer={id => navigate(`/dashboard/customers/${id}`)}
-              />
-            ) : (
-              <div
+              <span>⌘ Quick Find</span>
+              <kbd
                 style={{
-                  flex: 1,
-                  border: isDark
-                    ? '1.5px dashed rgba(239, 68, 68, 0.25)'
-                    : '1.5px dashed rgba(239, 68, 68, 0.35)',
-                  borderRadius: '12px',
-                  padding: '32px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: isDark ? '#64748B' : '#475569',
-                  backgroundColor: isDark ? 'rgba(7, 13, 24, 0.3)' : '#F8FAFC',
-                  textAlign: 'center',
-                  gap: '12px',
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  padding: '1px 5px',
+                  borderRadius: '4px',
+                  fontSize: '0.65rem',
                 }}
               >
-                <span style={{ fontSize: '2rem' }}>🎯</span>
-                <div style={{ maxWidth: '480px' }}>
-                  <div
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: 800,
-                      color: isDark ? '#F1F5F9' : '#0F172A',
-                    }}
-                  >
-                    {activeTab.toUpperCase()} Viewport Initialized
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '0.82rem',
-                      marginTop: '4px',
-                      color: isDark ? '#94A3B8' : '#64748B',
-                    }}
-                  >
-                    Select a module from the left activity bar to inspect departments, employees,
-                    tasks, or merit rankings.
+                Ctrl+K
+              </kbd>
+            </button>
+          </div>
+
+          {/* ── Main Workspace Body (Sidebar + Viewport + AI Mesh) ──────────── */}
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
+            {/* ── Left VS Code-Style Explorer Sidebar ────────────────────────── */}
+            <ExecutiveVSCodeSidebar
+              activeTab={activeTab}
+              onSelectTab={handleSelectSidebarTab}
+              onSelectItem={handleSelectSidebarItem}
+            />
+
+            {/* ── Center Working Canvas (Viewport Switcher) ─────────────────── */}
+            <main
+              style={{
+                flex: 1,
+                height: '100%',
+                overflowY: 'auto',
+                backgroundColor: isDark ? '#020617' : '#FFFFFF',
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+              data-testid="viewport-main-area"
+            >
+              {/* ── Active Viewport Switcher ── */}
+              {activeTab === 'departments' ? (
+                <DepartmentManagementWorkspace
+                  selectedDeptId={activeItemId || undefined}
+                  isReadOnly={isReadOnly}
+                />
+              ) : activeTab === 'employees' ? (
+                <EmployeeManagerView selectedEmpId={activeItemId || undefined} />
+              ) : activeTab === 'tasks' ? (
+                <TaskManagerView
+                  selectedTaskId={activeItemId}
+                  onSelectTask={id => navigate(`/dashboard/tasks/${id}`)}
+                />
+              ) : activeTab === 'leaderboard' ? (
+                <LeaderboardView />
+              ) : activeTab === 'REproperties' ? (
+                <REPropertyManagerView
+                  selectedPropertyId={activeItemId}
+                  onSelectProperty={id => navigate(`/dashboard/REproperties/${id}`)}
+                />
+              ) : activeTab === 'deals' ? (
+                <DealManagerView
+                  selectedDealId={activeItemId}
+                  onSelectDeal={id => navigate(`/dashboard/deals/${id}`)}
+                />
+              ) : activeTab === 'documents' ? (
+                <DocumentManagerView
+                  selectedDocId={activeItemId}
+                  onSelectDoc={id => navigate(`/dashboard/documents/${id}`)}
+                />
+              ) : activeTab === 'relationships' || activeTab === 'erms' ? (
+                isErmsRootOverview ? (
+                  <ErmsOverviewView onNavigate={navigate} />
+                ) : (
+                  <RelationshipManagerView
+                    initialTab={ermsSubTab}
+                    selectedEntityId={ermsEntityId}
+                    selectedRelationshipId={ermsRelationshipId}
+                    onSelectEntity={id => navigate(`/dashboard/erms/entities/${id}`)}
+                    onSelectRelationship={id => navigate(`/dashboard/erms/relationships/${id}`)}
+                    onNavigateToDeepRoute={route => navigate(route)}
+                  />
+                )
+              ) : activeTab === 'customers' ? (
+                <CustomerManagerView
+                  selectedCustomerId={activeItemId}
+                  onSelectCustomer={id => navigate(`/dashboard/customers/${id}`)}
+                />
+              ) : (
+                <div
+                  style={{
+                    flex: 1,
+                    border: isDark
+                      ? '1.5px dashed rgba(239, 68, 68, 0.25)'
+                      : '1.5px dashed rgba(239, 68, 68, 0.35)',
+                    borderRadius: '12px',
+                    padding: '32px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: isDark ? '#64748B' : '#475569',
+                    backgroundColor: isDark ? 'rgba(7, 13, 24, 0.3)' : '#F8FAFC',
+                    textAlign: 'center',
+                    gap: '12px',
+                  }}
+                >
+                  <span style={{ fontSize: '2rem' }}>🎯</span>
+                  <div style={{ maxWidth: '480px' }}>
+                    <div
+                      style={{
+                        fontSize: '1rem',
+                        fontWeight: 800,
+                        color: isDark ? '#F1F5F9' : '#0F172A',
+                      }}
+                    >
+                      {activeTab.toUpperCase()} Viewport Initialized
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.82rem',
+                        marginTop: '4px',
+                        color: isDark ? '#94A3B8' : '#64748B',
+                      }}
+                    >
+                      Select a module from the left activity bar to inspect departments, employees,
+                      tasks, or merit rankings.
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </main>
+              )}
+            </main>
 
-          {/* ── Right VS Code-Style AI Command Center Sidebar ─────────────────── */}
-          <ExecutiveAIVSCodeSidebar
-            onSelectAgent={(agentId, agentName) => setActiveAgent({ id: agentId, name: agentName })}
-            onSelectItem={handleSelectRightExplorerItem}
-          />
-        </div>
+            {/* ── Right VS Code-Style AI Command Center Sidebar ─────────────────── */}
+            <ExecutiveAIVSCodeSidebar
+              onSelectAgent={(agentId, agentName) =>
+                setActiveAgent({ id: agentId, name: agentName })
+              }
+              onSelectItem={handleSelectRightExplorerItem}
+            />
+          </div>
+        </ErmsProvider>
       </CorporateDepartmentsProvider>
     </div>
   );
