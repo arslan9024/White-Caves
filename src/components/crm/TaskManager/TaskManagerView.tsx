@@ -46,6 +46,7 @@ export const TaskManagerView: FC<TaskManagerViewProps> = ({ selectedTaskId, onSe
   } = useTaskManager();
 
   const [executingTask, setExecutingTask] = useState<TaskNode | null>(null);
+  const [visibleCount, setVisibleCount] = useState<number>(60);
 
   const SUPERVISOR_TARGETS = [
     { code: 'SUP-001', name: 'Tariq Mansoor' },
@@ -217,14 +218,14 @@ export const TaskManagerView: FC<TaskManagerViewProps> = ({ selectedTaskId, onSe
         </div>
       )}
 
-      {/* ── 3. Tasks Cards Grid (Showing Catalog of 200 Tasks) ──────────── */}
+      {/* ── 3. Tasks Cards Grid (Showing Catalog of 600+ Tasks) ─────────── */}
       <div className={s.tasksGrid} data-testid="tasks-cards-grid">
         {filteredTasks.length === 0 ? (
           <div className="col-span-full p-8 text-center text-slate-500 bg-slate-900/40 rounded-2xl border border-slate-800">
             No statutory tasks found matching your filter criteria.
           </div>
         ) : (
-          filteredTasks.slice(0, 60).map(task => (
+          filteredTasks.slice(0, visibleCount).map(task => (
             <TaskCard
               key={task._id}
               task={task}
@@ -239,10 +240,26 @@ export const TaskManagerView: FC<TaskManagerViewProps> = ({ selectedTaskId, onSe
         )}
       </div>
 
-      {filteredTasks.length > 60 && (
-        <div className="p-3 text-center text-xs text-slate-500 bg-slate-900/50 rounded-xl border border-slate-800">
-          Showing 60 of {filteredTasks.length} tasks in catalog. Use search or pillar filters to
-          locate specific statutory tasks.
+      {filteredTasks.length > visibleCount && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+          <span className="text-xs text-slate-400 font-mono">
+            Showing {Math.min(visibleCount, filteredTasks.length)} of {filteredTasks.length} tasks
+            in catalog
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setVisibleCount(prev => prev + 60)}
+              className="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors"
+            >
+              Load More (+60)
+            </button>
+            <button
+              onClick={() => setVisibleCount(filteredTasks.length)}
+              className="px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 transition-colors"
+            >
+              Show All ({filteredTasks.length})
+            </button>
+          </div>
         </div>
       )}
 

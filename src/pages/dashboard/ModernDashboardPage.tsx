@@ -131,9 +131,9 @@ export const ModernDashboardPage: FC = () => {
           >
             {/* ── Active Viewport Switcher ── */}
             {activeTab === 'departments' ? (
-              <DepartmentManagementWorkspace />
+              <DepartmentManagementWorkspace selectedDeptId={activeItemId} />
             ) : activeTab === 'employees' ? (
-              <EmployeeManagerView />
+              <EmployeeManagerView selectedEmpId={activeItemId} />
             ) : activeTab === 'tasks' ? (
               <TaskManagerView
                 selectedTaskId={activeItemId}

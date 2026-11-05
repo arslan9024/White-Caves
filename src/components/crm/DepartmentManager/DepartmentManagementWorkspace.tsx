@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { Search, Plus, AlertCircle, Layers, Building2, GitFork } from 'lucide-react';
 import { useDepartmentManagementWorkspaceLogic } from './DepartmentManagementWorkspace.logic';
 import { DepartmentSubItemsModal } from './DepartmentSubItemsModal';
@@ -16,10 +16,12 @@ import {
 
 export interface DepartmentManagementWorkspaceProps {
   initialViewMode?: 'squads' | 'grid' | 'hierarchy';
+  selectedDeptId?: string;
 }
 
 export const DepartmentManagementWorkspace: FC<DepartmentManagementWorkspaceProps> = ({
   initialViewMode = 'grid',
+  selectedDeptId,
 }) => {
   const [viewMode, setViewMode] = useState<'squads' | 'grid' | 'hierarchy'>(initialViewMode);
 
@@ -69,6 +71,21 @@ export const DepartmentManagementWorkspace: FC<DepartmentManagementWorkspaceProp
     handleSubDragEnd,
     handleDemoteSubDept,
   } = useDepartmentManagementWorkspaceLogic();
+
+  useEffect(() => {
+    if (!selectedDeptId || departments.length === 0) return;
+    const cleanId = selectedDeptId.toUpperCase();
+    const targetDept = departments.find(
+      d =>
+        d.id?.toUpperCase() === cleanId ||
+        d.code?.toUpperCase() === cleanId ||
+        `D${d.slotNumber}`.padStart(3, '0').toUpperCase() === cleanId ||
+        `D${d.slotNumber}` === cleanId
+    );
+    if (targetDept) {
+      handleOpenSubItems(targetDept);
+    }
+  }, [selectedDeptId, departments, handleOpenSubItems]);
 
   return (
     <WorkspaceContainer data-testid="department-management-workspace">

@@ -9,7 +9,11 @@ import { employeeStyles as s } from './EmployeeManager.styles';
 import { useEmployeeManager } from './EmployeeManager.logic';
 import { EmployeeEditDrawer } from './EmployeeEditDrawer';
 
-export const EmployeeManagerView: React.FC = () => {
+export interface EmployeeManagerViewProps {
+  selectedEmpId?: string;
+}
+
+export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({ selectedEmpId }) => {
   const {
     filteredEmployees,
     searchQuery,
@@ -32,6 +36,17 @@ export const EmployeeManagerView: React.FC = () => {
     handleOpenEdit,
     handleCloseDrawer,
   } = useEmployeeManager();
+
+  React.useEffect(() => {
+    if (!selectedEmpId || filteredEmployees.length === 0) return;
+    const cleanId = selectedEmpId.toUpperCase();
+    const target = filteredEmployees.find(
+      e => e.id?.toUpperCase() === cleanId || e.employeeCode?.toUpperCase() === cleanId
+    );
+    if (target) {
+      handleOpenEdit(target);
+    }
+  }, [selectedEmpId, filteredEmployees, handleOpenEdit]);
 
   const getRoleBadgeClass = (tier: string) => {
     switch (tier) {
