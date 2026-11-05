@@ -47,7 +47,7 @@ export const LeaderboardView: React.FC = () => {
   } = useLeaderboardLogic();
 
   return (
-    <div className={LEADERBOARD_STYLES.container}>
+    <div className={LEADERBOARD_STYLES.container} data-testid="leaderboard-view">
       <div className={LEADERBOARD_STYLES.contentWrapper}>
         {/* Notification Toast */}
         {notification && (

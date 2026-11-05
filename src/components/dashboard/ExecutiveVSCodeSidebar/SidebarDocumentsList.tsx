@@ -1,19 +1,22 @@
 /**
- * White Caves Real Estate LLC - Sovereign Document Vault Sidebar List
+ * SidebarDocumentsList.tsx
+ * White Caves Real Estate LLC - Documents Left Sidebar Drawer
  * Standard: AEGIS Canonical 7-Category Architecture Standard (Drawer Sub-View)
  * Single Purpose File Law: < 350 lines
+ * Protocol: Turing Protocol Double-Layer Routing
  */
 
 import React, { FC } from 'react';
-import { FileText, ShieldCheck, Tag, UploadCloud } from 'lucide-react';
+import { FileText, ShieldCheck, Tag, UploadCloud, ArrowRight, Lock } from 'lucide-react';
 import { CANONICAL_DOCUMENTS } from '../../crm/DocumentManager/DocumentManager.data';
 import { SidebarListWrapper } from './SidebarDepartmentsList.styles';
 
-interface SidebarDocumentsListProps {
+export interface SidebarDocumentsListProps {
   filterQuery?: string;
   selectedDocId?: string | null;
   onSelectDoc?: (id: string, title: string) => void;
   onOpenUpload?: () => void;
+  onNavigateToView?: (route: string) => void;
 }
 
 export const SidebarDocumentsList: FC<SidebarDocumentsListProps> = ({
@@ -21,6 +24,7 @@ export const SidebarDocumentsList: FC<SidebarDocumentsListProps> = ({
   selectedDocId,
   onSelectDoc,
   onOpenUpload,
+  onNavigateToView,
 }) => {
   const query = filterQuery.trim().toLowerCase();
 
@@ -38,6 +42,51 @@ export const SidebarDocumentsList: FC<SidebarDocumentsListProps> = ({
 
   return (
     <SidebarListWrapper data-testid="sidebar-documents-list">
+      {/* ── Level 1 Category Portals ─────────────────────────────────── */}
+      <div style={{ marginBottom: '8px' }}>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/documents/vault')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#38BDF8',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(56, 189, 248, 0.08)',
+            border: '1px solid rgba(56, 189, 248, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '4px',
+          }}
+          data-testid="link-all-docs-vault"
+        >
+          📁 Open Document Archive (CRUD) <ArrowRight size={11} />
+        </div>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/documents/compliance')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#34D399',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(16, 185, 129, 0.08)',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '8px',
+          }}
+          data-testid="link-docs-compliance"
+        >
+          📜 Statutory DLD/RERA Vault <ArrowRight size={11} />
+        </div>
+      </div>
+
+      {/* Header bar with Count and Upload action */}
       <div
         style={{
           display: 'flex',
@@ -60,7 +109,6 @@ export const SidebarDocumentsList: FC<SidebarDocumentsListProps> = ({
         {onOpenUpload && (
           <button
             onClick={onOpenUpload}
-            data-testid="sidebar-upload-doc-btn"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -75,94 +123,62 @@ export const SidebarDocumentsList: FC<SidebarDocumentsListProps> = ({
               cursor: 'pointer',
             }}
           >
-            <span>+ Upload</span>
+            <UploadCloud size={12} />
+            <span>Upload</span>
           </button>
         )}
       </div>
 
+      {/* ── Level 2 Sub-Items: Documents with Turing IDs ─────────────── */}
       {visibleDocs.map(doc => {
         const isSelected = selectedDocId === doc.id;
-        const isVerified = doc.status === 'VERIFIED';
-
         return (
           <div
-            key={doc._id}
-            onClick={() => onSelectDoc?.(doc.id, doc.title)}
-            data-testid={`sidebar-doc-${doc.id}`}
+            key={doc.id}
+            onClick={() => {
+              onSelectDoc?.(doc.id, doc.title);
+              onNavigateToView?.(`/dashboard/documents/${doc.id}`);
+            }}
+            data-testid={`sidebar-doc-${doc.docCode}`}
             style={{
               padding: '10px 12px',
               borderRadius: '8px',
               background: isSelected ? 'rgba(56, 189, 248, 0.15)' : '#070D18',
-              border: `1px solid ${isSelected ? '#38BDF8' : 'rgba(255, 255, 255, 0.05)'}`,
-              marginBottom: '6px',
+              border: isSelected ? '1px solid #38BDF8' : '1px solid rgba(255, 255, 255, 0.05)',
               cursor: 'pointer',
-              transition: 'all 0.15s ease-in-out',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              marginBottom: '6px',
+              transition: 'all 0.15s ease',
             }}
           >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '4px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span
-                  style={{
-                    fontSize: '0.65rem',
-                    fontWeight: 800,
-                    color: '#38BDF8',
-                    background: 'rgba(56, 189, 248, 0.2)',
-                    padding: '1px 6px',
-                    borderRadius: '4px',
-                  }}
-                >
-                  {doc.id}
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.62rem',
-                    color: '#64748B',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '2px',
-                  }}
-                >
-                  <Tag size={10} />
-                  {doc.docCode}
-                </span>
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span
                 style={{
-                  fontSize: '0.6rem',
-                  fontWeight: 700,
-                  color: isVerified ? '#34D399' : '#FBBF24',
-                  background: isVerified ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                  fontSize: '0.65rem',
+                  fontFamily: 'monospace',
+                  color: '#38BDF8',
+                  background: 'rgba(56, 189, 248, 0.1)',
                   padding: '2px 6px',
                   borderRadius: '4px',
-                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                }}
+              >
+                {doc.docCode}
+              </span>
+              <span
+                style={{
+                  fontSize: '0.65rem',
+                  fontWeight: 800,
+                  color: doc.status === 'VERIFIED' ? '#10B981' : '#F59E0B',
                 }}
               >
                 {doc.status}
               </span>
             </div>
 
-            <div
-              style={{
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                color: isSelected ? '#FFFFFF' : '#CBD5E1',
-                lineHeight: '1.2',
-                marginBottom: '4px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-              title={doc.title}
-            >
-              {doc.title}
-            </div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#F8FAFC' }}>{doc.title}</div>
 
             <div
               style={{
@@ -170,13 +186,13 @@ export const SidebarDocumentsList: FC<SidebarDocumentsListProps> = ({
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 fontSize: '0.68rem',
+                color: '#64748B',
               }}
             >
-              <span style={{ color: '#94A3B8', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                <ShieldCheck size={10} color="#3B82F6" />
-                {doc.entityName}
+              <span>{doc.docType}</span>
+              <span style={{ color: '#10B981', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                <ShieldCheck size={11} /> OCR Match
               </span>
-              <span style={{ fontWeight: 800, color: '#38BDF8' }}>{doc.ocrConfidence}% OCR</span>
             </div>
           </div>
         );

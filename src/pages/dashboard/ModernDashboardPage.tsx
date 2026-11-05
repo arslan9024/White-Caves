@@ -12,15 +12,23 @@ import { ExecutiveTopNavbar } from '../../components/dashboard/ExecutiveTopNavba
 import { ExecutiveVSCodeSidebar } from '../../components/dashboard/ExecutiveVSCodeSidebar';
 import { ExecutiveAIVSCodeSidebar } from '../../components/dashboard/ExecutiveAIVSCodeSidebar';
 import { DepartmentManagementWorkspace } from '../../components/crm/DepartmentManager';
+import { DepartmentOverviewView } from '../../components/crm/DepartmentManager/DepartmentOverviewView';
 import { EmployeeManagerView } from '../../components/crm/EmployeeManager';
+import { EmployeeOverviewView } from '../../components/crm/EmployeeManager/EmployeeOverviewView';
 import { TaskManagerView } from '../../components/crm/TaskManager';
+import { TaskOverviewView } from '../../components/crm/TaskManager/TaskOverviewView';
 import { LeaderboardView } from '../../components/crm/Leaderboard';
+import { LeaderboardOverviewView } from '../../components/crm/Leaderboard/LeaderboardOverviewView';
 import { REPropertyManagerView } from '../../components/crm/REPropertyManager';
+import { REPropertyOverviewView } from '../../components/crm/REPropertyManager/REPropertyOverviewView';
 import { DealManagerView } from '../../components/crm/DealManager';
+import { DealOverviewView } from '../../components/crm/DealManager/DealOverviewView';
 import { DocumentManagerView } from '../../components/crm/DocumentManager';
+import { DocumentOverviewView } from '../../components/crm/DocumentManager/DocumentOverviewView';
+import { CustomerManagerView } from '../../components/crm/CustomerManager';
+import { CustomerOverviewView } from '../../components/crm/CustomerManager/CustomerOverviewView';
 import { RelationshipManagerView } from '../../components/crm/RelationshipManager';
 import { ErmsOverviewView } from '../../components/crm/RelationshipManager/ErmsOverviewView';
-import { CustomerManagerView } from '../../components/crm/CustomerManager';
 import { GlobalEntityCommandPalette } from '../../components/dashboard/GlobalEntityCommandPalette';
 import { CorporateDepartmentsProvider } from '../../context/CorporateDepartmentsContext';
 import { ErmsProvider } from '../../context/ErmsContext';
@@ -31,13 +39,13 @@ export const ModernDashboardPage: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Parse deep URL e.g. /dashboard/tasks/T001 or /dashboard/departments/DEPT-01/sub/SUB-01
   const pathParts = location.pathname
     .replace(/^\/dashboard\/?/, '')
     .split('/')
     .filter(Boolean);
   const rawTab = pathParts[0] as ActivityTab | undefined;
   const activeItemId = pathParts[1] || null;
+  const isRootOverview = !pathParts[1];
 
   const queryParams = new URLSearchParams(location.search);
   const isReadOnly = queryParams.get('mode') === 'view' || queryParams.get('mode') === 'execution';
@@ -56,39 +64,37 @@ export const ModernDashboardPage: FC = () => {
     'audit',
     'settings',
   ];
-
   const activeTab: ActivityTab = validTabs.includes(rawTab as ActivityTab)
     ? (rawTab as ActivityTab)
     : 'departments';
 
-  // ERMS double-layer route extraction: /dashboard/erms/entities/:id or /dashboard/erms/relationships/:id
-  const isErmsRootOverview = rawTab === 'erms' && !pathParts[1];
+  // ERMS double-layer extraction
+  const isErmsRootOverview = rawTab === 'erms' && isRootOverview;
   let ermsSubTab: 'entities' | 'relationships' | 'erd' =
     rawTab === 'relationships' ? 'relationships' : 'entities';
   let ermsEntityId: string | null = null;
   let ermsRelationshipId: string | null = null;
 
   if (rawTab === 'erms' || rawTab === 'relationships') {
-    const layer1 = pathParts[1];
-    const layer2 = pathParts[2];
-    if (layer1 === 'entities') {
+    const l1 = pathParts[1];
+    const l2 = pathParts[2];
+    if (l1 === 'entities') {
       ermsSubTab = 'entities';
-      ermsEntityId = layer2 || null;
-    } else if (layer1 === 'relationships') {
+      ermsEntityId = l2 || null;
+    } else if (l1 === 'relationships') {
       ermsSubTab = 'relationships';
-      ermsRelationshipId = layer2 || null;
-    } else if (layer1 === 'erd') {
+      ermsRelationshipId = l2 || null;
+    } else if (l1 === 'erd') {
       ermsSubTab = 'erd';
-    } else if (layer1 && (layer1.startsWith('rel-') || layer1.startsWith('REL-'))) {
+    } else if (l1 && (l1.startsWith('rel-') || l1.startsWith('REL-'))) {
       ermsSubTab = 'relationships';
-      ermsRelationshipId = layer1;
-    } else if (layer1) {
+      ermsRelationshipId = l1;
+    } else if (l1) {
       ermsSubTab = 'entities';
-      ermsEntityId = layer1;
+      ermsEntityId = l1;
     }
   }
 
-  // Auto-redirect /dashboard to /dashboard/departments
   useEffect(() => {
     if (location.pathname === '/dashboard' || location.pathname === '/dashboard/') {
       navigate('/dashboard/departments', { replace: true });
@@ -109,12 +115,10 @@ export const ModernDashboardPage: FC = () => {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  const handleSelectSidebarTab = (tab: ActivityTab) => {
-    navigate(`/dashboard/${tab}`);
-  };
+  const handleSelectSidebarTab = (tab: ActivityTab) => navigate(`/dashboard/${tab}`);
 
   const handleSelectSidebarItem = (key: string, label: string) => {
-    if (key === 'departments-crud') return navigate('/dashboard/departments');
+    if (key === 'departments-crud') return navigate('/dashboard/departments/slots');
     if (key.startsWith('route-')) return navigate(key.replace('route-', ''));
     if (key.startsWith('entity-'))
       return navigate(`/dashboard/erms/entities/${key.replace('entity-', '')}`);
@@ -158,29 +162,16 @@ export const ModernDashboardPage: FC = () => {
       style={{
         height: '100vh',
         width: '100vw',
-        backgroundColor: isDark ? '#070D18' : '#F8FAFC',
-        color: isDark ? '#FFFFFF' : '#0F172A',
-        fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
         display: 'flex',
         flexDirection: 'column',
+        backgroundColor: isDark ? '#020617' : '#FFFFFF',
         overflow: 'hidden',
       }}
-      data-testid="modern-dashboard-page"
     >
       <CorporateDepartmentsProvider>
         <ErmsProvider>
-          {/* ── Global Entity Quick Switcher (Ctrl+K) ───────────────────────── */}
-          <GlobalEntityCommandPalette
-            isOpen={isCommandPaletteOpen}
-            onClose={() => setIsCommandPaletteOpen(false)}
-            onSelectEntity={entity => {
-              navigate(entity.route);
-            }}
-          />
-
-          {/* ── Top Executive Navbar ────────────────────────────────────────── */}
           <div style={{ position: 'relative' }}>
-            <ExecutiveTopNavbar sticky={true} />
+            <ExecutiveTopNavbar sticky={true} homeRoute="/dashboard/departments" />
             <button
               type="button"
               onClick={() => setIsCommandPaletteOpen(true)}
@@ -217,24 +208,21 @@ export const ModernDashboardPage: FC = () => {
               </kbd>
             </button>
           </div>
-
-          {/* ── Main Workspace Body (Sidebar + Viewport + AI Mesh) ──────────── */}
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              overflow: 'hidden',
-              position: 'relative',
+          <GlobalEntityCommandPalette
+            isOpen={isCommandPaletteOpen}
+            onClose={() => setIsCommandPaletteOpen(false)}
+            onSelectEntity={entity => {
+              navigate(entity.route);
+              setIsCommandPaletteOpen(false);
             }}
-          >
-            {/* ── Left VS Code-Style Explorer Sidebar ────────────────────────── */}
+          />
+          <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
             <ExecutiveVSCodeSidebar
               activeTab={activeTab}
               onSelectTab={handleSelectSidebarTab}
               onSelectItem={handleSelectSidebarItem}
             />
 
-            {/* ── Center Working Canvas (Viewport Switcher) ─────────────────── */}
             <main
               style={{
                 flex: 1,
@@ -247,36 +235,90 @@ export const ModernDashboardPage: FC = () => {
               }}
               data-testid="viewport-main-area"
             >
-              {/* ── Active Viewport Switcher ── */}
               {activeTab === 'departments' ? (
-                <DepartmentManagementWorkspace
-                  selectedDeptId={activeItemId || undefined}
-                  isReadOnly={isReadOnly}
-                />
+                isRootOverview ? (
+                  <DepartmentOverviewView onNavigate={navigate} />
+                ) : (
+                  <DepartmentManagementWorkspace
+                    selectedDeptId={
+                      activeItemId && activeItemId !== 'slots' && activeItemId !== 'pillars'
+                        ? activeItemId
+                        : undefined
+                    }
+                    isReadOnly={isReadOnly}
+                  />
+                )
               ) : activeTab === 'employees' ? (
-                <EmployeeManagerView selectedEmpId={activeItemId || undefined} />
+                isRootOverview ? (
+                  <EmployeeOverviewView onNavigate={navigate} />
+                ) : (
+                  <EmployeeManagerView
+                    selectedEmpId={
+                      activeItemId &&
+                      activeItemId !== 'roster' &&
+                      activeItemId !== 'directors' &&
+                      activeItemId !== 'supervisors'
+                        ? activeItemId
+                        : undefined
+                    }
+                  />
+                )
               ) : activeTab === 'tasks' ? (
-                <TaskManagerView
-                  selectedTaskId={activeItemId}
-                  onSelectTask={id => navigate(`/dashboard/tasks/${id}`)}
-                />
+                isRootOverview ? (
+                  <TaskOverviewView onNavigate={navigate} />
+                ) : (
+                  <TaskManagerView
+                    selectedTaskId={
+                      activeItemId !== 'catalog' && activeItemId !== 'categories'
+                        ? activeItemId
+                        : null
+                    }
+                    onSelectTask={id => navigate(`/dashboard/tasks/${id}`)}
+                  />
+                )
               ) : activeTab === 'leaderboard' ? (
-                <LeaderboardView />
+                isRootOverview ? (
+                  <LeaderboardOverviewView onNavigate={navigate} />
+                ) : (
+                  <LeaderboardView />
+                )
               ) : activeTab === 'REproperties' ? (
-                <REPropertyManagerView
-                  selectedPropertyId={activeItemId}
-                  onSelectProperty={id => navigate(`/dashboard/REproperties/${id}`)}
-                />
+                isRootOverview ? (
+                  <REPropertyOverviewView onNavigate={navigate} />
+                ) : (
+                  <REPropertyManagerView
+                    selectedPropertyId={
+                      activeItemId !== 'inventory' && activeItemId !== 'clusters'
+                        ? activeItemId
+                        : null
+                    }
+                    onSelectProperty={id => navigate(`/dashboard/REproperties/${id}`)}
+                  />
+                )
               ) : activeTab === 'deals' ? (
-                <DealManagerView
-                  selectedDealId={activeItemId}
-                  onSelectDeal={id => navigate(`/dashboard/deals/${id}`)}
-                />
+                isRootOverview ? (
+                  <DealOverviewView onNavigate={navigate} />
+                ) : (
+                  <DealManagerView
+                    selectedDealId={
+                      activeItemId !== 'pipeline' && activeItemId !== 'escrow' ? activeItemId : null
+                    }
+                    onSelectDeal={id => navigate(`/dashboard/deals/${id}`)}
+                  />
+                )
               ) : activeTab === 'documents' ? (
-                <DocumentManagerView
-                  selectedDocId={activeItemId}
-                  onSelectDoc={id => navigate(`/dashboard/documents/${id}`)}
-                />
+                isRootOverview ? (
+                  <DocumentOverviewView onNavigate={navigate} />
+                ) : (
+                  <DocumentManagerView
+                    selectedDocId={
+                      activeItemId !== 'vault' && activeItemId !== 'compliance'
+                        ? activeItemId
+                        : null
+                    }
+                    onSelectDoc={id => navigate(`/dashboard/documents/${id}`)}
+                  />
+                )
               ) : activeTab === 'relationships' || activeTab === 'erms' ? (
                 isErmsRootOverview ? (
                   <ErmsOverviewView onNavigate={navigate} />
@@ -291,56 +333,32 @@ export const ModernDashboardPage: FC = () => {
                   />
                 )
               ) : activeTab === 'customers' ? (
-                <CustomerManagerView
-                  selectedCustomerId={activeItemId}
-                  onSelectCustomer={id => navigate(`/dashboard/customers/${id}`)}
-                />
+                isRootOverview ? (
+                  <CustomerOverviewView onNavigate={navigate} />
+                ) : (
+                  <CustomerManagerView
+                    selectedCustomerId={
+                      activeItemId !== 'leads' && activeItemId !== 'investors' ? activeItemId : null
+                    }
+                    onSelectCustomer={id => navigate(`/dashboard/customers/${id}`)}
+                  />
+                )
               ) : (
                 <div
                   style={{
                     flex: 1,
-                    border: isDark
-                      ? '1.5px dashed rgba(239, 68, 68, 0.25)'
-                      : '1.5px dashed rgba(239, 68, 68, 0.35)',
-                    borderRadius: '12px',
                     padding: '32px',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: isDark ? '#64748B' : '#475569',
-                    backgroundColor: isDark ? 'rgba(7, 13, 24, 0.3)' : '#F8FAFC',
-                    textAlign: 'center',
-                    gap: '12px',
                   }}
                 >
-                  <span style={{ fontSize: '2rem' }}>🎯</span>
-                  <div style={{ maxWidth: '480px' }}>
-                    <div
-                      style={{
-                        fontSize: '1rem',
-                        fontWeight: 800,
-                        color: isDark ? '#F1F5F9' : '#0F172A',
-                      }}
-                    >
-                      {activeTab.toUpperCase()} Viewport Initialized
-                    </div>
-                    <div
-                      style={{
-                        fontSize: '0.82rem',
-                        marginTop: '4px',
-                        color: isDark ? '#94A3B8' : '#64748B',
-                      }}
-                    >
-                      Select a module from the left activity bar to inspect departments, employees,
-                      tasks, or merit rankings.
-                    </div>
-                  </div>
+                  <span>🎯 {activeTab.toUpperCase()} Viewport Initialized</span>
                 </div>
               )}
             </main>
 
-            {/* ── Right VS Code-Style AI Command Center Sidebar ─────────────────── */}
             <ExecutiveAIVSCodeSidebar
               onSelectAgent={(agentId, agentName) =>
                 setActiveAgent({ id: agentId, name: agentName })

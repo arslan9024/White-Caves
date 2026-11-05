@@ -1,13 +1,22 @@
+/**
+ * SidebarTasksList.tsx
+ * White Caves Real Estate LLC - Tasks Left Sidebar Drawer
+ * Standard: AEGIS Canonical 7-Category Architecture Standard (Drawer Sub-View)
+ * Single Purpose File Law: < 350 lines
+ * Protocol: Turing Protocol Double-Layer Routing
+ */
+
 import React, { FC } from 'react';
-import { CheckSquare, PlusCircle } from 'lucide-react';
+import { CheckSquare, PlusCircle, ArrowRight, ShieldCheck, Clock } from 'lucide-react';
 import { buildCanonical200Tasks } from '../../crm/TaskManager/TaskManager.data';
 import { SidebarListWrapper } from './SidebarDepartmentsList.styles';
 
-interface SidebarTasksListProps {
+export interface SidebarTasksListProps {
   filterQuery?: string;
   selectedTaskId?: string | null;
   onSelectTask?: (id: string, title: string) => void;
   onOpenCreate?: () => void;
+  onNavigateToView?: (route: string) => void;
 }
 
 export const SidebarTasksList: FC<SidebarTasksListProps> = ({
@@ -15,6 +24,7 @@ export const SidebarTasksList: FC<SidebarTasksListProps> = ({
   selectedTaskId,
   onSelectTask,
   onOpenCreate,
+  onNavigateToView,
 }) => {
   const allTasks = React.useMemo(() => buildCanonical200Tasks(), []);
   const query = filterQuery.trim().toLowerCase();
@@ -31,6 +41,51 @@ export const SidebarTasksList: FC<SidebarTasksListProps> = ({
 
   return (
     <SidebarListWrapper data-testid="sidebar-tasks-list">
+      {/* ── Level 1 Category Portals ─────────────────────────────────── */}
+      <div style={{ marginBottom: '8px' }}>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/tasks/catalog')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#34D399',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(16, 185, 129, 0.08)',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '4px',
+          }}
+          data-testid="link-all-tasks-catalog"
+        >
+          📋 Open Tasks Catalog Hub (CRUD) <ArrowRight size={11} />
+        </div>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/tasks/categories')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#38BDF8',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(56, 189, 248, 0.08)',
+            border: '1px solid rgba(56, 189, 248, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '8px',
+          }}
+          data-testid="link-tasks-categories"
+        >
+          🏛️ Tasks by Authority (DLD, RERA, FTA) <ArrowRight size={11} />
+        </div>
+      </div>
+
+      {/* Header bar with Count and New Task action */}
       <div
         style={{
           display: 'flex',
@@ -73,12 +128,16 @@ export const SidebarTasksList: FC<SidebarTasksListProps> = ({
         )}
       </div>
 
+      {/* ── Level 2 Sub-Items: Tasks with Turing IDs ─────────────────── */}
       {visibleTasks.slice(0, 50).map(task => {
         const isSelected = selectedTaskId === task._id;
         return (
           <div
             key={task._id}
-            onClick={() => onSelectTask?.(task._id, task.title)}
+            onClick={() => {
+              onSelectTask?.(task._id, task.title);
+              onNavigateToView?.(`/dashboard/tasks/${task._id}`);
+            }}
             data-testid={`sidebar-task-${task.taskCode}`}
             style={{
               padding: '10px 12px',
@@ -94,65 +153,32 @@ export const SidebarTasksList: FC<SidebarTasksListProps> = ({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span
-                  style={{
-                    fontSize: '0.65rem',
-                    fontFamily: 'monospace',
-                    fontWeight: 800,
-                    color: '#34D399',
-                    background: 'rgba(16, 185, 129, 0.12)',
-                    padding: '1px 5px',
-                    borderRadius: '4px',
-                  }}
-                >
-                  {task.taskCode}
-                </span>
-                {task.statutoryAuthority && (
-                  <span style={{ fontSize: '0.62rem', color: '#94A3B8', fontWeight: 600 }}>
-                    {task.statutoryAuthority}
-                  </span>
-                )}
-              </div>
               <span
                 style={{
-                  fontSize: '0.62rem',
-                  fontWeight: 800,
+                  fontSize: '0.65rem',
                   fontFamily: 'monospace',
-                  color:
-                    task.priority === 'CRITICAL'
-                      ? '#F87171'
-                      : task.priority === 'HIGH'
-                        ? '#FBBF24'
-                        : '#60A5FA',
+                  color: '#34D399',
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  fontWeight: 700,
+                }}
+              >
+                {task.taskCode}
+              </span>
+              <span
+                style={{
+                  fontSize: '0.65rem',
+                  fontWeight: 800,
+                  color: task.priority === 'CRITICAL' ? '#EF4444' : '#F59E0B',
                 }}
               >
                 {task.priority}
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-              <div
-                style={{
-                  width: '22px',
-                  height: '22px',
-                  borderRadius: '6px',
-                  background: 'rgba(16, 185, 129, 0.12)',
-                  color: '#34D399',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                  marginTop: '1px',
-                }}
-              >
-                <CheckSquare size={13} />
-              </div>
-              <div
-                style={{ fontSize: '0.75rem', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.25 }}
-              >
-                {task.title}
-              </div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#F8FAFC' }}>
+              {task.title}
             </div>
 
             <div
@@ -160,27 +186,20 @@ export const SidebarTasksList: FC<SidebarTasksListProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                fontSize: '0.65rem',
+                fontSize: '0.68rem',
                 color: '#64748B',
-                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                paddingTop: '4px',
               }}
             >
-              <span>
-                Sup:{' '}
-                <strong style={{ color: '#94A3B8' }}>{task.reportingChain.supervisorName}</strong>
+              <span>{task.statutoryAuthority || 'Internal'}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#94A3B8' }}>
+                <Clock size={11} /> {task.defaultSla}
               </span>
-              <span style={{ color: '#10B981', fontFamily: 'monospace' }}>{task.defaultSla}</span>
             </div>
           </div>
         );
       })}
-
-      {visibleTasks.length > 50 && (
-        <div style={{ padding: '8px', textAlign: 'center', fontSize: '0.68rem', color: '#64748B' }}>
-          Showing 50 of {visibleTasks.length} tasks. Use search to filter.
-        </div>
-      )}
     </SidebarListWrapper>
   );
 };
+
+export default SidebarTasksList;

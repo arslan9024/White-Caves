@@ -1,25 +1,29 @@
 /**
- * White Caves Real Estate LLC - Sidebar Leaderboard List
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Drawer Component)
+ * SidebarLeaderboardList.tsx
+ * White Caves Real Estate LLC - Leaderboard Left Sidebar Drawer
+ * Standard: AEGIS Canonical 7-Category Architecture Standard (Drawer Sub-View)
  * Single Purpose File Law: < 350 lines
+ * Protocol: Turing Protocol Double-Layer Routing
  */
 
 import React, { FC } from 'react';
-import { Trophy, Award, Sparkles, ChevronRight, Crown } from 'lucide-react';
+import { Trophy, Award, Sparkles, ChevronRight, Crown, ArrowRight } from 'lucide-react';
 import { INITIAL_LEADERBOARD_DATA } from '../../crm/Leaderboard/Leaderboard.data';
 import { TIER_METADATA } from '../../crm/Leaderboard/Leaderboard.config';
 import { SidebarListWrapper } from './SidebarDepartmentsList.styles';
 
-interface SidebarLeaderboardListProps {
+export interface SidebarLeaderboardListProps {
   filterQuery?: string;
   selectedMemberId?: string | null;
   onSelectMember?: (id: string, name: string) => void;
+  onNavigateToView?: (route: string) => void;
 }
 
 export const SidebarLeaderboardList: FC<SidebarLeaderboardListProps> = ({
   filterQuery = '',
   selectedMemberId,
   onSelectMember,
+  onNavigateToView,
 }) => {
   const query = filterQuery.trim().toLowerCase();
 
@@ -37,6 +41,51 @@ export const SidebarLeaderboardList: FC<SidebarLeaderboardListProps> = ({
 
   return (
     <SidebarListWrapper data-testid="sidebar-leaderboard-list">
+      {/* ── Level 1 Category Portals ─────────────────────────────────── */}
+      <div style={{ marginBottom: '8px' }}>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/leaderboard/rankings')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#F59E0B',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(245, 158, 11, 0.08)',
+            border: '1px solid rgba(245, 158, 11, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '4px',
+          }}
+          data-testid="link-all-leaderboard-rankings"
+        >
+          🏆 Open Leaderboard Standings <ArrowRight size={11} />
+        </div>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/leaderboard/tiers')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#C084FC',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(192, 132, 252, 0.08)',
+            border: '1px solid rgba(192, 132, 252, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '8px',
+          }}
+          data-testid="link-leaderboard-tiers"
+        >
+          🎖️ Tier Structure & Rules (L0–L5) <ArrowRight size={11} />
+        </div>
+      </div>
+
+      {/* Header bar with Count */}
       <div
         style={{
           display: 'flex',
@@ -58,109 +107,94 @@ export const SidebarLeaderboardList: FC<SidebarLeaderboardListProps> = ({
           }}
         >
           <Trophy size={12} color="#F59E0B" />
-          Merit Rankings ({sortedMembers.length})
+          Rankings ({sortedMembers.length})
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        {sortedMembers.map((member, index) => {
-          const isSelected = selectedMemberId === member.id;
-          const tierMeta = TIER_METADATA[member.currentTier];
-          const isGold = index === 0;
+      {/* ── Level 2 Sub-Items: Members with Turing IDs ───────────────── */}
+      {sortedMembers.map((member, idx) => {
+        const isSelected = selectedMemberId === member.id;
+        const tierInfo = TIER_METADATA[member.currentTier];
 
-          return (
+        return (
+          <div
+            key={member.id}
+            onClick={() => {
+              onSelectMember?.(member.id, member.name);
+              onNavigateToView?.(`/dashboard/leaderboard/${member.id}`);
+            }}
+            data-testid={`sidebar-member-${member.id}`}
+            style={{
+              padding: '10px 12px',
+              borderRadius: '8px',
+              background: isSelected ? 'rgba(245, 158, 11, 0.15)' : '#070D18',
+              border: isSelected ? '1px solid #F59E0B' : '1px solid rgba(255, 255, 255, 0.05)',
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              marginBottom: '6px',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span
+                  style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 900,
+                    color:
+                      idx === 0
+                        ? '#F59E0B'
+                        : idx === 1
+                          ? '#94A3B8'
+                          : idx === 2
+                            ? '#B45309'
+                            : '#64748B',
+                  }}
+                >
+                  #{idx + 1}
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.65rem',
+                    fontFamily: 'monospace',
+                    color: '#F59E0B',
+                    background: 'rgba(245, 158, 11, 0.12)',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    fontWeight: 700,
+                  }}
+                >
+                  {member.currentTier}
+                </span>
+              </div>
+              <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#F59E0B' }}>
+                {member.meritXp.toLocaleString()} XP
+              </span>
+            </div>
+
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#F8FAFC' }}>
+              {member.name}
+            </div>
+
             <div
-              key={member.id}
-              onClick={() => onSelectMember?.(member.id, member.name)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '6px 8px',
-                borderRadius: '6px',
-                background: isSelected ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255, 255, 255, 0.02)',
-                border: isSelected
-                  ? '1px solid rgba(245, 158, 11, 0.4)'
-                  : '1px solid rgba(255, 255, 255, 0.04)',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
+                justifyContent: 'space-between',
+                fontSize: '0.68rem',
+                color: '#64748B',
               }}
             >
-              {/* Rank */}
-              <div
-                style={{
-                  width: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.72rem',
-                  fontWeight: 800,
-                  color: isGold ? '#F59E0B' : '#94A3B8',
-                }}
-              >
-                {isGold ? <Crown size={12} color="#F59E0B" /> : `#${index + 1}`}
-              </div>
-
-              {/* Avatar */}
-              <img
-                src={member.avatar}
-                alt={member.name}
-                style={{
-                  width: '26px',
-                  height: '26px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  border: isGold ? '1.5px solid #F59E0B' : '1px solid #475569',
-                }}
-              />
-
-              {/* Info */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span
-                    style={{
-                      fontSize: '0.74rem',
-                      fontWeight: 700,
-                      color: '#F8FAFC',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {member.name}
-                  </span>
-                  {member.promotionStatus === 'ELIGIBLE' && <Sparkles size={10} color="#10B981" />}
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    fontSize: '0.64rem',
-                    color: '#94A3B8',
-                  }}
-                >
-                  <span
-                    style={{
-                      padding: '0.5px 3px',
-                      borderRadius: '3px',
-                      background: 'rgba(255, 255, 255, 0.06)',
-                      fontWeight: 700,
-                      color: isGold ? '#FCD34D' : '#CBD5E1',
-                    }}
-                  >
-                    {tierMeta.tier}
-                  </span>
-                  <span>•</span>
-                  <span>{member.meritXp.toLocaleString()} XP</span>
-                </div>
-              </div>
-
-              <ChevronRight size={12} color="#64748B" />
+              <span>{member.currentRole}</span>
+              <span style={{ color: '#94A3B8' }}>{member.departmentName}</span>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </SidebarListWrapper>
   );
 };
+
+export default SidebarLeaderboardList;

@@ -256,41 +256,52 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
 
         {/* ── View Selection in Drawer ─────── */}
         {activeTab === 'departments' ? (
-          <SidebarDepartmentsList filterQuery={filterQuery} onOpenCreate={onOpenDeptManager} />
+          <SidebarDepartmentsList
+            filterQuery={filterQuery}
+            onOpenCreate={onOpenDeptManager}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
+          />
         ) : activeTab === 'employees' ? (
           <SidebarEmployeesList
             filterQuery={filterQuery}
             onSelectEmployee={(id, name) => handleLeafClick(`emp-${id}`, `Employee: ${name}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : activeTab === 'tasks' ? (
           <SidebarTasksList
             filterQuery={filterQuery}
             onSelectTask={(id, title) => handleLeafClick(`task-${id}`, `Task: ${title}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : activeTab === 'leaderboard' ? (
           <SidebarLeaderboardList
             filterQuery={filterQuery}
             onSelectMember={(id, name) => handleLeafClick(`lead-${id}`, `Leaderboard: ${name}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : activeTab === 'REproperties' ? (
           <SidebarREPropertiesList
             filterQuery={filterQuery}
             onSelectProperty={(id, title) => handleLeafClick(`prop-${id}`, `Property: ${title}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : activeTab === 'deals' ? (
           <SidebarDealsList
             filterQuery={filterQuery}
             onSelectDeal={(id, title) => handleLeafClick(`deal-${id}`, `Deal: ${title}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : activeTab === 'customers' ? (
           <SidebarCustomersList
             filterQuery={filterQuery}
             onSelectCustomer={(id, name) => handleLeafClick(`cust-${id}`, `Customer: ${name}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : activeTab === 'documents' ? (
           <SidebarDocumentsList
             filterQuery={filterQuery}
             onSelectDoc={(id, title) => handleLeafClick(`doc-${id}`, `Doc: ${title}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : activeTab === 'relationships' || activeTab === 'erms' ? (
           <SidebarRelationshipsList
@@ -300,7 +311,11 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : (
-          <SidebarDepartmentsList filterQuery={filterQuery} onOpenCreate={onOpenDeptManager} />
+          <SidebarDepartmentsList
+            filterQuery={filterQuery}
+            onOpenCreate={onOpenDeptManager}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
+          />
         )}
       </ExplorerDrawer>
 

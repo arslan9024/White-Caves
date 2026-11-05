@@ -2,11 +2,12 @@
  * White Caves Real Estate LLC - ModernDashboardPage Unit & Mounting Test
  * Standard: AEGIS Canonical 7-Category Architecture Standard (Tests)
  * Single Purpose File Law: < 350 lines
+ * Protocol: Turing Protocol Two-Part Routing Architecture (Icon Overview & Drawer Deep Routes)
  */
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '../../context/ThemeContext';
 import { UserRoleProvider } from '../../context/UserRoleContext';
@@ -40,28 +41,81 @@ function renderDashboardWithProviders(initialEntry: string) {
   );
 }
 
-describe('ModernDashboardPage Viewport Rendering', () => {
+describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
   it('renders modern dashboard without throwing ReferenceError', () => {
     renderDashboardWithProviders('/dashboard/departments');
     expect(screen.getByTestId('viewport-main-area')).toBeInTheDocument();
   }, 30000);
 
-  it('renders documents viewport when navigating to /dashboard/documents', () => {
-    renderDashboardWithProviders('/dashboard/documents');
-    expect(screen.getByTestId('document-manager-view')).toBeInTheDocument();
+  it('renders Department Overview on icon route /dashboard/departments', () => {
+    renderDashboardWithProviders('/dashboard/departments');
+    expect(screen.getByTestId('department-overview-view')).toBeInTheDocument();
   }, 30000);
 
-  it('renders deals viewport when navigating to /dashboard/deals', () => {
+  it('renders Department Slots workspace on drawer route /dashboard/departments/slots', () => {
+    renderDashboardWithProviders('/dashboard/departments/slots');
+    expect(screen.getByTestId('department-management-workspace')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Employee Overview on icon route /dashboard/employees', () => {
+    renderDashboardWithProviders('/dashboard/employees');
+    expect(screen.getByTestId('employee-overview-view')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Employee Roster workspace on drawer route /dashboard/employees/roster', () => {
+    renderDashboardWithProviders('/dashboard/employees/roster');
+    expect(screen.getByTestId('employee-manager-view')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Task Overview on icon route /dashboard/tasks', () => {
+    renderDashboardWithProviders('/dashboard/tasks');
+    expect(screen.getByTestId('task-overview-view')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Task Catalog workspace on drawer route /dashboard/tasks/catalog', () => {
+    renderDashboardWithProviders('/dashboard/tasks/catalog');
+    expect(screen.getByTestId('task-manager-view')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Property Portfolio Overview on icon route /dashboard/REproperties', () => {
+    renderDashboardWithProviders('/dashboard/REproperties');
+    expect(screen.getByTestId('reproperty-overview-view')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Property Inventory workspace on drawer route /dashboard/REproperties/inventory', () => {
+    renderDashboardWithProviders('/dashboard/REproperties/inventory');
+    expect(screen.getByTestId('re-property-manager-view')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Deals Overview on icon route /dashboard/deals', () => {
     renderDashboardWithProviders('/dashboard/deals');
+    expect(screen.getByTestId('deal-overview-view')).toBeInTheDocument();
     expect(screen.getByTestId('deal-manager-view')).toBeInTheDocument();
   }, 30000);
 
-  it('renders relationships viewport when navigating to /dashboard/relationships', () => {
-    renderDashboardWithProviders('/dashboard/relationships');
-    expect(screen.getByTestId('relationship-manager-view')).toBeInTheDocument();
+  it('renders Documents Overview on icon route /dashboard/documents', () => {
+    renderDashboardWithProviders('/dashboard/documents');
+    expect(screen.getByTestId('document-overview-view')).toBeInTheDocument();
+    expect(screen.getByTestId('document-manager-view')).toBeInTheDocument();
   }, 30000);
 
-  it('renders ERMS root overview when navigating to /dashboard/erms from icon only route', () => {
+  it('renders Customers Overview on icon route /dashboard/customers', () => {
+    renderDashboardWithProviders('/dashboard/customers');
+    expect(screen.getByTestId('customer-overview-view')).toBeInTheDocument();
+    expect(screen.getByTestId('customer-manager-view')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Leaderboard Overview on icon route /dashboard/leaderboard', () => {
+    renderDashboardWithProviders('/dashboard/leaderboard');
+    expect(screen.getByTestId('leaderboard-overview-view')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Leaderboard Rankings on drawer route /dashboard/leaderboard/rankings', () => {
+    renderDashboardWithProviders('/dashboard/leaderboard/rankings');
+    expect(screen.getByTestId('leaderboard-view')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders ERMS root overview on icon route /dashboard/erms', () => {
     renderDashboardWithProviders('/dashboard/erms');
     expect(screen.getByTestId('erms-overview-view')).toBeInTheDocument();
     expect(
@@ -79,9 +133,9 @@ describe('ModernDashboardPage Viewport Rendering', () => {
     expect(screen.getByTestId('relationship-single-link-view')).toBeInTheDocument();
   }, 30000);
 
-  it('renders customers viewport when navigating to /dashboard/customers', () => {
-    renderDashboardWithProviders('/dashboard/customers');
-    expect(screen.getByTestId('customer-manager-view')).toBeInTheDocument();
+  it('renders relationships backward-compatible viewport /dashboard/relationships', () => {
+    renderDashboardWithProviders('/dashboard/relationships');
+    expect(screen.getByTestId('relationship-manager-view')).toBeInTheDocument();
   }, 30000);
 
   it('opens global command palette when clicking quick-command-palette-btn', () => {

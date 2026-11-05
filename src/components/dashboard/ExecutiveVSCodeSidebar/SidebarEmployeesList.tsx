@@ -1,13 +1,22 @@
+/**
+ * SidebarEmployeesList.tsx
+ * White Caves Real Estate LLC - Employees Left Sidebar Drawer
+ * Standard: AEGIS Canonical 7-Category Architecture Standard (Drawer Sub-View)
+ * Single Purpose File Law: < 350 lines
+ * Protocol: Turing Protocol Double-Layer Routing
+ */
+
 import React, { FC } from 'react';
-import { Users, UserPlus, Shield } from 'lucide-react';
+import { Users, UserPlus, Shield, ArrowRight, Award } from 'lucide-react';
 import { INITIAL_EMPLOYEES_SEED } from '../../crm/EmployeeManager/EmployeeManager.data';
 import { SidebarListWrapper } from './SidebarDepartmentsList.styles';
 
-interface SidebarEmployeesListProps {
+export interface SidebarEmployeesListProps {
   filterQuery?: string;
   selectedEmployeeId?: string | null;
   onSelectEmployee?: (id: string, name: string) => void;
   onOpenCreate?: () => void;
+  onNavigateToView?: (route: string) => void;
 }
 
 export const SidebarEmployeesList: FC<SidebarEmployeesListProps> = ({
@@ -15,6 +24,7 @@ export const SidebarEmployeesList: FC<SidebarEmployeesListProps> = ({
   selectedEmployeeId,
   onSelectEmployee,
   onOpenCreate,
+  onNavigateToView,
 }) => {
   const query = filterQuery.trim().toLowerCase();
 
@@ -30,6 +40,51 @@ export const SidebarEmployeesList: FC<SidebarEmployeesListProps> = ({
 
   return (
     <SidebarListWrapper data-testid="sidebar-employees-list">
+      {/* ── Level 1 Category Portals ─────────────────────────────────── */}
+      <div style={{ marginBottom: '8px' }}>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/employees/roster')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#60A5FA',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(59, 130, 246, 0.08)',
+            border: '1px solid rgba(59, 130, 246, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '4px',
+          }}
+          data-testid="link-all-emp-roster"
+        >
+          👥 Open Personnel Roster Table (CRUD) <ArrowRight size={11} />
+        </div>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/employees/supervisors')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#34D399',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(16, 185, 129, 0.08)',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '8px',
+          }}
+          data-testid="link-emp-supervisors"
+        >
+          🛡️ 108 Squad Supervisors <ArrowRight size={11} />
+        </div>
+      </div>
+
+      {/* Header bar with Count and Onboard action */}
       <div
         style={{
           display: 'flex',
@@ -72,12 +127,16 @@ export const SidebarEmployeesList: FC<SidebarEmployeesListProps> = ({
         )}
       </div>
 
+      {/* ── Level 2 Sub-Items: Employees with Turing IDs ─────────────── */}
       {visibleEmployees.map(emp => {
         const isSelected = selectedEmployeeId === emp._id;
         return (
           <div
             key={emp._id}
-            onClick={() => onSelectEmployee?.(emp._id, emp.fullName)}
+            onClick={() => {
+              onSelectEmployee?.(emp._id, emp.fullName);
+              onNavigateToView?.(`/dashboard/employees/${emp._id}`);
+            }}
             data-testid={`sidebar-emp-${emp.employeeCode}`}
             style={{
               padding: '10px 12px',
@@ -98,73 +157,32 @@ export const SidebarEmployeesList: FC<SidebarEmployeesListProps> = ({
                   style={{
                     fontSize: '0.65rem',
                     fontFamily: 'monospace',
-                    fontWeight: 800,
                     color: '#60A5FA',
-                    background: 'rgba(59, 130, 246, 0.12)',
-                    padding: '1px 5px',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    padding: '2px 6px',
                     borderRadius: '4px',
+                    fontWeight: 700,
                   }}
                 >
                   {emp.employeeCode}
                 </span>
-                <span style={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: 600 }}>
+                <span
+                  style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 800,
+                    color: '#94A3B8',
+                  }}
+                >
                   {emp.roleTier}
                 </span>
               </div>
-              <span
-                style={{
-                  fontSize: '0.65rem',
-                  color: emp.status === 'active' ? '#10B981' : '#F59E0B',
-                  fontWeight: 700,
-                }}
-              >
-                ● {emp.status}
+              <span style={{ fontSize: '0.65rem', color: '#F59E0B', fontWeight: 700 }}>
+                {emp.merit_xp_count || 0} XP
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div
-                style={{
-                  width: '26px',
-                  height: '26px',
-                  borderRadius: '6px',
-                  background: 'rgba(59, 130, 246, 0.15)',
-                  color: '#60A5FA',
-                  fontSize: '0.65rem',
-                  fontWeight: 800,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <Users size={14} />
-              </div>
-              <div style={{ overflow: 'hidden' }}>
-                <div
-                  style={{
-                    fontSize: '0.78rem',
-                    fontWeight: 800,
-                    color: '#FFFFFF',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {emp.fullName}
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.68rem',
-                    color: '#94A3B8',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {emp.designation}
-                </div>
-              </div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#F8FAFC' }}>
+              {emp.fullName}
             </div>
 
             <div
@@ -172,29 +190,12 @@ export const SidebarEmployeesList: FC<SidebarEmployeesListProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                fontSize: '0.65rem',
+                fontSize: '0.68rem',
                 color: '#64748B',
-                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                paddingTop: '4px',
               }}
             >
-              <span
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  maxWidth: '140px',
-                }}
-              >
-                {emp.pillarName}
-              </span>
-              {emp.reraCardNumber && (
-                <span
-                  style={{ display: 'flex', alignItems: 'center', gap: '2px', color: '#F59E0B' }}
-                >
-                  <Shield size={10} /> {emp.reraCardNumber}
-                </span>
-              )}
+              <span>{emp.designation}</span>
+              <span style={{ color: '#38BDF8' }}>{emp.pillarName}</span>
             </div>
           </div>
         );
@@ -202,3 +203,5 @@ export const SidebarEmployeesList: FC<SidebarEmployeesListProps> = ({
     </SidebarListWrapper>
   );
 };
+
+export default SidebarEmployeesList;

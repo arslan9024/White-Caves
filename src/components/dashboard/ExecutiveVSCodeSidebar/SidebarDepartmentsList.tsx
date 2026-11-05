@@ -1,16 +1,34 @@
+/**
+ * SidebarDepartmentsList.tsx
+ * White Caves Real Estate LLC - Department Left Sidebar Drawer
+ * Standard: AEGIS Canonical 7-Category Architecture Standard (Drawer Sub-View)
+ * Single Purpose File Law: < 350 lines
+ * Protocol: Turing Protocol Double-Layer Routing
+ */
+
 import React, { FC } from 'react';
-import { GripVertical, Building2, Layers, Edit2, Trash2, PlusCircle } from 'lucide-react';
+import {
+  GripVertical,
+  Building2,
+  Layers,
+  Edit2,
+  Trash2,
+  PlusCircle,
+  ArrowRight,
+} from 'lucide-react';
 import { useCorporateDepartments } from '../../../context/CorporateDepartmentsContext';
 import { SidebarListWrapper, SidebarCardItem } from './SidebarDepartmentsList.styles';
 
-interface SidebarDepartmentsListProps {
+export interface SidebarDepartmentsListProps {
   filterQuery?: string;
   onOpenCreate?: () => void;
+  onNavigateToView?: (route: string) => void;
 }
 
 export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
   filterQuery = '',
   onOpenCreate,
+  onNavigateToView,
 }) => {
   const {
     slots,
@@ -44,6 +62,51 @@ export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
 
   return (
     <SidebarListWrapper data-testid="sidebar-departments-list">
+      {/* ── Hierarchical Level 1 Category Portals ───────────────────── */}
+      <div style={{ marginBottom: '8px' }}>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/departments/slots')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#F87171',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '4px',
+          }}
+          data-testid="link-all-dept-slots"
+        >
+          📑 Open 12 Slots Workspace (CRUD) <ArrowRight size={11} />
+        </div>
+        <div
+          onClick={() => onNavigateToView?.('/dashboard/departments/pillars')}
+          style={{
+            fontSize: '0.68rem',
+            color: '#60A5FA',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'rgba(59, 130, 246, 0.08)',
+            border: '1px solid rgba(59, 130, 246, 0.2)',
+            borderRadius: '6px',
+            marginBottom: '8px',
+          }}
+          data-testid="link-dept-pillars"
+        >
+          🏛️ Inspect 7 Governance Pillars <ArrowRight size={11} />
+        </div>
+      </div>
+
+      {/* ── Level 2 Sub-Items: 12 Corporate Slots ─────────────────────── */}
       {visibleSlots.map(slot => {
         const isSelected = selectedSlotIndex === slot.slotIndex;
         const isEmpty = !slot.dept;
@@ -65,7 +128,16 @@ export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
             onDragLeave={e => handleSlotDragLeave(e, slot.slotIndex)}
             onDrop={e => handleSlotDrop(e, slot.slotIndex)}
             onDragEnd={handleSlotDragEnd}
-            onClick={() => selectSlot(slot.slotIndex)}
+            onClick={() => {
+              selectSlot(slot.slotIndex);
+              if (onNavigateToView) {
+                onNavigateToView(
+                  dept?.code
+                    ? `/dashboard/departments/${dept.code}`
+                    : `/dashboard/departments/slots`
+                );
+              }
+            }}
             data-testid={`sidebar-dept-card-${slot.slotIndex}`}
           >
             {/* Top row: Slot pill, fixed code, drag handle */}
