@@ -5,6 +5,7 @@
  * Single Purpose File Law: < 350 lines
  */
 
+import { safeStorage } from '../utils/safeStorage';
 import type { UserRole, AccessLevel, RoleTier, UserProfile } from './UserRoleContext.types';
 
 export const ROLE_DEFAULT_LEVELS: Record<UserRole, AccessLevel> = {
@@ -144,204 +145,6 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, string[]> = {
   guest: ['can_view_properties', 'can_use_calculators'],
 };
 
-export const DEMO_ROLE_PROFILES: Record<UserRole, UserProfile> = {
-  managing_director: {
-    id: 'md_arslan_malik',
-    name: 'Arslan Malik Bashir Ahmad',
-    email: 'arslanmalikgoraha@gmail.com',
-    phone: '+971505110636',
-    role: 'managing_director',
-    accessLevel: 5,
-    assignedDepartment: 'Executive Directorate',
-    isManagingDirector: true,
-    isFounder: true,
-    isRoleConfirmed: true,
-    permissions: ['*'],
-  },
-  admin: {
-    id: 'admin_sys',
-    name: 'White Caves Admin',
-    email: 'admin@whitecaves.com',
-    phone: '+97148888888',
-    role: 'admin',
-    accessLevel: 5,
-    assignedDepartment: 'Information Technology',
-    isManagingDirector: true,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ['*'],
-  },
-  manager: {
-    id: 'mgr_diana',
-    name: 'Diana Prince (Sales Head)',
-    email: 'diana.prince@whitecaves.com',
-    phone: '+971501234561',
-    role: 'manager',
-    accessLevel: 4,
-    assignedDepartment: 'Luxury Residential Sales',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.manager,
-  },
-  supervisor: {
-    id: 'sup_rashid',
-    name: 'Rashid Al Nuaimi (Team Lead)',
-    email: 'rashid.lead@whitecaves.com',
-    phone: '+971501234562',
-    role: 'supervisor',
-    accessLevel: 3,
-    assignedDepartment: 'Downtown & Marina Squad',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.supervisor,
-  },
-  agent: {
-    id: 'agent_sarah',
-    name: 'Sarah Broker (Licensed Agent)',
-    email: 'sarah.broker@whitecaves.com',
-    phone: '+971501234563',
-    role: 'agent',
-    accessLevel: 2,
-    assignedDepartment: 'Palm Jumeirah & Hills Luxury',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.agent,
-  },
-  intern: {
-    id: 'intern_tariq',
-    name: 'Tariq Mansour (Trainee)',
-    email: 'tariq.intern@whitecaves.com',
-    phone: '+971501234564',
-    role: 'intern',
-    accessLevel: 1,
-    assignedDepartment: 'Broker Academy',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.intern,
-  },
-  tenant: {
-    id: 'client_tenant_omar',
-    name: 'Omar Farooq (DAMAC Hills 2 Tenant)',
-    email: 'omar.tenant@gmail.com',
-    phone: '+971509988771',
-    role: 'tenant',
-    accessLevel: 1,
-    assignedDepartment: 'Client Leasing Portal',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.tenant,
-  },
-  landlord: {
-    id: 'client_landlord_khalid',
-    name: 'Sheikh Khalid (Portfolio Landlord)',
-    email: 'khalid.landlord@gmail.com',
-    phone: '+971509988772',
-    role: 'landlord',
-    accessLevel: 2,
-    assignedDepartment: 'Asset Owner Portal',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.landlord,
-  },
-  buyer: {
-    id: 'client_buyer_alex',
-    name: 'Alexander Volkov (Luxury Buyer)',
-    email: 'alex.buyer@investor.com',
-    phone: '+971509988773',
-    role: 'buyer',
-    accessLevel: 1,
-    assignedDepartment: 'Secondary Acquisition',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.buyer,
-  },
-  seller: {
-    id: 'client_seller_fatima',
-    name: 'Fatima Al Mansoori (Villa Seller)',
-    email: 'fatima.seller@gmail.com',
-    phone: '+971509988774',
-    role: 'seller',
-    accessLevel: 1,
-    assignedDepartment: 'Secondary Listings',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.seller,
-  },
-  offplan_buyer: {
-    id: 'client_offplan_pierre',
-    name: 'Pierre Dubois (Off-Plan Investor)',
-    email: 'pierre.offplan@pariswealth.fr',
-    phone: '+33612345678',
-    role: 'offplan_buyer',
-    accessLevel: 1,
-    assignedDepartment: 'Off-Plan Investment Portal',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.offplan_buyer,
-  },
-  developer: {
-    id: 'dev_emaar_focal',
-    name: 'Emaar Properties Representative',
-    email: 'partners@emaar.ae',
-    phone: '+97143673333',
-    role: 'developer',
-    accessLevel: 2,
-    assignedDepartment: 'Primary Developer Network',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.developer,
-  },
-  conveyancer: {
-    id: 'convey_dld_trustee',
-    name: 'Al Twar Registration Trustee Office',
-    email: 'trustee@al-twar-dld.ae',
-    phone: '+97142630000',
-    role: 'conveyancer',
-    accessLevel: 2,
-    assignedDepartment: 'DLD Conveyancing & Title Office',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.conveyancer,
-  },
-  contractor: {
-    id: 'cont_apex_maint',
-    name: 'Apex Engineering & Facilities (DH2)',
-    email: 'support@apex-maint.ae',
-    phone: '+97148899000',
-    role: 'contractor',
-    accessLevel: 2,
-    assignedDepartment: 'Field Maintenance Contractor Pool',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: true,
-    permissions: ROLE_DEFAULT_PERMISSIONS.contractor,
-  },
-  guest: {
-    id: 'guest_user',
-    name: 'Executive Guest',
-    email: 'guest@whitecaves.com',
-    phone: '+971505110636',
-    role: 'guest',
-    accessLevel: 1,
-    assignedDepartment: 'Public Portal',
-    isManagingDirector: false,
-    isFounder: false,
-    isRoleConfirmed: false,
-    permissions: ROLE_DEFAULT_PERMISSIONS.guest,
-  },
-};
-
 export const SOVEREIGN_FOUNDER_EMAILS: string[] = [
   'arslanmalikgoraha@gmail.com',
   'the.white.caves@gmail.com',
@@ -365,4 +168,196 @@ export const ALL_SOVEREIGN_ROLES: UserRole[] = [
   'guest',
 ];
 
+function createDemoRoleProfile(
+  role: UserRole,
+  id: string,
+  name: string,
+  email: string,
+  phone: string,
+  isFounder = false
+): UserProfile {
+  return {
+    id,
+    name,
+    email,
+    phone,
+    role,
+    accessLevel: ROLE_DEFAULT_LEVELS[role],
+    assignedDepartment: ROLE_DEFAULT_DEPARTMENTS[role],
+    isManagingDirector: isFounder || role === 'managing_director' || role === 'admin',
+    isFounder,
+    isRoleConfirmed: role !== 'guest',
+    permissions: ROLE_DEFAULT_PERMISSIONS[role],
+  };
+}
+
+const DEMO_SEED_ROWS: Array<[UserRole, string, string, string, string, boolean?]> = [
+  [
+    'managing_director',
+    'md_arslan_malik',
+    'Arslan Malik Bashir Ahmad',
+    'arslanmalikgoraha@gmail.com',
+    '+971505110636',
+    true,
+  ],
+  ['admin', 'admin_sys_1', 'Elena Vance (System Admin)', 'admin@whitecaves.com', '+971501234560'],
+  [
+    'manager',
+    'mgr_victoria',
+    'Victoria Sterling (Sales Director)',
+    'victoria@whitecaves.com',
+    '+971501234561',
+  ],
+  [
+    'supervisor',
+    'sup_nadia',
+    'Nadia Al-Mansoor (Team Lead)',
+    'nadia@whitecaves.com',
+    '+971501234562',
+  ],
+  [
+    'agent',
+    'agent_sarah',
+    'Sarah Broker (Licensed Agent)',
+    'sarah.broker@whitecaves.com',
+    '+971501234563',
+  ],
+  [
+    'intern',
+    'intern_tariq',
+    'Tariq Mansour (Trainee)',
+    'tariq.intern@whitecaves.com',
+    '+971501234564',
+  ],
+  [
+    'tenant',
+    'client_tenant_omar',
+    'Omar Farooq (DAMAC Hills 2 Tenant)',
+    'omar.tenant@gmail.com',
+    '+971509988771',
+  ],
+  [
+    'landlord',
+    'client_landlord_khalid',
+    'Sheikh Khalid (Portfolio Landlord)',
+    'khalid.landlord@gmail.com',
+    '+971509988772',
+  ],
+  [
+    'buyer',
+    'client_buyer_alex',
+    'Alexander Volkov (Luxury Buyer)',
+    'alex.buyer@investor.com',
+    '+971509988773',
+  ],
+  [
+    'seller',
+    'client_seller_fatima',
+    'Fatima Al Mansoori (Villa Seller)',
+    'fatima.seller@gmail.com',
+    '+971509988774',
+  ],
+  [
+    'offplan_buyer',
+    'client_offplan_pierre',
+    'Pierre Dubois (Off-Plan Investor)',
+    'pierre.offplan@pariswealth.fr',
+    '+33612345678',
+  ],
+  [
+    'developer',
+    'dev_emaar_focal',
+    'Emaar Properties Representative',
+    'partners@emaar.ae',
+    '+97143673333',
+  ],
+  [
+    'conveyancer',
+    'convey_dld_trustee',
+    'Al Twar Registration Trustee Office',
+    'trustee@al-twar-dld.ae',
+    '+97142630000',
+  ],
+  [
+    'contractor',
+    'cont_apex_maint',
+    'Apex Engineering & Facilities (DH2)',
+    'support@apex-maint.ae',
+    '+97148899000',
+  ],
+  ['guest', 'guest_user', 'Executive Guest', 'guest@whitecaves.com', '+971505110636'],
+];
+
+export const DEMO_ROLE_PROFILES = Object.fromEntries(
+  DEMO_SEED_ROWS.map(([role, id, name, email, phone, isFounder]) => [
+    role,
+    createDemoRoleProfile(role, id, name, email, phone, Boolean(isFounder)),
+  ])
+) as Record<UserRole, UserProfile>;
+
 export const DEFAULT_GUEST_USER: UserProfile = DEMO_ROLE_PROFILES.guest;
+
+export function buildSovereignProfile(data: Partial<UserProfile> & { email: string }): UserProfile {
+  const isFounderUser = SOVEREIGN_FOUNDER_EMAILS.some(
+    e => e.toLowerCase() === data.email.toLowerCase()
+  );
+  const effectiveRole: UserRole = isFounderUser ? 'managing_director' : data.role || 'guest';
+  const effectiveLevel: AccessLevel = isFounderUser
+    ? 5
+    : data.accessLevel || ROLE_DEFAULT_LEVELS[effectiveRole] || 1;
+  const isConfirmed = isFounderUser ? true : (data.isRoleConfirmed ?? effectiveRole !== 'guest');
+
+  return {
+    id: data.id || `user_${Date.now()}`,
+    name: data.name || (isFounderUser ? 'Arslan Malik Bashir Ahmad' : 'White Caves User'),
+    email: data.email,
+    photoURL:
+      data.photoURL ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        data.name || 'User'
+      )}&background=EF4444&color=fff`,
+    phone: data.phone || '+971505110636',
+    role: effectiveRole,
+    accessLevel: effectiveLevel,
+    assignedDepartment: data.assignedDepartment || ROLE_DEFAULT_DEPARTMENTS[effectiveRole],
+    isManagingDirector:
+      isFounderUser || effectiveRole === 'managing_director' || effectiveRole === 'admin',
+    isFounder: isFounderUser,
+    isRoleConfirmed: isConfirmed,
+    permissions: isFounderUser
+      ? ['*']
+      : data.permissions || ROLE_DEFAULT_PERMISSIONS[effectiveRole] || ['can_view_properties'],
+  };
+}
+
+export function syncUserToSafeStorage(user: UserProfile | null): void {
+  if (typeof window === 'undefined') return;
+  if (user) {
+    safeStorage.setJSON('whitecaves_user', user);
+    safeStorage.set('whitecaves_role', user.role);
+    safeStorage.set('whitecaves_access_level', String(user.accessLevel));
+    safeStorage.setJSON('userRole', {
+      category: ROLE_TIERS[user.role],
+      role: user.role,
+      status: 'active',
+      locked: true,
+    });
+    try {
+      localStorage.setItem('white-caves-user', JSON.stringify(user));
+      localStorage.setItem('whitecaves_user', JSON.stringify(user));
+    } catch {
+      // ignore storage quota errors
+    }
+  } else {
+    safeStorage.remove('whitecaves_user');
+    safeStorage.remove('whitecaves_role');
+    safeStorage.remove('whitecaves_access_level');
+    safeStorage.remove('userRole');
+    try {
+      localStorage.removeItem('white-caves-user');
+      localStorage.removeItem('whitecaves_user');
+    } catch {
+      // ignore
+    }
+  }
+}

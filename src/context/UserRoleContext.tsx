@@ -3,7 +3,7 @@
  * White Caves Real Estate LLC - UserRoleContext Sovereign RBAC Authority
  * Standard: AEGIS Canonical 12-Way Architecture Standard & Single Purpose File Law
  * Single Purpose File Law: < 350 lines
- * Protocol: Turing Protocol Law T11 (Level 5 RBAC Boundary & Sovereign Privacy Vault)
+ * Protocol: Turing Protocol Law T11 & T20 (Server-Enforced RBAC & Role Confirmation)
  */
 
 import React, {
@@ -16,11 +16,11 @@ import React, {
   FC,
 } from 'react';
 import { safeStorage } from '../utils/safeStorage';
+import { fetchProfile } from '../services/authService';
 export * from './UserRoleContext.types';
 import type {
   UserRole,
   AccessLevel,
-  RoleTier,
   UserProfile,
   UserRoleContextType,
   UserRoleProviderProps,
@@ -36,6 +36,8 @@ import {
   SOVEREIGN_FOUNDER_EMAILS,
   ALL_SOVEREIGN_ROLES,
   DEFAULT_GUEST_USER,
+  buildSovereignProfile,
+  syncUserToSafeStorage,
 } from './UserRoleContext.data';
 
 export {
@@ -60,65 +62,56 @@ export const UserRoleProvider: FC<UserRoleProviderProps> = ({ children, initialU
     if (typeof window !== 'undefined') {
       const stored = safeStorage.getJSON<UserProfile>('whitecaves_user');
       if (stored && stored.email) {
-        const isFounder = SOVEREIGN_FOUNDER_EMAILS.some(
-          e => e.toLowerCase() === stored.email.toLowerCase()
-        );
-        const effectiveRole = isFounder ? 'managing_director' : stored.role || 'guest';
-        const isConfirmed = isFounder
-          ? true
-          : (stored.isRoleConfirmed ?? effectiveRole !== 'guest');
-
-        return {
-          ...stored,
-          role: effectiveRole,
-          accessLevel: isFounder
-            ? 5
-            : stored.accessLevel || ROLE_DEFAULT_LEVELS[effectiveRole] || 1,
-          isManagingDirector:
-            isFounder || effectiveRole === 'managing_director' || effectiveRole === 'admin',
-          isFounder,
-          isRoleConfirmed: isConfirmed,
-          permissions: isFounder
-            ? ['*']
-            : stored.permissions || ROLE_DEFAULT_PERMISSIONS[effectiveRole] || [],
-        };
+        return buildSovereignProfile(stored);
       }
     }
     return DEFAULT_GUEST_USER;
   });
 
-  // Cross-storage persistence sync (Turing Protocol Unified SOT)
+  // Law T20: Hydrate role & confirmation status from server (/api/auth/profile) when a JWT exists.
+  // Any tampered localStorage role is overwritten by the server's authoritative user record.
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (user) {
-        safeStorage.setJSON('whitecaves_user', user);
-        safeStorage.set('whitecaves_role', user.role);
-        safeStorage.set('whitecaves_access_level', String(user.accessLevel));
-        safeStorage.setJSON('userRole', {
-          category: ROLE_TIERS[user.role],
-          role: user.role,
-          status: 'active',
-          locked: true,
-        });
-        try {
-          localStorage.setItem('white-caves-user', JSON.stringify(user));
-          localStorage.setItem('whitecaves_user', JSON.stringify(user));
-        } catch {
-          // ignore storage quota errors in safari private mode
-        }
-      } else {
-        safeStorage.remove('whitecaves_user');
-        safeStorage.remove('whitecaves_role');
-        safeStorage.remove('whitecaves_access_level');
-        safeStorage.remove('userRole');
-        try {
-          localStorage.removeItem('white-caves-user');
-          localStorage.removeItem('whitecaves_user');
-        } catch {
-          // ignore
-        }
-      }
-    }
+    if (initialUser !== undefined || typeof window === 'undefined') return;
+    const token = safeStorage.get('token');
+    if (!token) return;
+
+    let cancelled = false;
+    fetchProfile()
+      .then(res => {
+        if (cancelled || !res?.success || !res.data?.email) return;
+        const serverUser = res.data;
+        const serverRole = (serverUser.role || 'guest') as UserRole;
+        const serverConfirmed =
+          serverUser.isRoleConfirmed ?? (serverRole !== 'guest' && serverUser.status !== 'pending');
+
+        setUser(prev =>
+          buildSovereignProfile({
+            ...prev,
+            id: serverUser.id || prev?.id,
+            email: serverUser.email,
+            name: serverUser.name || prev?.name,
+            photoURL: serverUser.photoUrl || prev?.photoURL,
+            phone: serverUser.phone || prev?.phone,
+            role: serverRole,
+            accessLevel: ROLE_DEFAULT_LEVELS[serverRole],
+            assignedDepartment: serverUser.department || ROLE_DEFAULT_DEPARTMENTS[serverRole],
+            permissions: ROLE_DEFAULT_PERMISSIONS[serverRole],
+            isRoleConfirmed: serverConfirmed,
+          })
+        );
+      })
+      .catch(() => {
+        // Offline or unit-test environment without backend — retain cached profile
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialUser]);
+
+  // Cross-storage persistence sync (cache only; server remains authoritative)
+  useEffect(() => {
+    syncUserToSafeStorage(user);
   }, [user]);
 
   const isAuthenticated = useMemo(() => {
@@ -173,41 +166,7 @@ export const UserRoleProvider: FC<UserRoleProviderProps> = ({ children, initialU
 
   const login = useCallback(
     (userData: Partial<UserProfile> & { email: string }, token?: string) => {
-      const isFounderUser = SOVEREIGN_FOUNDER_EMAILS.some(
-        e => e.toLowerCase() === userData.email.toLowerCase()
-      );
-      const defaultRole = isFounderUser ? 'managing_director' : userData.role || 'guest';
-      const defaultLevel = isFounderUser
-        ? 5
-        : userData.accessLevel || ROLE_DEFAULT_LEVELS[defaultRole] || 1;
-      const isConfirmed = isFounderUser
-        ? true
-        : (userData.isRoleConfirmed ?? defaultRole !== 'guest');
-
-      const newUser: UserProfile = {
-        id: userData.id || `user_${Date.now()}`,
-        name: userData.name || (isFounderUser ? 'Arslan Malik Bashir Ahmad' : 'White Caves User'),
-        email: userData.email,
-        photoURL:
-          userData.photoURL ||
-          `https://ui-avatars.com/api/?name=${encodeURIComponent(
-            userData.name || 'User'
-          )}&background=EF4444&color=fff`,
-        phone: userData.phone || '+971505110636',
-        role: defaultRole,
-        accessLevel: defaultLevel,
-        assignedDepartment: userData.assignedDepartment || ROLE_DEFAULT_DEPARTMENTS[defaultRole],
-        isManagingDirector:
-          isFounderUser || defaultRole === 'managing_director' || defaultRole === 'admin',
-        isFounder: isFounderUser,
-        isRoleConfirmed: isConfirmed,
-        permissions: isFounderUser
-          ? ['*']
-          : userData.permissions ||
-            ROLE_DEFAULT_PERMISSIONS[defaultRole] || ['can_view_properties'],
-      };
-
-      setUser(newUser);
+      setUser(buildSovereignProfile(userData));
       if (token) {
         safeStorage.set('whitecaves_token', token);
         safeStorage.set('token', token);
@@ -216,98 +175,56 @@ export const UserRoleProvider: FC<UserRoleProviderProps> = ({ children, initialU
     []
   );
 
-  /** Explicitly confirms user role and unblocks sovereign portal navigation */
   const confirmRole = useCallback((confirmedRole: UserRole, customName?: string) => {
     setUser(prev => {
       const base = prev || DEFAULT_GUEST_USER;
-      const isFounderUser = SOVEREIGN_FOUNDER_EMAILS.some(
-        e => e.toLowerCase() === base.email.toLowerCase()
-      );
-      const effectiveRole = isFounderUser ? 'managing_director' : confirmedRole;
-      const effectiveLevel = isFounderUser ? 5 : ROLE_DEFAULT_LEVELS[effectiveRole] || 1;
-
-      const confirmedProfile: UserProfile = {
+      return buildSovereignProfile({
         ...base,
         name: customName || base.name || 'White Caves User',
-        role: effectiveRole,
-        accessLevel: effectiveLevel,
-        assignedDepartment: ROLE_DEFAULT_DEPARTMENTS[effectiveRole],
-        isManagingDirector:
-          isFounderUser || effectiveRole === 'managing_director' || effectiveRole === 'admin',
-        isFounder: isFounderUser,
-        isRoleConfirmed: true,
-        permissions: isFounderUser ? ['*'] : ROLE_DEFAULT_PERMISSIONS[effectiveRole],
-      };
-
-      return confirmedProfile;
+        role: confirmedRole,
+        accessLevel: ROLE_DEFAULT_LEVELS[confirmedRole],
+        assignedDepartment: ROLE_DEFAULT_DEPARTMENTS[confirmedRole],
+        permissions: ROLE_DEFAULT_PERMISSIONS[confirmedRole],
+        isRoleConfirmed: confirmedRole !== 'guest',
+      });
     });
   }, []);
 
-  /** Fast 1-click login as any of the 14 Sovereign roles */
   const loginAsRole = useCallback((targetRole: UserRole) => {
     const demoProfile = DEMO_ROLE_PROFILES[targetRole] || DEMO_ROLE_PROFILES.guest;
     setUser(demoProfile);
-    safeStorage.setJSON('whitecaves_user', demoProfile);
-    safeStorage.set('whitecaves_role', demoProfile.role);
-    safeStorage.set('whitecaves_access_level', String(demoProfile.accessLevel));
+    syncUserToSafeStorage(demoProfile);
   }, []);
 
   const logout = useCallback(() => {
     setUser(DEFAULT_GUEST_USER);
     safeStorage.remove('whitecaves_token');
     safeStorage.remove('token');
-    safeStorage.remove('whitecaves_user');
+    syncUserToSafeStorage(null);
     safeStorage.set('whitecaves_role', 'guest');
     safeStorage.set('whitecaves_access_level', '1');
-    try {
-      localStorage.removeItem('white-caves-user');
-      localStorage.removeItem('whitecaves_user');
-      localStorage.removeItem('userRole');
-    } catch {
-      // ignore
-    }
   }, []);
 
   const switchRole = useCallback((newRole: UserRole) => {
     setUser(prev => {
       if (!prev) return DEMO_ROLE_PROFILES[newRole];
-      const isFounderUser = SOVEREIGN_FOUNDER_EMAILS.some(
-        e => e.toLowerCase() === prev.email.toLowerCase()
-      );
-      const newLevel = isFounderUser ? 5 : ROLE_DEFAULT_LEVELS[newRole] || 1;
-      return {
+      return buildSovereignProfile({
         ...prev,
         role: newRole,
-        accessLevel: newLevel,
+        accessLevel: ROLE_DEFAULT_LEVELS[newRole],
         assignedDepartment: ROLE_DEFAULT_DEPARTMENTS[newRole],
-        isManagingDirector: isFounderUser || newRole === 'managing_director' || newRole === 'admin',
-        isFounder: isFounderUser,
-        isRoleConfirmed: true,
-        permissions: isFounderUser
-          ? ['*']
-          : ROLE_DEFAULT_PERMISSIONS[newRole] || ['can_view_properties'],
-      };
+        permissions: ROLE_DEFAULT_PERMISSIONS[newRole],
+        isRoleConfirmed: newRole !== 'guest',
+      });
     });
   }, []);
 
   const setAccessLevel = useCallback((level: AccessLevel) => {
-    setUser(prev => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        accessLevel: level,
-      };
-    });
+    setUser(prev => (prev ? { ...prev, accessLevel: level } : null));
   }, []);
 
   const updateProfile = useCallback((updates: Partial<UserProfile>) => {
-    setUser(prev => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        ...updates,
-      };
-    });
+    setUser(prev => (prev ? { ...prev, ...updates } : null));
   }, []);
 
   const value = useMemo<UserRoleContextType>(
@@ -362,5 +279,3 @@ export const useUserRole = (): UserRoleContextType => {
   }
   return context;
 };
-
-export default UserRoleContext;

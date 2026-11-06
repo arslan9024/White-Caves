@@ -199,14 +199,16 @@ export const ModernDashboardPage: FC = () => {
             </button>
           </div>
           <VSCodeBreadcrumbs onNavigate={navigate} />
-          <GlobalEntityCommandPalette
-            isOpen={isCommandPaletteOpen}
-            onClose={() => setIsCommandPaletteOpen(false)}
-            onSelectEntity={entity => {
-              navigate(entity.route);
-              setIsCommandPaletteOpen(false);
-            }}
-          />
+          {isCommandPaletteOpen && (
+            <GlobalEntityCommandPalette
+              isOpen={isCommandPaletteOpen}
+              onClose={() => setIsCommandPaletteOpen(false)}
+              onSelectEntity={entity => {
+                navigate(entity.route);
+                setIsCommandPaletteOpen(false);
+              }}
+            />
+          )}
           <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
             <ExecutiveVSCodeSidebar
               activeTab={activeTab}

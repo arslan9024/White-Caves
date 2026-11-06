@@ -18,6 +18,8 @@ export interface AuthUser {
   email: string;
   name: string | null;
   role: string;
+  status?: string;
+  isRoleConfirmed?: boolean;
   department?: string | null;
   photoUrl?: string | null;
   phone?: string | null;
@@ -26,7 +28,7 @@ export interface AuthUser {
     roleCategory: 'general' | 'client' | 'agent' | 'leadership';
     requiredFields: Array<'name' | 'phone' | 'department'>;
     optionalFields: Array<'name' | 'phone' | 'department'>;
-    missingFields: Array<'name' | 'phone' | 'department'>;
+    missingFields: Array<'name' | 'phone' | 'phone' | 'department'>;
   };
 }
 
@@ -61,6 +63,8 @@ export interface RegisterResponse {
   success: boolean;
   data: {
     token: string;
+    pendingApproval?: boolean;
+    requestedRole?: string | null;
     user: AuthUser;
   };
 }

@@ -54,6 +54,10 @@ const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
         deleteMany: fn().mockResolvedValue({ count: 1 }),
         update: fn().mockResolvedValue({ id: 'cred-1' }),
       },
+      roleRequest: {
+        findFirst: fn().mockResolvedValue(null),
+        create: fn().mockResolvedValue({ id: 'rr-1' }),
+      },
     },
     mockBcrypt: {
       hash: fn().mockResolvedValue('$2a$10$newhashedpassword'),
@@ -617,13 +621,13 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.error).toMatch(/valid role/i);
     });
 
-    it('registers staff accounts as pending agent', async () => {
+    it('registers staff accounts as pending guest and files an agent role request (Law T20)', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.create.mockResolvedValueOnce({
         id: 'staff-user',
         email: 'staff@whitecaves.ae',
         name: 'Staff User',
-        role: 'agent',
+        role: 'guest',
         department: null,
         status: 'pending',
       });
@@ -639,7 +643,16 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.status).toBe(201);
       expect(mockPrisma.user.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ role: 'agent', status: 'pending' }),
+          data: expect.objectContaining({ role: 'guest', status: 'pending' }),
+        })
+      );
+      expect(mockPrisma.roleRequest.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            userId: 'staff-user',
+            requestedRole: 'agent',
+            status: 'pending',
+          }),
         })
       );
     });
@@ -1015,6 +1028,168 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data.token).toBe('mock-jwt-token');
       expect(res.body.data.user.email).toBe('unsetenv@whitecaves.ae');
+    });
+
+    // ── Law T20: server-enforced role confirmation ──
+    it('creates brand-new Google users as unconfirmed guest, never agent', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({
+        id: 'new-google-user',
+        email: 'test@whitecaves.ae',
+        name: 'Firebase Test',
+        role: 'guest',
+        department: null,
+        photoUrl: null,
+        status: 'active',
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-123',
+        firebaseToken: 'valid-token',
+        email: 'test@whitecaves.ae',
+      });
+
+      expect(res.status).toBe(200);
+      expect(mockPrisma.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ role: 'guest' }) })
+      );
+      expect(res.body.data.user.isRoleConfirmed).toBe(false);
+    });
+
+    it('rejects Google sign-in for suspended accounts', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-sus',
+        email: 'test@whitecaves.ae',
+        role: 'agent',
+        status: 'suspended',
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-123',
+        firebaseToken: 'valid-token',
+        email: 'test@whitecaves.ae',
+      });
+
+      expect(res.status).toBe(403);
+      expect(mockPrisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('does not re-activate a pending account on Google sign-in', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-pending',
+        email: 'test@whitecaves.ae',
+        role: 'guest',
+        status: 'pending',
+      });
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: 'user-pending',
+        email: 'test@whitecaves.ae',
+        role: 'guest',
+        status: 'pending',
+        department: null,
+        photoUrl: null,
+      });
+
+      await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-123',
+        firebaseToken: 'valid-token',
+        email: 'test@whitecaves.ae',
+      });
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ status: 'pending' }) })
+      );
+    });
+  });
+
+  // ── POST /complete-social-registration (Law T20) ─────────────────
+  describe('POST /api/auth/complete-social-registration', () => {
+    it('lets an unconfirmed guest self-select a client role', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        role: 'guest',
+      });
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Landlord',
+        role: 'landlord',
+        status: 'active',
+        department: null,
+      });
+
+      const res = await request(createApp('guest'))
+        .post('/api/auth/complete-social-registration')
+        .send({ category: 'client', role: 'landlord' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.user.role).toBe('landlord');
+      expect(res.body.data.user.isRoleConfirmed).toBe(true);
+      expect(res.body.data.pendingApproval).toBe(false);
+    });
+
+    it('keeps staff signups as guest and files an agent role request', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        role: 'guest',
+      });
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Broker',
+        role: 'guest',
+        status: 'pending',
+        department: null,
+      });
+
+      const res = await request(createApp('guest'))
+        .post('/api/auth/complete-social-registration')
+        .send({ category: 'staff', role: 'agent' });
+
+      expect(res.status).toBe(200);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: { role: 'guest', status: 'pending' },
+        })
+      );
+      expect(mockPrisma.roleRequest.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ requestedRole: 'agent', status: 'pending' }),
+        })
+      );
+      expect(res.body.data.pendingApproval).toBe(true);
+    });
+
+    it('returns 409 when the user already has a confirmed role', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        role: 'tenant',
+      });
+
+      const res = await request(createApp('tenant'))
+        .post('/api/auth/complete-social-registration')
+        .send({ category: 'client', role: 'landlord' });
+
+      expect(res.status).toBe(409);
+      expect(mockPrisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('rejects self-assignment of privileged roles via the client category', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        role: 'guest',
+      });
+
+      const res = await request(createApp('guest'))
+        .post('/api/auth/complete-social-registration')
+        .send({ category: 'client', role: 'managing_director' });
+
+      expect(res.status).toBe(400);
+      expect(mockPrisma.user.update).not.toHaveBeenCalled();
     });
   });
 

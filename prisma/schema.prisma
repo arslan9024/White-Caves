@@ -16,7 +16,7 @@ model User {
   email        String   @unique
   name         String?
   photoUrl     String?
-  role         String   @default("agent") // owner, agent, viewer
+  role         String   @default("guest") // guest (unconfirmed), client roles, staff roles — see selfServiceRolePolicy.ts
   phone        String?
   department   String?
   status       String   @default("active")

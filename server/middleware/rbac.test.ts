@@ -522,4 +522,18 @@ describe('New role permissions (v2.0)', () => {
     expect(underscorePerms).toBeDefined();
     expect(underscorePerms).toEqual(hyphenPerms);
   });
+
+  it('unconfirmed guest has zero CRM permissions and is rejected by requirePermission and requireMinRole (Law T20)', () => {
+    expect(roleHasPermission('guest', 'view_leads')).toBe(false);
+    expect(roleHasPermission('guest', 'manage_leads')).toBe(false);
+    expect(roleHasPermission('guest', 'manage_properties')).toBe(false);
+
+    const { req, res, next } = createMocks({ role: 'guest' });
+    requirePermission('view_leads')(req, res, next);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
+
+    const { req: r2, res: r2res, next: n2 } = createMocks({ role: 'guest' });
+    requireMinRole('agent')(r2, r2res, n2);
+    expect(n2).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
+  });
 });

@@ -1,3 +1,4 @@
+// FILE: src/pages/dashboard/ModernDashboardPage.test.tsx
 /**
  * White Caves Real Estate LLC - ModernDashboardPage Unit & Mounting Test
  * Standard: AEGIS Canonical 7-Category Architecture Standard (Tests)
@@ -12,6 +13,18 @@ import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '../../context/ThemeContext';
 import { UserRoleProvider, DEMO_ROLE_PROFILES } from '../../context/UserRoleContext';
 import { ModernDashboardPage } from './ModernDashboardPage';
+
+// Chrome shell bars are tested in their own dedicated suites (e.g. ExecutiveVSCodeSidebar.test.tsx).
+// Mocking them here avoids mounting 75 heavy sidebar trees across 25 route assertions in JSDOM.
+vi.mock('../../components/dashboard/ExecutiveTopNavbar', () => ({
+  ExecutiveTopNavbar: () => <div data-testid="mock-top-navbar" />,
+}));
+vi.mock('../../components/dashboard/ExecutiveVSCodeSidebar', () => ({
+  ExecutiveVSCodeSidebar: () => <div data-testid="mock-left-sidebar" />,
+}));
+vi.mock('../../components/dashboard/ExecutiveAIVSCodeSidebar', () => ({
+  ExecutiveAIVSCodeSidebar: () => <div data-testid="mock-right-ai-sidebar" />,
+}));
 
 // Mock matchMedia for Responsive containers
 window.matchMedia =

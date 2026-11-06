@@ -121,7 +121,9 @@ adminRoleRequestRouter.get(
       where: { id: { in: userIds } },
       select: { id: true, name: true, email: true, role: true },
     });
-    const userMap = new Map(users.map((u: { id: string; name: string; email: string; role: string }) => [u.id, u]));
+    const userMap = new Map(
+      users.map((u: { id: string; name: string; email: string; role: string }) => [u.id, u])
+    );
 
     const enriched = requests.map((r: Record<string, unknown> & { userId: string }) => ({
       ...r,
@@ -148,10 +150,21 @@ adminRoleRequestRouter.post(
 
     const { reviewNote } = req.body;
 
-    // Apply the role to the user
+    // Apply the role to the user. Staff signups wait as guest/pending, so approval
+    // also activates them (but never re-activates a suspended account).
+    const targetUser =
+      typeof db.user?.findUnique === 'function'
+        ? await db.user.findUnique({
+            where: { id: roleReq.userId },
+            select: { status: true },
+          })
+        : null;
     await db.user.update({
       where: { id: roleReq.userId },
-      data: { role: roleReq.requestedRole },
+      data: {
+        role: roleReq.requestedRole,
+        ...(targetUser?.status === 'pending' ? { status: 'active' } : {}),
+      },
     });
 
     const updated = await db.roleRequest.update({

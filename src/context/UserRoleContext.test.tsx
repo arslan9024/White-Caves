@@ -1,7 +1,16 @@
+// FILE: src/context/UserRoleContext.test.tsx
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { UserRoleProvider, useUserRole, ALL_SOVEREIGN_ROLES } from './UserRoleContext';
+
+const { mockFetchProfile } = vi.hoisted(() => ({
+  mockFetchProfile: vi.fn(),
+}));
+
+vi.mock('../services/authService', () => ({
+  fetchProfile: mockFetchProfile,
+}));
 
 const mockStorage: Record<string, any> = {};
 vi.mock('../utils/safeStorage', () => ({
@@ -121,6 +130,7 @@ const TestComponent = () => {
 describe('UserRoleContext & 14-Role Sovereign Registry', () => {
   beforeEach(() => {
     Object.keys(mockStorage).forEach(k => delete mockStorage[k]);
+    mockFetchProfile.mockReset();
   });
 
   afterEach(() => {
@@ -233,5 +243,42 @@ describe('UserRoleContext & 14-Role Sovereign Registry', () => {
     fireEvent.click(screen.getByTestId('logout-btn'));
     expect(screen.getByTestId('user-name').textContent).toBe('Executive Guest');
     expect(screen.getByTestId('is-authenticated').textContent).toBe('false');
+  });
+
+  it('hydrates role from /api/auth/profile and overwrites tampered localStorage role (Law T20)', async () => {
+    // Simulate a user who tampered with localStorage to claim agent role
+    mockStorage['token'] = 'valid-jwt';
+    mockStorage['whitecaves_user'] = {
+      id: 'u-tampered',
+      email: 'visitor@gmail.com',
+      name: 'Tampered Visitor',
+      role: 'agent',
+      isRoleConfirmed: true,
+    };
+
+    // Server returns authoritative guest (unconfirmed) profile
+    mockFetchProfile.mockResolvedValueOnce({
+      success: true,
+      data: {
+        id: 'u-tampered',
+        email: 'visitor@gmail.com',
+        name: 'Real Visitor',
+        role: 'guest',
+        status: 'active',
+        isRoleConfirmed: false,
+      },
+    });
+
+    render(
+      <UserRoleProvider>
+        <TestComponent />
+      </UserRoleProvider>
+    );
+
+    await waitFor(() => {
+      expect(mockFetchProfile).toHaveBeenCalledTimes(1);
+      expect(screen.getByTestId('user-role').textContent).toBe('guest');
+      expect(screen.getByTestId('is-authenticated').textContent).toBe('false');
+    });
   });
 });

@@ -49,10 +49,27 @@ vi.mock('../database.js', () => ({
       ),
     },
     user: {
-      findMany: vi.fn().mockResolvedValue([
-        { id: '507f1f77bcf86cd799439012', name: 'Elena Rostova', email: 'elena@whitecaves.ae', role: 'agent' },
-      ]),
-      update: vi.fn().mockResolvedValue({ id: '507f1f77bcf86cd799439012', role: 'senior_agent' }),
+      findUnique: vi.fn().mockResolvedValue({
+        id: '507f1f77bcf86cd799439012',
+        status: 'pending',
+      }),
+      findMany: vi
+        .fn()
+        .mockResolvedValue([
+          {
+            id: '507f1f77bcf86cd799439012',
+            name: 'Elena Rostova',
+            email: 'elena@whitecaves.ae',
+            role: 'agent',
+          },
+        ]),
+      update: vi
+        .fn()
+        .mockResolvedValue({
+          id: '507f1f77bcf86cd799439012',
+          role: 'senior_agent',
+          status: 'active',
+        }),
     },
     activity: {
       create: vi.fn().mockResolvedValue({ id: 'act-001' }),
@@ -89,9 +106,7 @@ describe('Role Requests API Routes', () => {
         reason: 'Exceeded sales target by 200% this quarter.',
       };
 
-      const res = await request(app)
-        .post('/api/users/role-request')
-        .send(payload);
+      const res = await request(app).post('/api/users/role-request').send(payload);
 
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
@@ -103,9 +118,7 @@ describe('Role Requests API Routes', () => {
         requestedRole: 'super_admin_unauthorized',
       };
 
-      const res = await request(app)
-        .post('/api/users/role-request')
-        .send(payload);
+      const res = await request(app).post('/api/users/role-request').send(payload);
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
