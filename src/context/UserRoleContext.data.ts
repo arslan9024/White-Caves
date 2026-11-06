@@ -191,108 +191,32 @@ function createDemoRoleProfile(
   };
 }
 
-const DEMO_SEED_ROWS: Array<[UserRole, string, string, string, string, boolean?]> = [
-  [
-    'managing_director',
-    'md_arslan_malik',
-    'Arslan Malik Bashir Ahmad',
-    'arslanmalikgoraha@gmail.com',
-    '+971505110636',
-    true,
-  ],
-  ['admin', 'admin_sys_1', 'Elena Vance (System Admin)', 'admin@whitecaves.com', '+971501234560'],
-  [
-    'manager',
-    'mgr_victoria',
-    'Victoria Sterling (Sales Director)',
-    'victoria@whitecaves.com',
-    '+971501234561',
-  ],
-  [
-    'supervisor',
-    'sup_nadia',
-    'Nadia Al-Mansoor (Team Lead)',
-    'nadia@whitecaves.com',
-    '+971501234562',
-  ],
-  [
-    'agent',
-    'agent_sarah',
-    'Sarah Broker (Licensed Agent)',
-    'sarah.broker@whitecaves.com',
-    '+971501234563',
-  ],
-  [
-    'intern',
-    'intern_tariq',
-    'Tariq Mansour (Trainee)',
-    'tariq.intern@whitecaves.com',
-    '+971501234564',
-  ],
-  [
-    'tenant',
-    'client_tenant_omar',
-    'Omar Farooq (DAMAC Hills 2 Tenant)',
-    'omar.tenant@gmail.com',
-    '+971509988771',
-  ],
-  [
-    'landlord',
-    'client_landlord_khalid',
-    'Sheikh Khalid (Portfolio Landlord)',
-    'khalid.landlord@gmail.com',
-    '+971509988772',
-  ],
-  [
-    'buyer',
-    'client_buyer_alex',
-    'Alexander Volkov (Luxury Buyer)',
-    'alex.buyer@investor.com',
-    '+971509988773',
-  ],
-  [
-    'seller',
-    'client_seller_fatima',
-    'Fatima Al Mansoori (Villa Seller)',
-    'fatima.seller@gmail.com',
-    '+971509988774',
-  ],
-  [
-    'offplan_buyer',
-    'client_offplan_pierre',
-    'Pierre Dubois (Off-Plan Investor)',
-    'pierre.offplan@pariswealth.fr',
-    '+33612345678',
-  ],
-  [
-    'developer',
-    'dev_emaar_focal',
-    'Emaar Properties Representative',
-    'partners@emaar.ae',
-    '+97143673333',
-  ],
-  [
-    'conveyancer',
-    'convey_dld_trustee',
-    'Al Twar Registration Trustee Office',
-    'trustee@al-twar-dld.ae',
-    '+97142630000',
-  ],
-  [
-    'contractor',
-    'cont_apex_maint',
-    'Apex Engineering & Facilities (DH2)',
-    'support@apex-maint.ae',
-    '+97148899000',
-  ],
-  ['guest', 'guest_user', 'Executive Guest', 'guest@whitecaves.com', '+971505110636'],
+const DEMO_SEED_SPEC: string[] = [
+  'managing_director|md_arslan_malik|Arslan Malik Bashir Ahmad|arslanmalikgoraha@gmail.com|+971505110636|1',
+  'admin|admin_sys_1|Elena Vance (System Admin)|admin@whitecaves.com|+971501234560',
+  'manager|mgr_victoria|Victoria Sterling (Sales Director)|victoria@whitecaves.com|+971501234561',
+  'supervisor|sup_nadia|Nadia Al-Mansoor (Team Lead)|nadia@whitecaves.com|+971501234562',
+  'agent|agent_sarah|Sarah Broker (Licensed Agent)|sarah.broker@whitecaves.com|+971501234563',
+  'intern|intern_tariq|Tariq Mansour (Trainee)|tariq.intern@whitecaves.com|+971501234564',
+  'tenant|client_tenant_omar|Omar Farooq (DAMAC Hills 2 Tenant)|omar.tenant@gmail.com|+971509988771',
+  'landlord|client_landlord_khalid|Sheikh Khalid (Portfolio Landlord)|khalid.landlord@gmail.com|+971509988772',
+  'buyer|client_buyer_alex|Alexander Volkov (Luxury Buyer)|alex.buyer@investor.com|+971509988773',
+  'seller|client_seller_fatima|Fatima Al Mansoori (Villa Seller)|fatima.seller@gmail.com|+971509988774',
+  'offplan_buyer|client_offplan_pierre|Pierre Dubois (Off-Plan Investor)|pierre.offplan@pariswealth.fr|+33612345678',
+  'developer|dev_emaar_focal|Emaar Properties Representative|partners@emaar.ae|+97143673333',
+  'conveyancer|convey_dld_trustee|Al Twar Registration Trustee Office|trustee@al-twar-dld.ae|+97142630000',
+  'contractor|cont_apex_maint|Apex Engineering & Facilities (DH2)|support@apex-maint.ae|+97148899000',
+  'guest|guest_user|Executive Guest|guest@whitecaves.com|+971505110636',
 ];
 
 export const DEMO_ROLE_PROFILES = Object.fromEntries(
-  DEMO_SEED_ROWS.map(([role, id, name, email, phone, isFounder]) => [
-    role,
-    createDemoRoleProfile(role, id, name, email, phone, Boolean(isFounder)),
-  ])
+  DEMO_SEED_SPEC.map(spec => {
+    const [role, id, name, email, phone, founderFlag] = spec.split('|');
+    return [
+      role,
+      createDemoRoleProfile(role as UserRole, id, name, email, phone, founderFlag === '1'),
+    ];
+  })
 ) as Record<UserRole, UserProfile>;
 
 export const DEFAULT_GUEST_USER: UserProfile = DEMO_ROLE_PROFILES.guest;
