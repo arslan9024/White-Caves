@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../../../../store/authSlice';
 import { ThemeProvider } from '../../../../context/ThemeContext';
 import { LanguageProvider } from '../../../../context/LanguageContext';
 import { CurrencyProvider } from '../../../../context/CurrencyContext';
-import { UserRoleProvider } from '../../../../context/UserRoleContext';
+import { UserRoleProvider, DEMO_ROLE_PROFILES } from '../../../../context/UserRoleContext';
 import { UserPreferencesDropdown } from './UserPreferencesDropdown';
 
 const mockNavigate = vi.fn();
@@ -21,13 +21,17 @@ const mockStore = configureStore({
   },
 });
 
-const renderDropdown = (userProps = null, onClose = vi.fn()) => {
+const renderDropdown = (
+  userProps = null,
+  onClose = vi.fn(),
+  initialUser = DEMO_ROLE_PROFILES.managing_director
+) => {
   return render(
     <Provider store={mockStore}>
       <ThemeProvider>
         <LanguageProvider>
           <CurrencyProvider>
-            <UserRoleProvider>
+            <UserRoleProvider initialUser={initialUser}>
               <UserPreferencesDropdown user={userProps} onClose={onClose} />
             </UserRoleProvider>
           </CurrencyProvider>
@@ -42,11 +46,21 @@ describe('UserPreferencesDropdown (4-Way Component)', () => {
     vi.clearAllMocks();
   });
 
-  it('renders correctly with default guest user', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('renders correctly with default managing director user and role simulator', () => {
     renderDropdown();
     expect(screen.getByTestId('user-preferences-dropdown')).toBeDefined();
     expect(screen.getByTestId('active-role-badge')).toBeDefined();
     expect(screen.getByTestId('role-simulator-select')).toBeDefined();
+  });
+
+  it('hides administrative role simulator for non-L5 guest users', () => {
+    renderDropdown(null, vi.fn(), DEMO_ROLE_PROFILES.guest);
+    expect(screen.getByTestId('user-preferences-dropdown')).toBeDefined();
+    expect(screen.queryByTestId('role-simulator-select')).toBeNull();
   });
 
   it('renders theme, language, and currency options', () => {
@@ -58,7 +72,7 @@ describe('UserPreferencesDropdown (4-Way Component)', () => {
     expect(screen.getByTestId('pref-curr-aed')).toBeDefined();
   });
 
-  it('allows selecting a role from the 14-role simulator', () => {
+  it('allows selecting a role from the 14-role simulator for L5 users', () => {
     const onClose = vi.fn();
     renderDropdown(null, onClose);
 

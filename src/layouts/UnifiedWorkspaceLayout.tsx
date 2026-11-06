@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UnifiedWorkspaceLayout.tsx — View Layer (Atomic 3-Folder Pattern)
  *
  * Upgraded Sovereign Layout with Large Sidebar Tiles, Sub-Item Accordion Trees,
@@ -22,6 +22,7 @@ import { ROLE_LABELS } from '../context/UserRoleContext';
 interface UnifiedWorkspaceLayoutProps {
   currentUserEmail?: string;
   initialViewId?: string;
+  defaultSidebarOpen?: boolean;
   children?: React.ReactNode;
 }
 
@@ -30,11 +31,12 @@ interface UnifiedWorkspaceLayoutProps {
 export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
   currentUserEmail = 'arslanmalikgoraha@gmail.com',
   initialViewId = 'VIEW-01',
+  defaultSidebarOpen = false,
   children,
 }) => {
   const navigate = useNavigate();
-  const [isMdHubOpen, setIsMdHubOpen] = useState(true);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMdHubOpen, setIsMdHubOpen] = useState(defaultSidebarOpen);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(!defaultSidebarOpen);
   const [activeSubItemId, setActiveSubItemId] = useState<string | null>(null);
 
   const {
@@ -45,9 +47,14 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
     activeView,
     categories,
     filteredViews,
+    isSidebarOpen,
+    activeSidebar,
     setActiveViewCode,
     setSearchTerm,
     setActiveCategory,
+    setIsSidebarOpen,
+    setActiveSidebar,
+    toggleSidebar,
   } = useWorkspaceLayoutLogic(currentUserEmail, initialViewId);
 
   const isLevel5 = userProfile.isFounder || userProfile.accessLevel >= 5;

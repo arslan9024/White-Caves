@@ -55,6 +55,8 @@ export const ModernDashboardPage: FC = () => {
     'landlord',
     'tenant',
     'broker',
+    'linda',
+    'ai-command',
   ];
 
   const activeTab: ActivityTab = rawTab && validTabs.includes(rawTab) ? rawTab : 'departments';
@@ -82,6 +84,40 @@ export const ModernDashboardPage: FC = () => {
 
   const [activeAgent, setActiveAgent] = useState<{ id: string; name: string } | null>(null);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+
+  // Contract 2: Symmetrical Sidebar Toggles (both initialized as hidden)
+  // Disciplined constraint switch: 'LEFT' | 'RIGHT' | 'BOTH' | null
+  // By default, selecting an icon sets exclusive focus, unless the user explicitly toggles both to be open.
+  const [isLeftCollapsed, setIsLeftCollapsed] = useState(true);
+  const [isRightCollapsed, setIsRightCollapsed] = useState(true);
+
+  const toggleLeftSidebar = (forceBoth = false) => {
+    setIsLeftCollapsed(prev => {
+      const willOpen = prev;
+      if (willOpen && !forceBoth) {
+        // mutually exclusive focus unless both explicitly requested
+        setIsRightCollapsed(true);
+      }
+      return !prev;
+    });
+  };
+
+  const toggleRightSidebar = (forceBoth = false) => {
+    setIsRightCollapsed(prev => {
+      const willOpen = prev;
+      if (willOpen && !forceBoth) {
+        // mutually exclusive focus unless both explicitly requested
+        setIsLeftCollapsed(true);
+      }
+      return !prev;
+    });
+  };
+
+  const toggleBothSidebars = () => {
+    const shouldOpen = isLeftCollapsed || isRightCollapsed;
+    setIsLeftCollapsed(!shouldOpen);
+    setIsRightCollapsed(!shouldOpen);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -128,10 +164,12 @@ export const ModernDashboardPage: FC = () => {
   ]);
 
   const handleSelectSidebarTab = (tab: ActivityTab) => {
+    setActiveAgent(null);
     navigate(`/dashboard/${tab}`);
   };
 
   const handleSelectSidebarItem = (key: string, label: string) => {
+    setActiveAgent(null);
     if (key === 'departments-crud') return navigate('/dashboard/departments/slots');
     if (key.startsWith('route-')) return navigate(key.replace('route-', ''));
     if (key.startsWith('entity-'))
@@ -239,6 +277,9 @@ export const ModernDashboardPage: FC = () => {
               activeTab={activeTab}
               onSelectTab={handleSelectSidebarTab}
               onSelectItem={handleSelectSidebarItem}
+              onOpenDeptManager={() => navigate('/dashboard/departments/slots')}
+              isCollapsed={isLeftCollapsed}
+              onToggleCollapse={toggleLeftSidebar}
             />
 
             <main
@@ -262,16 +303,26 @@ export const ModernDashboardPage: FC = () => {
                 ermsSubTab={ermsSubTab}
                 ermsEntityId={ermsEntityId}
                 ermsRelationshipId={ermsRelationshipId}
+                activeAgent={activeAgent}
                 navigate={navigate}
                 onOpenRoleModal={() => setIsRoleModalOpen(true)}
               />
             </main>
 
             <ExecutiveAIVSCodeSidebar
-              onSelectAgent={(agentId, agentName) =>
-                setActiveAgent({ id: agentId, name: agentName })
-              }
+              onSelectAgent={(agentId, agentName) => {
+                setActiveAgent({ id: agentId, name: agentName });
+                if (agentId === 'linda') {
+                  navigate('/dashboard/linda');
+                } else if (agentId === 'ai-command') {
+                  navigate('/dashboard/ai-command');
+                } else {
+                  navigate(`/dashboard/ai-command/${agentId}`);
+                }
+              }}
               onSelectItem={handleSelectRightExplorerItem}
+              isCollapsed={isRightCollapsed}
+              onToggleCollapse={toggleRightSidebar}
             />
           </div>
 

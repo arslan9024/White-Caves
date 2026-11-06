@@ -64,6 +64,8 @@ model User {
   facilityBookings FacilityBooking[]
   floorAssignment  Int?              @default(1)
   taskRecords      TaskNodeRecord[]  @relation("UserAssignedTasks")
+  staffProfile     StaffProfile?
+  roleAssignments  RoleAssignment[]  @relation("UserRoleAssignments")
 
   @@index([role])
   @@index([status])
@@ -2342,6 +2344,7 @@ model TaskNodeRecord {
   property           Property?        @relation(fields: [propertyId], references: [id])
   contractId         String?          @db.ObjectId
   contract           TenancyContract? @relation(fields: [contractId], references: [id])
+  meritLedgerEntries MeritLeaderboardLedger[]
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 
@@ -2351,3 +2354,106 @@ model TaskNodeRecord {
   @@index([propertyId])
   @@index([contractId])
 }
+
+// ─── AEGIS V5.0: GAMIFIED MERIT LEADERBOARD XP & ROLE ASSIGNMENT JOIN TABLES ──
+
+// AEG-037 & AEG-038: Active Staff Profile with XP accumulation & dynamic 60%-70% commission split
+model StaffProfile {
+  id                       String                   @id @default(auto()) @map("_id") @db.ObjectId
+  userId                   String                   @unique @db.ObjectId
+  user                     User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeCode             String                   @unique
+  departmentCode           String                   @default("WC-OPS")
+  currentFloor             Int                      @default(1) // Floors 1..13
+  operationalLevel         Int                      @default(1) // Operational level 1..5 (AEG-004)
+  accumulatedXP            Int                      @default(0) // Total gamified Merit XP
+  baseCommissionSplitPct   Float                    @default(60.0) // Base 60% contract split (AEG-038)
+  dynamicBonusSplitPct     Float                    @default(60.0) // Scales from 60.0% up to max 70.0% based on XP thresholds
+  statutoryGatesCleared    Int                      @default(0)
+  meritEntries             MeritLeaderboardLedger[]
+  roleAssignments          RoleAssignment[]
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
+
+  @@index([departmentCode])
+  @@index([accumulatedXP])
+  @@index([currentFloor])
+}
+
+// AEG-037: Gamified Merit Leaderboard Ledger (+500 XP statutory gate clearance rewards)
+model MeritLeaderboardLedger {
+  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
+  staffProfileId     String          @db.ObjectId
+  staffProfile       StaffProfile    @relation(fields: [staffProfileId], references: [id], onDelete: Cascade)
+  taskRecordId       String?         @db.ObjectId
+  taskRecord         TaskNodeRecord? @relation(fields: [taskRecordId], references: [id])
+  eventTrigger       String          @default("STATUTORY_GATE_CLEARANCE") // STATUTORY_GATE_CLEARANCE | XP_THRESHOLD_MILESTONE
+  xpDelta            Int             @default(500) // +500 XP citable reward per statutory gate clearance
+  previousTotalXP    Int             @default(0)
+  newTotalXP         Int             @default(500)
+  resultingSplitPct  Float           @default(60.0) // Resulting split % (60% -> max 70%)
+  citationReference  String?         // Audit citation / statutory gate code
+  awardedAt          DateTime        @default(now())
+
+  @@index([staffProfileId])
+  @@index([taskRecordId])
+  @@index([awardedAt])
+}
+
+// AEG-039: Isolated Relational Join Table for Personnel Shift Layout Allocations across 13 Floors
+model RoleAssignment {
+  id                  String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String       @db.ObjectId
+  user                User         @relation("UserRoleAssignments", fields: [userId], references: [id], onDelete: Cascade)
+  staffProfileId      String       @db.ObjectId
+  staffProfile        StaffProfile @relation(fields: [staffProfileId], references: [id], onDelete: Cascade)
+  departmentCode      String       // e.g. WC-EXE, WC-LMS, WC-FIN, WC-CRM, WC-OPS
+  roleName            String       // Assigned operational role
+  operationalLevel    Int          @default(1) // 1..5 RBAC level
+  floorNumber         Int          @default(1) // 1..13 floor allocation
+  shiftDate           DateTime
+  shiftStart          String       @default("09:00")
+  shiftEnd            String       @default("18:00")
+  taskSignatureHash   String       // Immutable historical signature trail during floor rotations
+  isActiveRotation    Boolean      @default(true)
+  rotatedOutAt        DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([staffProfileId])
+  @@index([departmentCode, floorNumber])
+  @@index([shiftDate])
+  @@index([isActiveRotation])
+}
+
+// AI Mesh Management - AiAssistantAgent Entity Schema
+model AiAssistantAgent {
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  agentName        String       @unique /// e.g., @Zoe, @Linda, @Daisy, @Mary
+  departmentCode   String       /// e.g., WC-EXE, WC-LMS, WC-CRM
+  agentRoleTitle   String       /// e.g. Executive Assistant, Lead Qualifier
+  concurrencyCap   Int          @default(5)
+  isActive         Boolean      @default(true)
+  cachedMemorySize Int          @default(4096)
+  
+  // Extended Operational Fields
+  agentId          String?      @unique // e.g. "linda", "zoe", "dept-01-sup-01"
+  code             String       @default("WC-AI-AGENT")
+  status           String       @default("ACTIVE") // ACTIVE, IDLE, BUSY, OFFLINE, MAINTENANCE
+  tier             String       @default("SUPERVISOR") // EXECUTIVE, MANAGER, SUPERVISOR, SPECIALIST
+  model            String       @default("gemini-1.5-flash")
+  systemPrompt     String?
+  capabilities     String[]     @default([])
+  metrics          Json?        // { tasksCompleted: number, accuracy: number, latencyMs: number }
+  configuration    Json?        // { temperature: number, maxTokens: number, tools: string[] }
+  activeWorkload   Int          @default(0)
+  lastActiveAt     DateTime     @default(now())
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([departmentCode])
+  @@index([status])
+  @@index([tier])
+}
+

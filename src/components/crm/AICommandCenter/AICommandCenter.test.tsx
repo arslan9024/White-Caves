@@ -1,11 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { store } from '../../../store/store';
 import { AICommandCenter } from './AICommandCenter';
 
 describe('AICommandCenter View Component (1-12-108 Protocol)', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders root container, Managing Director, and AI Zoe', () => {
     render(
       <Provider store={store}>

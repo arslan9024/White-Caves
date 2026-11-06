@@ -35,6 +35,8 @@ export interface ExecutiveVSCodeSidebarProps {
   onSelectTab?: (tab: ActivityTab) => void;
   onSelectItem?: (key: string, label: string) => void;
   onOpenDeptManager?: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
@@ -42,6 +44,8 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
   onSelectTab,
   onSelectItem,
   onOpenDeptManager,
+  isCollapsed: controlledCollapsed,
+  onToggleCollapse,
 }) => {
   const {
     activeTab,
@@ -56,6 +60,8 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
   } = useExecutiveVSCodeSidebarLogic({
     activeTab: controlledTab,
     onSelectTab,
+    isCollapsed: controlledCollapsed,
+    onToggleCollapse,
   });
 
   const roleContext = React.useContext(UserRoleContext);

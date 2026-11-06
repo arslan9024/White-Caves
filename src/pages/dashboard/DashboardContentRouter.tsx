@@ -29,6 +29,8 @@ import { RoleManagerView } from '../../components/crm/RoleManager';
 import { LandlordManagerView } from '../../components/crm/LandlordManager';
 import { TenantManagerView } from '../../components/crm/TenantManager';
 import { BrokerManagerView } from '../../components/crm/BrokerManager';
+import LindaWhatsAppCRM from '../../components/crm/LindaWhatsAppCRM';
+import { AICommandCenter } from '../../components/crm/AICommandCenter/AICommandCenter';
 import { ProfileDashboardView } from './ProfileDashboardView';
 import { GuestDashboardGatewayView } from './GuestDashboardGatewayView';
 import { AccessDeniedView } from './AccessDeniedView';
@@ -44,6 +46,7 @@ export interface DashboardContentRouterProps {
   ermsSubTab: 'entities' | 'relationships' | 'graph' | 'matrix';
   ermsEntityId: string | null;
   ermsRelationshipId: string | null;
+  activeAgent?: { id: string; name: string } | null;
   navigate: (route: string) => void;
   onOpenRoleModal?: () => void;
 }
@@ -57,6 +60,7 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   ermsSubTab,
   ermsEntityId,
   ermsRelationshipId,
+  activeAgent,
   navigate,
   onOpenRoleModal,
 }) => {
@@ -68,13 +72,11 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   const isConfirmed = isMdOrFounder || Boolean(roleContext?.isRoleConfirmed && role !== 'guest');
 
   // Guard 1: Unconfirmed or Guest users are restricted from internal corporate machinery
-  // Managing Director (user-001) bypasses role confirmation and always sees the full dashboard.
   if (!isMdOrFounder && (!isConfirmed || role === 'guest')) {
     if (activeTab === 'landlord') return <LandlordManagerView />;
     if (activeTab === 'tenant') return <TenantManagerView />;
     if (activeTab === 'broker') return <BrokerManagerView />;
     if (activeTab === 'profile') return <ProfileDashboardView />;
-
     return <GuestDashboardGatewayView onOpenRoleModal={onOpenRoleModal} onNavigate={navigate} />;
   }
 
@@ -158,6 +160,31 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
         onNavigateBack={() => navigate('/dashboard/broker')}
         onNavigateHome={() => navigate('/dashboard/broker')}
       />
+    );
+  }
+
+  // Direct Linda / AI Command Center selection from Right Sidebar or URL
+  if (
+    activeTab === 'linda' ||
+    activeAgent?.id === 'linda' ||
+    (activeTab === 'ai-command' && activeItemId === 'linda')
+  ) {
+    return (
+      <div style={{ padding: '20px', flex: 1 }}>
+        <LindaWhatsAppCRM />
+      </div>
+    );
+  }
+
+  if (activeTab === 'ai-command' || activeAgent?.id === 'ai-command') {
+    return (
+      <div style={{ padding: '16px', flex: 1 }}>
+        <AICommandCenter
+          onSelectAgent={id =>
+            navigate(id === 'linda' ? '/dashboard/linda' : `/dashboard/ai-command/${id}`)
+          }
+        />
+      </div>
     );
   }
 

@@ -19,11 +19,15 @@ import {
 export interface ExecutiveAIVSCodeSidebarProps {
   onSelectAgent?: (agentId: string, agentName: string) => void;
   onSelectItem?: (key: string, label: string) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
   onSelectAgent,
   onSelectItem,
+  isCollapsed: controlledCollapsed,
+  onToggleCollapse,
 }) => {
   const {
     activeTab,
@@ -40,7 +44,10 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
     handleMouseDown,
     zoe,
     managers,
-  } = useExecutiveAIVSCodeSidebarLogic();
+  } = useExecutiveAIVSCodeSidebarLogic({
+    isCollapsed: controlledCollapsed,
+    onToggleCollapse,
+  });
 
   const handleTileClick = (agentId: string, agentName: string) => {
     setSelectedAgentId(agentId);
@@ -127,6 +134,33 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
 
             {/* Scrollable Agent Mesh List */}
             <AIScrollArea>
+              <button
+                type="button"
+                data-testid="open-ai-command-center-main-btn"
+                onClick={() => {
+                  if (onSelectAgent) onSelectAgent('ai-command', 'AI Command Center');
+                }}
+                style={{
+                  width: '100%',
+                  marginBottom: '10px',
+                  padding: '8px 10px',
+                  borderRadius: '8px',
+                  background:
+                    'linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(15, 23, 42, 0.9))',
+                  border: '1px solid rgba(239, 68, 68, 0.45)',
+                  color: '#F8FAFC',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span>🔱 Open Full AI Command Center</span>
+                <span style={{ color: '#FCA5A5', fontSize: '0.65rem' }}>Main Screen →</span>
+              </button>
+
               <div
                 style={{
                   fontSize: '0.65rem',
@@ -147,6 +181,7 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
                   return (
                     <AgentTile
                       key={mgr.id}
+                      data-testid={`right-sidebar-agent-${mgr.id}`}
                       $accentColor={mgr.color}
                       $isSelected={isSelected}
                       onClick={() => handleTileClick(mgr.id, `${mgr.name} · ${mgr.title}`)}
@@ -175,7 +210,10 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
         <AIActivityGroup>
           <AIActivityIconBtn
             $isActive={activeTab === 'ai-command'}
-            onClick={() => handleSelectTab('ai-command')}
+            onClick={() => {
+              handleSelectTab('ai-command');
+              if (onSelectAgent) onSelectAgent('ai-command', 'AI Command Center');
+            }}
             title="AI Command Center (Zoe + Multi-Agent Mesh)"
             data-testid="activity-btn-ai-command"
           >

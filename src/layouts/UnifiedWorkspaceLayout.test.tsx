@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -50,6 +50,10 @@ describe('UnifiedWorkspaceLayout (4-Way Workspace Architecture)', () => {
   it('renders correctly with Founder session and Managing Director Hub', () => {
     renderLayout('arslanmalikgoraha@gmail.com');
     expect(screen.getByTestId('test-child-content')).toBeDefined();
+    // Expand sidebar to view MD Hub
+    const expandBtn = screen.getByTitle(/Expand Sidebar/i);
+    expect(expandBtn).toBeDefined();
+    fireEvent.click(expandBtn);
     expect(screen.getByText(/Managing Director Hub/i)).toBeDefined();
   });
 

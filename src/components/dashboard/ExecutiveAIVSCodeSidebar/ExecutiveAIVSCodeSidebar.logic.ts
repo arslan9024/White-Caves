@@ -12,28 +12,38 @@ export type AIActivityTab =
   | 'organogram'
   | 'prompts';
 
-export function useExecutiveAIVSCodeSidebarLogic() {
+export interface UseExecutiveAIVSCodeSidebarProps {
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
+}
+
+export function useExecutiveAIVSCodeSidebarLogic(props?: UseExecutiveAIVSCodeSidebarProps) {
   const [activeTab, setActiveTab] = useState<AIActivityTab>('ai-command');
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(true);
+  const isCollapsed = props?.isCollapsed !== undefined ? props.isCollapsed : internalCollapsed;
   const [width, setWidth] = useState(320);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedAgentId, setSelectedAgentId] = useState<string>('mgr_clara');
+  const [selectedAgentId, setSelectedAgentId] = useState<string>('linda');
   const [directiveInput, setDirectiveInput] = useState('');
 
   const toggleCollapse = useCallback(() => {
-    setIsCollapsed(prev => !prev);
-  }, []);
+    if (props?.onToggleCollapse) {
+      props.onToggleCollapse();
+    } else {
+      setInternalCollapsed(prev => !prev);
+    }
+  }, [props]);
 
   const handleSelectTab = useCallback(
     (tab: AIActivityTab) => {
-      if (activeTab === tab && !isCollapsed) {
-        setIsCollapsed(true);
+      setActiveTab(tab);
+      if (props?.onToggleCollapse && isCollapsed) {
+        props.onToggleCollapse();
       } else {
-        setActiveTab(tab);
-        setIsCollapsed(false);
+        setInternalCollapsed(false);
       }
     },
-    [activeTab, isCollapsed]
+    [props, isCollapsed]
   );
 
   // Drag-to-resize from the left edge of the right sidebar
@@ -63,13 +73,25 @@ export function useExecutiveAIVSCodeSidebarLogic() {
   );
 
   const managerAgents = useMemo(() => {
-    return CORPORATE_DEPARTMENTS_12.map(dept => ({
+    const lindaAgent = {
+      id: 'linda',
+      name: 'AI Linda',
+      title: 'WhatsApp Bot Operations Center (v2.0)',
+      avatar: 'https://ui-avatars.com/api/?name=Linda+Bot&background=25D366&color=fff',
+      deptName: 'Multi-Account WhatsApp & Outreach',
+      deptCode: 'BOT-LINDA',
+      color: '#25D366',
+      description:
+        'Upgraded WhatsApp Bot Operations Center: 4-Panel Terminal, F1-F35 Catalog, Playbooks P1-P10, and Area Owner Outreach Planner.',
+    };
+    const deptManagers = CORPORATE_DEPARTMENTS_12.map(dept => ({
       ...dept.managerAi,
       deptName: dept.name,
       deptCode: dept.code,
       color: dept.color,
       description: dept.description,
     }));
+    return [lindaAgent, ...deptManagers];
   }, []);
 
   const filteredManagers = useMemo(() => {

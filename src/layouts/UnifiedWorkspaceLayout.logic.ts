@@ -12,6 +12,8 @@ import { useUserRole } from '../context/UserRoleContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export type ActiveSidebarConstraint = 'LEFT' | 'RIGHT' | 'BOTH' | null;
+
 export interface WorkspaceLayoutState {
   userProfile: UserProfile;
   activeViewCode: string;
@@ -20,12 +22,18 @@ export interface WorkspaceLayoutState {
   activeView: ViewDefinition;
   categories: string[];
   filteredViews: ViewDefinition[];
+  // Discipline: Default hidden (isOpen: false) with dual/mutual switch
+  isSidebarOpen: boolean;
+  activeSidebar: ActiveSidebarConstraint;
 }
 
 export interface WorkspaceLayoutHandlers {
   setActiveViewCode: (code: string) => void;
   setSearchTerm: (term: string) => void;
   setActiveCategory: (cat: string) => void;
+  setIsSidebarOpen: (isOpen: boolean) => void;
+  setActiveSidebar: (sidebar: ActiveSidebarConstraint) => void;
+  toggleSidebar: (side?: 'LEFT' | 'RIGHT') => void;
 }
 
 export interface UseWorkspaceLayoutLogicReturn
@@ -44,6 +52,30 @@ export function useWorkspaceLayoutLogic(
   const [activeViewCode, setActiveViewCode] = useState<string>(initialViewId);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
+
+  // Sidebar Discipline: Default initialization state for sidebars MUST be hidden (isOpen: false)
+  // Constraint switch: 'LEFT' | 'RIGHT' | 'BOTH' | null
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [activeSidebar, setActiveSidebar] = useState<ActiveSidebarConstraint>(null);
+
+  const toggleSidebar = useCallback((side: 'LEFT' | 'RIGHT' = 'LEFT') => {
+    setActiveSidebar(prev => {
+      if (prev === null) {
+        setIsSidebarOpen(true);
+        return side;
+      }
+      if (prev === side) {
+        setIsSidebarOpen(false);
+        return null;
+      }
+      if (prev === 'BOTH') {
+        // Closing the requested side leaves the other
+        return side === 'LEFT' ? 'RIGHT' : 'LEFT';
+      }
+      // If one is already open and user clicks the opposing one, mutually switch unless explicitly BOTH
+      return side;
+    });
+  }, []);
 
   // Derive active user profile from UserRoleContext or fallback to evaluateFounderGuard
   const userProfile: UserProfile = useMemo(() => {
@@ -65,22 +97,20 @@ export function useWorkspaceLayoutLogic(
   // ── Derived Data ───────────────────────────────────────────────────────────
   const activeView = useMemo(
     () =>
-      VIEWS_REGISTRY.find(
-        (v) => v.code === activeViewCode || v.id === activeViewCode
-      ) || VIEWS_REGISTRY[0],
+      VIEWS_REGISTRY.find(v => v.code === activeViewCode || v.id === activeViewCode) ||
+      VIEWS_REGISTRY[0],
     [activeViewCode]
   );
 
   const categories = useMemo(
-    () => ['All', ...Array.from(new Set(VIEWS_REGISTRY.map((v) => v.category)))],
+    () => ['All', ...Array.from(new Set(VIEWS_REGISTRY.map(v => v.category)))],
     []
   );
 
   const filteredViews = useMemo(
     () =>
-      VIEWS_REGISTRY.filter((v) => {
-        const matchesCategory =
-          activeCategory === 'All' || v.category === activeCategory;
+      VIEWS_REGISTRY.filter(v => {
+        const matchesCategory = activeCategory === 'All' || v.category === activeCategory;
         const q = searchTerm.toLowerCase();
         const matchesSearch =
           v.title.toLowerCase().includes(q) ||
@@ -89,7 +119,9 @@ export function useWorkspaceLayoutLogic(
 
         // Level 5 views require level 5 access
         const isLevel5 = userProfile.isFounder || userProfile.accessLevel >= 5;
-        const isRestrictedL5 = v.group.toLowerCase().includes('managing director') || v.group.toLowerCase().includes('executive');
+        const isRestrictedL5 =
+          v.group.toLowerCase().includes('managing director') ||
+          v.group.toLowerCase().includes('executive');
         if (isRestrictedL5 && !isLevel5) {
           return false;
         }
@@ -118,6 +150,8 @@ export function useWorkspaceLayoutLogic(
     activeViewCode,
     searchTerm,
     activeCategory,
+    isSidebarOpen,
+    activeSidebar,
     // Derived
     activeView,
     categories,
@@ -126,5 +160,8 @@ export function useWorkspaceLayoutLogic(
     setActiveViewCode: handleSetActiveViewCode,
     setSearchTerm: handleSetSearchTerm,
     setActiveCategory: handleSetActiveCategory,
+    setIsSidebarOpen,
+    setActiveSidebar,
+    toggleSidebar,
   };
 }

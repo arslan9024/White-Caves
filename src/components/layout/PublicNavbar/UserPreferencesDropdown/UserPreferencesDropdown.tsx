@@ -132,39 +132,43 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({
         ))}
       </ButtonGrid>
 
-      {/* 4. 14-Role Sovereign Simulator */}
-      <SectionTitle>
-        <span>🏛️ Operational Role / Portal</span>
-        <span style={{ fontSize: '0.65rem', color: 'var(--accent-red, #ef4444)' }}>
-          14-Role Matrix
-        </span>
-      </SectionTitle>
-      <RoleSelectBox
-        value={currentRole}
-        onChange={e => handleSelectRole(e.target.value as UserRole)}
-        data-testid="role-simulator-select"
-      >
-        <optgroup label="Tier 1: Internal Corporate Machinery">
-          <option value="managing_director">👑 Managing Director (L5 Sovereign)</option>
-          <option value="manager">📊 Department Manager (L4)</option>
-          <option value="supervisor">⚡ Team Supervisor (L3)</option>
-          <option value="agent">💼 Licensed Broker (L2)</option>
-          <option value="intern">🎓 Corporate Intern (L1)</option>
-        </optgroup>
-        <optgroup label="Tier 2: Paired Client Portals">
-          <option value="tenant">🔑 Leasing Tenant (Client L1)</option>
-          <option value="landlord">🏢 Property Landlord (Asset Owner L2)</option>
-          <option value="buyer">🏡 Secondary Buyer (Client L1)</option>
-          <option value="seller">📜 Property Seller (Mandate L1)</option>
-          <option value="offplan_buyer">🏗️ Off-Plan Purchaser (HNWI L1)</option>
-          <option value="developer">🏙️ Primary Developer Partner (L2)</option>
-        </optgroup>
-        <optgroup label="Tier 3: Strategic Partners & Public">
-          <option value="conveyancer">⚖️ DLD Conveyancer / Trustee (L2)</option>
-          <option value="contractor">🛠️ Maintenance Contractor (L2)</option>
-          <option value="guest">🌐 Executive Guest (Public L1)</option>
-        </optgroup>
-      </RoleSelectBox>
+      {/* 4. 14-Role Sovereign Simulator (Level 5 RBAC Gate for Administrative Founder Controls) */}
+      {(accessLevel >= 5 || isFounder || isManagingDirector) && (
+        <>
+          <SectionTitle>
+            <span>🏛️ Operational Role / Portal</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--accent-red, #ef4444)' }}>
+              14-Role Matrix (L5 Sovereign)
+            </span>
+          </SectionTitle>
+          <RoleSelectBox
+            value={currentRole}
+            onChange={e => handleSelectRole(e.target.value as UserRole)}
+            data-testid="role-simulator-select"
+          >
+            <optgroup label="Tier 1: Internal Corporate Machinery">
+              <option value="managing_director">👑 Managing Director (L5 Sovereign)</option>
+              <option value="manager">📊 Department Manager (L4)</option>
+              <option value="supervisor">⚡ Team Supervisor (L3)</option>
+              <option value="agent">💼 Licensed Broker (L2)</option>
+              <option value="intern">🎓 Corporate Intern (L1)</option>
+            </optgroup>
+            <optgroup label="Tier 2: Paired Client Portals">
+              <option value="tenant">🔑 Leasing Tenant (Client L1)</option>
+              <option value="landlord">🏢 Property Landlord (Asset Owner L2)</option>
+              <option value="buyer">🏡 Secondary Buyer (Client L1)</option>
+              <option value="seller">📜 Property Seller (Mandate L1)</option>
+              <option value="offplan_buyer">🏗️ Off-Plan Purchaser (HNWI L1)</option>
+              <option value="developer">🏙️ Primary Developer Partner (L2)</option>
+            </optgroup>
+            <optgroup label="Tier 3: Strategic Partners & Public">
+              <option value="conveyancer">⚖️ DLD Conveyancer / Trustee (L2)</option>
+              <option value="contractor">🛠️ Maintenance Contractor (L2)</option>
+              <option value="guest">🌐 Executive Guest (Public L1)</option>
+            </optgroup>
+          </RoleSelectBox>
+        </>
+      )}
 
       {/* Links & Actions */}
       <LinksGroup>

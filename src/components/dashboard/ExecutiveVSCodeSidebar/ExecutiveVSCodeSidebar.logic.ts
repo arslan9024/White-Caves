@@ -20,18 +20,23 @@ export type ActivityTab =
   | 'landlord'
   | 'tenant'
   | 'broker'
+  | 'linda'
+  | 'ai-command'
   | 'audit'
   | 'settings';
 
 export interface UseExecutiveVSCodeSidebarProps {
   activeTab?: ActivityTab;
   onSelectTab?: (tab: ActivityTab) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export function useExecutiveVSCodeSidebarLogic(props?: UseExecutiveVSCodeSidebarProps) {
   const [internalTab, setInternalTab] = useState<ActivityTab>('departments');
   const activeTab = props?.activeTab !== undefined ? props.activeTab : internalTab;
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(true);
+  const isCollapsed = props?.isCollapsed !== undefined ? props.isCollapsed : internalCollapsed;
   const [width, setWidth] = useState(280);
   const [filterQuery, setFilterQuery] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
@@ -49,17 +54,29 @@ export function useExecutiveVSCodeSidebarLogic(props?: UseExecutiveVSCodeSidebar
   }, []);
 
   const toggleCollapse = useCallback(() => {
-    setIsCollapsed(prev => !prev);
-  }, []);
+    if (props?.onToggleCollapse) {
+      props.onToggleCollapse();
+    } else {
+      setInternalCollapsed(prev => !prev);
+    }
+  }, [props]);
 
   const handleSelectTab = useCallback(
     (tab: ActivityTab) => {
       if (activeTab === tab && !isCollapsed) {
-        setIsCollapsed(true);
+        if (props?.onToggleCollapse) {
+          props.onToggleCollapse();
+        } else {
+          setInternalCollapsed(true);
+        }
       } else {
         setInternalTab(tab);
         props?.onSelectTab?.(tab);
-        setIsCollapsed(false);
+        if (props?.onToggleCollapse && isCollapsed) {
+          props.onToggleCollapse();
+        } else {
+          setInternalCollapsed(false);
+        }
       }
     },
     [activeTab, isCollapsed, props]
