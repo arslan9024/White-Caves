@@ -348,7 +348,7 @@ Every system execution, automation layer loop, and database mutation inside the 
 
 ## 🧭 SECTION 3: THE VSCODE-STYLE HIERARCHICAL BREADCRUMB SPECIFICATION
 
-To provide effortless, bidirectional orientation across the enterprise grid, the application header must feature a **VSCode-Style Hierarchical Breadcrumb** bar:
+To provide effortless, bidirectional orientation across the enterprise grid, the application header features a **VSCode-Style Hierarchical Breadcrumb** bar:
 
 ```
 [🏢 White Caves] › [DMS: DEPT-01 Executive] › [SUB-01 Strategy] › [SQD-01 Core Ops] › [TSK-001 Verify RERA]
@@ -356,9 +356,21 @@ To provide effortless, bidirectional orientation across the enterprise grid, the
 
 ### Navigation & Behavioral Rules
 
-1. **Bidirectional Navigation:** Users can click any parent breadcrumb segment to navigate directly back to that level.
-2. **Deterministic Turing IDs:** Every breadcrumb token displays the canonical unique ID alongside its human-readable title.
-3. **Interactive Dropdown Menus:** Clicking a breadcrumb segment reveals a quick-jump popover menu listing sibling entities at that exact hierarchical level.
+1. **Bidirectional Navigation:** Users click any parent breadcrumb segment to navigate directly back to that level.
+2. **Deterministic Turing IDs:** Every token displays the canonical unique ID alongside its human-readable title.
+3. **Interactive Dropdown Menus:** Clicking a segment reveals a popover menu listing sibling entities.
 4. **URL Synchronization:** Breadcrumbs update synchronously with route transitions (`/dashboard/:system/:category/:id`).
 5. **Keyboard Accessibility:** Supports `LeftArrow` / `RightArrow` navigation, `Enter` to select, and `Escape` to close jump menus.
-6. **Unified Location:** Positioned cleanly below the Executive Top Navbar and above the active workspace canvas.
+
+---
+
+## 🛠 SECTION 4: THE PRODUCTION 12-WAY TECH STACK & RBAC CONTEXT MATRIX
+
+| Layer                | Production Technology                                                       | Architectural Target                                                                                      |
+| :------------------- | :-------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------- |
+| **Framework Core**   | Next.js 15 (App Router) + React 19 Ready                                    | Server Component performance loops, native Streaming, zero hydration lag.                                 |
+| **State & Cache**    | Redux Toolkit (UI) + TanStack Query / Persistent Local Cache (`*.cache.ts`) | Complete isolation between volatile interface indicators and structural database records.                 |
+| **Off-Thread Core**  | Native Web Workers Engine (`*.workers.ts`)                                  | Offloads heavy computation (OCR parsing, leaderboard XP multipliers) from main thread to preserve 60 FPS. |
+| **Database Gateway** | Prisma ORM + PostgreSQL / MongoDB                                           | Clean foreign-key safety contracts linking properties, clients, leases, cheques, and task chains.         |
+| **Quality Gates**    | Vitest + Playwright + Knip Linting                                          | Strict pre-commit verification checking to guarantee zero code duplication or dead variables.             |
+| **Auth & Security**  | Sovereign `UserRoleContext` (14-Role RBAC)                                  | Strict segregation between Executive MD Engine (Level 5) and Client Landlord Portal (Level 2).            |

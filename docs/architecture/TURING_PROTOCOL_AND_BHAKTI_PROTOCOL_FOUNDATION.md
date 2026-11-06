@@ -175,35 +175,29 @@ All entity schemas across the CRM and Prisma database must adhere to strict UML 
 2. **Composition Cascade (`◆—`):** Defined exclusively for lifecycle-dependent children (e.g., `TenancyContract ◆— FinancialReceiptLog`). Deletion of the parent contract must cascade delete child financial logs.
 3. **Interactive ERD Visualization:** The ERMS `/dashboard/erms/erd` canvas provides real-time pan, zoom, foreign key edge highlights, cardinality toggles, and UML attribute inspection.
 
-#### Law T11: Rational Unified Process (RUP) Specification Standard
+#### Law T13: The Production 12-Way Tech Stack Matrix
 
-Every task cataloged in the White Caves CRM must be formally bound to a structured **RUP Use Case Dossier**:
+To optimize the software stack to mirror the 1-12-108 organizational hierarchy with zero layout debt and high throughput, all modules must align with this production architecture:
 
-1. **Explicit Stereotypes:** `«Boundary»` for UI Views & Forms, `«Control»` for Workflow Controllers & Redux Slices, and `«Entity»` for Persistent Prisma / Database Models.
-2. **Deterministic Use Case Contract (`UC-[TASK-ID]`):**
-   - **Primary Actor:** Exclusively specifies the operational User Role (e.g. `L3 Tenancy Supervisor`, `L2 Conveyancing Broker`, `L3 Compliance Supervisor`, `L2 Treasury Controller`).
-   - **Executing Sovereign Actor:** Managing Director Arslan Malik Bashir Ahmad (`EMP-001`) retains universal sovereign execution clearance to test, trigger, and execute all use cases across all departments.
-   - **Secondary Actors:** Regulatory integration partners with explicit role descriptions (e.g. Dubai Land Department `REST API`, UAE FTA `EmaraTax Gateway`, `Zoho Books API`).
-   - **Pre-conditions:** Actor authenticated with requisite clearance; entity reference validated in database (Property UID / Client Code / Deal Number).
-   - **Trigger:** Manual dispatch from Explorer or automated event trigger (e.g. 30-day Ejari expiry alert).
-   - **4-Phase Main Success Scenario (The Journey):**
-     - _Phase 1 (Input Phase):_ System prompts actor for parameters (Reference UID, Value AED, Certificate Number).
-     - _Phase 2 (Processing Phase):_ Engine executes algorithmic checks against RERA / FTA Executive Law.
-     - _Phase 3 (Output Phase):_ Generates statutory PDF artifact, Ejari certificate, or verified receipt token.
-     - _Phase 4 (Persistence Phase):_ Database record committed, audit ledger logged, and Merit XP incremented.
-   - **Post-conditions:** Entity state shifted to next pipeline stage; telemetry emitted to Right Sidebar stream.
-   - **Statutory Compliance Mandate:** DLD Law No. 7 / RERA Regulation No. 26 / FTA VAT Executive Law.
+1. **Framework Core (Next.js 15 App Router + React 19 Ready):** Server Component performance loops, native streaming responses, and zero client-side hydration lag.
+2. **State & Cache (Redux Toolkit + TanStack Query / Persistent Local Cache):** Total structural isolation between transient client UI indicators and immutable server/database state.
+3. **Off-Thread Core (Native Web Workers Engine `*.workers.ts`):** Offloads heavy mathematical loops, Tesseract OCR document parsing, and XP leaderboard sorting away from the main thread to maintain an unbroken 60 FPS viewport.
+4. **Database Gateway (Prisma ORM + PostgreSQL / MongoDB):** Robust foreign-key safety contracts linking properties, clients, tenancies, cheques, and task reporting chains.
+5. **Quality Gates (Vitest + Playwright + Knip Linting):** Automated pre-commit gates enforcing zero code duplication, strict typechecking, and zero dead exports.
 
-#### Law T12: Strict Unified Modeling Language (UML) ERD & Relational Multiplicity Standard
+#### Law T14: Role-Based Access Control (RBAC) & Sovereign UserRoleContext
 
-All entity schemas across the CRM and Prisma database must adhere to strict UML Entity-Relationship conventions:
+Enterprise multi-tenancy and security boundaries are enforced via `UserRoleContext` (`src/context/UserRoleContext.tsx`), guaranteeing strict view and data segregation between user tiers:
 
-1. **Multiplicity Notation:** Every relational link must declare explicit cardinality bounds:
-   - `1 to 0..*` (One-to-Many Aggregation, e.g., User aggregates Tasks, Landlord owns Properties).
-   - `1 to 1` (One-to-One Strict Association, e.g., Contract to Ejari Registration).
-   - `0..1 to 0..*` (Optional Reference Link, e.g., Property to Valuations).
-2. **Composition Cascade (`◆—`):** Defined exclusively for lifecycle-dependent children (e.g., `TenancyContract ◆— FinancialReceiptLog`). Deletion of the parent contract must cascade delete child financial logs.
-3. **Interactive ERD Visualization:** The ERMS `/dashboard/erms/erd` canvas provides real-time pan, zoom, foreign key edge highlights, cardinality toggles, and UML attribute inspection.
+1. **Root Context Authority:** The authenticated user's role and clearance tier must be injected at the application root through `UserRoleProvider`, eliminating prop drilling and securing all router nodes.
+2. **Managing Director View (`managing_director` — Level 5 Sovereign Clearance):**
+   - Renders the complete **Executive 1-12-108 Corporate Engine** (`/dashboard`).
+   - Unrestricted visibility over all 12 corporate floors, 108 manager slots, company-wide escrow balances, VAT returns, HR rosters, and the Master Audit Log.
+   - Authorized to bypass Law 6 privacy masking to inspect unmasked title deeds, Emirates IDs, and sovereign financials.
+3. **Landlord View (`landlord` — Level 2 Client Portal Clearance):**
+   - Renders exclusively the **Asset Owner Portal**.
+   - Strictly scoped to their own owned properties (`where landlordId === currentUser.id`), rental yield calculations, PDC cheque clearance schedules, and tenant maintenance requests.
+   - Completely strips and hides all internal corporate machinery: no employee hiring/firing tools, no internal broker commission matrices, and no visibility into external landlords' holdings.
 
 ---
 
@@ -221,5 +215,5 @@ All entity schemas across the CRM and Prisma database must adhere to strict UML 
 | 18-Step Pipeline Integrity (T10)        | Turing   | `CustomerManager.workflow.ts` & `DealManager.workflow.ts` | ✅ PASSED   |
 | RUP Use Case Dossier Standard (T11)     | Turing   | `RUPUseCaseDossierView.tsx` & `TaskExecutionWorkbench`    | ✅ PASSED   |
 | Strict UML ERD Specifications (T12)     | Turing   | `RelationshipErdVisualizer.tsx` & `schema.prisma`         | ✅ PASSED   |
-| RUP Use Case Dossier Standard (T11)     | Turing   | `RUPUseCaseDossierView.tsx` & `TaskExecutionWorkbench`    | ✅ PASSED   |
-| Strict UML ERD Specifications (T12)     | Turing   | `RelationshipErdVisualizer.tsx` & `schema.prisma`         | ✅ PASSED   |
+| Production Tech Stack Matrix (T13)      | Turing   | Next.js 15, RTK, Prisma, Vitest, Web Workers              | ✅ PASSED   |
+| Sovereign RBAC Context Standard (T14)   | Turing   | `UserRoleContext.tsx` (MD vs. Landlord Portal Separation) | ✅ PASSED   |
