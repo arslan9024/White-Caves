@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '../../context/ThemeContext';
 import { UserRoleProvider } from '../../context/UserRoleContext';
@@ -42,6 +42,15 @@ function renderDashboardWithProviders(initialEntry: string) {
 }
 
 describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ success: true, data: [] }),
+      })
+    );
+  });
+
   it('renders modern dashboard without throwing ReferenceError', () => {
     renderDashboardWithProviders('/dashboard/departments');
     expect(screen.getByTestId('viewport-main-area')).toBeInTheDocument();

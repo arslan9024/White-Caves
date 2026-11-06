@@ -18,6 +18,7 @@ export interface UseCustomerManagerProps {
   initialCustomers?: CustomerItem[];
   selectedCustomerId?: string | null;
   onSelectCustomer?: (id: string) => void;
+  onNavigateBack?: () => void;
 }
 
 export function useCustomerManager({

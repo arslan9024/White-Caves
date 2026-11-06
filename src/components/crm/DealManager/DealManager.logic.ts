@@ -13,6 +13,7 @@ export interface UseDealManagerProps {
   initialDeals?: DealItem[];
   selectedDealId?: string | null;
   onSelectDeal?: (id: string) => void;
+  onNavigateBack?: () => void;
 }
 
 export function useDealManager({

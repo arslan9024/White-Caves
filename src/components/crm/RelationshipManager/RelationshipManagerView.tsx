@@ -187,6 +187,10 @@ export const RelationshipManagerView: FC<UseRelationshipManagerProps> = props =>
             <RelationshipEntitiesHub
               selectedEntityId={props.selectedEntityId}
               onSelectEntity={props.onSelectEntity}
+              onNavigateBack={() => {
+                props.onSelectEntity?.('');
+                props.onNavigateToDeepRoute?.('/dashboard/erms/entities');
+              }}
             />
           )}
 

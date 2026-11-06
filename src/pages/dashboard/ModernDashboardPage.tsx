@@ -245,6 +245,8 @@ export const ModernDashboardPage: FC = () => {
                         ? activeItemId
                         : undefined
                     }
+                    onNavigateBack={() => navigate('/dashboard/departments/slots')}
+                    onSelectDept={code => navigate(`/dashboard/departments/${code}`)}
                     isReadOnly={isReadOnly}
                   />
                 )
@@ -261,6 +263,8 @@ export const ModernDashboardPage: FC = () => {
                         ? activeItemId
                         : undefined
                     }
+                    onNavigateBack={() => navigate('/dashboard/employees/roster')}
+                    onSelectEmployee={id => navigate(`/dashboard/employees/${id}`)}
                   />
                 )
               ) : activeTab === 'tasks' ? (
@@ -274,6 +278,7 @@ export const ModernDashboardPage: FC = () => {
                         : null
                     }
                     onSelectTask={id => navigate(`/dashboard/tasks/${id}`)}
+                    onNavigateBack={() => navigate('/dashboard/tasks/catalog')}
                   />
                 )
               ) : activeTab === 'leaderboard' ? (
@@ -293,6 +298,7 @@ export const ModernDashboardPage: FC = () => {
                         : null
                     }
                     onSelectProperty={id => navigate(`/dashboard/REproperties/${id}`)}
+                    onNavigateBack={() => navigate('/dashboard/REproperties/inventory')}
                   />
                 )
               ) : activeTab === 'deals' ? (
@@ -304,6 +310,7 @@ export const ModernDashboardPage: FC = () => {
                       activeItemId !== 'pipeline' && activeItemId !== 'escrow' ? activeItemId : null
                     }
                     onSelectDeal={id => navigate(`/dashboard/deals/${id}`)}
+                    onNavigateBack={() => navigate('/dashboard/deals/pipeline')}
                   />
                 )
               ) : activeTab === 'documents' ? (
@@ -317,6 +324,7 @@ export const ModernDashboardPage: FC = () => {
                         : null
                     }
                     onSelectDoc={id => navigate(`/dashboard/documents/${id}`)}
+                    onNavigateBack={() => navigate('/dashboard/documents/vault')}
                   />
                 )
               ) : activeTab === 'relationships' || activeTab === 'erms' ? (
@@ -341,6 +349,7 @@ export const ModernDashboardPage: FC = () => {
                       activeItemId !== 'leads' && activeItemId !== 'investors' ? activeItemId : null
                     }
                     onSelectCustomer={id => navigate(`/dashboard/customers/${id}`)}
+                    onNavigateBack={() => navigate('/dashboard/customers/leads')}
                   />
                 )
               ) : (

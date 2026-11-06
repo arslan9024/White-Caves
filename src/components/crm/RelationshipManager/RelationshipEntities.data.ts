@@ -229,3 +229,17 @@ export const CANONICAL_ALL_ENTITIES: EntityNode[] = [
     },
   },
 ];
+
+export const ENTITY_TYPE_OPTIONS: Array<{ id: string; label: string }> = [
+  { id: 'ALL', label: 'All Entities' },
+  { id: 'USER', label: 'Users' },
+  { id: 'LANDLORD', label: 'Landlords' },
+  { id: 'TENANT', label: 'Tenants' },
+  { id: 'PROPERTY', label: 'Properties' },
+  { id: 'CONTRACT', label: 'Contracts' },
+  { id: 'DEAL', label: 'Deals' },
+  { id: 'TASK', label: 'Tasks' },
+  { id: 'DOCUMENT', label: 'Documents' },
+  { id: 'INVOICE', label: 'Invoices' },
+  { id: 'CHEQUE', label: 'Cheques' },
+];

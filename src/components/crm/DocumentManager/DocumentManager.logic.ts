@@ -12,6 +12,7 @@ export interface UseDocumentManagerProps {
   initialDocuments?: DocumentItem[];
   selectedDocId?: string | null;
   onSelectDoc?: (id: string) => void;
+  onNavigateBack?: () => void;
 }
 
 export function useDocumentManager({

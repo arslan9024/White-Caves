@@ -6,9 +6,9 @@
  */
 
 import React, { FC, useState, useMemo, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Eye } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Eye, ArrowLeft } from 'lucide-react';
 import type { EntityNode, EntityType } from './RelationshipManager.types';
-import { CANONICAL_ALL_ENTITIES } from './RelationshipEntities.data';
+import { CANONICAL_ALL_ENTITIES, ENTITY_TYPE_OPTIONS } from './RelationshipEntities.data';
 import { EntityFormModal, EntityInspectModal } from './RelationshipEntityModals';
 
 const STORAGE_KEY = 'whitecaves_all_entities_store';
@@ -35,11 +35,13 @@ function saveStoredEntities(entities: EntityNode[]) {
 export interface RelationshipEntitiesHubProps {
   selectedEntityId?: string | null;
   onSelectEntity?: (id: string) => void;
+  onNavigateBack?: () => void;
 }
 
 export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
   selectedEntityId,
   onSelectEntity,
+  onNavigateBack,
 }) => {
   const [entities, setEntities] = useState<EntityNode[]>(loadStoredEntities);
   const [searchQuery, setSearchQuery] = useState('');
@@ -150,19 +152,58 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
     });
   }, [entities, selectedType, searchQuery]);
 
-  const typeOptions: Array<{ id: string; label: string }> = [
-    { id: 'ALL', label: 'All Entities' },
-    { id: 'USER', label: 'Users' },
-    { id: 'LANDLORD', label: 'Landlords' },
-    { id: 'TENANT', label: 'Tenants' },
-    { id: 'PROPERTY', label: 'Properties' },
-    { id: 'CONTRACT', label: 'Contracts' },
-    { id: 'DEAL', label: 'Deals' },
-    { id: 'TASK', label: 'Tasks' },
-    { id: 'DOCUMENT', label: 'Documents' },
-    { id: 'INVOICE', label: 'Invoices' },
-    { id: 'CHEQUE', label: 'Cheques' },
-  ];
+  const typeOptions = ENTITY_TYPE_OPTIONS;
+
+  if (selectedEntityId && activeViewNode) {
+    return (
+      <div data-testid="entity-detail-main-view" className="space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveViewNode(null);
+              onNavigateBack?.();
+            }}
+            data-testid="entity-back-btn"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-bold transition-colors cursor-pointer border border-slate-700"
+          >
+            <ArrowLeft size={15} />
+            <span>← Back to Entities Hub</span>
+          </button>
+          <span className="font-mono text-xs text-sky-400 font-bold">{activeViewNode.id}</span>
+        </div>
+
+        <div className="p-6 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300">
+              {activeViewNode.type}
+            </span>
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950/40 text-emerald-300 border border-emerald-800/40">
+              {activeViewNode.badge}
+            </span>
+            <span className="font-mono text-[11px] text-emerald-400 ml-auto">
+              {activeViewNode.status || 'ACTIVE'}
+            </span>
+          </div>
+
+          <h2 className="text-xl font-bold text-white">{activeViewNode.name}</h2>
+          <p className="text-xs text-slate-300">{activeViewNode.description}</p>
+
+          <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono space-y-2">
+            <div className="text-[10px] uppercase font-bold text-slate-500 mb-2">
+              Relational Attributes
+            </div>
+            {Object.entries(activeViewNode.details || {}).map(([k, v]) => (
+              <div key={k} className="flex justify-between py-1 border-b border-slate-800/50">
+                <span className="text-slate-400">{k}:</span>
+                <span className="text-emerald-400 font-semibold">{String(v)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4" data-testid="relationship-entities-hub">
@@ -290,8 +331,10 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
         onChangeField={(field, val) => setFormData(prev => ({ ...prev, [field]: val }))}
       />
 
-      {/* ── View Details Modal ────────────────────────────────────────────── */}
-      <EntityInspectModal node={activeViewNode} onClose={() => setActiveViewNode(null)} />
+      {/* ── View Details Modal (only when not on deep route) ────────────── */}
+      {!selectedEntityId && (
+        <EntityInspectModal node={activeViewNode} onClose={() => setActiveViewNode(null)} />
+      )}
     </div>
   );
 };
