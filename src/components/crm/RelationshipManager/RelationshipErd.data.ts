@@ -12,6 +12,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'User',
     stereotype: '«Entity»',
     domain: 'GOVERNANCE',
+    description: 'The Corporate Staff Actor & Sovereign System Operator',
+    x: 50,
+    y: 40,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'name', type: 'String' },
@@ -25,6 +28,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'Landlord',
     stereotype: '«Entity»',
     domain: 'LEASING',
+    description: 'External KYC Landlord Profile & Freehold Asset Owner',
+    x: 370,
+    y: 40,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'fullName', type: 'String' },
@@ -36,6 +42,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'Tenant',
     stereotype: '«Entity»',
     domain: 'LEASING',
+    description: 'External KYC Tenant Profile & Lease Agreement Signatory',
+    x: 690,
+    y: 40,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'fullName', type: 'String' },
@@ -48,6 +57,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'Property',
     stereotype: '«Entity»',
     domain: 'SALES',
+    description: 'Residential Asset Row with Cluster & Vacancy State',
+    x: 370,
+    y: 300,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'uid', type: 'String' },
@@ -61,6 +73,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'TenancyContract',
     stereotype: '«Entity»',
     domain: 'LEASING',
+    description: 'Core Leasing Agreement with Cascade Composition',
+    x: 690,
+    y: 300,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'contractNumber', type: 'String' },
@@ -77,6 +92,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'FinancialReceiptLog',
     stereotype: '«Entity»',
     domain: 'FINANCE',
+    description: 'Composed Financial Ledger Record (VAT & Zoho Reconciliation)',
+    x: 690,
+    y: 600,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'receiptNumber', type: 'String' },
@@ -90,6 +108,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'TaskNodeRecord',
     stereotype: '«Entity»',
     domain: 'STATUTORY',
+    description: 'Universal Operational & Statutory Action Task Node',
+    x: 50,
+    y: 360,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'taskCode', type: 'String' },
@@ -107,6 +128,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'DealPipeline',
     stereotype: '«Entity»',
     domain: 'SALES',
+    description: 'Sales Pipeline Deal Instance across 18-Step Lifecycle',
+    x: 1010,
+    y: 40,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'dealNumber', type: 'String' },
@@ -121,6 +145,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'TaxInvoice',
     stereotype: '«Entity»',
     domain: 'FINANCE',
+    description: 'Statutory 5% VAT Tax Invoice with FTA TRN',
+    x: 1010,
+    y: 350,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'invoiceNumber', type: 'String' },
@@ -134,6 +161,9 @@ export const CANONICAL_ERD_MODELS: ERDClassModel[] = [
     name: 'Cheque',
     stereotype: '«Entity»',
     domain: 'FINANCE',
+    description: 'PDC Cheque Instrument with Maturity & Escrow Status',
+    x: 1010,
+    y: 620,
     attributes: [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'chequeNumber', type: 'String' },

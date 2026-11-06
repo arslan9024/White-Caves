@@ -11,6 +11,7 @@ import v1DealsRouter from './v1Deals.js';
 import v1CustomersRouter from './v1Customers.js';
 import v1RelationshipsRouter from './v1Relationships.js';
 import v1DocumentsRouter from './v1Documents.js';
+import v1TasksRouter from './v1Tasks.js';
 
 function createTestApp(): express.Application {
   const app = express();
@@ -19,6 +20,7 @@ function createTestApp(): express.Application {
   app.use('/api/v1/customers', v1CustomersRouter);
   app.use('/api/v1/relationships', v1RelationshipsRouter);
   app.use('/api/v1/documents', v1DocumentsRouter);
+  app.use('/api/v1/tasks', v1TasksRouter);
   return app;
 }
 
@@ -108,6 +110,49 @@ describe('V1 REST API Routes Suite', () => {
         .expect(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.status).toBe('VERIFIED');
+    });
+  });
+
+  describe('/api/v1/tasks endpoints & entity synchronization', () => {
+    it('GET /api/v1/tasks returns canonical catalog of tasks', async () => {
+      const res = await request(app).get('/api/v1/tasks').expect(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.length).toBeGreaterThan(0);
+    });
+
+    it('GET /api/v1/tasks/:id returns single task with RUP dossier', async () => {
+      const res = await request(app).get('/api/v1/tasks/TSK-001').expect(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.taskCode).toBe('TSK-001');
+      expect(res.body.data.useCase).toBeDefined();
+    });
+
+    it('POST /api/v1/tasks creates a new operational task instance', async () => {
+      const payload = {
+        title: 'Attest Power of Attorney with Dubai Courts',
+        pillarId: 'pillar-1',
+        category: 'REGULATORY',
+        priority: 'CRITICAL',
+      };
+      const res = await request(app).post('/api/v1/tasks').send(payload).expect(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.title).toBe(payload.title);
+    });
+
+    it('POST /api/v1/tasks/:id/complete commits status and synchronizes entity records', async () => {
+      const res = await request(app)
+        .post('/api/v1/tasks/TSK-001/complete')
+        .send({
+          awardedXp: 150,
+          outputs: { vacancyStatus: 'OCCUPIED' },
+          entityId: 'PROP-001',
+        })
+        .expect(200);
+
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe('COMPLETED');
+      expect(res.body.awardedXp).toBe(150);
+      expect(res.body.syncedEntities).toBeDefined();
     });
   });
 });

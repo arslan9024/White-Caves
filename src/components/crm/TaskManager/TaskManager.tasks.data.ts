@@ -1400,40 +1400,57 @@ export function buildTaskFromDef(
     isUnassignedPool: false,
   };
 
+  const roleByCat: Record<TaskNode['category'], string> = {
+    REGULATORY: 'L3 Statutory Compliance Supervisor / L2 Conveyancing Broker',
+    FINANCE: 'L2 Treasury & 5% VAT Controller',
+    HR: 'L3 People Operations & Licensing Lead',
+    SALES: 'L2 Certified Luxury Property Broker',
+    MARKETING: 'L3 Digital Syndication & Media Specialist',
+    TECH: 'L3 Core Systems & AI Orchestration Engineer',
+    OPERATIONS: 'L3 Tenancy & PMS Operations Supervisor',
+  };
+  const primaryRole = roleByCat[category] || 'L3 Operational Supervisor';
+
   const useCase: RUPUseCaseDossier = {
     useCaseId: `UC-${code}`,
-    primaryActor: 'Managing Director Arslan Malik Bashir Ahmad (EMP-001)',
-    secondaryActors: [authority || 'Dubai Land Department (DLD)'],
+    primaryActor: primaryRole,
+    executingUser:
+      'Managing Director Arslan Malik Bashir Ahmad (EMP-001) [Sovereign Execution Clearance]',
+    secondaryActors: [
+      {
+        name: authority ? `${authority} REST API` : 'Dubai Land Department (DLD) Gateway',
+        role: 'Statutory Verification & Registry Attestation',
+      },
+      {
+        name: 'UAE Federal Tax Authority (FTA) EmaraTax',
+        role: '5% VAT Audit & TRN Verification',
+      },
+      {
+        name: 'Zoho Books Enterprise API',
+        role: 'Double-entry Ledger & VAT Invoice Reconciliation',
+      },
+    ] as any,
     preconditions: [
-      'Actor authenticated with L0/Managing Director clearance',
-      `Entity data record initialized under ${authority || 'White Caves SOP'}`,
+      'Actor authenticated with requisite RBAC clearance (or Managing Director Sovereign Clearance)',
+      `Entity reference exists in database (Property UID / Client Code / Deal Number for ${title})`,
     ],
-    trigger: `Manual execution dispatch or scheduled trigger for ${title}`,
+    trigger: `User dispatches task from Explorer or automated event trigger for ${title}`,
     mainSuccessScenario: {
-      input: `Input parameters and verification credentials collected for ${code}`,
-      processing: `Algorithmic validation and compliance verification against ${authority || 'RERA standards'}`,
-      output: `Generated verified artifact and statutory output document for ${title}`,
-      persistence: `Committed transaction state to sovereign ledger and credited Merit XP`,
+      input: `Input Phase: System prompts actor for parameters (Reference UID, Value AED, Statutory Cert No.)`,
+      processing: `Processing Phase: Core engine executes validation, regulatory checks, and fee/VAT calculation against ${authority || 'RERA/DLD'}`,
+      output: `Output Phase: System generates statutory PDF artifact, Ejari certificate, or cryptographically verified receipt`,
+      persistence: `Persistence Phase: Database record committed, audit ledger logged, and Merit XP incremented`,
     },
     postconditions: [
-      `Task status shifted to COMPLETED with verified timestamp`,
-      `Audit telemetry emitted to Right Sidebar stream`,
+      'Entity state shifted to next pipeline stage; telemetry emitted to Right Sidebar stream',
     ],
-    statutoryMandate: authority ? `${authority} Statutory Mandate` : 'White Caves Quality SOP',
+    statutoryMandate: authority
+      ? `${authority} Statutory Mandate`
+      : 'DLD Law No. 7 / RERA Regulation No. 26 / FTA VAT Executive Law',
   };
 
   const statuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'REVIEW', 'COMPLETED'];
   const status = statuses[index % statuses.length];
-
-  const roleByCat: Record<TaskNode['category'], string> = {
-    REGULATORY: 'Statutory Compliance Officer',
-    FINANCE: 'Treasury & VAT Controller',
-    HR: 'Licensing & People Operations Lead',
-    SALES: 'Certified Luxury Property Broker',
-    MARKETING: 'Digital Syndication Specialist',
-    TECH: 'Core Systems & AI Engineer',
-    OPERATIONS: 'Property & PMS Operations Lead',
-  };
 
   const actor = 'Managing Director Arslan Malik Bashir Ahmad (EMP-001)';
   const action = `Execute operational workflow: ${title} under ${authority || 'White Caves SOP'} standards`;

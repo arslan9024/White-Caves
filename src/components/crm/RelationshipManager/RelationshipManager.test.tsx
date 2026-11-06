@@ -105,6 +105,30 @@ describe('RelationshipManager Suite (7-Category Architecture Standard)', () => {
     fireEvent.click(erdTab);
     expect(screen.getByTestId('relationship-erd-visualizer')).toBeInTheDocument();
     expect(screen.getByText(/Strict Entity-Relationship Diagram/i)).toBeInTheDocument();
+    expect(screen.getByTestId('erd-interactive-canvas')).toBeInTheDocument();
+    expect(screen.getByTestId('erd-zoom-in-btn')).toBeInTheDocument();
+    expect(screen.getByTestId('erd-entity-inspector')).toBeInTheDocument();
+
+    // Click zoom in and reset
+    fireEvent.click(screen.getByTestId('erd-zoom-in-btn'));
+    fireEvent.click(screen.getByTestId('erd-zoom-reset-btn'));
+
+    // Select node on canvas
+    const userNode = screen.getByTestId('erd-canvas-node-User');
+    fireEvent.click(userNode);
+    expect(screen.getByTestId('erd-entity-inspector')).toBeInTheDocument();
+
+    // Switch view mode to table
+    const tableBtn = screen.getByTestId('erd-view-table-btn');
+    fireEvent.click(tableBtn);
+    expect(
+      screen.getByText(/UML Multiplicity & Composition Cascade Registry/i)
+    ).toBeInTheDocument();
+
+    // Switch back to canvas
+    const canvasBtn = screen.getByTestId('erd-view-canvas-btn');
+    fireEvent.click(canvasBtn);
+    expect(screen.getByTestId('erd-interactive-canvas')).toBeInTheDocument();
 
     // Switch back to Relationships Matrix
     const relTab = screen.getByTestId('tab-relationships-matrix');

@@ -92,6 +92,7 @@ import v1DealsRoutes from './routes/v1Deals.js';
 import v1CustomersRoutes from './routes/v1Customers.js';
 import v1RelationshipsRoutes from './routes/v1Relationships.js';
 import v1DocumentsRoutes from './routes/v1Documents.js';
+import v1TasksRoutes from './routes/v1Tasks.js';
 import homepageRoutes from './routes/homepage.js';
 import graphqlRoutes from './routes/graphql.js';
 import contactRoutes from './routes/contact.js';
@@ -601,6 +602,7 @@ app.use('/api/v1/deals', v1DealsRoutes);
 app.use('/api/v1/customers', v1CustomersRoutes);
 app.use('/api/v1/relationships', v1RelationshipsRoutes);
 app.use('/api/v1/documents', v1DocumentsRoutes);
+app.use('/api/v1/tasks', v1TasksRoutes);
 
 // Currency API (Phase 2E - Multi-Currency Support)
 app.use('/api/currency', currencyRoutes);

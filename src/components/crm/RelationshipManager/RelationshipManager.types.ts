@@ -35,6 +35,9 @@ export interface ERDClassModel {
   stereotype: '«Entity»' | '«Control»' | '«Boundary»';
   domain: 'LEASING' | 'SALES' | 'GOVERNANCE' | 'FINANCE' | 'STATUTORY';
   attributes: ERDAttribute[];
+  description?: string;
+  x?: number;
+  y?: number;
 }
 
 export interface ERDRelation {
