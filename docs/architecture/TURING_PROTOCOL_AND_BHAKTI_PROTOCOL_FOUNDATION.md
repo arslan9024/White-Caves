@@ -187,33 +187,49 @@ To optimize the software stack to mirror the 1-12-108 organizational hierarchy w
 
 #### Law T14: Role-Based Access Control (RBAC) & Sovereign UserRoleContext
 
-Enterprise multi-tenancy and security boundaries are enforced via `UserRoleContext` (`src/context/UserRoleContext.tsx`), guaranteeing strict view and data segregation between user tiers:
+Enterprise multi-tenancy and security boundaries are enforced via `UserRoleContext` (`src/context/UserRoleContext.tsx`), guaranteeing strict view and data segregation across all 14 sovereign roles in 3 tiers:
 
-1. **Root Context Authority:** The authenticated user's role and clearance tier must be injected at the application root through `UserRoleProvider`, eliminating prop drilling and securing all router nodes.
-2. **Managing Director View (`managing_director` — Level 5 Sovereign Clearance):**
-   - Renders the complete **Executive 1-12-108 Corporate Engine** (`/dashboard`).
-   - Unrestricted visibility over all 12 corporate floors, 108 manager slots, company-wide escrow balances, VAT returns, HR rosters, and the Master Audit Log.
-   - Authorized to bypass Law 6 privacy masking to inspect unmasked title deeds, Emirates IDs, and sovereign financials.
-3. **Landlord View (`landlord` — Level 2 Client Portal Clearance):**
-   - Renders exclusively the **Asset Owner Portal**.
-   - Strictly scoped to their own owned properties (`where landlordId === currentUser.id`), rental yield calculations, PDC cheque clearance schedules, and tenant maintenance requests.
-   - Completely strips and hides all internal corporate machinery: no employee hiring/firing tools, no internal broker commission matrices, and no visibility into external landlords' holdings.
+1. **Root Context Authority:** The authenticated user's role and clearance tier must be injected at the application root through `UserRoleProvider`, eliminating prop drilling and securing all router nodes and components.
+2. **Three Sovereign Role Tiers:**
+   - **Tier 1 (Internal Corporate - 5 Roles):** `managing_director` (L5), `department_director` (L4), `operations_supervisor` (L3), `compliance_officer` (L3), `portfolio_manager` (L2).
+   - **Tier 2 (Client Portals - 6 Roles):** `landlord` (L2), `tenant` (L1), `buyer` (L1), `seller` (L1), `investor` (L2), `prospective_client` (L1).
+   - **Tier 3 (Strategic Partners - 3 Roles):** `bank_partner` (L2), `maintenance_contractor` (L2), `legal_counsel` (L3).
+3. **Left Sidebar Role Management System (`SidebarRolesList.tsx`):**
+   - Direct activity bar access (`ShieldAlert` icon) switching to `'roles'` drawer.
+   - Live clearance simulator badge displaying active role tier, level (L1–L5), and instant role-switching buttons (`MD L5`, `Landlord L2`, `Broker L2`, `Tenant L1`).
+   - Grouped accordion hierarchy listing all 14 roles with permission tags and direct navigation to `/dashboard/roles`.
+4. **Managing Director vs. Landlord Portal Separation:**
+   - **Managing Director View (`managing_director` — Level 5 Sovereign Clearance):** Renders the complete **Executive 1-12-108 Corporate Engine** (`/dashboard`). Unrestricted visibility over all 12 corporate floors, 108 manager slots, company-wide escrow balances, VAT returns, HR rosters, and unmasked title deeds.
+   - **Landlord View (`landlord` — Level 2 Client Portal Clearance):** Renders exclusively the **Asset Owner Portal**. Strictly scoped to their own owned properties (`where landlordId === currentUser.id`), rental yield calculations, PDC cheque clearance schedules, and tenant maintenance requests, completely stripping internal corporate governance tools.
+
+#### Law T15: The Unified `/dashboard/profile` Sovereign Workspace Routing Law
+
+To maintain executive workflow immersion and layout integrity, user profile management is integrated into the dashboard shell:
+
+1. **Sovereign Dashboard Integration (`/dashboard/profile`):** The profile workspace renders within the core dashboard application frame via `ProfileDashboardView.tsx`, retaining the Top Navbar, breadcrumbs, search command palette, and quick notifications dock.
+2. **Global Context Quartet Controls:** The `/dashboard/profile` workspace embeds direct live controls for the application's foundational contexts:
+   - **User Role Clearance Context:** Live role switcher simulator across all 14 corporate and client roles.
+   - **Theme Context:** Instant toggle between Dark (`#0F172A`), Light (`#FFFFFF`), and Cyberpunk White Caves Red palettes.
+   - **Language & Bi-Directional Direction Context:** 4-language switcher (**en, ar, es, ru**) with automatic `dir="rtl"` layout transformation for Arabic.
+   - **Global Currency Context:** Real-time conversion switcher between UAE Dirhams (`AED`), US Dollars (`USD`), Euros (`EUR`), and British Pounds (`GBP`).
+3. **Zero-Breakage Redirection Standard:** Legacy standalone route `/profile` is permanently preserved with an automated client-side redirect (`<Navigate to="/dashboard/profile" replace />`), guaranteeing 100% backward compatibility for bookmarks, external links, and avatar dropdown triggers.
 
 ---
 
 ### 4. Implementation Validation Matrix
 
-| Standard                                | Protocol | File / Component                                          | Gate Status |
-| :-------------------------------------- | :------- | :-------------------------------------------------------- | :---------- |
-| Fixed 12 Slots / 108 Managers           | Bhakti   | `DepartmentManagementWorkspace.tsx`                       | ✅ PASSED   |
-| Universal Unique ID Taxonomies          | Turing   | `TaskManager.types.ts`, `EmployeeManager.types.ts`        | ✅ PASSED   |
-| Pure 4-Stage Workflow Engines           | Turing   | `Leaderboard.workflow.ts`, `TaskManager.workflow.ts`      | ✅ PASSED   |
-| 7-Category Architecture Standard        | Turing   | All CRM modules (`crm/Leaderboard/`, `crm/TaskManager/`)  | ✅ PASSED   |
-| Single Purpose File Limit (< 350 lines) | Turing   | 100% of CRM & Dashboard files                             | ✅ PASSED   |
-| Universal Zero-Duplication Law (T8)     | Turing   | Authoritative Workflows & Shared Hooks                    | ✅ PASSED   |
-| 100% Reusable Abstraction (T9)          | Turing   | Headless Hook & View Separation Standard                  | ✅ PASSED   |
-| 18-Step Pipeline Integrity (T10)        | Turing   | `CustomerManager.workflow.ts` & `DealManager.workflow.ts` | ✅ PASSED   |
-| RUP Use Case Dossier Standard (T11)     | Turing   | `RUPUseCaseDossierView.tsx` & `TaskExecutionWorkbench`    | ✅ PASSED   |
-| Strict UML ERD Specifications (T12)     | Turing   | `RelationshipErdVisualizer.tsx` & `schema.prisma`         | ✅ PASSED   |
-| Production Tech Stack Matrix (T13)      | Turing   | Next.js 15, RTK, Prisma, Vitest, Web Workers              | ✅ PASSED   |
-| Sovereign RBAC Context Standard (T14)   | Turing   | `UserRoleContext.tsx` (MD vs. Landlord Portal Separation) | ✅ PASSED   |
+| Standard                                 | Protocol | File / Component                                             | Gate Status |
+| :--------------------------------------- | :------- | :----------------------------------------------------------- | :---------- |
+| Fixed 12 Slots / 108 Managers            | Bhakti   | `DepartmentManagementWorkspace.tsx`                          | ✅ PASSED   |
+| Universal Unique ID Taxonomies           | Turing   | `TaskManager.types.ts`, `EmployeeManager.types.ts`           | ✅ PASSED   |
+| Pure 4-Stage Workflow Engines            | Turing   | `Leaderboard.workflow.ts`, `TaskManager.workflow.ts`         | ✅ PASSED   |
+| 7-Category Architecture Standard         | Turing   | All CRM modules (`crm/Leaderboard/`, `crm/TaskManager/`)     | ✅ PASSED   |
+| Single Purpose File Limit (< 350 lines)  | Turing   | 100% of CRM & Dashboard files                                | ✅ PASSED   |
+| Universal Zero-Duplication Law (T8)      | Turing   | Authoritative Workflows & Shared Hooks                       | ✅ PASSED   |
+| 100% Reusable Abstraction (T9)           | Turing   | Headless Hook & View Separation Standard                     | ✅ PASSED   |
+| 18-Step Pipeline Integrity (T10)         | Turing   | `CustomerManager.workflow.ts` & `DealManager.workflow.ts`    | ✅ PASSED   |
+| RUP Use Case Dossier Standard (T11)      | Turing   | `RUPUseCaseDossierView.tsx` & `TaskExecutionWorkbench`       | ✅ PASSED   |
+| Strict UML ERD Specifications (T12)      | Turing   | `RelationshipErdVisualizer.tsx` & `schema.prisma`            | ✅ PASSED   |
+| Production Tech Stack Matrix (T13)       | Turing   | Next.js 15, RTK, Prisma, Vitest, Web Workers                 | ✅ PASSED   |
+| Sovereign RBAC Context Standard (T14)    | Turing   | `UserRoleContext.tsx`, `SidebarRolesList.tsx`, `RoleManager` | ✅ PASSED   |
+| Unified Dashboard Profile Standard (T15) | Turing   | `ProfileDashboardView.tsx`, `/dashboard/profile` redirect    | ✅ PASSED   |

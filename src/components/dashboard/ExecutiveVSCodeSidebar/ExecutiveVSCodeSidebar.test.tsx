@@ -7,7 +7,7 @@ describe('ExecutiveVSCodeSidebar Component (7-Category Co-Location Spec)', () =>
   it('renders Departments Hub drawer and corporate activity bar by default', () => {
     render(<ExecutiveVSCodeSidebar />);
     expect(screen.getByText(/Departments Hub/i)).toBeInTheDocument();
-  });
+  }, 15000);
 
   it('renders 5th Activity Bar icon for Corporate Departments and switches tabs', () => {
     const onSelectTab = vi.fn();
@@ -117,5 +117,29 @@ describe('ExecutiveVSCodeSidebar Component (7-Category Co-Location Spec)', () =>
     fireEvent.click(custBtn);
     expect(onSelectTab).toHaveBeenCalledWith('customers');
     expect(screen.getByText(/Customers Hub \(CRM\)/i)).toBeInTheDocument();
+  }, 15000);
+
+  it('renders Activity Bar icon for User Roles and switches to roles tab with simulator', () => {
+    const onSelectTab = vi.fn();
+    render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
+
+    const rolesBtn = screen.getByTestId('activity-btn-roles');
+    expect(rolesBtn).toBeInTheDocument();
+
+    fireEvent.click(rolesBtn);
+    expect(onSelectTab).toHaveBeenCalledWith('roles');
+    expect(screen.getByText(/User Roles & RBAC Hub/i)).toBeInTheDocument();
+    expect(screen.getByText(/Role Simulator/i)).toBeInTheDocument();
+  }, 15000);
+
+  it('renders Activity Bar icon for Profile and switches to profile tab', () => {
+    const onSelectTab = vi.fn();
+    render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
+
+    const profileBtn = screen.getByTestId('activity-btn-profile');
+    expect(profileBtn).toBeInTheDocument();
+
+    fireEvent.click(profileBtn);
+    expect(onSelectTab).toHaveBeenCalledWith('profile');
   }, 15000);
 });

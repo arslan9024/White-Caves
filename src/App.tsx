@@ -815,7 +815,7 @@ function App(): React.JSX.Element {
                                 />
                                 <Route
                                   path="/profile"
-                                  element={renderSignedInPage(<ProfilePage />, 'Profile')}
+                                  element={<Navigate to="/dashboard/profile" replace />}
                                 />
                                 <Route
                                   path="/select-role"

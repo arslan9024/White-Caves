@@ -152,4 +152,16 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
     const btn = screen.getByTestId('quick-command-palette-btn');
     expect(btn).toBeInTheDocument();
   }, 30000);
+
+  it('renders User Role Management on route /dashboard/roles', () => {
+    renderDashboardWithProviders('/dashboard/roles');
+    expect(screen.getByTestId('role-manager-view')).toBeInTheDocument();
+    expect(screen.getByText(/User Role & Sovereign RBAC Matrix/i)).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Sovereign Profile View on route /dashboard/profile', () => {
+    renderDashboardWithProviders('/dashboard/profile');
+    expect(screen.getByTestId('profile-dashboard-view')).toBeInTheDocument();
+    expect(screen.getByText(/Sovereign Executive Profile & Preferences/i)).toBeInTheDocument();
+  }, 30000);
 });

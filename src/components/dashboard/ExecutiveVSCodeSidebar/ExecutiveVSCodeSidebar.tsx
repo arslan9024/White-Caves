@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import {
   FileText,
   ShieldCheck,
+  ShieldAlert,
   Building2,
   Users,
   CheckSquare,
@@ -10,6 +11,7 @@ import {
   Handshake,
   Network,
   Contact,
+  UserCircle,
   Settings,
   Search,
   Building,
@@ -27,6 +29,7 @@ import { SidebarDealsList } from './SidebarDealsList';
 import { SidebarDocumentsList } from './SidebarDocumentsList';
 import { SidebarRelationshipsList } from './SidebarRelationshipsList';
 import { SidebarCustomersList } from './SidebarCustomersList';
+import { SidebarRolesList } from './SidebarRolesList';
 import {
   SidebarLayoutContainer,
   ActivityBar,
@@ -37,38 +40,7 @@ import {
   FilterBarWrapper,
   ResizeHandle,
 } from './ExecutiveVSCodeSidebar.styles';
-
-const TAB_HEADER_MAP: Record<string, { icon: React.ReactNode; label: string }> = {
-  departments: {
-    icon: <Building2 size={14} color="#EF4444" />,
-    label: 'Departments Hub (12 Slots)',
-  },
-  employees: { icon: <Users size={14} color="#3B82F6" />, label: 'Employees Hub (Roster)' },
-  tasks: { icon: <CheckSquare size={14} color="#10B981" />, label: '200+ Tasks Catalog' },
-  leaderboard: { icon: <Trophy size={14} color="#F59E0B" />, label: 'Merit Leaderboard & Tiers' },
-  REproperties: { icon: <Home size={14} color="#8B5CF6" />, label: 'RE Properties Inventory' },
-  deals: { icon: <Handshake size={14} color="#C084FC" />, label: 'Deals & Pipeline' },
-  documents: { icon: <FileText size={14} color="#38BDF8" />, label: 'Document Vault' },
-  relationships: {
-    icon: <Network size={14} color="#10B981" />,
-    label: 'ERMS (Entities & Relationships)',
-  },
-  erms: { icon: <Network size={14} color="#10B981" />, label: 'ERMS (Entities & Relationships)' },
-  customers: { icon: <Contact size={14} color="#34D399" />, label: 'Customers Hub (CRM)' },
-};
-
-const SEARCH_PLACEHOLDER_MAP: Record<string, string> = {
-  departments: 'Filter 12 slots & depts...',
-  employees: 'Filter employees & roles...',
-  tasks: 'Filter 200 tasks & SLAs...',
-  leaderboard: 'Filter leaderboard & tiers...',
-  REproperties: 'Filter properties & units...',
-  deals: 'Filter deals & pipelines...',
-  documents: 'Filter vault documents...',
-  relationships: 'Filter entities & relational matrix...',
-  erms: 'Filter entities & relational matrix...',
-  customers: 'Filter clients & leads...',
-};
+import { TAB_HEADER_MAP, SEARCH_PLACEHOLDER_MAP } from './ExecutiveVSCodeSidebar.data';
 
 export interface ExecutiveVSCodeSidebarProps {
   activeTab?: ActivityTab;
@@ -203,6 +175,15 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
           </ActivityIconBtn>
 
           <ActivityIconBtn
+            $isActive={activeTab === 'roles'}
+            onClick={() => handleSelectTab('roles')}
+            title="User Role Management System & RBAC (roles)"
+            data-testid="activity-btn-roles"
+          >
+            <ShieldAlert size={18} />
+          </ActivityIconBtn>
+
+          <ActivityIconBtn
             $isActive={activeTab === 'audit'}
             onClick={() => handleSelectTab('audit')}
             title="RERA Compliance & Master Audit"
@@ -212,6 +193,15 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
         </ActivityGroup>
 
         <ActivityGroup>
+          <ActivityIconBtn
+            $isActive={activeTab === 'profile'}
+            onClick={() => handleSelectTab('profile')}
+            title="Sovereign Executive Profile & Preferences"
+            data-testid="activity-btn-profile"
+          >
+            <UserCircle size={18} />
+          </ActivityIconBtn>
+
           <ActivityIconBtn
             $isActive={activeTab === 'settings'}
             onClick={() => handleSelectTab('settings')}
@@ -308,6 +298,12 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             filterQuery={filterQuery}
             onSelectChain={(id, name) => handleLeafClick(`rel-${id}`, `Chain: ${name}`)}
             onSelectEntity={(id, name) => handleLeafClick(`entity-${id}`, `Entity: ${name}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
+          />
+        ) : activeTab === 'roles' ? (
+          <SidebarRolesList
+            filterQuery={filterQuery}
+            onSelectRole={(id, name) => handleLeafClick(`role-${id}`, `Role: ${name}`)}
             onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : (

@@ -15,6 +15,8 @@ export type ActivityTab =
   | 'documents'
   | 'relationships'
   | 'erms'
+  | 'roles'
+  | 'profile'
   | 'audit'
   | 'settings';
 

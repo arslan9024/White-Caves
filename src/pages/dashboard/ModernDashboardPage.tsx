@@ -46,6 +46,8 @@ export const ModernDashboardPage: FC = () => {
     'relationships',
     'erms',
     'customers',
+    'roles',
+    'profile',
   ];
 
   const activeTab: ActivityTab = rawTab && validTabs.includes(rawTab) ? rawTab : 'departments';
@@ -104,6 +106,7 @@ export const ModernDashboardPage: FC = () => {
       'deal-': '/dashboard/deals/',
       'doc-': '/dashboard/documents/',
       'cust-': '/dashboard/customers/',
+      'role-': '/dashboard/roles/',
     };
     for (const [pfx, route] of Object.entries(prefixes)) {
       if (key.startsWith(pfx)) return navigate(`${route}${key.replace(pfx, '')}`);

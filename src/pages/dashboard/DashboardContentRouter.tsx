@@ -24,6 +24,8 @@ import { CustomerManagerView } from '../../components/crm/CustomerManager';
 import { CustomerOverviewView } from '../../components/crm/CustomerManager/CustomerOverviewView';
 import { RelationshipManagerView } from '../../components/crm/RelationshipManager';
 import { ErmsOverviewView } from '../../components/crm/RelationshipManager/ErmsOverviewView';
+import { RoleManagerView } from '../../components/crm/RoleManager';
+import { ProfileDashboardView } from './ProfileDashboardView';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
 export interface DashboardContentRouterProps {
@@ -187,6 +189,18 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
           onNavigateBack={() => navigate('/dashboard/customers/leads')}
         />
       );
+
+    case 'roles':
+      return (
+        <RoleManagerView
+          selectedRoleId={activeItemId || undefined}
+          onSelectRole={id => navigate(`/dashboard/roles/${id}`)}
+          onNavigateBack={() => navigate('/dashboard/roles')}
+        />
+      );
+
+    case 'profile':
+      return <ProfileDashboardView />;
 
     default:
       return (
