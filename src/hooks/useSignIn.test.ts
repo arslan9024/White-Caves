@@ -211,7 +211,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       vi.useRealTimers();
     });
 
@@ -348,7 +348,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(result.current.step).toBe(1);
       expect(result.current.pendingUser).toBeNull();
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       vi.useRealTimers();
     });
   });

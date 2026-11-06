@@ -65,6 +65,18 @@ export const TAB_HEADER_MAP: Record<string, { icon: React.ReactNode; label: stri
     icon: React.createElement(ShieldAlert, { size: 14, color: '#F43F5E' }),
     label: 'User Roles & RBAC Hub (14 Roles)',
   },
+  landlord: {
+    icon: React.createElement(Building2, { size: 14, color: '#EF4444' }),
+    label: 'Sovereign Landlord Asset Hub',
+  },
+  tenant: {
+    icon: React.createElement(Building2, { size: 14, color: '#10B981' }),
+    label: 'Sovereign Tenant Portal',
+  },
+  broker: {
+    icon: React.createElement(Building2, { size: 14, color: '#3B82F6' }),
+    label: 'Sovereign Licensed Broker Hub',
+  },
   profile: {
     icon: React.createElement(UserCircle, { size: 14, color: '#A855F7' }),
     label: 'Sovereign Executive Profile',
@@ -83,5 +95,8 @@ export const SEARCH_PLACEHOLDER_MAP: Record<string, string> = {
   erms: 'Filter entities & relational matrix...',
   customers: 'Filter clients & leads...',
   roles: 'Filter 14 sovereign roles & tiers...',
+  landlord: 'Filter properties & tenancies...',
+  tenant: 'Filter lease & inspections...',
+  broker: 'Filter commission splits & leads...',
   profile: 'Filter profile preferences...',
 };

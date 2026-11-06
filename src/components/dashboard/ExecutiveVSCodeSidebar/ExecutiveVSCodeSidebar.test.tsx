@@ -1,9 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import ExecutiveVSCodeSidebar from './ExecutiveVSCodeSidebar';
 
 describe('ExecutiveVSCodeSidebar Component (7-Category Co-Location Spec)', () => {
+  afterEach(() => {
+    cleanup();
+  });
   it('renders Departments Hub drawer and corporate activity bar by default', () => {
     render(<ExecutiveVSCodeSidebar />);
     expect(screen.getByText(/Departments Hub/i)).toBeInTheDocument();

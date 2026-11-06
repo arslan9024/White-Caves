@@ -254,6 +254,15 @@ To guarantee uninterrupted field operations in remote or subterranean Dubai cons
 2. **Automatic Background Sync Queue:** Network state transitions (`window.addEventListener('online')`) automatically flush queued inspection items and lease updates to the cloud without manual user intervention.
 3. **Conflict-Free Convergence:** Offline mutations reconcile with server state using Last-Write-Wins (LWW) timestamped conflict resolution vectors.
 
+#### Law T20: Sovereign User Role Confirmation, Guest Isolation & RBAC Gateway Law
+
+To eliminate catastrophic access control leaks, unauthorized corporate data exposure, and broken multi-account authentication, the platform enforces strict sovereign role confirmation and guest boundary isolation:
+
+1. **Mandatory Sovereign Role Confirmation Gateway:** Every newly registered user, secondary OAuth/Google account, or unconfirmed guest (`isRoleConfirmed: false` or `role === 'guest'`) is intercepted by the Sovereign Role Confirmation Gateway (`RoleConfirmationModal.tsx` & `GuestDashboardGatewayView.tsx`). The user MUST explicitly select and confirm their operational persona (Property Landlord, Leasing Tenant, Licensed Broker, or Property Buyer) before corporate routes unlock.
+2. **Strict Zero-Leak Guest Boundary Isolation:** When an unauthenticated visitor or unconfirmed guest reaches `/dashboard`, the internal executive corporate engine (12 floors, 108 managers, HR payroll, financial ledgers, unmasked title deeds, and deal pipelines) is completely severed and replaced by the secure `GuestDashboardGatewayView.tsx`.
+3. **Automated Sovereign Forward Routing:** Upon role confirmation, the dashboard router (`DashboardContentRouter.tsx`) automatically navigates the user to their designated sovereign portal (`/dashboard/landlord`, `/dashboard/tenant`, or `/dashboard/broker`), shielding Level 5 executive routes and rendering the `AccessDeniedView.tsx` if cross-tier boundaries are breached.
+4. **Unified Cross-Storage Session Synchronization:** All authentication services (`useSignIn.ts`) and identity contexts (`UserRoleContext.tsx`) must simultaneously synchronize session tokens and profiles across both hyphenated and underscored keys (`white-caves-user` and `whitecaves_user`), preventing state divergence across heterogeneous providers.
+
 ---
 
 ### 4. Implementation Validation Matrix
@@ -277,3 +286,4 @@ To guarantee uninterrupted field operations in remote or subterranean Dubai cons
 | Sovereign Tenant Portal (T17)            | Turing   | `TenantManagerView.tsx`, `/dashboard/tenant`                 | ✅ PASSED   |
 | Sovereign Broker Hub (T18)               | Turing   | `BrokerManagerView.tsx`, `/dashboard/broker`                 | ✅ PASSED   |
 | PWA Offline Sync & Inspections (T19)     | Turing   | `RemoteInspectionOfflineService.ts`, Wave 15                 | ✅ PASSED   |
+| Sovereign Role Gateway & Isolation (T20) | Turing   | `RoleConfirmationModal.tsx`, `GuestDashboardGatewayView.tsx` | ✅ PASSED   |

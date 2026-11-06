@@ -17,12 +17,16 @@ import { CorporateDepartmentsProvider } from '../../context/CorporateDepartments
 import { ErmsProvider } from '../../context/ErmsContext';
 import { VSCodeBreadcrumbs } from '../../components/dashboard/VSCodeBreadcrumbs';
 import { DashboardContentRouter } from './DashboardContentRouter';
+import { RoleConfirmationModal } from '../../components/auth/RoleConfirmationModal';
+import { useUserRole } from '../../context/UserRoleContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
 export const ModernDashboardPage: FC = () => {
   const { isDark } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+  const roleContext = useUserRole();
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
 
   const pathParts = location.pathname
     .replace(/^\/dashboard\/?/, '')
@@ -89,6 +93,14 @@ export const ModernDashboardPage: FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  useEffect(() => {
+    if (pathParts.length === 0 && roleContext?.isRoleConfirmed) {
+      if (roleContext.role === 'landlord') navigate('/dashboard/landlord', { replace: true });
+      else if (roleContext.role === 'tenant') navigate('/dashboard/tenant', { replace: true });
+      else if (roleContext.role === 'agent') navigate('/dashboard/broker', { replace: true });
+    }
+  }, [pathParts.length, roleContext?.role, roleContext?.isRoleConfirmed, navigate]);
 
   const handleSelectSidebarTab = (tab: ActivityTab) => {
     navigate(`/dashboard/${tab}`);
@@ -224,6 +236,7 @@ export const ModernDashboardPage: FC = () => {
                 ermsEntityId={ermsEntityId}
                 ermsRelationshipId={ermsRelationshipId}
                 navigate={navigate}
+                onOpenRoleModal={() => setIsRoleModalOpen(true)}
               />
             </main>
 
@@ -234,6 +247,14 @@ export const ModernDashboardPage: FC = () => {
               onSelectItem={handleSelectRightExplorerItem}
             />
           </div>
+
+          <RoleConfirmationModal
+            isOpen={isRoleModalOpen}
+            onClose={() => setIsRoleModalOpen(false)}
+            onRoleConfirmed={confirmed =>
+              navigate(`/dashboard/${confirmed === 'agent' ? 'broker' : confirmed}`)
+            }
+          />
         </ErmsProvider>
       </CorporateDepartmentsProvider>
     </div>

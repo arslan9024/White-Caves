@@ -17,13 +17,13 @@ import {
   signInWithPhone,
   createRecaptchaVerifier,
   signOut as signOutFirebase,
-  handleRedirectResult
+  handleRedirectResult,
 } from '../config/firebase';
 import {
   firebaseAuth as auth,
   isFirebaseConfigured,
   isFirebaseAuthConfigured,
-  firebaseMissingReason as firebaseAuthUnavailableReason
+  firebaseMissingReason as firebaseAuthUnavailableReason,
 } from '../auth/firebaseInit';
 import { TIMING } from '../constants';
 import {
@@ -393,6 +393,50 @@ export function useSignIn() {
           profileCompleted,
         })
       );
+
+      const isFounderUser = isSuperuserEmail(user.email);
+      const effectiveRole = isFounderUser
+        ? 'managing_director'
+        : normalizedRole || user.role || 'guest';
+      const effectiveAccessLevel = isFounderUser
+        ? 5
+        : effectiveRole === 'landlord' || effectiveRole === 'agent'
+          ? 2
+          : 1;
+      const isConfirmed = isFounderUser ? true : effectiveRole !== 'guest' && Boolean(user.role);
+
+      const whitecavesUser = {
+        id: user.id,
+        name:
+          user.name ||
+          user.displayName ||
+          (isFounderUser ? 'Arslan Malik Bashir Ahmad' : 'White Caves User'),
+        email: user.email || '',
+        photoURL: user.photoUrl || undefined,
+        phone: user.phone || undefined,
+        role: effectiveRole,
+        accessLevel: effectiveAccessLevel,
+        assignedDepartment: isFounderUser
+          ? 'Executive Directorate'
+          : effectiveRole === 'landlord'
+            ? 'Asset Owner Portal'
+            : 'Public Portal',
+        isManagingDirector:
+          isFounderUser || effectiveRole === 'managing_director' || effectiveRole === 'admin',
+        isFounder: isFounderUser,
+        isRoleConfirmed: isConfirmed,
+        permissions: isFounderUser ? ['*'] : ['can_view_properties'],
+      };
+
+      safeStorage.setJSON('whitecaves_user', whitecavesUser);
+      safeStorage.set('whitecaves_role', effectiveRole);
+      safeStorage.set('whitecaves_access_level', String(effectiveAccessLevel));
+      try {
+        localStorage.setItem('white-caves-user', JSON.stringify(whitecavesUser));
+        localStorage.setItem('whitecaves_user', JSON.stringify(whitecavesUser));
+      } catch {
+        // ignore
+      }
 
       if (normalizedRole) {
         saveUserData(resolveCategoryFromRole(normalizedRole), normalizedRole, resolvedStatus);

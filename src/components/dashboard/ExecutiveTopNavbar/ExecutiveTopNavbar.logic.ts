@@ -1,11 +1,26 @@
+// FILE: src/components/dashboard/ExecutiveTopNavbar/ExecutiveTopNavbar.logic.ts
+/**
+ * White Caves Real Estate LLC - Executive Top Navbar State & RBAC Logic
+ * Standard: AEGIS Canonical 12-Way Architecture Standard & Single Purpose File Law
+ * Single Purpose File Law: < 350 lines
+ */
+
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { useUserRole } from '../../../context/UserRoleContext';
+import { useUserRole, ROLE_LABELS } from '../../../context/UserRoleContext';
 
 export function useExecutiveTopNavbarLogic() {
-  const { user, logout } = useAuth();
-  const { isFounder, isManagingDirector, accessLevel, role } = useUserRole();
+  const { user: authUser, logout: authLogout } = useAuth();
+  const {
+    isFounder,
+    isManagingDirector,
+    accessLevel,
+    role,
+    user: roleUser,
+    logout: roleLogout,
+    isRoleConfirmed,
+  } = useUserRole();
   const navigate = useNavigate();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -41,16 +56,24 @@ export function useExecutiveTopNavbarLogic() {
 
   const handleLogout = async () => {
     closeProfile();
-    await logout();
+    roleLogout();
+    await authLogout();
     navigate('/signin');
   };
 
-  const displayName = user?.name || 'Arslan Malik';
+  const activeUser = roleUser || authUser;
+  const isGuest = !activeUser || activeUser.role === 'guest' || activeUser.id === 'guest_user';
+
+  const displayName = isFounder
+    ? 'Arslan Malik Bashir Ahmad'
+    : activeUser?.name || (isGuest ? 'Executive Guest' : 'White Caves User');
+
   const displayRole =
     isFounder || isManagingDirector || accessLevel >= 5
       ? 'Managing Director'
-      : role || 'Executive Broker';
-  const initial = displayName.charAt(0).toUpperCase();
+      : ROLE_LABELS[role] || (isGuest ? 'Executive Guest (Unconfirmed)' : 'Client Portal');
+
+  const initial = (displayName.charAt(0) || 'U').toUpperCase();
 
   return {
     displayName,
@@ -58,6 +81,8 @@ export function useExecutiveTopNavbarLogic() {
     initial,
     isProfileOpen,
     dropdownRef,
+    isGuest,
+    isRoleConfirmed,
     toggleProfile,
     handleNavigate,
     handleLogout,

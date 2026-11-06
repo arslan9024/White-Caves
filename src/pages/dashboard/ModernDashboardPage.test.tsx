@@ -6,11 +6,11 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '../../context/ThemeContext';
-import { UserRoleProvider } from '../../context/UserRoleContext';
+import { UserRoleProvider, DEMO_ROLE_PROFILES } from '../../context/UserRoleContext';
 import { ModernDashboardPage } from './ModernDashboardPage';
 
 // Mock matchMedia for Responsive containers
@@ -29,11 +29,14 @@ window.matchMedia =
     };
   };
 
-function renderDashboardWithProviders(initialEntry: string) {
+function renderDashboardWithProviders(
+  initialEntry: string,
+  user = DEMO_ROLE_PROFILES.managing_director
+) {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <ThemeProvider>
-        <UserRoleProvider>
+        <UserRoleProvider initialUser={user}>
           <ModernDashboardPage />
         </UserRoleProvider>
       </ThemeProvider>
@@ -49,6 +52,10 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
         json: () => Promise.resolve({ success: true, data: [] }),
       })
     );
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('renders modern dashboard without throwing ReferenceError', () => {
@@ -181,5 +188,11 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
     renderDashboardWithProviders('/dashboard/broker');
     expect(screen.getByTestId('broker-manager-view')).toBeInTheDocument();
     expect(screen.getByText(/Sovereign Licensed Broker Hub/i)).toBeInTheDocument();
+  }, 30000);
+
+  it('renders GuestDashboardGatewayView when accessed by an unconfirmed guest user', () => {
+    renderDashboardWithProviders('/dashboard/departments', DEMO_ROLE_PROFILES.guest);
+    expect(screen.getByTestId('guest-dashboard-gateway')).toBeInTheDocument();
+    expect(screen.getByText(/Sovereign Identity Gateway • Role Verification/i)).toBeInTheDocument();
   }, 30000);
 });

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { UserRoleProvider, useUserRole, ALL_SOVEREIGN_ROLES } from './UserRoleContext';
 
 const mockStorage: Record<string, any> = {};
@@ -121,6 +121,10 @@ const TestComponent = () => {
 describe('UserRoleContext & 14-Role Sovereign Registry', () => {
   beforeEach(() => {
     Object.keys(mockStorage).forEach(k => delete mockStorage[k]);
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('renders default guest user with Level 1 access', () => {

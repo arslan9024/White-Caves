@@ -1,25 +1,16 @@
+// FILE: src/components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.tsx
+/**
+ * White Caves Real Estate LLC - Executive VSCode Sidebar Master Hub
+ * Standard: AEGIS Canonical 12-Way Architecture Standard & Single Purpose File Law
+ * Single Purpose File Law: < 350 lines
+ * Protocol: Turing Protocol Law T11 (Level 5 RBAC Boundary & Sovereign Privacy Vault)
+ */
+
 import React, { FC } from 'react';
-import {
-  FileText,
-  ShieldCheck,
-  ShieldAlert,
-  Building2,
-  Users,
-  CheckSquare,
-  Trophy,
-  Home,
-  Handshake,
-  Network,
-  Contact,
-  UserCircle,
-  Settings,
-  Search,
-  Building,
-  Plus,
-  PanelLeftClose,
-  PanelLeft,
-} from 'lucide-react';
+import { Search, Building, Plus, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { useExecutiveVSCodeSidebarLogic, ActivityTab } from './ExecutiveVSCodeSidebar.logic';
+import { UserRoleContext } from '../../../context/UserRoleContext';
+import { SidebarActivityBar } from './SidebarActivityBar';
 import { SidebarDepartmentsList } from './SidebarDepartmentsList';
 import { SidebarEmployeesList } from './SidebarEmployeesList';
 import { SidebarTasksList } from './SidebarTasksList';
@@ -32,9 +23,6 @@ import { SidebarCustomersList } from './SidebarCustomersList';
 import { SidebarRolesList } from './SidebarRolesList';
 import {
   SidebarLayoutContainer,
-  ActivityBar,
-  ActivityGroup,
-  ActivityIconBtn,
   ExplorerDrawer,
   ExplorerHeader,
   FilterBarWrapper,
@@ -61,18 +49,23 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
     width,
     filterQuery,
     setFilterQuery,
-    expandedFolders,
-    activeItemKey,
     setActiveItemKey,
-    toggleFolder,
     toggleCollapse,
     handleSelectTab,
     handleMouseDown,
-    departments,
   } = useExecutiveVSCodeSidebarLogic({
     activeTab: controlledTab,
     onSelectTab,
   });
+
+  const roleContext = React.useContext(UserRoleContext);
+  const role = roleContext?.role || 'managing_director';
+  const isDirectorate = Boolean(
+    !roleContext ||
+      roleContext?.isFounder ||
+      roleContext?.isManagingDirector ||
+      (roleContext?.accessLevel && roleContext.accessLevel >= 3)
+  );
 
   const handleLeafClick = (key: string, label: string) => {
     setActiveItemKey(key);
@@ -91,126 +84,12 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
       data-testid="executive-vscode-sidebar"
     >
       {/* ── 1. Vertical Activity Bar (48px) ────────────────────────── */}
-      <ActivityBar>
-        <ActivityGroup>
-          <ActivityIconBtn
-            $isActive={activeTab === 'departments'}
-            onClick={() => handleSelectTab('departments')}
-            title="Corporate Departments Hub (12 Slots / 7 Pillars)"
-            data-testid="activity-btn-departments"
-          >
-            <Building2 size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'employees'}
-            onClick={() => handleSelectTab('employees')}
-            title="Employees Directory & Personnel Management"
-            data-testid="activity-btn-employees"
-          >
-            <Users size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'tasks'}
-            onClick={() => handleSelectTab('tasks')}
-            title="200+ Core Operational & Statutory Tasks Catalog"
-            data-testid="activity-btn-tasks"
-          >
-            <CheckSquare size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'REproperties'}
-            onClick={() => handleSelectTab('REproperties')}
-            title="Real Estate Inventory & Portfolio (REproperties)"
-            data-testid="activity-btn-reproperties"
-          >
-            <Home size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'deals'}
-            onClick={() => handleSelectTab('deals')}
-            title="Deals & Revenue Pipeline (deals)"
-            data-testid="activity-btn-deals"
-          >
-            <Handshake size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'customers'}
-            onClick={() => handleSelectTab('customers')}
-            title="Customers & CRM Nervous Hub (customers)"
-            data-testid="activity-btn-customers"
-          >
-            <Contact size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'documents'}
-            onClick={() => handleSelectTab('documents')}
-            title="Sovereign Document Vault (documents)"
-            data-testid="activity-btn-documents"
-          >
-            <FileText size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'leaderboard'}
-            onClick={() => handleSelectTab('leaderboard')}
-            title="Corporate Merit Leaderboard & Tier Progression (L0–L5)"
-            data-testid="activity-btn-leaderboard"
-          >
-            <Trophy size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'relationships' || activeTab === 'erms'}
-            onClick={() => handleSelectTab('relationships')}
-            title="ERMS: Entities & Relational Matrix Hub"
-            data-testid="activity-btn-relationships"
-          >
-            <Network size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'roles'}
-            onClick={() => handleSelectTab('roles')}
-            title="User Role Management System & RBAC (roles)"
-            data-testid="activity-btn-roles"
-          >
-            <ShieldAlert size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'audit'}
-            onClick={() => handleSelectTab('audit')}
-            title="RERA Compliance & Master Audit"
-          >
-            <ShieldCheck size={18} />
-          </ActivityIconBtn>
-        </ActivityGroup>
-
-        <ActivityGroup>
-          <ActivityIconBtn
-            $isActive={activeTab === 'profile'}
-            onClick={() => handleSelectTab('profile')}
-            title="Sovereign Executive Profile & Preferences"
-            data-testid="activity-btn-profile"
-          >
-            <UserCircle size={18} />
-          </ActivityIconBtn>
-
-          <ActivityIconBtn
-            $isActive={activeTab === 'settings'}
-            onClick={() => handleSelectTab('settings')}
-            title="Sovereign Settings"
-          >
-            <Settings size={18} />
-          </ActivityIconBtn>
-        </ActivityGroup>
-      </ActivityBar>
+      <SidebarActivityBar
+        activeTab={activeTab}
+        onSelectTab={handleSelectTab}
+        role={role}
+        isDirectorate={isDirectorate}
+      />
 
       {/* ── 2. Collapsible Explorer Drawer ─────────────────────────── */}
       <ExplorerDrawer $isCollapsed={isCollapsed}>
@@ -219,22 +98,32 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
             {headerInfo.icon}
             <span>{headerInfo.label}</span>
           </div>
-          <div className="header-actions">
-            {onOpenDeptManager && (
-              <button onClick={onOpenDeptManager} title="Action Panel">
+          <div className="actions-wrap">
+            {activeTab === 'departments' && (
+              <button
+                className="icon-action-btn"
+                title="Create Department Blueprint"
+                onClick={onOpenDeptManager}
+                data-testid="sidebar-action-new-dept"
+              >
                 <Plus size={14} />
               </button>
             )}
-            <button onClick={toggleCollapse} title="Collapse Sidebar">
+            <button
+              className="icon-action-btn"
+              title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+              onClick={toggleCollapse}
+              data-testid="sidebar-collapse-toggle-btn"
+            >
               {isCollapsed ? <PanelLeft size={14} /> : <PanelLeftClose size={14} />}
             </button>
           </div>
         </ExplorerHeader>
 
-        {/* Search / Filter Box */}
+        {/* ── Filter Bar ───────────────────── */}
         <FilterBarWrapper>
-          <div className="search-box">
-            <Search size={14} />
+          <div className="input-wrap">
+            <Search size={12} className="search-icon" />
             <input
               type="text"
               placeholder={SEARCH_PLACEHOLDER_MAP[activeTab] || 'Filter modules & squads...'}

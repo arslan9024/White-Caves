@@ -3,6 +3,7 @@
  * White Caves Real Estate LLC - Modern Dashboard Viewport Content Router
  * Standard: AEGIS Canonical 12-Way Architecture Standard & Single Purpose File Law
  * Single Purpose File Law: < 350 lines
+ * Protocol: Turing Protocol Law T11 (Level 5 RBAC Boundary & Sovereign Privacy Vault)
  */
 
 import React, { FC } from 'react';
@@ -29,6 +30,8 @@ import { LandlordManagerView } from '../../components/crm/LandlordManager';
 import { TenantManagerView } from '../../components/crm/TenantManager';
 import { BrokerManagerView } from '../../components/crm/BrokerManager';
 import { ProfileDashboardView } from './ProfileDashboardView';
+import { GuestDashboardGatewayView } from './GuestDashboardGatewayView';
+import { AccessDeniedView } from './AccessDeniedView';
 import { UserRoleContext } from '../../context/UserRoleContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
@@ -42,6 +45,7 @@ export interface DashboardContentRouterProps {
   ermsEntityId: string | null;
   ermsRelationshipId: string | null;
   navigate: (route: string) => void;
+  onOpenRoleModal?: () => void;
 }
 
 export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
@@ -54,28 +58,106 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   ermsEntityId,
   ermsRelationshipId,
   navigate,
+  onOpenRoleModal,
 }) => {
   const roleContext = React.useContext(UserRoleContext);
-  const role = roleContext?.role || 'managing_director';
+  const role = roleContext?.role || 'guest';
+  const isConfirmed = Boolean(roleContext?.isRoleConfirmed && role !== 'guest');
 
-  if (
-    role === 'landlord' &&
-    (activeTab === 'departments' || (activeTab as string) === 'landlord')
-  ) {
-    return <LandlordManagerView />;
+  // Guard 1: Unconfirmed or Guest users are restricted from internal corporate machinery
+  if (!isConfirmed || role === 'guest') {
+    if (activeTab === 'landlord') return <LandlordManagerView />;
+    if (activeTab === 'tenant') return <TenantManagerView />;
+    if (activeTab === 'broker') return <BrokerManagerView />;
+    if (activeTab === 'profile') return <ProfileDashboardView />;
+
+    return <GuestDashboardGatewayView onOpenRoleModal={onOpenRoleModal} onNavigate={navigate} />;
   }
 
-  if (role === 'tenant' && (activeTab === 'departments' || (activeTab as string) === 'tenant')) {
-    return <TenantManagerView />;
+  // Guard 2: Sovereign Landlord portal isolation
+  if (role === 'landlord') {
+    if (activeTab === 'departments' || activeTab === 'landlord') return <LandlordManagerView />;
+    if (activeTab === 'documents') {
+      return isRootOverview ? (
+        <DocumentOverviewView onNavigate={navigate} />
+      ) : (
+        <DocumentManagerView onNavigateBack={() => navigate('/dashboard/documents/vault')} />
+      );
+    }
+    if (activeTab === 'profile') return <ProfileDashboardView />;
+    return (
+      <AccessDeniedView
+        requiredRole="Corporate Directorate (L3+)"
+        onNavigateBack={() => navigate('/dashboard/landlord')}
+        onNavigateHome={() => navigate('/dashboard/landlord')}
+      />
+    );
   }
 
-  if (
-    (role === 'agent' || (role as string) === 'broker') &&
-    (activeTab === 'departments' || (activeTab as string) === 'broker')
-  ) {
-    return <BrokerManagerView />;
+  // Guard 3: Sovereign Tenant portal isolation
+  if (role === 'tenant') {
+    if (activeTab === 'departments' || activeTab === 'tenant') return <TenantManagerView />;
+    if (activeTab === 'documents') {
+      return isRootOverview ? (
+        <DocumentOverviewView onNavigate={navigate} />
+      ) : (
+        <DocumentManagerView onNavigateBack={() => navigate('/dashboard/documents/vault')} />
+      );
+    }
+    if (activeTab === 'profile') return <ProfileDashboardView />;
+    return (
+      <AccessDeniedView
+        requiredRole="Corporate Directorate (L3+)"
+        onNavigateBack={() => navigate('/dashboard/tenant')}
+        onNavigateHome={() => navigate('/dashboard/tenant')}
+      />
+    );
   }
 
+  // Guard 4: Sovereign Broker hub isolation
+  if (role === 'agent' || (role as string) === 'broker') {
+    if (activeTab === 'departments' || activeTab === 'broker') return <BrokerManagerView />;
+    if (activeTab === 'REproperties') {
+      return isRootOverview ? (
+        <REPropertyOverviewView onNavigate={navigate} />
+      ) : (
+        <REPropertyManagerView
+          onNavigateBack={() => navigate('/dashboard/REproperties/inventory')}
+        />
+      );
+    }
+    if (activeTab === 'deals') {
+      return isRootOverview ? (
+        <DealOverviewView onNavigate={navigate} />
+      ) : (
+        <DealManagerView onNavigateBack={() => navigate('/dashboard/deals/pipeline')} />
+      );
+    }
+    if (activeTab === 'customers') {
+      return isRootOverview ? (
+        <CustomerOverviewView onNavigate={navigate} />
+      ) : (
+        <CustomerManagerView onNavigateBack={() => navigate('/dashboard/customers/leads')} />
+      );
+    }
+    if (activeTab === 'documents') {
+      return isRootOverview ? (
+        <DocumentOverviewView onNavigate={navigate} />
+      ) : (
+        <DocumentManagerView onNavigateBack={() => navigate('/dashboard/documents/vault')} />
+      );
+    }
+    if (activeTab === 'profile') return <ProfileDashboardView />;
+    return (
+      <AccessDeniedView
+        requiredRole="Corporate Directorate (L3+)"
+        onNavigateBack={() => navigate('/dashboard/broker')}
+        onNavigateHome={() => navigate('/dashboard/broker')}
+      />
+    );
+  }
+
+  // Tier 1 Internal Corporate Directorate (L3, L4, L5)
   switch (activeTab) {
     case 'departments':
       return isRootOverview ? (
@@ -246,6 +328,7 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+            color: '#94a3b8',
           }}
         >
           <span>🎯 {activeTab.toUpperCase()} Viewport Initialized</span>
