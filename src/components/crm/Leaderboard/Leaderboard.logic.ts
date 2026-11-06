@@ -1,10 +1,11 @@
+// FILE: src/components/crm/Leaderboard/Leaderboard.logic.ts
 /**
  * White Caves Real Estate LLC - Leaderboard Business Logic
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Logic)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Logic - Tier 2)
  * Single Purpose File Law: < 350 lines
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   LeaderboardMember,
   LeaderboardTimeframe,
@@ -12,6 +13,8 @@ import {
   TaskXpInput,
 } from './Leaderboard.types';
 import { INITIAL_LEADERBOARD_DATA } from './Leaderboard.data';
+import { LeaderboardTelemetry } from './Leaderboard.telemetry';
+import { loadLeaderboardCache, saveLeaderboardCache } from './Leaderboard.cache';
 import {
   taskCompletionXpWorkflow,
   executeTierPromotionWorkflow,
@@ -19,7 +22,10 @@ import {
 } from './Leaderboard.workflow';
 
 export function useLeaderboardLogic() {
-  const [members, setMembers] = useState<LeaderboardMember[]>(INITIAL_LEADERBOARD_DATA);
+  const [members, setMembers] = useState<LeaderboardMember[]>(() => {
+    const cached = loadLeaderboardCache();
+    return cached && cached.length > 0 ? cached : INITIAL_LEADERBOARD_DATA;
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState<string>('ALL');
   const [selectedTier, setSelectedTier] = useState<string>('ALL');
@@ -27,6 +33,11 @@ export function useLeaderboardLogic() {
   const [selectedMemberForPromotion, setSelectedMemberForPromotion] =
     useState<LeaderboardMember | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    LeaderboardTelemetry.track('MOUNT', { initialCount: members.length });
+  }, []);
 
   // Filter and Rank
   const filteredAndRankedMembers = useMemo(() => {
@@ -87,7 +98,13 @@ export function useLeaderboardLogic() {
       );
       setTimeout(() => setNotification(null), 4000);
 
-      return prev.map(m => (m.id === memberId ? updatedMember : m));
+      const updatedList = prev.map(m => (m.id === memberId ? updatedMember : m));
+      saveLeaderboardCache(updatedList);
+      LeaderboardTelemetry.track('XP_AWARDED', {
+        memberId,
+        awardedXp: result.totalXp,
+      });
+      return updatedList;
     });
   }, []);
 
@@ -102,7 +119,13 @@ export function useLeaderboardLogic() {
         setNotification(`🎉 ${promoted.name} promoted to ${promoted.currentRole}!`);
         setTimeout(() => setNotification(null), 5000);
         setSelectedMemberForPromotion(null);
-        return prev.map(m => (m.id === memberId ? promoted : m));
+        const updatedList = prev.map(m => (m.id === memberId ? promoted : m));
+        saveLeaderboardCache(updatedList);
+        LeaderboardTelemetry.track('TIER_PROMOTION', {
+          memberId,
+          meta: { newRole: promoted.currentRole },
+        });
+        return updatedList;
       } catch (err: any) {
         setNotification(`Error: ${err.message}`);
         return prev;
@@ -140,6 +163,8 @@ export function useLeaderboardLogic() {
     selectedMemberForPromotion,
     promotionAudit,
     notification,
+    error,
+    setError,
     handleAwardTaskXp,
     handlePromoteMember,
     openPromotionDrawer,

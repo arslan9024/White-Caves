@@ -1,6 +1,7 @@
+// FILE: src/components/crm/CustomerManager/CustomerManager.workflow.ts
 /**
  * White Caves Real Estate LLC - 18-Step Transaction Workflow Engine
- * Standard: Turing Protocol (Law T10: 18-Step Continuous Transaction Pipeline)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Workflow - Tier 7)
  * Single Purpose File Law: < 350 lines
  */
 

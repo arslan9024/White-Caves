@@ -1,7 +1,7 @@
+// FILE: src/components/crm/TaskManager/TaskManager.data.ts
 /**
- * TaskManager.data.ts
- * 7-Category Architecture: Data Layer
- * Master Catalog of 600+ Statutory & Operational Tasks with Escalation Chains
+ * White Caves Real Estate LLC - Task Management Data
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Static Data - Tier 4)
  * Single Purpose File Law: < 350 lines
  */
 

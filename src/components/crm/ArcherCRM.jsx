@@ -1,3 +1,4 @@
+// FILE: src/components/crm/ArcherCRM.jsx
 import React, { useState } from 'react';
 import {
   Target,
@@ -13,121 +14,13 @@ import {
 import AssistantDocsTab from './shared/AssistantDocsTab';
 import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import './AssistantDashboard.css';
-
-const SCORED_LEADS = [
-  {
-    id: 1,
-    name: 'Ahmad Al Rashidi',
-    score: 94,
-    budget: 'AED 3.5M',
-    source: 'WhatsApp',
-    interest: 'Palm Jumeirah Villa',
-    velocity: 'High',
-    change: +4,
-  },
-  {
-    id: 2,
-    name: 'Priya Nair',
-    score: 88,
-    budget: 'AED 1.8M',
-    source: 'Web Form',
-    interest: 'Dubai Marina Apt',
-    velocity: 'High',
-    change: +12,
-  },
-  {
-    id: 3,
-    name: 'James Whitmore',
-    score: 76,
-    budget: 'AED 5M+',
-    source: 'Referral',
-    interest: 'Emirates Hills',
-    velocity: 'Medium',
-    change: -3,
-  },
-  {
-    id: 4,
-    name: 'Fatima Al Suwaidi',
-    score: 71,
-    budget: 'AED 2.2M',
-    source: 'Portal',
-    interest: 'Downtown Dubai',
-    velocity: 'Medium',
-    change: +8,
-  },
-  {
-    id: 5,
-    name: 'Chen Wei',
-    score: 62,
-    budget: 'AED 900K',
-    source: 'Social',
-    interest: 'JVC Studio',
-    velocity: 'Low',
-    change: -1,
-  },
-  {
-    id: 6,
-    name: 'Sara Müller',
-    score: 55,
-    budget: 'AED 1.2M',
-    source: 'Email',
-    interest: 'Business Bay',
-    velocity: 'Low',
-    change: +2,
-  },
-  {
-    id: 7,
-    name: 'Ravi Patel',
-    score: 48,
-    budget: 'AED 750K',
-    source: 'Cold',
-    interest: 'Al Barsha',
-    velocity: 'Low',
-    change: -5,
-  },
-];
-
-const SCORING_FACTORS = [
-  { factor: 'Enquiry Channel', weight: 20, description: 'WhatsApp direct = high intent signal' },
-  {
-    factor: 'Budget Specificity',
-    weight: 18,
-    description: 'Precise AED figure vs. "flexible" range',
-  },
-  {
-    factor: 'Community Match',
-    weight: 22,
-    description: 'Desired area vs. available inventory overlap',
-  },
-  {
-    factor: 'Engagement Velocity',
-    weight: 25,
-    description: 'Response time, message count, viewing requests',
-  },
-  {
-    factor: 'Historical Patterns',
-    weight: 15,
-    description: 'Similar lead profile win-rate from past data',
-  },
-];
-
-const QUEUE_STATS = [
-  { label: 'Hot Leads (80+)', value: 2, color: 'var(--error-color)' },
-  { label: 'Warm Leads (60–79)', value: 3, color: '#F97316' },
-  { label: 'Cold Leads (<60)', value: 2, color: '#6B7280' },
-];
-
-const getScoreColor = score => {
-  if (score >= 80) return '#E31E24';
-  if (score >= 60) return '#F97316';
-  return '#6B7280';
-};
-
-const getVelocityBadge = v => {
-  const map = { High: '#22C55E', Medium: '#F59E0B', Low: '#6B7280' };
-  // eslint-disable-next-line security/detect-object-injection
-  return map[v] || '#6B7280';
-};
+import {
+  SCORED_LEADS,
+  SCORING_FACTORS,
+  QUEUE_STATS,
+  getScoreColor,
+  getVelocityBadge,
+} from './ArcherCRM.data';
 
 const ArcherCRM = () => {
   const [activeTab, setActiveTab] = useState('scores');
@@ -149,10 +42,7 @@ const ArcherCRM = () => {
   return (
     <div className="assistant-dashboard archer">
       <div className="assistant-header">
-        <div
-          className="assistant-avatar"
-          style={{ background: 'var(--error-gradient)' }}
-        >
+        <div className="assistant-avatar" style={{ background: 'var(--error-gradient)' }}>
           <Target size={28} />
         </div>
         <div className="assistant-info">
@@ -328,7 +218,14 @@ const ArcherCRM = () => {
                 <strong>{f.factor}</strong>
                 <span style={{ color: 'var(--error-color)', fontWeight: 700 }}>{f.weight}%</span>
               </div>
-              <div style={{ width: '100%', height: 6, background: 'var(--border-color)', borderRadius: 4 }}>
+              <div
+                style={{
+                  width: '100%',
+                  height: 6,
+                  background: 'var(--border-color)',
+                  borderRadius: 4,
+                }}
+              >
                 <div
                   style={{
                     width: `${f.weight * 4}%`,
@@ -338,7 +235,9 @@ const ArcherCRM = () => {
                   }}
                 />
               </div>
-              <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6 }}>{f.description}</p>
+              <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6 }}>
+                {f.description}
+              </p>
             </div>
           ))}
           <div

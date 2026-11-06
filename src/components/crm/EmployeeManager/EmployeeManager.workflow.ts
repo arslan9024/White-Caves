@@ -1,7 +1,8 @@
+// FILE: src/components/crm/EmployeeManager/EmployeeManager.workflow.ts
 /**
- * EmployeeManager.workflow.ts
- * 7-Category Architecture: Workflow Engine Layer
- * Universal 4-Stage I-P-O-V Protocol for Employee Management & Lifecycle
+ * White Caves Real Estate LLC - Employee Management Workflows
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Workflow - Tier 7)
+ * Single Purpose File Law: < 350 lines
  */
 
 import type { EmployeeNode } from './EmployeeManager.types';

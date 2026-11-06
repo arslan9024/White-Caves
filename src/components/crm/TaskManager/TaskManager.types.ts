@@ -1,7 +1,8 @@
+// FILE: src/components/crm/TaskManager/TaskManager.types.ts
 /**
- * TaskManager.types.ts
- * 7-Category Architecture: Config & Types Layer
- * 200+ Statutory & Operational Tasks Catalog and Reporting Escalation Contracts
+ * White Caves Real Estate LLC - Task Management Types
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Types - Tier 5)
+ * Single Purpose File Law: < 350 lines
  */
 
 export type TaskPriority = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'STANDARD';
@@ -67,6 +68,7 @@ export interface TaskReportingChain {
 
 export interface TaskNode {
   _id: string;
+  id?: string;
   taskCode: string; // e.g. TSK-001 to TSK-200
   title: string;
   pillarId: string; // e.g. 'pillar-1' to 'pillar-7', 'executive'

@@ -1,12 +1,13 @@
+// FILE: src/components/crm/CustomerManager/CustomerManager.test.tsx
 /**
  * White Caves Real Estate LLC - Customer Manager Unit & Integration Tests
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Tests)
+ * Standard: AEGIS 12-Way Co-Location Architecture Standard (Tests - Tier 6)
  * Single Purpose File Law: < 350 lines
  */
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { CustomerManagerView } from './CustomerManagerView';
 import {
@@ -14,10 +15,27 @@ import {
   validateCustomerKycRequirements,
 } from './CustomerManager.workflow';
 import { CANONICAL_CUSTOMERS } from './CustomerManager.data';
+import { CustomerManagerFallback } from './CustomerManager.fallback';
+import { CustomerTelemetry } from './CustomerManager.telemetry';
+import { getCustomerI18n } from './CustomerManager.i18n';
+import {
+  saveCustomersCache,
+  loadCustomersCache,
+  getCustomerByTuringId,
+  indexCustomersInMemory,
+} from './CustomerManager.cache';
+import { calculateCustomerLeadScoreOffThread } from './CustomerManager.workers';
 
 const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
-describe('CustomerManager Module Tests', () => {
+describe('CustomerManager Module Tests (12-Way Blueprint)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    indexCustomersInMemory(CANONICAL_CUSTOMERS);
+    CustomerTelemetry.clear();
+  });
+
+  // --- Tier 1 & 2: View and Logic Integration ---
   it('renders CustomerManagerView with title and metric cards', () => {
     renderWithRouter(<CustomerManagerView />);
     expect(screen.getByText(/Customer & Lead Management System/i)).toBeInTheDocument();
@@ -108,6 +126,7 @@ describe('CustomerManager Module Tests', () => {
     expect(screen.getByText('Rashid Al-Maktoum')).toBeInTheDocument();
   });
 
+  // --- Tier 7: Stateless Workflow Chains ---
   it('validates 18-step pipeline transition function correctly', () => {
     const invalidSkip = execute18StepPipelineTransition(1, 5);
     expect(invalidSkip.success).toBe(false);
@@ -123,5 +142,94 @@ describe('CustomerManager Module Tests', () => {
     const validation = validateCustomerKycRequirements(validCustomer);
     expect(validation.compliant).toBe(true);
     expect(validation.missingFields.length).toBe(0);
+  });
+
+  // --- Tier 8: Failure Boundary ---
+  it('renders CustomerManagerFallback boundary with errorId and triggers onRetry', () => {
+    const onRetry = vi.fn();
+    const onNavigateBack = vi.fn();
+
+    render(
+      <CustomerManagerFallback
+        error="AML Sovereign Registry Timeout"
+        errorId="ERR-CUST-503"
+        onRetry={onRetry}
+        onNavigateBack={onNavigateBack}
+      />
+    );
+
+    expect(screen.getByTestId('customer-manager-fallback')).toBeInTheDocument();
+    expect(screen.getByText('ERR-CUST-503')).toBeInTheDocument();
+    expect(screen.getByText(/AML Sovereign Registry Timeout/i)).toBeInTheDocument();
+
+    const retryBtn = screen.getByTestId('customer-fallback-retry-btn');
+    fireEvent.click(retryBtn);
+    expect(onRetry).toHaveBeenCalledTimes(1);
+
+    const backBtn = screen.getByTestId('customer-fallback-back-btn');
+    fireEvent.click(backBtn);
+    expect(onNavigateBack).toHaveBeenCalledTimes(1);
+  });
+
+  // --- Tier 9: Real-Time State Attestations & Telemetry ---
+  it('tracks customer telemetry events and delivers to queue with non-blocking dispatch', () => {
+    CustomerTelemetry.track('KYC_AML_VERIFIED', {
+      customerId: 'CUST-001',
+      actorRole: 'MANAGING_DIRECTOR',
+    });
+
+    const events = CustomerTelemetry.getRecentEvents();
+    expect(events.length).toBeGreaterThan(0);
+    const lastEvent = events[events.length - 1];
+    expect(lastEvent.eventType).toBe('KYC_AML_VERIFIED');
+    expect(lastEvent.customerId).toBe('CUST-001');
+  });
+
+  // --- Tier 10: 4-Language Translation Schemas ---
+  it('resolves 4-language i18n schemas with Arabic RTL compliance', () => {
+    const arI18n = getCustomerI18n('ar');
+    expect(arI18n.dir).toBe('rtl');
+    expect(arI18n.workspaceTitle).toContain('العملاء');
+
+    const enI18n = getCustomerI18n('en');
+    expect(enI18n.dir).toBe('ltr');
+    expect(enI18n.workspaceTitle).toContain('Client');
+
+    const esI18n = getCustomerI18n('es');
+    expect(esI18n.workspaceTitle).toContain('Clientes');
+
+    const ruI18n = getCustomerI18n('ru');
+    expect(ruI18n.workspaceTitle).toContain('Клиентов');
+  });
+
+  // --- Tier 11: Localized State Persistence & O(1) Cache Lookup ---
+  it('persists customers cache and provides O(1) lookups by Turing ID', () => {
+    saveCustomersCache(CANONICAL_CUSTOMERS);
+    const cached = loadCustomersCache();
+    expect(cached).toBeDefined();
+    expect(cached?.length).toBe(CANONICAL_CUSTOMERS.length);
+
+    const lookupById = getCustomerByTuringId('CUST-001');
+    expect(lookupById).toBeDefined();
+    expect(lookupById?.fullName).toBe('Hassan Al-Nuaimi');
+
+    const lookupByCode = getCustomerByTuringId('WC-CUST-001');
+    expect(lookupByCode?.id).toBe('CUST-001');
+  });
+
+  // --- Tier 12: Off-Thread Multi-Agent Background Computation ---
+  it('computes customer lead score off-thread with AML attestation', async () => {
+    const result = await calculateCustomerLeadScoreOffThread({
+      customerId: 'CUST-001',
+      budgetAED: 5000000,
+      currentStep: 15,
+      interactionCount: 6,
+      kycVerified: true,
+    });
+
+    expect(result.customerId).toBe('CUST-001');
+    expect(result.intentScore).toBeGreaterThanOrEqual(70);
+    expect(result.verificationToken).toContain('ATTEST-AML-CUST-001');
+    expect(result.meritBonusXp).toBeGreaterThanOrEqual(100);
   });
 });

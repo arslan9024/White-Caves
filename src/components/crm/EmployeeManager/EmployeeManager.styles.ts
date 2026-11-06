@@ -1,7 +1,8 @@
+// FILE: src/components/crm/EmployeeManager/EmployeeManager.styles.ts
 /**
- * EmployeeManager.styles.ts
- * 7-Category Architecture: Styles Layer
- * Luxury White Caves styling tokens for Employee Directory & Profiles
+ * White Caves Real Estate LLC - Employee Management Styles
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Styles - Tier 3)
+ * Single Purpose File Law: < 350 lines
  */
 
 export const employeeStyles = {

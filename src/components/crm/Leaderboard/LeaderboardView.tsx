@@ -1,6 +1,7 @@
+// FILE: src/components/crm/Leaderboard/LeaderboardView.tsx
 /**
  * White Caves Real Estate LLC - Gamified Leaderboard & Tier Progression View
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Pure View)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Pure View - Tier 1)
  * Single Purpose File Law: < 350 lines
  */
 
@@ -21,6 +22,7 @@ import {
 import { useLeaderboardLogic } from './Leaderboard.logic';
 import { LeaderboardPodium } from './LeaderboardPodium';
 import { LeaderboardPromotionDrawer } from './LeaderboardPromotionDrawer';
+import { LeaderboardFallback } from './Leaderboard.fallback';
 import { TIER_METADATA } from './Leaderboard.config';
 import { LEADERBOARD_STYLES } from './Leaderboard.styles';
 import { TierLevel } from './Leaderboard.types';
@@ -41,10 +43,16 @@ export const LeaderboardView: React.FC = () => {
     selectedMemberForPromotion,
     promotionAudit,
     notification,
+    error,
+    setError,
     handlePromoteMember,
     openPromotionDrawer,
     closePromotionDrawer,
   } = useLeaderboardLogic();
+
+  if (error) {
+    return <LeaderboardFallback error={error} onRetry={() => setError(null)} />;
+  }
 
   return (
     <div className={LEADERBOARD_STYLES.container} data-testid="leaderboard-view">

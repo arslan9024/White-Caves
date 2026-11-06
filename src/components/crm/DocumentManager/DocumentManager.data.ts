@@ -1,6 +1,7 @@
+// FILE: src/components/crm/DocumentManager/DocumentManager.data.ts
 /**
  * White Caves Real Estate LLC - Canonical Documents Seed Data
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Static Data)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Static Data - Tier 4)
  * Single Purpose File Law: < 350 lines
  */
 

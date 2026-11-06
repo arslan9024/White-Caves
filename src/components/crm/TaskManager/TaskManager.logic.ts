@@ -1,12 +1,15 @@
+// FILE: src/components/crm/TaskManager/TaskManager.logic.ts
 /**
- * TaskManager.logic.ts
- * 7-Category Architecture: Logic Layer
- * State management, search, and hierarchy workflow orchestration for 200+ Tasks
+ * White Caves Real Estate LLC - Task Management Logic
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Logic - Tier 2)
+ * Single Purpose File Law: < 350 lines
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { TaskNode, TaskStatus } from './TaskManager.types';
 import { buildCanonical200Tasks, TASK_PILLARS, TASK_CATEGORIES } from './TaskManager.data';
+import { TaskTelemetry } from './TaskManager.telemetry';
+import { loadTasksCache, saveTasksCache } from './TaskManager.cache';
 import {
   executeCreateTaskWorkflow,
   executeUpdateTaskWorkflow,
@@ -15,7 +18,10 @@ import {
 } from './TaskManager.workflow';
 
 export function useTaskManager() {
-  const [tasks, setTasks] = useState<TaskNode[]>(buildCanonical200Tasks);
+  const [tasks, setTasks] = useState<TaskNode[]>(() => {
+    const cached = loadTasksCache();
+    return cached && cached.length > 0 ? cached : buildCanonical200Tasks();
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPillar, setSelectedPillar] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -23,6 +29,11 @@ export function useTaskManager() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'board'>('grid');
   const [statusToast, setStatusToast] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    TaskTelemetry.track('MOUNT', { initialCount: tasks.length });
+  }, []);
 
   // Drawer / modal states
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -38,7 +49,12 @@ export function useTaskManager() {
       setTasks(prev => {
         const res = executeCreateTaskWorkflow(prev, payload);
         showStatus(res.message);
-        return res.success ? res.tasks : prev;
+        if (res.success) {
+          saveTasksCache(res.tasks);
+          TaskTelemetry.track('STATUS_TRANSITION', { meta: { title: payload.title } });
+          return res.tasks;
+        }
+        return prev;
       });
       setIsDrawerOpen(false);
     },
@@ -50,7 +66,12 @@ export function useTaskManager() {
       setTasks(prev => {
         const res = executeUpdateTaskWorkflow(prev, id, patch);
         showStatus(res.message);
-        return res.success ? res.tasks : prev;
+        if (res.success) {
+          saveTasksCache(res.tasks);
+          TaskTelemetry.track('STATUS_TRANSITION', { taskId: id, meta: patch });
+          return res.tasks;
+        }
+        return prev;
       });
       setIsDrawerOpen(false);
     },
@@ -62,7 +83,12 @@ export function useTaskManager() {
       setTasks(prev => {
         const res = executeAdvanceTaskStatusWorkflow(prev, id, newStatus);
         showStatus(res.message);
-        return res.success ? res.tasks : prev;
+        if (res.success) {
+          saveTasksCache(res.tasks);
+          TaskTelemetry.track('STATUS_TRANSITION', { taskId: id, meta: { newStatus } });
+          return res.tasks;
+        }
+        return prev;
       });
     },
     [showStatus]
@@ -141,6 +167,8 @@ export function useTaskManager() {
     viewMode,
     setViewMode,
     statusToast,
+    error,
+    setError,
     isDrawerOpen,
     editingTask,
     metrics,

@@ -1,6 +1,7 @@
+// FILE: src/components/crm/Leaderboard/Leaderboard.styles.ts
 /**
  * White Caves Real Estate LLC - Leaderboard Style Tokens
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Styles)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Styles - Tier 3)
  * Single Purpose File Law: < 350 lines
  */
 

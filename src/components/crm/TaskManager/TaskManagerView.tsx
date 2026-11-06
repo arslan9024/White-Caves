@@ -1,6 +1,7 @@
+// FILE: src/components/crm/TaskManager/TaskManagerView.tsx
 /**
  * White Caves Real Estate LLC - Task Manager View
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Pure View Layer)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Pure View Layer - Tier 1)
  * Single Purpose File Law: < 350 lines
  */
 
@@ -10,6 +11,7 @@ import { useTaskManager } from './TaskManager.logic';
 import { TaskCard } from './TaskCard';
 import { TaskEditDrawer } from './TaskEditDrawer';
 import { TaskExecutionWorkbench } from './TaskExecutionWorkbench';
+import { TaskManagerFallback } from './TaskManager.fallback';
 import type { TaskNode } from './TaskManager.types';
 
 export interface TaskManagerViewProps {
@@ -36,6 +38,8 @@ export const TaskManagerView: FC<TaskManagerViewProps> = ({
     selectedStatus,
     setSelectedStatus,
     statusToast,
+    error,
+    setError,
     isDrawerOpen,
     editingTask,
     metrics,
@@ -52,6 +56,16 @@ export const TaskManagerView: FC<TaskManagerViewProps> = ({
 
   const [executingTask, setExecutingTask] = useState<TaskNode | null>(null);
   const [visibleCount, setVisibleCount] = useState<number>(60);
+
+  if (error) {
+    return (
+      <TaskManagerFallback
+        error={error}
+        onRetry={() => setError(null)}
+        onNavigateBack={onNavigateBack}
+      />
+    );
+  }
 
   const SUPERVISOR_TARGETS = [
     { code: 'SUP-001', name: 'Tariq Mansoor' },

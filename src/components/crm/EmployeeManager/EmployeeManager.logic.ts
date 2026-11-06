@@ -1,12 +1,15 @@
+// FILE: src/components/crm/EmployeeManager/EmployeeManager.logic.ts
 /**
- * EmployeeManager.logic.ts
- * 7-Category Architecture: Logic Layer
- * State management and CRUD handlers for Employee Directory
+ * White Caves Real Estate LLC - Employee Management Logic
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Logic - Tier 2)
+ * Single Purpose File Law: < 350 lines
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { EmployeeNode } from './EmployeeManager.types';
 import { INITIAL_EMPLOYEES_SEED, PILLARS_7 } from './EmployeeManager.data';
+import { EmployeeTelemetry } from './EmployeeManager.telemetry';
+import { loadEmployeesCache, saveEmployeesCache } from './EmployeeManager.cache';
 import {
   executeHireEmployeeWorkflow,
   executeUpdateEmployeeWorkflow,
@@ -15,12 +18,20 @@ import {
 } from './EmployeeManager.workflow';
 
 export function useEmployeeManager() {
-  const [employees, setEmployees] = useState<EmployeeNode[]>(INITIAL_EMPLOYEES_SEED);
+  const [employees, setEmployees] = useState<EmployeeNode[]>(() => {
+    const cached = loadEmployeesCache();
+    return cached && cached.length > 0 ? cached : INITIAL_EMPLOYEES_SEED;
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPillar, setSelectedPillar] = useState('all');
   const [selectedRoleTier, setSelectedRoleTier] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [statusToast, setStatusToast] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    EmployeeTelemetry.track('MOUNT', { initialCount: employees.length });
+  }, []);
 
   // Drawer / modal states
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -37,7 +48,12 @@ export function useEmployeeManager() {
       setEmployees(prev => {
         const res = executeHireEmployeeWorkflow(prev, payload);
         showStatus(res.message);
-        return res.success ? res.employees : prev;
+        if (res.success) {
+          saveEmployeesCache(res.employees);
+          EmployeeTelemetry.track('HIRE', { meta: { fullName: payload.fullName } });
+          return res.employees;
+        }
+        return prev;
       });
       setIsDrawerOpen(false);
     },
@@ -49,7 +65,12 @@ export function useEmployeeManager() {
       setEmployees(prev => {
         const res = executeUpdateEmployeeWorkflow(prev, id, patch);
         showStatus(res.message);
-        return res.success ? res.employees : prev;
+        if (res.success) {
+          saveEmployeesCache(res.employees);
+          EmployeeTelemetry.track('UPDATE', { meta: { id } });
+          return res.employees;
+        }
+        return prev;
       });
       setIsDrawerOpen(false);
     },
@@ -61,7 +82,12 @@ export function useEmployeeManager() {
       setEmployees(prev => {
         const res = executeDemoteEmployeeWorkflow(prev, id, reason);
         showStatus(res.message);
-        return res.success ? res.employees : prev;
+        if (res.success) {
+          saveEmployeesCache(res.employees);
+          EmployeeTelemetry.track('ROLE_ROTATION', { meta: { id, reason } });
+          return res.employees;
+        }
+        return prev;
       });
     },
     [showStatus]
@@ -78,7 +104,12 @@ export function useEmployeeManager() {
           targetSupervisor
         );
         showStatus(res.message);
-        return res.success ? res.employees : prev;
+        if (res.success) {
+          saveEmployeesCache(res.employees);
+          EmployeeTelemetry.track('ROLE_ROTATION', { meta: { id, targetPillarId } });
+          return res.employees;
+        }
+        return prev;
       });
     },
     [showStatus]
@@ -141,6 +172,8 @@ export function useEmployeeManager() {
     selectedStatus,
     setSelectedStatus,
     statusToast,
+    error,
+    setError,
     isDrawerOpen,
     editingEmployee,
     metrics,

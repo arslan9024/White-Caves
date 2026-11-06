@@ -1,6 +1,7 @@
+// FILE: src/components/crm/Leaderboard/Leaderboard.data.ts
 /**
  * White Caves Real Estate LLC - Leaderboard Seed Data
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Data)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Data - Tier 4)
  * Single Purpose File Law: < 350 lines
  */
 
@@ -203,3 +204,5 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     milestones: [],
   },
 ];
+
+export const CANONICAL_LEADERBOARD_MEMBERS = INITIAL_LEADERBOARD_DATA;

@@ -1,6 +1,7 @@
+// FILE: src/components/crm/Leaderboard/Leaderboard.types.ts
 /**
  * White Caves Real Estate LLC - Gamified Promotion Leaderboard Types
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Types)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Types - Tier 5)
  * Single Purpose File Law: < 350 lines
  */
 
@@ -59,6 +60,8 @@ export interface LeaderboardMember {
   badges: string[];
   milestones: CareerMilestone[];
   isAiAgent?: boolean;
+  rank?: number;
+  allTimeXp?: number;
 }
 
 export interface TaskXpInput {

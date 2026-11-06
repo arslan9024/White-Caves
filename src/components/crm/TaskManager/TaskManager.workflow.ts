@@ -1,7 +1,7 @@
+// FILE: src/components/crm/TaskManager/TaskManager.workflow.ts
 /**
- * TaskManager.workflow.ts
- * 7-Category Architecture: Workflow Engine Layer
- * Universal 4-Stage I-P-O-V Protocol for 200+ Tasks Execution & Escalation
+ * White Caves Real Estate LLC - Task Management Workflows
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Workflow - Tier 7)
  * Single Purpose File Law: < 350 lines
  */
 

@@ -1,6 +1,7 @@
+// FILE: src/components/crm/DocumentManager/DocumentManager.workflow.ts
 /**
  * White Caves Real Estate LLC - Document Manager Workflows
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Workflow)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Workflow - Tier 7)
  * Single Purpose File Law: < 350 lines
  */
 

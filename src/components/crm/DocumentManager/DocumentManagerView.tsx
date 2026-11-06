@@ -1,6 +1,7 @@
+// FILE: src/components/crm/DocumentManager/DocumentManagerView.tsx
 /**
  * White Caves Real Estate LLC - Document Manager Workspace View
- * Standard: AEGIS Canonical 7-Category Architecture Standard (View)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (View - Tier 1)
  * Single Purpose File Law: < 350 lines
  */
 
@@ -18,6 +19,7 @@ import { useDocumentManager, UseDocumentManagerProps } from './DocumentManager.l
 import { DocumentCard } from './DocumentCard';
 import { DocumentDetailModal } from './DocumentDetailModal';
 import { DocumentUploadDrawer } from './DocumentUploadDrawer';
+import { DocumentManagerFallback } from './DocumentManager.fallback';
 import {
   DocumentContainer,
   DocumentHeader,
@@ -37,6 +39,8 @@ export const DocumentManagerView: FC<UseDocumentManagerProps> = props => {
     setTypeFilter,
     statusFilter,
     setStatusFilter,
+    error,
+    setError,
     selectedDocForModal,
     isDrawerOpen,
     handleOpenDetailModal,
@@ -46,6 +50,16 @@ export const DocumentManagerView: FC<UseDocumentManagerProps> = props => {
     handleVerifyDocument,
     handleSaveDocument,
   } = useDocumentManager(props);
+
+  if (error) {
+    return (
+      <DocumentManagerFallback
+        error={error}
+        onRetry={() => setError(null)}
+        onNavigateBack={props.onNavigateBack}
+      />
+    );
+  }
 
   return (
     <DocumentContainer data-testid="document-manager-view">

@@ -1,6 +1,7 @@
+// FILE: src/components/crm/CustomerManager/CustomerManager.logic.ts
 /**
  * White Caves Real Estate LLC - Customer Management Logic
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Logic)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Logic - Tier 2)
  * Single Purpose File Law: < 350 lines
  */
 
@@ -12,6 +13,8 @@ import {
   CustomerInteraction,
 } from './CustomerManager.types';
 import { CANONICAL_CUSTOMERS } from './CustomerManager.data';
+import { CustomerTelemetry } from './CustomerManager.telemetry';
+import { loadCustomersCache, saveCustomersCache } from './CustomerManager.cache';
 import { v1CustomersApi } from '../../../services/api/v1ApiClient';
 
 export interface UseCustomerManagerProps {
@@ -26,16 +29,24 @@ export function useCustomerManager({
   selectedCustomerId,
   onSelectCustomer,
 }: UseCustomerManagerProps = {}) {
-  const [customers, setCustomers] = useState<CustomerItem[]>(initialCustomers);
+  const [customers, setCustomers] = useState<CustomerItem[]>(() => {
+    const cached = loadCustomersCache();
+    return cached && cached.length > 0 ? cached : initialCustomers;
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'ALL' | CustomerType>('ALL');
   const [sourceFilter, setSourceFilter] = useState<'ALL' | LeadSource>('ALL');
+  const [error, setError] = useState<string | null>(null);
 
   // Modal / Drawer state
   const [selectedCustomerForModal, setSelectedCustomerForModal] = useState<CustomerItem | null>(
     null
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    CustomerTelemetry.track('MOUNT', { initialCount: customers.length });
+  }, []);
 
   // Sync with selectedCustomerId deep link
   useEffect(() => {
@@ -112,8 +123,8 @@ export function useCustomerManager({
 
   const handleAdvanceStep = useCallback(
     (customerId: string, nextStep: number, nextStepName: string) => {
-      setCustomers(prev =>
-        prev.map(c => {
+      setCustomers(prev => {
+        const updated = prev.map(c => {
           if (c.id === customerId || c._id === customerId) {
             return {
               ...c,
@@ -122,8 +133,15 @@ export function useCustomerManager({
             };
           }
           return c;
-        })
-      );
+        });
+        saveCustomersCache(updated);
+        return updated;
+      });
+
+      CustomerTelemetry.track('STAGE_ADVANCE', {
+        customerId,
+        meta: { nextStep, nextStepName },
+      });
 
       setSelectedCustomerForModal(prev => {
         if (!prev) return null;
@@ -144,14 +162,18 @@ export function useCustomerManager({
   );
 
   const handleVerifyCustomerKyc = useCallback((customerId: string) => {
-    setCustomers(prev =>
-      prev.map(c => {
+    setCustomers(prev => {
+      const updated = prev.map(c => {
         if (c.id === customerId || c._id === customerId) {
           return { ...c, kycVerified: true };
         }
         return c;
-      })
-    );
+      });
+      saveCustomersCache(updated);
+      return updated;
+    });
+
+    CustomerTelemetry.track('KYC_AML_VERIFIED', { customerId });
 
     setSelectedCustomerForModal(prev => {
       if (!prev) return null;
@@ -202,6 +224,7 @@ export function useCustomerManager({
   );
 
   const handleSaveCustomer = useCallback((custData: Partial<CustomerItem>) => {
+    let createdCustomer: CustomerItem | null = null;
     setCustomers(prev => {
       const newId = `CUST-00${prev.length + 1}`;
       const newCust: CustomerItem = {
@@ -231,8 +254,19 @@ export function useCustomerManager({
         kycVerified: false,
         createdAt: new Date().toISOString().split('T')[0],
       };
-      return [newCust, ...prev];
+      createdCustomer = newCust;
+      const updated = [newCust, ...prev];
+      saveCustomersCache(updated);
+      return updated;
     });
+
+    if (createdCustomer) {
+      CustomerTelemetry.track('REGISTER', {
+        customerId: (createdCustomer as CustomerItem).id,
+        customerCode: (createdCustomer as CustomerItem).customerCode,
+      });
+    }
+
     // Live REST API sync
     v1CustomersApi.create(custData).catch(() => {});
     setIsDrawerOpen(false);
@@ -249,6 +283,8 @@ export function useCustomerManager({
     setTypeFilter,
     sourceFilter,
     setSourceFilter,
+    error,
+    setError,
     selectedCustomerForModal,
     isDrawerOpen,
     handleOpenDetailModal,

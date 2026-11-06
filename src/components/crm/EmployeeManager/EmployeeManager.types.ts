@@ -1,7 +1,8 @@
+// FILE: src/components/crm/EmployeeManager/EmployeeManager.types.ts
 /**
- * EmployeeManager.types.ts
- * 7-Category Architecture: Config & Types Layer
- * Employee Management contracts separated from departmental slots
+ * White Caves Real Estate LLC - Employee Management Types
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Types - Tier 5)
+ * Single Purpose File Law: < 350 lines
  */
 
 export type RoleTier =

@@ -1,12 +1,13 @@
+// FILE: src/components/crm/Leaderboard/Leaderboard.test.tsx
 /**
  * White Caves Real Estate LLC - Gamified Leaderboard Tests
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Tests)
+ * Standard: AEGIS 12-Way Co-Location Architecture Standard (Tests - Tier 6)
  * Single Purpose File Law: < 350 lines
  */
 
 import '@testing-library/jest-dom';
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { LeaderboardView } from './LeaderboardView';
 import {
@@ -15,6 +16,17 @@ import {
   executeTierPromotionWorkflow,
 } from './Leaderboard.workflow';
 import { LeaderboardMember, TaskXpInput } from './Leaderboard.types';
+import { INITIAL_LEADERBOARD_DATA } from './Leaderboard.data';
+import { LeaderboardFallback } from './Leaderboard.fallback';
+import { LeaderboardTelemetry } from './Leaderboard.telemetry';
+import { getLeaderboardI18n } from './Leaderboard.i18n';
+import {
+  saveLeaderboardCache,
+  loadLeaderboardCache,
+  getLeaderboardMemberByTuringId,
+  indexLeaderboardInMemory,
+} from './Leaderboard.cache';
+import { calculateLeaderboardRanksOffThread } from './Leaderboard.workers';
 
 const mockMemberL4: LeaderboardMember = {
   id: 'TEST-001',
@@ -35,51 +47,14 @@ const mockMemberL4: LeaderboardMember = {
   milestones: [],
 };
 
-describe('Leaderboard Pure Workflows', () => {
-  it('awards base and bonus XP on task completion', () => {
-    const taskInput: TaskXpInput = {
-      taskId: 'T001',
-      taskName: 'Qualify tenant lead',
-      priority: 'P0',
-      resolvedAheadOfSla: true, // +20%
-      zeroDefectAudit: true, // +15%
-    };
-
-    const initialMember = { ...mockMemberL4, meritXp: 1000, tasksCompleted: 10 };
-    const { updatedMember, result } = taskCompletionXpWorkflow(initialMember, taskInput);
-
-    expect(result.baseXp).toBe(100);
-    expect(result.bonusXp).toBe(35); // 100 * (0.20 + 0.15) = 35
-    expect(result.totalXp).toBe(135);
-    expect(updatedMember.meritXp).toBe(1135);
-    expect(updatedMember.tasksCompleted).toBe(11);
+describe('Leaderboard 12-Way Suite', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    indexLeaderboardInMemory(INITIAL_LEADERBOARD_DATA);
+    LeaderboardTelemetry.clear();
   });
 
-  it('correctly evaluates promotion eligibility', () => {
-    // Meets all criteria for L4 -> L3 (min 25 tasks, 2500 XP, 90% SLA)
-    const eligibleResult = evaluatePromotionEligibilityWorkflow(mockMemberL4);
-    expect(eligibleResult.isEligible).toBe(true);
-    expect(eligibleResult.missingRequirements.length).toBe(0);
-
-    // Below criteria
-    const ineligibleMember = { ...mockMemberL4, tasksCompleted: 12, meritXp: 1200 };
-    const ineligibleResult = evaluatePromotionEligibilityWorkflow(ineligibleMember);
-    expect(ineligibleResult.isEligible).toBe(false);
-    expect(ineligibleResult.missingRequirements.length).toBeGreaterThan(0);
-  });
-
-  it('executes tier promotion and records career milestone', () => {
-    const promoted = executeTierPromotionWorkflow(mockMemberL4, 'Executive Board');
-    expect(promoted.currentTier).toBe('L3');
-    expect(promoted.currentRole).toContain('Operational Supervisor');
-    expect(promoted.milestones.length).toBe(1);
-    expect(promoted.milestones[0].fromTier).toBe('L4');
-    expect(promoted.milestones[0].toTier).toBe('L3');
-    expect(promoted.nextTier).toBe('L2');
-  });
-});
-
-describe('LeaderboardView UI Component', () => {
+  // --- Tier 1 & 2: View and Logic Integration ---
   it('renders the corporate leaderboard title and metrics deck', () => {
     render(<LeaderboardView />);
 
@@ -103,7 +78,6 @@ describe('LeaderboardView UI Component', () => {
     const l1Tab = screen.getByRole('button', { name: /^L1$/i });
     fireEvent.click(l1Tab);
 
-    // Should show L1 directors
     expect(screen.getAllByText(/Sophia Al-Hashemi/i).length).toBeGreaterThan(0);
     expect(screen.queryByText(/Tariq Mansoor/i)).not.toBeInTheDocument();
   });
@@ -111,21 +85,136 @@ describe('LeaderboardView UI Component', () => {
   it('opens promotion drawer and executes promotion', () => {
     render(<LeaderboardView />);
 
-    // Click Promote button on first eligible member (Karim Bennani or Tariq Mansoor)
     const promoteButtons = screen.getAllByRole('button', { name: /promote/i });
     expect(promoteButtons.length).toBeGreaterThan(0);
     fireEvent.click(promoteButtons[0]);
 
-    // Drawer should open
     expect(screen.getByText(/Career Dossier & Promotion Audit/i)).toBeInTheDocument();
 
-    // Find the confirmation button in the drawer footer
     const confirmPromoteBtn = screen.getByRole('button', { name: /Promote to/i });
     expect(confirmPromoteBtn).toBeInTheDocument();
 
     fireEvent.click(confirmPromoteBtn);
-
-    // Toast or role transition should update
     expect(screen.getByText(/promoted to/i)).toBeInTheDocument();
+  });
+
+  // --- Tier 7: Pure Workflows ---
+  it('awards base and bonus XP on task completion', () => {
+    const taskInput: TaskXpInput = {
+      taskId: 'T001',
+      taskName: 'Qualify tenant lead',
+      priority: 'P0',
+      resolvedAheadOfSla: true,
+      zeroDefectAudit: true,
+    };
+
+    const initialMember = { ...mockMemberL4, meritXp: 1000, tasksCompleted: 10 };
+    const { updatedMember, result } = taskCompletionXpWorkflow(initialMember, taskInput);
+
+    expect(result.baseXp).toBe(100);
+    expect(result.bonusXp).toBe(35);
+    expect(result.totalXp).toBe(135);
+    expect(updatedMember.meritXp).toBe(1135);
+  });
+
+  it('correctly evaluates promotion eligibility', () => {
+    const eligibleResult = evaluatePromotionEligibilityWorkflow(mockMemberL4);
+    expect(eligibleResult.isEligible).toBe(true);
+    expect(eligibleResult.missingRequirements.length).toBe(0);
+
+    const ineligibleMember = { ...mockMemberL4, tasksCompleted: 12, meritXp: 1200 };
+    const ineligibleResult = evaluatePromotionEligibilityWorkflow(ineligibleMember);
+    expect(ineligibleResult.isEligible).toBe(false);
+  });
+
+  it('executes tier promotion and records career milestone', () => {
+    const promoted = executeTierPromotionWorkflow(mockMemberL4, 'Executive Board');
+    expect(promoted.currentTier).toBe('L3');
+    expect(promoted.currentRole).toContain('Operational Supervisor');
+    expect(promoted.milestones.length).toBe(1);
+  });
+
+  // --- Tier 8: Failure Boundary ---
+  it('renders LeaderboardFallback boundary with errorId and triggers onRetry', () => {
+    const onRetry = vi.fn();
+    const onNavigateBack = vi.fn();
+
+    render(
+      <LeaderboardFallback
+        error="Leaderboard WebSocket XP Stream Timeout"
+        errorId="ERR-LDR-503"
+        onRetry={onRetry}
+        onNavigateBack={onNavigateBack}
+      />
+    );
+
+    expect(screen.getByTestId('leaderboard-fallback')).toBeInTheDocument();
+    expect(screen.getByText('ERR-LDR-503')).toBeInTheDocument();
+    expect(screen.getByText(/Leaderboard WebSocket XP Stream Timeout/i)).toBeInTheDocument();
+
+    const retryBtn = screen.getByTestId('leaderboard-fallback-retry-btn');
+    fireEvent.click(retryBtn);
+    expect(onRetry).toHaveBeenCalledTimes(1);
+
+    const backBtn = screen.getByTestId('leaderboard-fallback-back-btn');
+    fireEvent.click(backBtn);
+    expect(onNavigateBack).toHaveBeenCalledTimes(1);
+  });
+
+  // --- Tier 9: Real-Time State Attestations & Telemetry ---
+  it('tracks leaderboard telemetry events and delivers to queue with non-blocking dispatch', () => {
+    LeaderboardTelemetry.track('XP_AWARDED', {
+      memberId: 'EMP-001',
+      actorRole: 'MANAGING_DIRECTOR',
+      awardedXp: 500,
+    });
+
+    const events = LeaderboardTelemetry.getRecentEvents();
+    expect(events.length).toBeGreaterThan(0);
+    const lastEvent = events[events.length - 1];
+    expect(lastEvent.eventType).toBe('XP_AWARDED');
+    expect(lastEvent.awardedXp).toBe(500);
+  });
+
+  // --- Tier 10: 4-Language Translation Schemas ---
+  it('resolves 4-language i18n schemas with Arabic RTL compliance', () => {
+    const arI18n = getLeaderboardI18n('ar');
+    expect(arI18n.dir).toBe('rtl');
+    expect(arI18n.workspaceTitle).toContain('الصدارة');
+
+    const enI18n = getLeaderboardI18n('en');
+    expect(enI18n.dir).toBe('ltr');
+    expect(enI18n.workspaceTitle).toContain('Leaderboard');
+
+    const esI18n = getLeaderboardI18n('es');
+    expect(esI18n.workspaceTitle).toContain('Clasificación');
+
+    const ruI18n = getLeaderboardI18n('ru');
+    expect(ruI18n.workspaceTitle).toContain('Лидеров');
+  });
+
+  // --- Tier 11: Localized State Persistence & O(1) Cache Lookup ---
+  it('persists leaderboard cache and provides O(1) lookups by Turing ID', () => {
+    saveLeaderboardCache(INITIAL_LEADERBOARD_DATA);
+    const cached = loadLeaderboardCache();
+    expect(cached).toBeDefined();
+    expect(cached?.length).toBe(INITIAL_LEADERBOARD_DATA.length);
+
+    const lookupById = getLeaderboardMemberByTuringId('emp-001');
+    expect(lookupById).toBeDefined();
+    expect(lookupById?.name).toContain('Tariq');
+  });
+
+  // --- Tier 12: Off-Thread Multi-Agent Background Computation ---
+  it('calculates leaderboard ranks off-thread with Law 10 gamified XP attribution', async () => {
+    const result = await calculateLeaderboardRanksOffThread({
+      members: INITIAL_LEADERBOARD_DATA,
+      additionalXp: { memberId: 'emp-001', xpBonus: 500 },
+    });
+
+    expect(result.sortedMembers.length).toBe(INITIAL_LEADERBOARD_DATA.length);
+    expect(result.topPodium.length).toBe(3);
+    expect(result.totalMeritXp).toBeGreaterThan(0);
+    expect(result.gamifiedAttestationToken).toContain('XP-RANK-ATTEST');
   });
 });

@@ -1,6 +1,7 @@
+// FILE: src/components/crm/CustomerManager/CustomerManager.types.ts
 /**
  * White Caves Real Estate LLC - Customer Relationship Management Types
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Types)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Types - Tier 5)
  * Single Purpose File Law: < 350 lines
  */
 

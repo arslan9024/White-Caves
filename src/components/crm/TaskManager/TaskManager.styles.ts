@@ -1,7 +1,8 @@
+// FILE: src/components/crm/TaskManager/TaskManager.styles.ts
 /**
- * TaskManager.styles.ts
- * 7-Category Architecture: Styles Layer
- * Luxury White Caves styling tokens for 200+ Tasks Management
+ * White Caves Real Estate LLC - Task Management Styles
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Styles - Tier 3)
+ * Single Purpose File Law: < 350 lines
  */
 
 export const taskStyles = {

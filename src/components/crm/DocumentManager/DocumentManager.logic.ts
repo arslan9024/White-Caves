@@ -1,12 +1,15 @@
+// FILE: src/components/crm/DocumentManager/DocumentManager.logic.ts
 /**
  * White Caves Real Estate LLC - Document Management Logic
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Logic)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Logic - Tier 2)
  * Single Purpose File Law: < 350 lines
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { DocumentItem, DocumentType, DocumentStatus } from './DocumentManager.types';
 import { CANONICAL_DOCUMENTS } from './DocumentManager.data';
+import { DocumentTelemetry } from './DocumentManager.telemetry';
+import { loadDocumentsCache, saveDocumentsCache } from './DocumentManager.cache';
 
 export interface UseDocumentManagerProps {
   initialDocuments?: DocumentItem[];
@@ -20,14 +23,22 @@ export function useDocumentManager({
   selectedDocId,
   onSelectDoc,
 }: UseDocumentManagerProps = {}) {
-  const [documents, setDocuments] = useState<DocumentItem[]>(initialDocuments);
+  const [documents, setDocuments] = useState<DocumentItem[]>(() => {
+    const cached = loadDocumentsCache();
+    return cached && cached.length > 0 ? cached : initialDocuments;
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'ALL' | DocumentType>('ALL');
   const [statusFilter, setStatusFilter] = useState<'ALL' | DocumentStatus>('ALL');
+  const [error, setError] = useState<string | null>(null);
 
   // Modal / Drawer state
   const [selectedDocForModal, setSelectedDocForModal] = useState<DocumentItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    DocumentTelemetry.track('MOUNT', { initialCount: documents.length });
+  }, []);
 
   // Sync with selectedDocId deep link
   useEffect(() => {
@@ -103,25 +114,30 @@ export function useDocumentManager({
   }, []);
 
   const handleVerifyDocument = useCallback((docId: string) => {
-    setDocuments(prev =>
-      prev.map(d => {
+    setDocuments(prev => {
+      const updated = prev.map(d => {
         if (d.id === docId || d._id === docId) {
-          return { ...d, status: 'VERIFIED', ocrConfidence: 99.5 };
+          return { ...d, status: 'VERIFIED' as DocumentStatus, ocrConfidence: 99.5 };
         }
         return d;
-      })
-    );
+      });
+      saveDocumentsCache(updated);
+      return updated;
+    });
+
+    DocumentTelemetry.track('OCR_VERIFIED', { docId });
 
     setSelectedDocForModal(prev => {
       if (!prev) return null;
       if (prev.id === docId || prev._id === docId) {
-        return { ...prev, status: 'VERIFIED', ocrConfidence: 99.5 };
+        return { ...prev, status: 'VERIFIED' as DocumentStatus, ocrConfidence: 99.5 };
       }
       return prev;
     });
   }, []);
 
   const handleSaveDocument = useCallback((docData: Partial<DocumentItem>) => {
+    let createdDoc: DocumentItem | null = null;
     setDocuments(prev => {
       const newId = `DOC-00${prev.length + 1}`;
       const newDoc: DocumentItem = {
@@ -141,8 +157,19 @@ export function useDocumentManager({
         ocrConfidence: docData.ocrConfidence || 99.0,
         metadata: docData.metadata || { note: 'Directly ingested via Document Vault' },
       };
-      return [newDoc, ...prev];
+      createdDoc = newDoc;
+      const updated = [newDoc, ...prev];
+      saveDocumentsCache(updated);
+      return updated;
     });
+
+    if (createdDoc) {
+      DocumentTelemetry.track('UPLOAD', {
+        docId: (createdDoc as DocumentItem).id,
+        docCode: (createdDoc as DocumentItem).docCode,
+      });
+    }
+
     setIsDrawerOpen(false);
   }, []);
 
@@ -156,6 +183,8 @@ export function useDocumentManager({
     setTypeFilter,
     statusFilter,
     setStatusFilter,
+    error,
+    setError,
     selectedDocForModal,
     isDrawerOpen,
     handleOpenDetailModal,

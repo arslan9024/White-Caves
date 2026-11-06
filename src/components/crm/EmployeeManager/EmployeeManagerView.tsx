@@ -1,7 +1,8 @@
+// FILE: src/components/crm/EmployeeManager/EmployeeManagerView.tsx
 /**
- * EmployeeManagerView.tsx
- * 7-Category Architecture: Pure View Layer
- * Dedicated Employee Management & Directory View (Separated from Department Slots)
+ * White Caves Real Estate LLC - Employee Manager View
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (View - Tier 1)
+ * Single Purpose File Law: < 350 lines
  */
 
 import React from 'react';
@@ -9,6 +10,7 @@ import { employeeStyles as s } from './EmployeeManager.styles';
 import { useEmployeeManager } from './EmployeeManager.logic';
 import { EmployeeEditDrawer } from './EmployeeEditDrawer';
 import { EmployeeDetailDossier } from './EmployeeDetailDossier';
+import { EmployeeManagerFallback } from './EmployeeManager.fallback';
 
 export interface EmployeeManagerViewProps {
   selectedEmpId?: string;
@@ -32,6 +34,8 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
     selectedStatus,
     setSelectedStatus,
     statusToast,
+    error,
+    setError,
     isDrawerOpen,
     editingEmployee,
     metrics,
@@ -53,6 +57,16 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
       ) || null
     );
   }, [selectedEmpId, filteredEmployees]);
+
+  if (error) {
+    return (
+      <EmployeeManagerFallback
+        error={error}
+        onRetry={() => setError(null)}
+        onNavigateBack={onNavigateBack}
+      />
+    );
+  }
 
   const getRoleBadgeClass = (tier: string) => {
     switch (tier) {

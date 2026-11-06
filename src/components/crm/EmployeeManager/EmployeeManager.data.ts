@@ -1,7 +1,8 @@
+// FILE: src/components/crm/EmployeeManager/EmployeeManager.data.ts
 /**
- * EmployeeManager.data.ts
- * 7-Category Architecture: Data Layer
- * Seed data and conversion utilities for White Caves Real Estate LLC Employees
+ * White Caves Real Estate LLC - Employee Management Data
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (Static Data - Tier 4)
+ * Single Purpose File Law: < 350 lines
  */
 
 import type { EmployeeNode } from './EmployeeManager.types';
@@ -220,3 +221,5 @@ export const INITIAL_EMPLOYEES_SEED: EmployeeNode[] = [
     joinedDate: '2023-10-15',
   },
 ];
+
+export const CANONICAL_EMPLOYEES = INITIAL_EMPLOYEES_SEED;

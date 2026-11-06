@@ -1,6 +1,7 @@
+// FILE: src/components/crm/CustomerManager/CustomerManagerView.tsx
 /**
  * White Caves Real Estate LLC - Customer Manager View
- * Standard: AEGIS Canonical 7-Category Architecture Standard (View)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard (View - Tier 1)
  * Single Purpose File Law: < 350 lines
  */
 
@@ -11,6 +12,7 @@ import { useCustomerManager } from './CustomerManager.logic';
 import { CustomerCard } from './CustomerCard';
 import { CustomerDetailModal } from './CustomerDetailModal';
 import { CustomerRegistrationDrawer } from './CustomerRegistrationDrawer';
+import { CustomerManagerFallback } from './CustomerManager.fallback';
 import {
   CustomerContainer,
   CustomerHeader,
@@ -38,6 +40,8 @@ export const CustomerManagerView: FC<CustomerManagerViewProps> = ({
     setSearchQuery,
     typeFilter,
     setTypeFilter,
+    error,
+    setError,
     selectedCustomerForModal,
     isDrawerOpen,
     handleOpenDetailModal,
@@ -53,6 +57,16 @@ export const CustomerManagerView: FC<CustomerManagerViewProps> = ({
     onSelectCustomer,
     onNavigateBack,
   });
+
+  if (error) {
+    return (
+      <CustomerManagerFallback
+        error={error}
+        onRetry={() => setError(null)}
+        onNavigateBack={onNavigateBack}
+      />
+    );
+  }
 
   return (
     <CustomerContainer data-testid="customer-manager-view">

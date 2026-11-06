@@ -1,20 +1,38 @@
+// FILE: src/components/crm/DocumentManager/DocumentManager.test.tsx
 /**
  * White Caves Real Estate LLC - Document Manager Unit Tests
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Tests)
+ * Standard: AEGIS 12-Way Co-Location Architecture Standard (Tests - Tier 6)
  * Single Purpose File Law: < 350 lines
  */
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DocumentManagerView } from './DocumentManagerView';
 import { CANONICAL_DOCUMENTS } from './DocumentManager.data';
 import {
   executeDocumentOcrExtraction,
   validateDocumentExpiration,
 } from './DocumentManager.workflow';
+import { DocumentManagerFallback } from './DocumentManager.fallback';
+import { DocumentTelemetry } from './DocumentManager.telemetry';
+import { getDocumentI18n } from './DocumentManager.i18n';
+import {
+  saveDocumentsCache,
+  loadDocumentsCache,
+  getDocumentByTuringId,
+  indexDocumentsInMemory,
+} from './DocumentManager.cache';
+import { extractDocumentOcrFieldsOffThread } from './DocumentManager.workers';
 
-describe('DocumentManager Suite (7-Category Architecture Standard)', () => {
+describe('DocumentManager Suite (12-Way Blueprint)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    indexDocumentsInMemory(CANONICAL_DOCUMENTS);
+    DocumentTelemetry.clear();
+  });
+
+  // --- Tier 1 & 2: View and Logic Integration ---
   it('renders workspace title, metrics deck, and canonical document cards', () => {
     render(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
 
@@ -57,7 +75,6 @@ describe('DocumentManager Suite (7-Category Architecture Standard)', () => {
     expect(screen.getAllByText(/Dubai Land Department/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Emaar Asset Holdings/i).length).toBeGreaterThan(0);
 
-    // Close modal
     const closeBtn = screen.getByTestId('close-document-modal');
     fireEvent.click(closeBtn);
 
@@ -92,6 +109,7 @@ describe('DocumentManager Suite (7-Category Architecture Standard)', () => {
     expect(screen.getByText('DEWA Clearance Certificate 2026')).toBeInTheDocument();
   });
 
+  // --- Tier 7: Stateless Workflow Chains ---
   it('extracts OCR fields deterministically in workflow', () => {
     const ocrResult = executeDocumentOcrExtraction('dld-title-deed.pdf', 'TITLE_DEED');
     expect(ocrResult.success).toBe(true);
@@ -104,5 +122,93 @@ describe('DocumentManager Suite (7-Category Architecture Standard)', () => {
     const docWithFutureExpiry = CANONICAL_DOCUMENTS[1];
     const validation = validateDocumentExpiration(docWithFutureExpiry);
     expect(validation.isExpired).toBe(false);
+  });
+
+  // --- Tier 8: Failure Boundary ---
+  it('renders DocumentManagerFallback boundary with errorId and triggers onRetry', () => {
+    const onRetry = vi.fn();
+    const onNavigateBack = vi.fn();
+
+    render(
+      <DocumentManagerFallback
+        error="DLD Statutory OCR Buffer Desync"
+        errorId="ERR-DLD-500"
+        onRetry={onRetry}
+        onNavigateBack={onNavigateBack}
+      />
+    );
+
+    expect(screen.getByTestId('document-manager-fallback')).toBeInTheDocument();
+    expect(screen.getByText('ERR-DLD-500')).toBeInTheDocument();
+    expect(screen.getByText(/DLD Statutory OCR Buffer Desync/i)).toBeInTheDocument();
+
+    const retryBtn = screen.getByTestId('document-fallback-retry-btn');
+    fireEvent.click(retryBtn);
+    expect(onRetry).toHaveBeenCalledTimes(1);
+
+    const backBtn = screen.getByTestId('document-fallback-back-btn');
+    fireEvent.click(backBtn);
+    expect(onNavigateBack).toHaveBeenCalledTimes(1);
+  });
+
+  // --- Tier 9: Real-Time State Attestations & Telemetry ---
+  it('tracks document telemetry events and delivers to queue with non-blocking dispatch', () => {
+    DocumentTelemetry.track('OCR_VERIFIED', {
+      docId: 'DOC-001',
+      actorRole: 'MANAGING_DIRECTOR',
+    });
+
+    const events = DocumentTelemetry.getRecentEvents();
+    expect(events.length).toBeGreaterThan(0);
+    const lastEvent = events[events.length - 1];
+    expect(lastEvent.eventType).toBe('OCR_VERIFIED');
+    expect(lastEvent.docId).toBe('DOC-001');
+  });
+
+  // --- Tier 10: 4-Language Translation Schemas ---
+  it('resolves 4-language i18n schemas with Arabic RTL compliance', () => {
+    const arI18n = getDocumentI18n('ar');
+    expect(arI18n.dir).toBe('rtl');
+    expect(arI18n.workspaceTitle).toContain('المستندات');
+
+    const enI18n = getDocumentI18n('en');
+    expect(enI18n.dir).toBe('ltr');
+    expect(enI18n.workspaceTitle).toContain('Vault');
+
+    const esI18n = getDocumentI18n('es');
+    expect(esI18n.workspaceTitle).toContain('Documentos');
+
+    const ruI18n = getDocumentI18n('ru');
+    expect(ruI18n.workspaceTitle).toContain('Документов');
+  });
+
+  // --- Tier 11: Localized State Persistence & O(1) Cache Lookup ---
+  it('persists documents cache and provides O(1) lookups by Turing ID', () => {
+    saveDocumentsCache(CANONICAL_DOCUMENTS);
+    const cached = loadDocumentsCache();
+    expect(cached).toBeDefined();
+    expect(cached?.length).toBe(CANONICAL_DOCUMENTS.length);
+
+    const lookupById = getDocumentByTuringId('DOC-001');
+    expect(lookupById).toBeDefined();
+    expect(lookupById?.title).toContain('Title Deed');
+
+    const lookupByCode = getDocumentByTuringId('TD-908124');
+    expect(lookupByCode?.id).toBe('DOC-001');
+  });
+
+  // --- Tier 12: Off-Thread Multi-Agent Background Computation ---
+  it('extracts OCR fields and asserts Law 11 overlay compliance off-thread', async () => {
+    const result = await extractDocumentOcrFieldsOffThread({
+      docId: 'DOC-001',
+      docType: 'TITLE_DEED',
+      enforceLaw11Overlay: true,
+    });
+
+    expect(result.docId).toBe('DOC-001');
+    expect(result.confidenceScore).toBeGreaterThanOrEqual(98);
+    expect(result.dldChecksum).toContain('DLD-CHK-DOC-001');
+    expect(result.law11OverlayCompliant).toBe(true);
+    expect(result.meritBonusXp).toBe(500); // Law 10: Gamified Merit XP
   });
 });
