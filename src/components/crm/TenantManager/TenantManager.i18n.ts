@@ -1,0 +1,73 @@
+// FILE: src/components/crm/TenantManager/TenantManager.i18n.ts
+/**
+ * White Caves Real Estate LLC - Tenant Manager 4-Language Translation Dictionaries
+ * Standard: AEGIS Canonical 12-Way Architecture Standard
+ * Single Purpose File Law: < 350 lines
+ */
+
+export const TENANT_DICTIONARY = {
+  en: {
+    title: 'Sovereign Tenant Portal',
+    sub: 'Manage your active lease, DLD Ejari, payment receipts, and maintenance work orders',
+    tabOverview: 'Tenant Overview',
+    tabLease: 'Lease & Ejari Contract',
+    tabPayments: 'Rental Installments',
+    tabMaintenance: 'Maintenance Requests',
+    tabInspection: 'Move-in Snag Checklist',
+    rent: 'Annual Contracted Rent',
+    daysRemaining: 'Days Remaining',
+    upcomingDue: 'Next Payment Due',
+    paidToDate: 'Total Paid to Date',
+    openTickets: 'Active Tickets',
+    signLease: 'Sign Ejari Lease',
+    downloadPdf: 'Download Ejari PDF',
+  },
+  ar: {
+    title: 'بوابة المستأجر السيادية',
+    sub: 'إدارة عقد الإيجار النشط، توثيق إيجاري، إيصالات الدفع وطلبات الصيانة',
+    tabOverview: 'نظرة عامة على المستأجر',
+    tabLease: 'عقد الإيجار وإيجاري',
+    tabPayments: 'أقساط الإيجار',
+    tabMaintenance: 'طلبات الصيانة',
+    tabInspection: 'قائمة فحص الاستلام',
+    rent: 'الإيجار السنوي المتعاقد عليه',
+    daysRemaining: 'الأيام المتبقية',
+    upcomingDue: 'الدفعة القادمة المستحقة',
+    paidToDate: 'إجمالي المدفوع حتى تاريخه',
+    openTickets: 'التذاكر النشطة',
+    signLease: 'توقيع عقد إيجاري',
+    downloadPdf: 'تحميل شهادة إيجاري',
+  },
+  es: {
+    title: 'Portal del Inquilino',
+    sub: 'Gestione su contrato, registro Ejari, pagos y órdenes de mantenimiento',
+    tabOverview: 'Resumen del Inquilino',
+    tabLease: 'Contrato y Ejari',
+    tabPayments: 'Cuotas de Alquiler',
+    tabMaintenance: 'Mantenimiento',
+    tabInspection: 'Lista de Inspección',
+    rent: 'Alquiler Anual',
+    daysRemaining: 'Días Restantes',
+    upcomingDue: 'Próximo Vencimiento',
+    paidToDate: 'Total Pagado',
+    openTickets: 'Tickets Activos',
+    signLease: 'Firmar Contrato',
+    downloadPdf: 'Descargar PDF Ejari',
+  },
+  ru: {
+    title: 'Портал Арендатора',
+    sub: 'Управление арендой, договором Ejari, платежами и заявками на ремонт',
+    tabOverview: 'Обзор Аренды',
+    tabLease: 'Договор и Ejari',
+    tabPayments: 'График Платежей',
+    tabMaintenance: 'Заявки на Ремонт',
+    tabInspection: 'Акт Приема-Передачи',
+    rent: 'Годовая Аренда',
+    daysRemaining: 'Дней до Окончания',
+    upcomingDue: 'Следующий Платеж',
+    paidToDate: 'Всего Оплачено',
+    openTickets: 'Активные Заявки',
+    signLease: 'Подписать Договор',
+    downloadPdf: 'Скачать PDF Ejari',
+  },
+} as const;

@@ -170,4 +170,16 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
     expect(screen.getByTestId('landlord-manager-view')).toBeInTheDocument();
     expect(screen.getByText(/Sovereign Landlord Asset Hub/i)).toBeInTheDocument();
   }, 30000);
+
+  it('renders Sovereign Tenant Portal on route /dashboard/tenant', () => {
+    renderDashboardWithProviders('/dashboard/tenant');
+    expect(screen.getByTestId('tenant-manager-view')).toBeInTheDocument();
+    expect(screen.getByText(/Sovereign Tenant Portal/i)).toBeInTheDocument();
+  }, 30000);
+
+  it('renders Sovereign Broker Hub on route /dashboard/broker', () => {
+    renderDashboardWithProviders('/dashboard/broker');
+    expect(screen.getByTestId('broker-manager-view')).toBeInTheDocument();
+    expect(screen.getByText(/Sovereign Licensed Broker Hub/i)).toBeInTheDocument();
+  }, 30000);
 });

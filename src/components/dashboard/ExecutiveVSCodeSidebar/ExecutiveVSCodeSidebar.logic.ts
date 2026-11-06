@@ -18,6 +18,8 @@ export type ActivityTab =
   | 'roles'
   | 'profile'
   | 'landlord'
+  | 'tenant'
+  | 'broker'
   | 'audit'
   | 'settings';
 

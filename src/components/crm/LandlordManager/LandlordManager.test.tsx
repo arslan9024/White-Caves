@@ -6,8 +6,8 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { LandlordManagerView } from './LandlordManagerView';
 import { LandlordManagerFallback } from './LandlordManager.fallback';
 import { calculateLandlordMetrics, transitionChequeStatus } from './LandlordManager.workflow';
@@ -18,6 +18,9 @@ import {
 } from './LandlordManager.data';
 
 describe('LandlordManager Suite (12-Way Co-Location Blueprint)', () => {
+  afterEach(() => {
+    cleanup();
+  });
   it('renders workspace title, metric cards, and active leases', () => {
     render(<LandlordManagerView />);
 

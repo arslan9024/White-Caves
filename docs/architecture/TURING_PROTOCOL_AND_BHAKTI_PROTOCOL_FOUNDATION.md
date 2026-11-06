@@ -225,6 +225,35 @@ To enforce Level 2 Asset Owner sovereignty and eliminate cross-tenant data leaks
    - **Tenant Maintenance Requests & Work Orders:** Priority tagging (`emergency`, `high`, `medium`, `low`), contractor assignments, and instant approval triggers.
    - **Net Rental Yield & Cash Flow Analytics Waterfall:** Real-time calculation of gross contracted rents minus community service charges (14%) and reserve sinking funds (3%) against Dubai Land Department Decree No. 43 of 2013 benchmarks.
 
+#### Law T17: The Sovereign Tenant Self-Service Portal & Digital Ejari Execution Law
+
+To enforce Level 1 Tenant empowerment, transparency, and statutory DLD compliance, all tenant experiences must adhere to the 4-tier tenant lifecycle standard:
+
+1. **Sovereign Tenant Routing (`/dashboard/tenant`):** Renders the dedicated `TenantManagerView.tsx` (12-way co-location blueprint), scoping the viewport exclusively to the tenant's leased property (`where tenantId === currentUser.id`).
+2. **Four Sovereign Tenant Functional Pillars:**
+   - **Digital Ejari Execution & Attestation:** Live tenancy agreement overview, digital execution triggers, and official DLD Ejari PDF certificate download.
+   - **Rental Payment & Installment Schedule:** Complete breakdown of upcoming and cleared cheques/installments, payment methods, and certified digital receipt tokens.
+   - **Move-In Handover & Snag Protocol:** Room-by-room snag item verification with resolution status tracking.
+   - **Tenant Maintenance Requests:** Direct submission and status tracking of HVAC, plumbing, and electrical service orders.
+
+#### Law T18: The Sovereign Licensed Broker Hub, Commission Split & RERA Compliance Law
+
+To protect the financial rights, licensing integrity, and lead distribution efficiency of licensed real estate brokers, all agent interfaces must adhere to this law:
+
+1. **Sovereign Broker Routing (`/dashboard/broker`):** Renders the dedicated `BrokerManagerView.tsx` (12-way co-location blueprint) when simulated or authenticated as `agent` or `broker`.
+2. **Three Sovereign Broker Operational Dimensions:**
+   - **Commission Tracking & Payout Schedule:** Automatic calculation of gross commissions (2.0%), UAE VAT (5.0%), and company split (50/50), with escrow release request triggers.
+   - **High-Net-Worth Lead Assignment & 15-Minute SLA:** Real-time round-robin lead queues with active SLA countdown timers and instant contact action triggers.
+   - **RERA & Trakheesi Compliance Credentials:** Live monitoring of Broker Registration Number (BRN), RERA card validity countdown, active Trakheesi advertising permits, and CPD training hours.
+
+#### Law T19: The PWA Offline Sync, Remote Property Inspection & Conflict-Free Convergence Law (Wave 15)
+
+To guarantee uninterrupted field operations in remote or subterranean Dubai construction areas with zero 5G connectivity, the platform enforces Progressive Web App (PWA) offline-first resilience:
+
+1. **IndexedDB & Offline Storage Strategy (`RemoteInspectionOfflineService.ts`):** On-site property inspection snags, photos, and client signatures are automatically saved to local storage with quota protection.
+2. **Automatic Background Sync Queue:** Network state transitions (`window.addEventListener('online')`) automatically flush queued inspection items and lease updates to the cloud without manual user intervention.
+3. **Conflict-Free Convergence:** Offline mutations reconcile with server state using Last-Write-Wins (LWW) timestamped conflict resolution vectors.
+
 ---
 
 ### 4. Implementation Validation Matrix
@@ -245,3 +274,6 @@ To enforce Level 2 Asset Owner sovereignty and eliminate cross-tenant data leaks
 | Sovereign RBAC Context Standard (T14)    | Turing   | `UserRoleContext.tsx`, `SidebarRolesList.tsx`, `RoleManager` | ✅ PASSED   |
 | Unified Dashboard Profile Standard (T15) | Turing   | `ProfileDashboardView.tsx`, `/dashboard/profile` redirect    | ✅ PASSED   |
 | Sovereign Landlord Asset Portal (T16)    | Turing   | `LandlordManagerView.tsx`, `/dashboard/landlord`             | ✅ PASSED   |
+| Sovereign Tenant Portal (T17)            | Turing   | `TenantManagerView.tsx`, `/dashboard/tenant`                 | ✅ PASSED   |
+| Sovereign Broker Hub (T18)               | Turing   | `BrokerManagerView.tsx`, `/dashboard/broker`                 | ✅ PASSED   |
+| PWA Offline Sync & Inspections (T19)     | Turing   | `RemoteInspectionOfflineService.ts`, Wave 15                 | ✅ PASSED   |

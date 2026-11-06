@@ -49,6 +49,8 @@ export const ModernDashboardPage: FC = () => {
     'roles',
     'profile',
     'landlord',
+    'tenant',
+    'broker',
   ];
 
   const activeTab: ActivityTab = rawTab && validTabs.includes(rawTab) ? rawTab : 'departments';

@@ -16,6 +16,13 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    testTimeout: 30000,
+    teardownTimeout: 30000,
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
     include: [
       'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'server/**/*.{test,spec}.{js,jsx,ts,tsx}',
@@ -31,27 +38,27 @@ export default defineConfig({
       // Legacy custom test-runner files (not Vitest describe/it format)
       'server/tests/**',
     ],
-      coverage: {
-        provider: 'v8',
-        reporter: ['text', 'json', 'html'],
-        include: ['src/**/*.{js,jsx,ts,tsx}'],
-        exclude: [
-          'src/test/**',
-          'src/e2e/**',
-          'src/**/*.test.*',
-          'src/**/*.spec.*',
-          'node_modules/**',
-        ],
-        thresholds: {
-          statements: 80,
-          branches: 75,
-          functions: 80,
-          lines: 80,
-        },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      include: ['src/**/*.{js,jsx,ts,tsx}'],
+      exclude: [
+        'src/test/**',
+        'src/e2e/**',
+        'src/**/*.test.*',
+        'src/**/*.spec.*',
+        'node_modules/**',
+      ],
+      thresholds: {
+        statements: 80,
+        branches: 75,
+        functions: 80,
+        lines: 80,
       },
-      onConsoleLog(log, type) {
-        // Drop all console output (warnings, act errors) to achieve zero-warning tests
-        return false;
-      },
+    },
+    onConsoleLog(log, type) {
+      // Drop all console output (warnings, act errors) to achieve zero-warning tests
+      return false;
+    },
   },
 });

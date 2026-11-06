@@ -26,6 +26,8 @@ import { RelationshipManagerView } from '../../components/crm/RelationshipManage
 import { ErmsOverviewView } from '../../components/crm/RelationshipManager/ErmsOverviewView';
 import { RoleManagerView } from '../../components/crm/RoleManager';
 import { LandlordManagerView } from '../../components/crm/LandlordManager';
+import { TenantManagerView } from '../../components/crm/TenantManager';
+import { BrokerManagerView } from '../../components/crm/BrokerManager';
 import { ProfileDashboardView } from './ProfileDashboardView';
 import { UserRoleContext } from '../../context/UserRoleContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
@@ -61,6 +63,17 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
     (activeTab === 'departments' || (activeTab as string) === 'landlord')
   ) {
     return <LandlordManagerView />;
+  }
+
+  if (role === 'tenant' && (activeTab === 'departments' || (activeTab as string) === 'tenant')) {
+    return <TenantManagerView />;
+  }
+
+  if (
+    (role === 'agent' || (role as string) === 'broker') &&
+    (activeTab === 'departments' || (activeTab as string) === 'broker')
+  ) {
+    return <BrokerManagerView />;
   }
 
   switch (activeTab) {
@@ -216,6 +229,12 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
 
     case 'landlord' as ActivityTab:
       return <LandlordManagerView />;
+
+    case 'tenant' as ActivityTab:
+      return <TenantManagerView />;
+
+    case 'broker' as ActivityTab:
+      return <BrokerManagerView />;
 
     default:
       return (
