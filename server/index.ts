@@ -219,6 +219,18 @@ const listenWithPortFallback = async (
 // Request ID — must be first so every log/response includes correlation ID
 app.use(requestIdMiddleware);
 
+let dbInitPromise: Promise<void> | null = null;
+app.use(async (req: Request, _res: Response, next: NextFunction) => {
+  if (dbInitPromise && req.path !== '/api/health' && req.path !== '/api/v1/health') {
+    try {
+      await dbInitPromise;
+    } catch {
+      // Errors are logged in startServer; allow request to proceed
+    }
+  }
+  next();
+});
+
 // Security middleware
 app.use(
   helmet({
@@ -1348,40 +1360,73 @@ app.use(errorHandler);
 // ============================================================================
 
 const startServer = async () => {
-  // Corporate-department routes use Mongoose models, so do not serve requests until it is ready.
-  logger.info('Connecting to MongoDB with Mongoose...');
-  await connectDB(DATABASE_URL);
-  logger.info('Mongoose connected successfully');
+  // Bind HTTP + Socket.io port immediately so Vite proxy never hits ECONNREFUSED during DB TLS warmup
+  const preferredPort = parsePort(PREFERRED_PORT);
+  const allowPortFallback = process.env.NODE_ENV === 'development';
 
-  // Prisma-backed services remain available on a best-effort basis.
-  try {
-    await connectDatabase();
-    logger.info('Prisma connected successfully');
+  const httpServer = createServer(app);
+  realtimeService = new RealtimeService(httpServer);
+  logger.info('RealtimeService initialized');
 
-    // Start background services
-    startFollowUpScheduler();
-    startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
-    startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
-    startViewingReminderCron(); // Wave 23: FCM push viewing reminders every 5 min
-    startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
-    startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
-    schedulerService.start(); // Wave 12: cron automation engine
+  const activePort = await listenWithPortFallback(httpServer, preferredPort, {
+    enableFallback: allowPortFallback,
+    maxAttempts: 20,
+  });
+  const host = process.env.API_URL || `http://localhost:${activePort}`;
 
-    // Boot AssistantOrchestrator — register all 5 assistant handler chains
-    import('./services/orchestrator/AssistantOrchestrator.js')
-      .then(({ assistantOrchestrator }) => {
-        assistantOrchestrator.registerLindaHandlers();
-        assistantOrchestrator.registerNadiaHandlers();
-        assistantOrchestrator.registerNinaHandlers();
-        assistantOrchestrator.registerMaryHandlers();
-        assistantOrchestrator.registerHenryHandlers();
-        logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
-      })
-      .catch((err: unknown) => {
-        logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);
-      });
+  if (activePort !== preferredPort) {
+    logger.warn(`API port fallback active: preferred ${preferredPort}, listening on ${activePort}`);
+  }
 
-    // Auto-migrate any remaining legacy base64 password hashes to bcrypt
+  logger.info(`Server started on ${host} (${process.env.NODE_ENV || 'development'})`);
+  logger.info(`API Base (v1): ${host}/api/v1 | Legacy: ${host}/api | Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
+
+  dbInitPromise = (async () => {
+    logger.info('Connecting to MongoDB with Mongoose...');
+    await connectDB(DATABASE_URL);
+    logger.info('Mongoose connected successfully');
+
+    try {
+      await connectDatabase();
+      logger.info('Prisma connected successfully');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      const firstLine = message
+        .split('\n')
+        .map(line => line.trim())
+        .find(Boolean);
+      logger.warn(`Database connection failed: ${firstLine ?? message}`);
+      logger.warn('Server will start without Prisma — Prisma-backed API calls may return errors');
+    }
+  })();
+
+  await dbInitPromise;
+  dbInitPromise = null;
+
+  // Start background services and non-blocking post-boot maintenance
+  startFollowUpScheduler();
+  startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
+  startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
+  startViewingReminderCron(); // Wave 23: FCM push viewing reminders every 5 min
+  startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
+  startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
+  schedulerService.start(); // Wave 12: cron automation engine
+
+  import('./services/orchestrator/AssistantOrchestrator.js')
+    .then(({ assistantOrchestrator }) => {
+      assistantOrchestrator.registerLindaHandlers();
+      assistantOrchestrator.registerNadiaHandlers();
+      assistantOrchestrator.registerNinaHandlers();
+      assistantOrchestrator.registerMaryHandlers();
+      assistantOrchestrator.registerHenryHandlers();
+      logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
+    })
+    .catch((err: unknown) => {
+      logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);
+    });
+
+  // Non-blocking background check for any legacy password hashes
+  void (async () => {
     try {
       const legacyUsers = await prisma.user.findMany({
         where: { passwordHash: { startsWith: 'wc$' } },
@@ -1401,47 +1446,7 @@ const startServer = async () => {
       const msg = migrationError instanceof Error ? migrationError.message : String(migrationError);
       logger.warn(`Legacy password migration skipped: ${msg}`);
     }
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
-    const firstLine = message
-      .split('\n')
-      .map(line => line.trim())
-      .find(Boolean);
-    logger.warn(`Database connection failed: ${firstLine ?? message}`);
-    logger.warn('Server will start without Prisma — Prisma-backed API calls may return errors');
-  }
-
-  // Start listening regardless of DB status
-  const preferredPort = parsePort(PREFERRED_PORT);
-  const allowPortFallback = process.env.NODE_ENV === 'development';
-
-  // Wrap Express in a raw http.Server so Socket.io can share the same port
-  const httpServer = createServer(app);
-
-  // Phase 7 Day 1: realtime websocket service (KPIs, presence, comments)
-  realtimeService = new RealtimeService(httpServer);
-  logger.info('RealtimeService initialized');
-
-  const activePort = await listenWithPortFallback(httpServer, preferredPort, {
-    enableFallback: allowPortFallback,
-    maxAttempts: 20,
-  });
-  const host = process.env.API_URL || `http://localhost:${activePort}`;
-
-  logger.info(`Server started on ${host}`);
-  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  logger.info(`API Base: ${host}/api`);
-  logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
-
-  if (activePort !== preferredPort) {
-    logger.warn(`API port fallback active: preferred ${preferredPort}, listening on ${activePort}`);
-  }
-
-  logger.info(`Server started on ${host}`);
-  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  logger.info(`API Base (v1): ${host}/api/v1`);
-  logger.info(`API Legacy Alias: ${host}/api`);
-  logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
+  })();
 
   return httpServer;
 };

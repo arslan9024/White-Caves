@@ -221,18 +221,45 @@ export const DEMO_ROLE_PROFILES = Object.fromEntries(
 
 export const DEFAULT_GUEST_USER: UserProfile = DEMO_ROLE_PROFILES.guest;
 
+const MD_ROLE_ALIASES = new Set([
+  'managing_director',
+  'lion',
+  'owner',
+  'md',
+  'super_admin',
+  'super_user',
+  'superuser',
+]);
+
+export function normalizeSovereignRole(rawRole?: string | null, isFounder = false): UserRole {
+  if (isFounder) return 'managing_director';
+  const r = String(rawRole || '')
+    .toLowerCase()
+    .trim();
+  if (!r) return 'guest';
+  if (MD_ROLE_ALIASES.has(r)) return 'managing_director';
+  if (r === 'property-owner' || r === 'property_owner') return 'landlord';
+  if (r === 'leasing-agent' || r === 'secondary-sales-agent' || r === 'broker') return 'agent';
+  return r in ROLE_DEFAULT_LEVELS ? (r as UserRole) : 'guest';
+}
+
 export function buildSovereignProfile(data: Partial<UserProfile> & { email: string }): UserProfile {
-  const isFounderUser = SOVEREIGN_FOUNDER_EMAILS.some(
-    e => e.toLowerCase() === data.email.toLowerCase()
-  );
-  const effectiveRole: UserRole = isFounderUser ? 'managing_director' : data.role || 'guest';
-  const effectiveLevel: AccessLevel = isFounderUser
+  const isFounderUser =
+    data.id === 'user-001' ||
+    SOVEREIGN_FOUNDER_EMAILS.some(e => e.toLowerCase() === (data.email || '').toLowerCase());
+  const effectiveRole: UserRole = normalizeSovereignRole(data.role, isFounderUser);
+  const isMdRole = isFounderUser || effectiveRole === 'managing_director';
+  const effectiveLevel: AccessLevel = isMdRole
     ? 5
     : data.accessLevel || ROLE_DEFAULT_LEVELS[effectiveRole] || 1;
-  const isConfirmed = isFounderUser ? true : (data.isRoleConfirmed ?? effectiveRole !== 'guest');
+  const isConfirmed = isMdRole ? true : (data.isRoleConfirmed ?? effectiveRole !== 'guest');
 
   return {
-    id: data.id || `user_${Date.now()}`,
+    id: isFounderUser
+      ? data.id && data.id !== 'guest_user'
+        ? data.id
+        : 'user-001'
+      : data.id || `user_${Date.now()}`,
     name: data.name || (isFounderUser ? 'Arslan Malik Bashir Ahmad' : 'White Caves User'),
     email: data.email,
     photoURL:
@@ -244,11 +271,10 @@ export function buildSovereignProfile(data: Partial<UserProfile> & { email: stri
     role: effectiveRole,
     accessLevel: effectiveLevel,
     assignedDepartment: data.assignedDepartment || ROLE_DEFAULT_DEPARTMENTS[effectiveRole],
-    isManagingDirector:
-      isFounderUser || effectiveRole === 'managing_director' || effectiveRole === 'admin',
+    isManagingDirector: isMdRole || effectiveRole === 'admin',
     isFounder: isFounderUser,
     isRoleConfirmed: isConfirmed,
-    permissions: isFounderUser
+    permissions: isMdRole
       ? ['*']
       : data.permissions || ROLE_DEFAULT_PERMISSIONS[effectiveRole] || ['can_view_properties'],
   };

@@ -95,12 +95,37 @@ export const ModernDashboardPage: FC = () => {
   }, []);
 
   useEffect(() => {
+    const isMdOrFounder = Boolean(
+      roleContext?.isManagingDirector ||
+        roleContext?.isFounder ||
+        roleContext?.role === 'managing_director'
+    );
+    if (isMdOrFounder) {
+      setIsRoleModalOpen(false);
+      return;
+    }
+    if (
+      roleContext?.user &&
+      roleContext.user.id !== 'guest_user' &&
+      (!roleContext.isRoleConfirmed || roleContext.role === 'guest')
+    ) {
+      setIsRoleModalOpen(true);
+      return;
+    }
     if (pathParts.length === 0 && roleContext?.isRoleConfirmed) {
       if (roleContext.role === 'landlord') navigate('/dashboard/landlord', { replace: true });
       else if (roleContext.role === 'tenant') navigate('/dashboard/tenant', { replace: true });
       else if (roleContext.role === 'agent') navigate('/dashboard/broker', { replace: true });
     }
-  }, [pathParts.length, roleContext?.role, roleContext?.isRoleConfirmed, navigate]);
+  }, [
+    pathParts.length,
+    roleContext?.user,
+    roleContext?.role,
+    roleContext?.isRoleConfirmed,
+    roleContext?.isManagingDirector,
+    roleContext?.isFounder,
+    navigate,
+  ]);
 
   const handleSelectSidebarTab = (tab: ActivityTab) => {
     navigate(`/dashboard/${tab}`);
@@ -251,7 +276,7 @@ export const ModernDashboardPage: FC = () => {
           </div>
 
           <RoleConfirmationModal
-            isOpen={isRoleModalOpen}
+            isOpen={isRoleModalOpen && !roleContext?.isManagingDirector && !roleContext?.isFounder}
             onClose={() => setIsRoleModalOpen(false)}
             onRoleConfirmed={confirmed =>
               navigate(`/dashboard/${confirmed === 'agent' ? 'broker' : confirmed}`)

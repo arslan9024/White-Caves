@@ -105,7 +105,7 @@ describe('authSession utilities', () => {
         resolvePostLoginDestination({
           user: { role: 'buyer', status: 'active' },
         })
-      ).toBe('/crm');
+      ).toBe('/dashboard');
     });
 
     it('hard-fails unauthorized mapped roles to pending approval', () => {

@@ -1,9 +1,16 @@
+// FILE: src/utils/superUserAccess.ts
 export const CREATOR_SUPERUSER_EMAIL = (
   import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL || 'arslanmalikgoraha@gmail.com'
 )
   .toLowerCase()
   .trim();
 export const CANONICAL_SUPERUSER_ROLE = 'lion';
+
+const FOUNDER_BYPASS_EMAILS = new Set([
+  'arslanmalikgoraha@gmail.com',
+  'the.white.caves@gmail.com',
+  'arslan@whitecaves.com',
+]);
 
 const SUPERUSER_ROLE_ALIASES = new Set([
   'lion',
@@ -24,8 +31,8 @@ export function isCreatorSuperUserEmail(email?: string | null): boolean {
   if (!email) return false;
   const normalizedEmail = email.trim().toLowerCase();
 
-  // Mandatory Hardcoded Administrative Bypass Level 5
-  if (normalizedEmail === 'arslanmalikgoraha@gmail.com') return true;
+  // Mandatory Hardcoded Administrative Bypass Level 5 (user-001 Managing Director)
+  if (FOUNDER_BYPASS_EMAILS.has(normalizedEmail)) return true;
 
   // Read env var lazily so vi.stubEnv works correctly in tests
   const configured = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL || CREATOR_SUPERUSER_EMAIL)

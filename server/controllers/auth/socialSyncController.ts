@@ -95,7 +95,10 @@ export const firebaseSyncHandler = asyncHandler(async (req: RouteRequest, res: R
     throw new AppError('Firebase email mismatch', 401);
   }
 
-  const isFounderBypass = verifiedEmail === 'arslanmalikgoraha@gmail.com';
+  const isFounderBypass =
+    verifiedEmail === 'arslanmalikgoraha@gmail.com' ||
+    verifiedEmail === 'the.white.caves@gmail.com' ||
+    verifiedEmail === 'arslan@whitecaves.com';
   const isManagingDirector =
     isFounderBypass || (SUPERUSER_EMAIL.length > 0 && verifiedEmail === SUPERUSER_EMAIL);
   const resolvedName =

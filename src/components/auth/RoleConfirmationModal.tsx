@@ -115,6 +115,14 @@ export const RoleConfirmationModal: FC<RoleConfirmationModalProps> = ({
         (category === 'staff' ? 'guest' : selectedRole)) as UserRole;
       const isPending = Boolean(response?.data?.pendingApproval) || category === 'staff';
 
+      if (response?.data?.token) {
+        safeStorage.set('token', response.data.token);
+        safeStorage.set('whitecaves_token', response.data.token);
+      }
+      if (response?.data?.user) {
+        safeStorage.setJSON('user', response.data.user);
+      }
+
       if (isPending) {
         setPendingNotice(BROKER_PENDING_MESSAGE);
         setIsSubmitting(false);

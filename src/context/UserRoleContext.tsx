@@ -36,6 +36,7 @@ import {
   SOVEREIGN_FOUNDER_EMAILS,
   ALL_SOVEREIGN_ROLES,
   DEFAULT_GUEST_USER,
+  normalizeSovereignRole,
   buildSovereignProfile,
   syncUserToSafeStorage,
 } from './UserRoleContext.data';
@@ -61,12 +62,30 @@ export const UserRoleProvider: FC<UserRoleProviderProps> = ({ children, initialU
 
     if (typeof window !== 'undefined') {
       const stored = safeStorage.getJSON<UserProfile>('whitecaves_user');
+      if (stored && stored.email && stored.id !== 'guest_user') {
+        return buildSovereignProfile(stored);
+      }
+      const reduxUser = safeStorage.getJSON<Partial<UserProfile> & { email?: string }>('user');
+      if (reduxUser && reduxUser.email) {
+        return buildSovereignProfile(reduxUser as Partial<UserProfile> & { email: string });
+      }
       if (stored && stored.email) {
         return buildSovereignProfile(stored);
       }
     }
     return DEFAULT_GUEST_USER;
   });
+
+  // Listen to finalizeAuthenticatedSession / completeClientLogout events across the app
+  useEffect(() => {
+    if (initialUser !== undefined || typeof window === 'undefined') return;
+    const handleAuthSync = (event: Event) => {
+      const customEvent = event as CustomEvent<UserProfile | null>;
+      setUser(customEvent.detail ?? DEFAULT_GUEST_USER);
+    };
+    window.addEventListener('whitecaves-auth-sync', handleAuthSync);
+    return () => window.removeEventListener('whitecaves-auth-sync', handleAuthSync);
+  }, [initialUser]);
 
   // Law T20: Hydrate role & confirmation status from server (/api/auth/profile) when a JWT exists.
   // Any tampered localStorage role is overwritten by the server's authoritative user record.
@@ -76,13 +95,18 @@ export const UserRoleProvider: FC<UserRoleProviderProps> = ({ children, initialU
     if (!token) return;
 
     let cancelled = false;
-    fetchProfile()
+    Promise.resolve(fetchProfile?.())
       .then(res => {
         if (cancelled || !res?.success || !res.data?.email) return;
         const serverUser = res.data;
-        const serverRole = (serverUser.role || 'guest') as UserRole;
-        const serverConfirmed =
-          serverUser.isRoleConfirmed ?? (serverRole !== 'guest' && serverUser.status !== 'pending');
+        const isFounderAccount = SOVEREIGN_FOUNDER_EMAILS.some(
+          e => e.toLowerCase() === serverUser.email.toLowerCase()
+        );
+        const serverRole = normalizeSovereignRole(serverUser.role, isFounderAccount);
+        const serverConfirmed = isFounderAccount
+          ? true
+          : (serverUser.isRoleConfirmed ??
+            (serverRole !== 'guest' && serverUser.status !== 'pending'));
 
         setUser(prev =>
           buildSovereignProfile({
@@ -200,9 +224,13 @@ export const UserRoleProvider: FC<UserRoleProviderProps> = ({ children, initialU
     setUser(DEFAULT_GUEST_USER);
     safeStorage.remove('whitecaves_token');
     safeStorage.remove('token');
+    safeStorage.remove('user');
     syncUserToSafeStorage(null);
     safeStorage.set('whitecaves_role', 'guest');
     safeStorage.set('whitecaves_access_level', '1');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('whitecaves-logout'));
+    }
   }, []);
 
   const switchRole = useCallback((newRole: UserRole) => {

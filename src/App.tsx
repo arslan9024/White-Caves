@@ -22,7 +22,11 @@ import type { RootState, AppDispatch } from './store/store';
 import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
-import { finalizeAuthenticatedSession, getCurrentPathWithQuery } from './utils/authSession';
+import {
+  completeClientLogout,
+  finalizeAuthenticatedSession,
+  getCurrentPathWithQuery,
+} from './utils/authSession';
 import {
   isCreatorSuperUserEmail,
   normalizeRoleForUserContext,
@@ -450,8 +454,10 @@ function App(): React.JSX.Element {
               token,
               provider: 'bootstrap',
             });
-          } else {
+          } else if (response.status === 401 || response.status === 403) {
             safeStorage.remove('token');
+            dispatch(setLoading(false));
+          } else {
             dispatch(setLoading(false));
           }
         } else {
@@ -478,6 +484,14 @@ function App(): React.JSX.Element {
     const themeValue = savedTheme ?? 'light';
     document.documentElement.setAttribute('data-theme', themeValue);
     dispatch(setTheme(themeValue));
+  }, [dispatch]);
+
+  useEffect(() => {
+    const handleLogoutEvent = (): void => {
+      completeClientLogout(dispatch);
+    };
+    window.addEventListener('whitecaves-logout', handleLogoutEvent);
+    return () => window.removeEventListener('whitecaves-logout', handleLogoutEvent);
   }, [dispatch]);
 
   const handleRoleSelect = (role: string): void => {
@@ -511,8 +525,20 @@ function App(): React.JSX.Element {
   const renderSignedInPage = (page: ReactNode, section: string): ReactNode =>
     user ? renderPublicPage(page, section) : <Navigate to="/signin" replace />;
 
-  const renderGuestOnlyPage = (page: ReactNode, section: string): ReactNode =>
-    user ? <Navigate to="/profile" replace /> : renderPublicPage(page, section);
+  const renderGuestOnlyPage = (page: ReactNode, section: string): ReactNode => {
+    if (!user) return renderPublicPage(page, section);
+    const roleKey = (user.role || '').toLowerCase().trim();
+    const goDashboard =
+      isCreatorSuperUserEmail(user.email) ||
+      roleKey === 'managing_director' ||
+      roleKey === 'lion' ||
+      roleKey === 'owner' ||
+      roleKey === 'guest' ||
+      roleKey === 'landlord' ||
+      roleKey === 'tenant' ||
+      roleKey === 'agent';
+    return <Navigate to={goDashboard ? '/dashboard' : '/profile'} replace />;
+  };
 
   const renderProtectedPortalPage = (
     page: ReactNode,

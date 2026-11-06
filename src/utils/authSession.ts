@@ -1,3 +1,4 @@
+// FILE: src/utils/authSession.ts
 import type { NavigateFunction } from 'react-router-dom';
 import { loginSuccess, logout as logoutAuthState } from '../store/authSlice';
 import { setActiveRole } from '../store/navigationSlice';
@@ -10,6 +11,7 @@ import {
   normalizeRoleForUserContext,
 } from './superUserAccess';
 import { getPostLoginRoute } from './routing';
+import { buildSovereignProfile, syncUserToSafeStorage } from '../context/UserRoleContext.data';
 
 const BLOCKED_RETURN_TO_PREFIXES = ['/signin', '/signup', '/login', '/auth/signin'];
 
@@ -80,8 +82,7 @@ export const finalizeAuthenticatedSession = (options: {
   rememberMe?: boolean;
   returnTo?: string | null;
 }): string => {
-  const isManagingDirectorMaster =
-    options.user.email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com';
+  const isManagingDirectorMaster = isCreatorSuperUserEmail(options.user.email);
 
   const resolvedRole = isManagingDirectorMaster
     ? CANONICAL_SUPERUSER_ROLE
@@ -93,6 +94,11 @@ export const finalizeAuthenticatedSession = (options: {
     accessLevel: isManagingDirectorMaster ? 5 : (options.user.accessLevel ?? 1),
   };
 
+  if (options.token) {
+    safeStorage.set('token', options.token);
+    safeStorage.set('whitecaves_token', options.token);
+  }
+
   options.dispatch(setUser(resolvedUser));
   options.dispatch(
     loginSuccess({
@@ -102,6 +108,35 @@ export const finalizeAuthenticatedSession = (options: {
       rememberMe: options.rememberMe ?? false,
     })
   );
+
+  // Synchronize UserRoleContext so ModernDashboardPage & DashboardContentRouter
+  // immediately reflect the authenticated user (e.g. user-001 Managing Director vs Guest/Client).
+  if (resolvedUser.email && typeof window !== 'undefined') {
+    const rawUser = options.user as AppUser & {
+      photoUrl?: string;
+      photoURL?: string;
+      isRoleConfirmed?: boolean;
+      department?: string;
+    };
+    const sovereignProfile = buildSovereignProfile({
+      id: isManagingDirectorMaster ? resolvedUser.id || 'user-001' : resolvedUser.id,
+      email: resolvedUser.email,
+      name: resolvedUser.name || resolvedUser.displayName,
+      photoURL: rawUser.photoURL || rawUser.photoUrl,
+      phone: resolvedUser.phone,
+      role: (isManagingDirectorMaster ? 'managing_director' : options.user.role || 'guest') as any,
+      assignedDepartment: rawUser.department,
+      isRoleConfirmed: isManagingDirectorMaster
+        ? true
+        : (rawUser.isRoleConfirmed ??
+          Boolean(
+            options.user.role &&
+              options.user.role.toLowerCase() !== 'guest' &&
+              resolvedUser.status !== 'pending'
+          )),
+    });
+    window.dispatchEvent(new CustomEvent('whitecaves-auth-sync', { detail: sovereignProfile }));
+  }
 
   const persistedRole = persistRolePreference(resolvedUser);
   if (persistedRole) {
@@ -116,7 +151,13 @@ export const finalizeAuthenticatedSession = (options: {
 
 export const completeClientLogout = (dispatch: AppDispatch): void => {
   safeStorage.remove('token');
+  safeStorage.remove('whitecaves_token');
   safeStorage.remove('userRole');
+  safeStorage.remove('user');
+  syncUserToSafeStorage(null);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('whitecaves-auth-sync', { detail: null }));
+  }
   dispatch(setUser(null));
   dispatch(logoutAuthState(undefined));
 };

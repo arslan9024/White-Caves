@@ -281,4 +281,39 @@ describe('UserRoleContext & 14-Role Sovereign Registry', () => {
       expect(screen.getByTestId('is-authenticated').textContent).toBe('false');
     });
   });
+
+  it('synchronizes immediately with whitecaves-auth-sync event for Managing Director (user-001)', async () => {
+    render(
+      <UserRoleProvider>
+        <TestComponent />
+      </UserRoleProvider>
+    );
+
+    expect(screen.getByTestId('user-role').textContent).toBe('guest');
+
+    window.dispatchEvent(
+      new CustomEvent('whitecaves-auth-sync', {
+        detail: {
+          id: 'user-001',
+          name: 'Arslan Malik Bashir Ahmad',
+          email: 'arslanmalikgoraha@gmail.com',
+          role: 'managing_director',
+          accessLevel: 5,
+          assignedDepartment: 'Executive Directorate',
+          isManagingDirector: true,
+          isFounder: true,
+          isRoleConfirmed: true,
+          permissions: ['*'],
+        },
+      })
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('user-name').textContent).toBe('Arslan Malik Bashir Ahmad');
+      expect(screen.getByTestId('user-role').textContent).toBe('managing_director');
+      expect(screen.getByTestId('access-level').textContent).toBe('5');
+      expect(screen.getByTestId('is-md').textContent).toBe('true');
+      expect(screen.getByTestId('is-founder').textContent).toBe('true');
+    });
+  });
 });

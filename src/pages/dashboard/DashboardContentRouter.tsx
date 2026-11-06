@@ -62,10 +62,14 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
 }) => {
   const roleContext = React.useContext(UserRoleContext);
   const role = roleContext?.role || 'guest';
-  const isConfirmed = Boolean(roleContext?.isRoleConfirmed && role !== 'guest');
+  const isMdOrFounder = Boolean(
+    roleContext?.isManagingDirector || roleContext?.isFounder || role === 'managing_director'
+  );
+  const isConfirmed = isMdOrFounder || Boolean(roleContext?.isRoleConfirmed && role !== 'guest');
 
   // Guard 1: Unconfirmed or Guest users are restricted from internal corporate machinery
-  if (!isConfirmed || role === 'guest') {
+  // Managing Director (user-001) bypasses role confirmation and always sees the full dashboard.
+  if (!isMdOrFounder && (!isConfirmed || role === 'guest')) {
     if (activeTab === 'landlord') return <LandlordManagerView />;
     if (activeTab === 'tenant') return <TenantManagerView />;
     if (activeTab === 'broker') return <BrokerManagerView />;
