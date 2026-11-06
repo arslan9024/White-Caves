@@ -40,6 +40,7 @@ export function getPostLoginRoute(
   }
 
   if (!role) return '/select-role';
+  if (role.toLowerCase().trim() === 'guest') return '/dashboard';
 
   const resolved = resolveBackendRole(role);
   const rank = getRank(resolved);

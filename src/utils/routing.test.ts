@@ -5,9 +5,9 @@ describe('getPostLoginRoute', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
-  it('routes staff roles to /crm by default', () => {
+  it('routes staff roles to /crm and managing_director to /dashboard by default', () => {
     expect(getPostLoginRoute('admin')).toBe('/crm');
-    expect(getPostLoginRoute('managing_director')).toBe('/crm');
+    expect(getPostLoginRoute('managing_director')).toBe('/dashboard');
     expect(getPostLoginRoute('leasing-agent')).toBe('/crm');
   });
 
@@ -21,10 +21,10 @@ describe('getPostLoginRoute', () => {
     expect(getPostLoginRoute('buyer', null, { status: 'pending' })).toBe('/pending-approval');
   });
 
-  it('routes customer roles to the correct portal or crm fallback', () => {
+  it('routes customer roles to the correct portal or dashboard fallback', () => {
     expect(getPostLoginRoute('tenant')).toBe('/tenant-portal');
     expect(getPostLoginRoute('landlord')).toBe('/landlord-portal');
-    expect(getPostLoginRoute('buyer')).toBe('/crm');
+    expect(getPostLoginRoute('buyer')).toBe('/dashboard');
   });
 
   it('routes CRM customer roles with incomplete profile to /profile', () => {
@@ -37,16 +37,17 @@ describe('getPostLoginRoute', () => {
     expect(getPostLoginRoute('user', null, { profileCompleted: true })).toBe('/crm');
   });
 
-  it('routes superuser aliases and creator email to /crm', () => {
-    expect(getPostLoginRoute('md')).toBe('/crm');
-    expect(getPostLoginRoute('unknown-role', 'arslanmalikgoraha@gmail.com')).toBe('/crm');
-    expect(getPostLoginRoute(undefined, 'arslanmalikgoraha@gmail.com')).toBe('/crm');
+  it('routes superuser aliases and creator email to /dashboard', () => {
+    expect(getPostLoginRoute('md')).toBe('/dashboard');
+    expect(getPostLoginRoute('unknown-role', 'arslanmalikgoraha@gmail.com')).toBe('/dashboard');
+    expect(getPostLoginRoute(undefined, 'arslanmalikgoraha@gmail.com')).toBe('/dashboard');
   });
 
-  it('routes missing roles to role selection', () => {
+  it('routes missing roles to role selection and unconfirmed guest to /dashboard gateway', () => {
     expect(getPostLoginRoute('')).toBe('/select-role');
     expect(getPostLoginRoute(undefined)).toBe('/select-role');
     expect(getPostLoginRoute(null)).toBe('/select-role');
+    expect(getPostLoginRoute('guest')).toBe('/dashboard');
   });
 
   it('hard-fails unauthorized mapped roles to pending approval with audit signal', () => {
@@ -66,7 +67,7 @@ describe('getPostLoginRoute', () => {
 
 describe('getLegacyCrmRoute', () => {
   it('keeps legacy CRM fallback behavior intact', () => {
-    expect(getLegacyCrmRoute('admin')).toBe('/crm');
+    expect(getLegacyCrmRoute('admin')).toBe('/dashboard');
     expect(getLegacyCrmRoute('landlord')).toBe('/landlord-portal');
     expect(getLegacyCrmRoute('tenant')).toBe('/tenant-portal');
     expect(getLegacyCrmRoute(undefined)).toBe('/signin');
