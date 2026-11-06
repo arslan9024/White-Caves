@@ -197,7 +197,13 @@ export const SidebarRolesList: FC<SidebarRolesListProps> = ({
     e.stopPropagation();
     switchRole(targetRole);
     if (onSelectRole) onSelectRole(targetRole, ROLE_LABELS[targetRole]);
-    if (onNavigateToView) onNavigateToView('/dashboard/roles');
+    if (onNavigateToView) {
+      if (targetRole === 'landlord') {
+        onNavigateToView('/dashboard/landlord');
+      } else {
+        onNavigateToView('/dashboard/roles');
+      }
+    }
   };
 
   const q = filterQuery.toLowerCase().trim();

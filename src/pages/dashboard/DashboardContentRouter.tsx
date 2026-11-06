@@ -25,7 +25,9 @@ import { CustomerOverviewView } from '../../components/crm/CustomerManager/Custo
 import { RelationshipManagerView } from '../../components/crm/RelationshipManager';
 import { ErmsOverviewView } from '../../components/crm/RelationshipManager/ErmsOverviewView';
 import { RoleManagerView } from '../../components/crm/RoleManager';
+import { LandlordManagerView } from '../../components/crm/LandlordManager';
 import { ProfileDashboardView } from './ProfileDashboardView';
+import { UserRoleContext } from '../../context/UserRoleContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
 export interface DashboardContentRouterProps {
@@ -51,6 +53,16 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   ermsRelationshipId,
   navigate,
 }) => {
+  const roleContext = React.useContext(UserRoleContext);
+  const role = roleContext?.role || 'managing_director';
+
+  if (
+    role === 'landlord' &&
+    (activeTab === 'departments' || (activeTab as string) === 'landlord')
+  ) {
+    return <LandlordManagerView />;
+  }
+
   switch (activeTab) {
     case 'departments':
       return isRootOverview ? (
@@ -201,6 +213,9 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
 
     case 'profile':
       return <ProfileDashboardView />;
+
+    case 'landlord' as ActivityTab:
+      return <LandlordManagerView />;
 
     default:
       return (

@@ -214,6 +214,17 @@ To maintain executive workflow immersion and layout integrity, user profile mana
    - **Global Currency Context:** Real-time conversion switcher between UAE Dirhams (`AED`), US Dollars (`USD`), Euros (`EUR`), and British Pounds (`GBP`).
 3. **Zero-Breakage Redirection Standard:** Legacy standalone route `/profile` is permanently preserved with an automated client-side redirect (`<Navigate to="/dashboard/profile" replace />`), guaranteeing 100% backward compatibility for bookmarks, external links, and avatar dropdown triggers.
 
+#### Law T16: The Sovereign Landlord Asset Portal & PDC Escrow Architecture Law
+
+To enforce Level 2 Asset Owner sovereignty and eliminate cross-tenant data leaks, all landlord client views must adhere to the 4-tier asset management standard:
+
+1. **Sovereign Asset Routing (`/dashboard/landlord`):** Renders the dedicated `LandlordManagerView.tsx` (12-way co-location blueprint), instantly routing landlords to their scoped properties (`where landlordId === currentUser.id`) while stripping internal corporate machinery.
+2. **Four Sovereign Client Widgets:**
+   - **Active Tenancy Contracts & Ejari Registry:** Unit details, tenant names, lease dates, and official DLD Ejari certificate numbers.
+   - **Post-Dated Cheque (PDC) Clearing Schedule:** Cheque numbers, banks, amounts, due dates, and clearing status transitions (`cleared`, `pending`, `in_escrow`, `bounced`).
+   - **Tenant Maintenance Requests & Work Orders:** Priority tagging (`emergency`, `high`, `medium`, `low`), contractor assignments, and instant approval triggers.
+   - **Net Rental Yield & Cash Flow Analytics Waterfall:** Real-time calculation of gross contracted rents minus community service charges (14%) and reserve sinking funds (3%) against Dubai Land Department Decree No. 43 of 2013 benchmarks.
+
 ---
 
 ### 4. Implementation Validation Matrix
@@ -233,3 +244,4 @@ To maintain executive workflow immersion and layout integrity, user profile mana
 | Production Tech Stack Matrix (T13)       | Turing   | Next.js 15, RTK, Prisma, Vitest, Web Workers                 | ✅ PASSED   |
 | Sovereign RBAC Context Standard (T14)    | Turing   | `UserRoleContext.tsx`, `SidebarRolesList.tsx`, `RoleManager` | ✅ PASSED   |
 | Unified Dashboard Profile Standard (T15) | Turing   | `ProfileDashboardView.tsx`, `/dashboard/profile` redirect    | ✅ PASSED   |
+| Sovereign Landlord Asset Portal (T16)    | Turing   | `LandlordManagerView.tsx`, `/dashboard/landlord`             | ✅ PASSED   |

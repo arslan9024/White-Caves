@@ -17,6 +17,7 @@ export type ActivityTab =
   | 'erms'
   | 'roles'
   | 'profile'
+  | 'landlord'
   | 'audit'
   | 'settings';
 

@@ -164,4 +164,10 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
     expect(screen.getByTestId('profile-dashboard-view')).toBeInTheDocument();
     expect(screen.getByText(/Sovereign Executive Profile & Preferences/i)).toBeInTheDocument();
   }, 30000);
+
+  it('renders Sovereign Landlord Asset Hub on route /dashboard/landlord', () => {
+    renderDashboardWithProviders('/dashboard/landlord');
+    expect(screen.getByTestId('landlord-manager-view')).toBeInTheDocument();
+    expect(screen.getByText(/Sovereign Landlord Asset Hub/i)).toBeInTheDocument();
+  }, 30000);
 });
