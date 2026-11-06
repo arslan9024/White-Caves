@@ -175,6 +175,36 @@ All entity schemas across the CRM and Prisma database must adhere to strict UML 
 2. **Composition Cascade (`◆—`):** Defined exclusively for lifecycle-dependent children (e.g., `TenancyContract ◆— FinancialReceiptLog`). Deletion of the parent contract must cascade delete child financial logs.
 3. **Interactive ERD Visualization:** The ERMS `/dashboard/erms/erd` canvas provides real-time pan, zoom, foreign key edge highlights, cardinality toggles, and UML attribute inspection.
 
+#### Law T11: Rational Unified Process (RUP) Specification Standard
+
+Every task cataloged in the White Caves CRM must be formally bound to a structured **RUP Use Case Dossier**:
+
+1. **Explicit Stereotypes:** `«Boundary»` for UI Views & Forms, `«Control»` for Workflow Controllers & Redux Slices, and `«Entity»` for Persistent Prisma / Database Models.
+2. **Deterministic Use Case Contract (`UC-[TASK-ID]`):**
+   - **Primary Actor:** Exclusively specifies the operational User Role (e.g. `L3 Tenancy Supervisor`, `L2 Conveyancing Broker`, `L3 Compliance Supervisor`, `L2 Treasury Controller`).
+   - **Executing Sovereign Actor:** Managing Director Arslan Malik Bashir Ahmad (`EMP-001`) retains universal sovereign execution clearance to test, trigger, and execute all use cases across all departments.
+   - **Secondary Actors:** Regulatory integration partners with explicit role descriptions (e.g. Dubai Land Department `REST API`, UAE FTA `EmaraTax Gateway`, `Zoho Books API`).
+   - **Pre-conditions:** Actor authenticated with requisite clearance; entity reference validated in database (Property UID / Client Code / Deal Number).
+   - **Trigger:** Manual dispatch from Explorer or automated event trigger (e.g. 30-day Ejari expiry alert).
+   - **4-Phase Main Success Scenario (The Journey):**
+     - _Phase 1 (Input Phase):_ System prompts actor for parameters (Reference UID, Value AED, Certificate Number).
+     - _Phase 2 (Processing Phase):_ Engine executes algorithmic checks against RERA / FTA Executive Law.
+     - _Phase 3 (Output Phase):_ Generates statutory PDF artifact, Ejari certificate, or verified receipt token.
+     - _Phase 4 (Persistence Phase):_ Database record committed, audit ledger logged, and Merit XP incremented.
+   - **Post-conditions:** Entity state shifted to next pipeline stage; telemetry emitted to Right Sidebar stream.
+   - **Statutory Compliance Mandate:** DLD Law No. 7 / RERA Regulation No. 26 / FTA VAT Executive Law.
+
+#### Law T12: Strict Unified Modeling Language (UML) ERD & Relational Multiplicity Standard
+
+All entity schemas across the CRM and Prisma database must adhere to strict UML Entity-Relationship conventions:
+
+1. **Multiplicity Notation:** Every relational link must declare explicit cardinality bounds:
+   - `1 to 0..*` (One-to-Many Aggregation, e.g., User aggregates Tasks, Landlord owns Properties).
+   - `1 to 1` (One-to-One Strict Association, e.g., Contract to Ejari Registration).
+   - `0..1 to 0..*` (Optional Reference Link, e.g., Property to Valuations).
+2. **Composition Cascade (`◆—`):** Defined exclusively for lifecycle-dependent children (e.g., `TenancyContract ◆— FinancialReceiptLog`). Deletion of the parent contract must cascade delete child financial logs.
+3. **Interactive ERD Visualization:** The ERMS `/dashboard/erms/erd` canvas provides real-time pan, zoom, foreign key edge highlights, cardinality toggles, and UML attribute inspection.
+
 ---
 
 ### 4. Implementation Validation Matrix
@@ -189,5 +219,7 @@ All entity schemas across the CRM and Prisma database must adhere to strict UML 
 | Universal Zero-Duplication Law (T8)     | Turing   | Authoritative Workflows & Shared Hooks                    | ✅ PASSED   |
 | 100% Reusable Abstraction (T9)          | Turing   | Headless Hook & View Separation Standard                  | ✅ PASSED   |
 | 18-Step Pipeline Integrity (T10)        | Turing   | `CustomerManager.workflow.ts` & `DealManager.workflow.ts` | ✅ PASSED   |
+| RUP Use Case Dossier Standard (T11)     | Turing   | `RUPUseCaseDossierView.tsx` & `TaskExecutionWorkbench`    | ✅ PASSED   |
+| Strict UML ERD Specifications (T12)     | Turing   | `RelationshipErdVisualizer.tsx` & `schema.prisma`         | ✅ PASSED   |
 | RUP Use Case Dossier Standard (T11)     | Turing   | `RUPUseCaseDossierView.tsx` & `TaskExecutionWorkbench`    | ✅ PASSED   |
 | Strict UML ERD Specifications (T12)     | Turing   | `RelationshipErdVisualizer.tsx` & `schema.prisma`         | ✅ PASSED   |

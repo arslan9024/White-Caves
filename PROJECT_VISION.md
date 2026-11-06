@@ -286,6 +286,38 @@ The sovereign enterprise CRM architecture strictly distinguishes between 9 indep
   - Single Edge Link: `/dashboard/erms/relationships/:relationshipId` (Turing ID: `REL-[TYPE]-[000]`)
   - Features: Multi-node visual flow, metrics deck, UML ERD visualizer, focused binary 2-entity edge inspector with multiplicity and cascade delete indicators.
 
+### 5. The 12-Way File Layout Array & 12 Comprehensive Architectural Laws
+
+The enterprise codebase strictly implements the **12-Way Co-Location Blueprint** (`docs/architecture/NINE_WAY_TO_TWELVE_WAY_REFRACTOR.md`):
+
+1. `*.view.tsx` (Pure UI Primitives, Stateless)
+2. `*.logic.ts` (State Orchestration Hooks & Redux Binding)
+3. `*.styles.ts` (Locked Tailwind & Framer Motion Tokens)
+4. `*.data.ts` (Static Seeds & Mock Matrices)
+5. `*.types.ts` / `*.config.ts` (TypeScript System Contracts & RUP Stereotypes)
+6. `*.test.tsx` (Automated Local Unit Assertions, 100% Pass)
+7. `*.workflow.ts` (Stateless Operational Chains, 4-Stage I-P-O-V)
+8. `*.errors.ts` / `*.fallback.tsx` (Granular Failure Boundaries)
+9. `*.telemetry.ts` / `*.analytics.ts` (Real-Time State Attestations)
+10. `*.i18n.ts` (Granular 4-Language Translation Schemas: en, ar, es, ru with RTL)
+11. `*.cache.ts` (Localized State Persistence & Index Optimizers)
+12. `*.workers.ts` (Off-Thread Multi-Agent Background Tasks)
+
+**The 12 Comprehensive Architectural Laws:**
+
+1. _Bhakti Protocol Structural Law (1-12-108 Global Grid)_
+2. _Turing Protocol Autopilot Law (Deterministic Enumeration & State Machines)_
+3. _Zero Duplication Law (Universal DRY)_
+4. _Single-Source-of-Truth Data Ledger Law_
+5. _Stateless Workflow Isolation Law (<1500ms execution bound)_
+6. _Privacy Vault Masking Law (Level 5 RBAC Boundary)_
+7. _Idempotent Government Gateway Handshake Law (DLD/FTA)_
+8. _Zero Build-Debt Quality Gate Law (.husky pre-commit strictness)_
+9. _Temporal Drift Assignment Law (RoleAssignment auditability)_
+10. _Gamified Merit XP Accumulation Law (+500 XP on VAT tax invoice)_
+11. _Structural Document Overlay Restriction Law (Immutable government templates)_
+12. _Asynchronous Black-Box Telemetry Law (Off-thread non-blocking logging)_
+
 ---
 
 ## 🔱 AEGIS

@@ -32,6 +32,7 @@ import { ErmsOverviewView } from '../../components/crm/RelationshipManager/ErmsO
 import { GlobalEntityCommandPalette } from '../../components/dashboard/GlobalEntityCommandPalette';
 import { CorporateDepartmentsProvider } from '../../context/CorporateDepartmentsContext';
 import { ErmsProvider } from '../../context/ErmsContext';
+import { VSCodeBreadcrumbs } from '../../components/dashboard/VSCodeBreadcrumbs';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
 export const ModernDashboardPage: FC = () => {
@@ -208,6 +209,7 @@ export const ModernDashboardPage: FC = () => {
               </kbd>
             </button>
           </div>
+          <VSCodeBreadcrumbs onNavigate={navigate} />
           <GlobalEntityCommandPalette
             isOpen={isCommandPaletteOpen}
             onClose={() => setIsCommandPaletteOpen(false)}

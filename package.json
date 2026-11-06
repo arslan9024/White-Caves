@@ -71,6 +71,8 @@
     "resources:download": "node scripts/download-external-data.js",
     "resources:update": "node scripts/update-resources.js",
     "validate": "node scripts/validate-code.js",
+    "schema:parity": "tsx scripts/verifySchemaParity.ts",
+    "scaffold:twelve": "tsx scripts/scaffoldTwelveWayModule.ts",
     "verify-deploy": "node scripts/verify-deployment.js",
     "seed": "node scripts/seedDatabase.js --clear",
     "seed:small": "node scripts/seedDatabase.js --clear --count 20",
