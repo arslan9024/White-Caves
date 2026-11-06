@@ -1,6 +1,7 @@
+// FILE: src/components/crm/DealManager/DealManager.workflow.ts
 /**
  * White Caves Real Estate LLC - Deal Manager Workflows
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Workflow)
+ * Standard: AEGIS 12-Way Co-Location Architecture Standard (Workflow)
  * Single Purpose File Law: < 350 lines
  */
 

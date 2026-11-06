@@ -1,6 +1,7 @@
+// FILE: src/components/crm/DealManager/DealManager.styles.ts
 /**
- * White Caves Real Estate LLC - Deal Management Styles
- * Standard: AEGIS Canonical 7-Category Architecture Standard (Styles)
+ * White Caves Real Estate LLC - Deal Management Styles (Tier 3)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard
  * Single Purpose File Law: < 350 lines
  */
 

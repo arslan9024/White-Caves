@@ -1,6 +1,7 @@
+// FILE: src/components/crm/DealManager/DealManagerView.tsx
 /**
- * White Caves Real Estate LLC - Deal Manager Workspace View
- * Standard: AEGIS Canonical 7-Category Architecture Standard (View)
+ * White Caves Real Estate LLC - Deal Manager Workspace View (Tier 1)
+ * Standard: AEGIS Canonical 12-Way Architecture Standard
  * Single Purpose File Law: < 350 lines
  */
 
@@ -10,6 +11,7 @@ import { useDealManager, UseDealManagerProps } from './DealManager.logic';
 import { DealCard } from './DealCard';
 import { DealDetailModal } from './DealDetailModal';
 import { DealEditDrawer } from './DealEditDrawer';
+import { DealManagerFallback } from './DealManager.fallback';
 import {
   DealContainer,
   DealHeader,
@@ -32,6 +34,9 @@ export const DealManagerView: FC<UseDealManagerProps> = props => {
     selectedDealForModal,
     isDrawerOpen,
     editingDeal,
+    runtimeError,
+    handleResetError,
+    t,
     handleOpenDetailModal,
     handleCloseDetailModal,
     handleOpenCreateDrawer,
@@ -39,6 +44,18 @@ export const DealManagerView: FC<UseDealManagerProps> = props => {
     handleAdvanceStatus,
     handleSaveDeal,
   } = useDealManager(props);
+
+  if (runtimeError) {
+    return (
+      <DealContainer data-testid="deal-manager-view">
+        <DealManagerFallback
+          error={runtimeError}
+          onRetry={handleResetError}
+          onNavigateBack={props.onNavigateBack}
+        />
+      </DealContainer>
+    );
+  }
 
   return (
     <DealContainer data-testid="deal-manager-view">
