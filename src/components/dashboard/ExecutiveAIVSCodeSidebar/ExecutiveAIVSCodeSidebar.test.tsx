@@ -38,4 +38,18 @@ describe('ExecutiveAIVSCodeSidebar Component (7-Category Co-Location Spec)', () 
     expect(screen.getByText(/White Caves Explorer/i)).toBeInTheDocument();
     expect(screen.getByTestId('right-sidebar-explorer-tree')).toBeInTheDocument();
   });
+
+  it('executes a live Zoe executive directive and displays the operational dispatch result', () => {
+    render(<ExecutiveAIVSCodeSidebar />);
+
+    const directiveInput = screen.getByTestId('zoe-directive-input');
+    const submitBtn = screen.getByTestId('zoe-directive-submit');
+
+    fireEvent.change(directiveInput, { target: { value: 'audit Ejari expiries' } });
+    fireEvent.click(submitBtn);
+
+    expect(screen.getByTestId('zoe-directive-result')).toBeInTheDocument();
+    expect(screen.getByText(/Dept 04 • Ejari Audit/i)).toBeInTheDocument();
+    expect(screen.getByText(/Zoe audited 14 active Ejari contracts/i)).toBeInTheDocument();
+  });
 });

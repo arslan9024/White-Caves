@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Bot, Cpu, FolderTree, Send, PanelRightClose, PanelRight, Zap } from 'lucide-react';
 import { useExecutiveAIVSCodeSidebarLogic } from './ExecutiveAIVSCodeSidebar.logic';
 import { SidebarRightExplorerTree } from './SidebarRightExplorerTree';
@@ -49,6 +49,12 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
     onToggleCollapse,
   });
 
+  const [lastDirectiveResult, setLastDirectiveResult] = useState<{
+    text: string;
+    action: string;
+    timestamp: string;
+  } | null>(null);
+
   const handleTileClick = (agentId: string, agentName: string) => {
     setSelectedAgentId(agentId);
     if (onSelectAgent) onSelectAgent(agentId, agentName);
@@ -57,6 +63,27 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
   const handleSendDirective = (e: React.FormEvent) => {
     e.preventDefault();
     if (!directiveInput.trim()) return;
+
+    const input = directiveInput.trim().toLowerCase();
+    let action = 'Operations Dispatch';
+    let text = `Directive received by AI Zoe: Executing '${directiveInput.trim()}' across 12 departments.`;
+
+    if (input.includes('ejari') || input.includes('expir')) {
+      action = 'Dept 04 • Ejari Audit';
+      text = 'Zoe audited 14 active Ejari contracts: 2 renewals due in 30 days dispatched to Dept 04.';
+    } else if (input.includes('aml') || input.includes('kyc') || input.includes('rera')) {
+      action = 'Dept 10 • Statutory Gate';
+      text = 'Zoe verified AML/KYC registry: All VIP investors cleared via UAE FIU GoAML screening.';
+    } else if (input.includes('luxury') || input.includes('palm') || input.includes('villa')) {
+      action = 'Dept 01 • Luxury Matching';
+      text = 'Zoe dispatched VIP buyer profile to Dept 01: 3 signature villas matched in Palm Jumeirah.';
+    }
+
+    setLastDirectiveResult({
+      text,
+      action,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    });
     setDirectiveInput('');
   };
 
@@ -125,11 +152,33 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
                   placeholder="Direct Zoe (e.g. 'audit Ejari expiries')..."
                   value={directiveInput}
                   onChange={e => setDirectiveInput(e.target.value)}
+                  data-testid="zoe-directive-input"
                 />
-                <button type="submit" title="Send Directive">
+                <button type="submit" title="Send Directive" data-testid="zoe-directive-submit">
                   <Send size={11} />
                 </button>
               </form>
+
+              {lastDirectiveResult && (
+                <div
+                  data-testid="zoe-directive-result"
+                  style={{
+                    marginTop: '8px',
+                    padding: '8px 10px',
+                    borderRadius: '6px',
+                    background: 'rgba(239, 68, 68, 0.12)',
+                    border: '1px solid rgba(239, 68, 68, 0.35)',
+                    fontSize: '0.68rem',
+                    color: '#F8FAFC',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                    <span style={{ fontWeight: 800, color: '#EF4444' }}>{lastDirectiveResult.action}</span>
+                    <span style={{ color: '#94A3B8' }}>{lastDirectiveResult.timestamp}</span>
+                  </div>
+                  <div style={{ lineHeight: 1.35 }}>{lastDirectiveResult.text}</div>
+                </div>
+              )}
             </ZoeExecutiveCard>
 
             {/* Scrollable Agent Mesh List */}

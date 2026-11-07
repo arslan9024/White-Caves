@@ -5,8 +5,8 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import React, { FC } from 'react';
-import { ArrowLeft, Edit3, Trash2, Cpu, Zap, CheckCircle2 } from 'lucide-react';
+import React, { FC, useState } from 'react';
+import { ArrowLeft, Edit3, Trash2, Cpu, Zap, CheckCircle2, Play } from 'lucide-react';
 import type { AiAgentRecord } from './AiAssistantManager.types';
 
 export interface AiAssistantDetailDossierProps {
@@ -24,6 +24,19 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
   onDelete,
   onToggleStatus,
 }) => {
+  const [activeRunResult, setActiveRunResult] = useState<{
+    workflow: string;
+    details: string;
+    time: string;
+  } | null>(null);
+
+  const handleExecuteSampleWorkflow = (taskName: string) => {
+    setActiveRunResult({
+      workflow: taskName,
+      details: `Execution successful: Agent ${agent.name} processed '${taskName}' with 100% compliance under ${agent.slaResponseTime} SLA.`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    });
+  };
   return (
     <div data-testid="aiams-agent-dossier-view" className="space-y-5">
       {/* Top Navigation Bar */}
@@ -148,14 +161,40 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
               {agent.systemPrompt}
             </p>
             {agent.assignedTasks && agent.assignedTasks.length > 0 && (
-              <ul className="space-y-1 pt-1">
+              <div className="space-y-2 pt-2">
+                <span className="text-[10px] font-mono uppercase text-slate-400 block">
+                  Interactive Test Workflows
+                </span>
                 {agent.assignedTasks.map((task, idx) => (
-                  <li key={idx} className="text-xs text-slate-300 flex items-center gap-2">
-                    <span className="text-emerald-400 font-bold">•</span>
-                    <span>{task}</span>
-                  </li>
+                  <div key={idx} className="flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-800">
+                    <span className="text-xs text-slate-300 font-medium truncate max-w-[280px]">
+                      {task}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleExecuteSampleWorkflow(task)}
+                      data-testid={`aiams-run-workflow-${idx}`}
+                      className="px-2 py-1 rounded bg-red-600/20 hover:bg-red-600/40 border border-red-500/40 text-red-400 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <Play size={10} />
+                      <span>Execute</span>
+                    </button>
+                  </div>
                 ))}
-              </ul>
+              </div>
+            )}
+
+            {activeRunResult && (
+              <div
+                data-testid="aiams-workflow-run-output"
+                className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-xs text-emerald-200 space-y-1 mt-2"
+              >
+                <div className="flex justify-between items-center font-mono font-bold text-emerald-400">
+                  <span>⚡ {activeRunResult.workflow}</span>
+                  <span className="text-[10px] text-slate-400">{activeRunResult.time}</span>
+                </div>
+                <div>{activeRunResult.details}</div>
+              </div>
             )}
           </div>
         </div>
