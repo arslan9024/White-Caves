@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import { vi, afterEach } from 'vitest';
 import * as reselect from 'reselect';
+
+afterEach(() => {
+  cleanup();
+});
 
 if (typeof window !== 'undefined') {
   Object.defineProperty(window, 'matchMedia', {
