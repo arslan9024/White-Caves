@@ -4,6 +4,7 @@
  * ESM-compatible — all routes use static imports
  */
 
+import './config/env.js';
 import crypto from 'crypto';
 import { createServer } from 'http';
 import express, { Express, Request, Response, NextFunction } from 'express';
