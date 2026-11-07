@@ -180,7 +180,7 @@ export default defineConfig(async ({ command }) => {
       strictPort: false,
       allowedHosts: true,
       watch: {
-        ignored: ['**/logs/**', '**/.git/**'],
+        ignored: ['**/logs/**', '**/.git/**', '**/secrets/**', '**/.agents/**', '**/.cache/**', '**/temp/**', '**/coverage/**', '**/*.log'],
       },
       proxy: {
         '/api': {
