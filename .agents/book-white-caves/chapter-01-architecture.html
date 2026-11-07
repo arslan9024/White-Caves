@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 1: The Grand Architecture — The Book of White Caves</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #0F172A;
+      --border: rgba(56, 189, 248, 0.2);
+      --accent-red: #EF4444;
+      --accent-cyan: #38BDF8;
+      --accent-emerald: #10B981;
+      --text: #F3F4F6;
+      --text-muted: #9CA3AF;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+    .dual-nav {
+      display: flex;
+      justify-content: space-between;
+      margin: 2rem 0;
+      padding: 1rem 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .dual-nav a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    h1, h2, h3 {
+      color: #fff;
+    }
+    code {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent-cyan);
+    }
+    .callout {
+      border-left: 4px solid var(--accent-red);
+      background: rgba(239, 68, 68, 0.08);
+      padding: 1rem 1.5rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>📖 The Book of White Caves</strong> / Chapter 1</div>
+    <a href="index.html" style="color: var(--accent-cyan); text-decoration: none;">📑 Index</a>
+  </header>
+
+  <main>
+    <div class="dual-nav">
+      <span>⏮️ Previous: <a href="index.html">Table of Contents</a></span>
+      <span>Next: <a href="chapter-02-mesh.html">Ch 2: AEGIS Mesh ⏭️</a></span>
+    </div>
+
+    <h1>Chapter 1: The Grand Architecture</h1>
+    <p><em>Curated by @Aurora, Principal Systems CTO</em></p>
+
+    <div class="callout">
+      <strong>Core Architectural Law:</strong> Clean Monolith Topology with unified execution paths across Next.js 15 App Router, Vite Single-Page Application engine, and distributed Node Express micro-services.
+    </div>
+
+    <h2>1. Hybrid Dual-Runtime Paradigm</h2>
+    <p>White Caves operates with a dual frontend runtime:</p>
+    <ul>
+      <li><strong>Vite SPA Engine (<code>npm run dev:client</code>):</strong> Ultra-fast developer feedback and low-latency client dashboard render cycles.</li>
+      <li><strong>Next.js 15 App Router (<code>app/</code>):</strong> Server-side rendering (SSR), high-performance Edge routing, and canonical DLD/Ejari compliance APIs.</li>
+    </ul>
+
+    <h2>2. Canonical State &amp; Path Cleanliness</h2>
+    <p>All system architectures, run logs, and business documents are encapsulated strictly inside <code>.agents/</code> under <strong>TURING-ROOT-007</strong>.</p>
+
+    <div class="dual-nav">
+      <span>⏮️ Previous: <a href="index.html">Table of Contents</a></span>
+      <span>Next: <a href="chapter-02-mesh.html">Ch 2: AEGIS Mesh ⏭️</a></span>
+    </div>
+  </main>
+</body>
+</html>

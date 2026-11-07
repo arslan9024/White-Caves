@@ -203,3 +203,4 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const max = process.argv.includes('--once') ? 1 : (process.argv.includes('--cycles') ? parseInt(process.argv[process.argv.indexOf('--cycles') + 1], 10) : Infinity);
   runPerpetualLoop(max);
 }
+
