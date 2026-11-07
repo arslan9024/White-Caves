@@ -13,6 +13,7 @@
 3. **Targeted Single-File Verification (< 2s):** During iteration, run only the affected test (`npx vitest run <path/to/file.test.ts>`). Never run the full 500-file test suite or full production build until final sign-off.
 4. **Zero-Token Deterministic Scripts First:** For repetitive, multi-file, or mechanical edits, execute a fast one-liner Node/PowerShell command (`0` LLM tokens) rather than emitting dozens of manual LLM edit blocks.
 5. **Cost-Aware Subagent Routing & Concise Output:** When delegating research or simple tasks via `invoke_subagent`, use `Model: "flash_lite"` or `"flash"`. Keep all user responses ultra-concise (zero filler prose, zero repetition) to minimize output token generation cost and latency. Hard ceiling: `<= 15,000` tokens per task.
+6. **Multi-Chat Workspace Safety (No Destructive `node_modules` Wipes or Blind Checkouts):** Multiple Antigravity chats operate concurrently in this workspace. NEVER run `rmdir /s /q node_modules`, `Remove-Item node_modules`, `npm ci`, `git checkout -- .`, or `git reset --hard` without explicit user permission. Never re-add `"vite/client"` to `tsconfig.json` `compilerOptions.types` (Vite ambient types live in `src/vite-env.d.ts`).
 
 ---
 

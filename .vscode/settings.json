@@ -12,5 +12,6 @@
     },
     "github.copilot.chat.newWorkspace.useContext7": true,
     "standard.enable": false,
+    "typescript.tsdk": "node_modules/typescript/lib",
     "cmake.sourceDirectory": "C:/Users/Dell/Documents/WC/White-Caves/docs/plans"
 }
