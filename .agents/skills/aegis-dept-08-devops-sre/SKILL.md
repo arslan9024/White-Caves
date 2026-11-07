@@ -48,6 +48,7 @@ description: "Coding standards, operational procedures, and engineering rules fo
 6. Docker: multi-stage builds — dev dependencies excluded from production image
 7. Rollback: automated revert if post-deploy health check fails within 5 minutes
 8. Secrets: GitHub Secrets for all tokens — never hardcode in CI configs
+9. Root Cleanliness (TURING-ROOT-007): All docs, plans, strategies, and audits belong under `.agents/`. Any loose root folders must be relocated immediately. Use `@skill:aegis-root-cleanliness-sentinel`.
 
 ---
 

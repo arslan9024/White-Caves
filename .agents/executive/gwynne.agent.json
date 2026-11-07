@@ -27,7 +27,8 @@
     "git:resolve-all-conversation-threads",
     "ci:status-checks-rollup-verification",
     "git:cleanup-and-prune-stale-branches",
-    "devops:zero-downtime-deployment-guard"
+    "devops:zero-downtime-deployment-guard",
+    "hygiene:root-cleanliness-sentinel-turing-root-007"
   ],
   "unblockProtocols": {
     "unresolvedCommentsBlocker": {
