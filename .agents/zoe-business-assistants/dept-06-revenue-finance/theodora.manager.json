@@ -20,5 +20,7 @@
     "Director Loan Account (DLA) & multi-currency escrow"
   ],
   "supervisorsManagedCount": 9,
-  "slaWatchdogThresholdMinutes": 15
+  "slaWatchdogThresholdMinutes": 15,
+  "engine": ".agents/zoe-business-assistants/dept-06-revenue-finance/dept.engine.js",
+  "attachedSkill": ".agents/skills/aegis-biz-dept-06-revenue-finance"
 }

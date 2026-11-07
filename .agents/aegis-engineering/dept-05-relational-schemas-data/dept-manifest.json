@@ -37,7 +37,13 @@
         ".agents/skills/whitecaves-ejari-rules",
         ".agents/skills/accidental_data_loss_prevention"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Anima_Research",
@@ -64,7 +70,13 @@
         ".agents/skills/whitecaves-ejari-rules",
         ".agents/skills/accidental_data_loss_prevention"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Cassie_Data",
@@ -91,7 +103,13 @@
         ".agents/skills/whitecaves-ejari-rules",
         ".agents/skills/accidental_data_loss_prevention"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Jennifer_Widom",
@@ -118,7 +136,13 @@
         ".agents/skills/whitecaves-ejari-rules",
         ".agents/skills/accidental_data_loss_prevention"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Cynthia_Dwork",
@@ -145,7 +169,13 @@
         ".agents/skills/whitecaves-ejari-rules",
         ".agents/skills/accidental_data_loss_prevention"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Latanya_Sweeney",
@@ -172,7 +202,13 @@
         ".agents/skills/whitecaves-ejari-rules",
         ".agents/skills/accidental_data_loss_prevention"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Daphne_Koller",
@@ -199,7 +235,13 @@
         ".agents/skills/whitecaves-ejari-rules",
         ".agents/skills/accidental_data_loss_prevention"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Pat_Hanrahan",
@@ -226,7 +268,13 @@
         ".agents/skills/whitecaves-ejari-rules",
         ".agents/skills/accidental_data_loss_prevention"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Heidi_Lam",
@@ -253,7 +301,14 @@
         ".agents/skills/whitecaves-ejari-rules",
         ".agents/skills/accidental_data_loss_prevention"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-05-relational-schemas-data/dept.engine.js"
 }

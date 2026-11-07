@@ -6,7 +6,10 @@
   "directorRole": "Principal Cyber Security Shield Architect",
   "nodeCount": 9,
   "protocol": "BHAKTI_1_12_108",
-  "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
+  "attachedSkills": [
+    ".agents/skills/security-audit",
+    ".agents/skills/credentials"
+  ],
   "team": [
     {
       "name": "@Sofia",
@@ -28,8 +31,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/credentials"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Katherine",
@@ -51,8 +63,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/credentials"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Radia",
@@ -74,8 +95,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/credentials"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Ecem",
@@ -97,8 +127,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/credentials"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Joy",
@@ -120,8 +159,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/credentials"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Shafi_Goldwasser",
@@ -143,8 +191,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/credentials"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Dorothy_Denning",
@@ -166,8 +223,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/credentials"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Joan_Feigenbaum",
@@ -189,8 +255,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/credentials"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Mary_Lou_Jepsen",
@@ -212,8 +287,18 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/security-audit", ".agents/skills/credentials"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/security-audit",
+        ".agents/skills/credentials"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-07-secops-cryptographic-gates/dept.engine.js"
 }

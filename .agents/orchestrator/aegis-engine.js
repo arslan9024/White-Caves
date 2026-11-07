@@ -212,9 +212,26 @@ export function runSquads() {
   const protocolRules = loadProtocolRules();
   const totalActiveMesh = execFiles.length + totalEngNodes + zoeManagersCount + zoeSupervisorsCount;
 
+  // 5D. Audit Sub-Agent Engines & Skills
+  let verifiedEngines = 0;
+  execFiles.forEach(f => {
+    const id = f.replace('.agent.json', '');
+    if (fs.existsSync(path.join(execDir, `${id}.engine.js`))) verifiedEngines++;
+  });
+  engDepts.forEach(d => {
+    if (fs.existsSync(path.join(engRoot, d.slug, 'dept.engine.js'))) verifiedEngines++;
+  });
+  if (fs.existsSync(zoeRoot)) {
+    const zoeSlugs = fs.readdirSync(zoeRoot).filter(d => fs.statSync(path.join(zoeRoot, d)).isDirectory());
+    zoeSlugs.forEach(zs => {
+      if (fs.existsSync(path.join(zoeRoot, zs, 'dept.engine.js'))) verifiedEngines++;
+    });
+  }
+
   console.log(`👑 [Level 0 Executive Council] ${execFiles.length} Sovereign Agents Active (.agents/executive/)`);
   console.log(`🏛️ [Track 1 — Software Engineering] ${engDepts.length} Departments | ${totalEngDirectors} Principal Directors | ${totalEngNodes} Active Engineering Nodes`);
   console.log(`💼 [Track 2 — Zoe Business Mesh] 12 Departments | ${zoeManagersCount} Department Managers | ${zoeSupervisorsCount} Specialized Supervisors`);
+  console.log(`⚡ [Autonomous Sub-Agent Engines] ${verifiedEngines}/32 Department & Executive Engines Active & Armed`);
   console.log(`📐 [Protocol Matrix Coverage] ${protocolRules.length}/42 Rules Enforced across 5 Protocol CSVs`);
   console.log(`🌐 [Total Verified Agent Mesh] ${totalActiveMesh} Autonomous Agents Online & Contributing\n`);
 

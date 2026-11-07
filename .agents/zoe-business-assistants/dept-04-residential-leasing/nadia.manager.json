@@ -20,5 +20,7 @@
     "Official RERA rental index recalculation"
   ],
   "supervisorsManagedCount": 9,
-  "slaWatchdogThresholdMinutes": 15
+  "slaWatchdogThresholdMinutes": 15,
+  "engine": ".agents/zoe-business-assistants/dept-04-residential-leasing/dept.engine.js",
+  "attachedSkill": ".agents/skills/aegis-biz-dept-04-residential-leasing"
 }

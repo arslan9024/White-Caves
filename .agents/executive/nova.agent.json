@@ -20,5 +20,11 @@
     "triage:continuous-zero-backlog-resolution",
     "automation:ten-task-cycle-execution",
     "validation:multi-gate-verification"
+  ],
+  "engine": ".agents/executive/nova.engine.js",
+  "attachedSkills": [
+    ".agents/skills/aegis-infinite-crucible",
+    ".agents/skills/project-optimizer",
+    ".agents/skills/aegis-root-cleanliness-sentinel"
   ]
 }

@@ -43,7 +43,13 @@
         ".agents/skills/agy-customizations",
         ".agents/skills/antigravity_guide"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Margaret",
@@ -73,7 +79,13 @@
         ".agents/skills/agy-customizations",
         ".agents/skills/antigravity_guide"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Grace",
@@ -103,7 +115,13 @@
         ".agents/skills/agy-customizations",
         ".agents/skills/antigravity_guide"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Elena",
@@ -133,7 +151,13 @@
         ".agents/skills/agy-customizations",
         ".agents/skills/antigravity_guide"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Zoe",
@@ -163,7 +187,13 @@
         ".agents/skills/agy-customizations",
         ".agents/skills/antigravity_guide"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Marissa_Mayer",
@@ -193,7 +223,13 @@
         ".agents/skills/agy-customizations",
         ".agents/skills/antigravity_guide"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Gwynne_Shotwell",
@@ -223,7 +259,13 @@
         ".agents/skills/agy-customizations",
         ".agents/skills/antigravity_guide"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Diane_Greene",
@@ -253,7 +295,13 @@
         ".agents/skills/agy-customizations",
         ".agents/skills/antigravity_guide"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Safra_Catz",
@@ -283,7 +331,14 @@
         ".agents/skills/agy-customizations",
         ".agents/skills/antigravity_guide"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-01-agent-orchestration/dept.engine.js"
 }

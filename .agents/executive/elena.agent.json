@@ -20,5 +20,11 @@
     "legal:uae-rera-compliance-briefs",
     "ai:cutting-edge-model-evaluation",
     "competitive:dubai-luxury-real-estate-analytics"
+  ],
+  "engine": ".agents/executive/elena.engine.js",
+  "attachedSkills": [
+    ".agents/skills/aegis-biz-dept-12-market-intelligence",
+    ".agents/skills/whitecaves-ejari-rules",
+    ".agents/skills/orchestration-progress-intelligence"
   ]
 }

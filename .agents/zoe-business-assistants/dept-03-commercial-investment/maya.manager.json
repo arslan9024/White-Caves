@@ -20,5 +20,7 @@
     "DIFC / ADGM SPV corporate structuring"
   ],
   "supervisorsManagedCount": 9,
-  "slaWatchdogThresholdMinutes": 15
+  "slaWatchdogThresholdMinutes": 15,
+  "engine": ".agents/zoe-business-assistants/dept-03-commercial-investment/dept.engine.js",
+  "attachedSkill": ".agents/skills/aegis-biz-dept-03-commercial-investment"
 }

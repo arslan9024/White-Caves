@@ -42,5 +42,12 @@
       "cliResolution": "node scripts/orchestrator/aegis-unblock-pr.js <pr_number> (submits APPROVE review via API)",
       "permanentRepoFix": "In Repo Settings > Branches > main: Set required approvals to 0 OR add Arslan / Gwynne to 'Allow specified actors to bypass required pull requests'."
     }
-  }
+  },
+  "engine": ".agents/executive/gwynne.engine.js",
+  "attachedSkills": [
+    ".agents/skills/gwynne-git-lifecycle",
+    ".agents/skills/git-manager",
+    ".agents/skills/aegis-dept-08-devops-sre",
+    ".agents/skills/release-readiness"
+  ]
 }

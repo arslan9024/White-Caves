@@ -23,5 +23,7 @@
     "slaResponseTime": "15-Minute Watchdog",
     "targetLookupLatency": "< 10ms (MapIndexHash)",
     "complianceAudit": "100% Green"
-  }
+  },
+  "engine": ".agents/zoe-business-assistants/dept-03-commercial-investment/dept.engine.js",
+  "attachedSkill": ".agents/skills/aegis-biz-dept-03-commercial-investment"
 }

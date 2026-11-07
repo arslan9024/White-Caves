@@ -20,5 +20,7 @@
     "AEGIS autonomous engine health verification"
   ],
   "supervisorsManagedCount": 9,
-  "slaWatchdogThresholdMinutes": 15
+  "slaWatchdogThresholdMinutes": 15,
+  "engine": ".agents/zoe-business-assistants/dept-09-corporate-governance/dept.engine.js",
+  "attachedSkill": ".agents/skills/aegis-biz-dept-09-corporate-governance"
 }

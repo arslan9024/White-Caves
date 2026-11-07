@@ -20,5 +20,7 @@
     "Sub-10ms in-memory MapIndexHash latency optimization"
   ],
   "supervisorsManagedCount": 9,
-  "slaWatchdogThresholdMinutes": 15
+  "slaWatchdogThresholdMinutes": 15,
+  "engine": ".agents/zoe-business-assistants/dept-12-market-intelligence/dept.engine.js",
+  "attachedSkill": ".agents/skills/aegis-biz-dept-12-market-intelligence"
 }

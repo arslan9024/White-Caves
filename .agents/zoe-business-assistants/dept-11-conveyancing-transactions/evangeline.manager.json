@@ -20,5 +20,7 @@
     "Electronic Title Deed verification & escrow release"
   ],
   "supervisorsManagedCount": 9,
-  "slaWatchdogThresholdMinutes": 15
+  "slaWatchdogThresholdMinutes": 15,
+  "engine": ".agents/zoe-business-assistants/dept-11-conveyancing-transactions/dept.engine.js",
+  "attachedSkill": ".agents/skills/aegis-biz-dept-11-conveyancing-transactions"
 }

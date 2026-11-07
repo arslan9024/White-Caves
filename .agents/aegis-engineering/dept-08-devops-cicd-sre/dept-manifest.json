@@ -39,7 +39,13 @@
         ".agents/skills/release-readiness",
         ".agents/skills/pr-review-checklist"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Lisa",
@@ -67,7 +73,13 @@
         ".agents/skills/release-readiness",
         ".agents/skills/pr-review-checklist"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Annie",
@@ -95,7 +107,13 @@
         ".agents/skills/release-readiness",
         ".agents/skills/pr-review-checklist"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Corinne",
@@ -123,7 +141,13 @@
         ".agents/skills/release-readiness",
         ".agents/skills/pr-review-checklist"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Rachel",
@@ -151,7 +175,13 @@
         ".agents/skills/release-readiness",
         ".agents/skills/pr-review-checklist"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Radia_Perlman",
@@ -179,7 +209,13 @@
         ".agents/skills/release-readiness",
         ".agents/skills/pr-review-checklist"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Sister_Mary_Keller",
@@ -207,7 +243,13 @@
         ".agents/skills/release-readiness",
         ".agents/skills/pr-review-checklist"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Adele_Goldberg",
@@ -235,7 +277,13 @@
         ".agents/skills/release-readiness",
         ".agents/skills/pr-review-checklist"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Evelyn_Boyd_Granville",
@@ -263,7 +311,14 @@
         ".agents/skills/release-readiness",
         ".agents/skills/pr-review-checklist"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-08-devops-cicd-sre/dept.engine.js"
 }

@@ -20,5 +20,7 @@
     "Bulk investor rebate schedule negotiations"
   ],
   "supervisorsManagedCount": 9,
-  "slaWatchdogThresholdMinutes": 15
+  "slaWatchdogThresholdMinutes": 15,
+  "engine": ".agents/zoe-business-assistants/dept-02-strategic-offplan/dept.engine.js",
+  "attachedSkill": ".agents/skills/aegis-biz-dept-02-strategic-offplan"
 }

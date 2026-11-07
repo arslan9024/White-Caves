@@ -6,7 +6,9 @@
   "directorRole": "Principal Cross-Platform Mobile Architect",
   "nodeCount": 9,
   "protocol": "BHAKTI_1_12_108",
-  "attachedSkills": [".agents/skills/whitecaves-ui-library"],
+  "attachedSkills": [
+    ".agents/skills/whitecaves-ui-library"
+  ],
   "team": [
     {
       "name": "@Iris",
@@ -28,8 +30,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Cassie",
@@ -51,8 +61,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Fei-Fei",
@@ -74,8 +92,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Anima",
@@ -97,8 +123,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Dina_Katabi",
@@ -120,8 +154,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Ayah_Bdeir",
@@ -143,8 +185,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Limor_Fried",
@@ -166,8 +216,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Jerri_Ellsworth",
@@ -189,8 +247,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Jade_Raymond",
@@ -212,8 +278,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-03-cross-platform-mobile/dept.engine.js"
 }

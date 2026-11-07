@@ -6,7 +6,10 @@
   "directorRole": "Principal Computer Vision Systems Lead",
   "nodeCount": 9,
   "protocol": "BHAKTI_1_12_108",
-  "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
+  "attachedSkills": [
+    ".agents/skills/gemini-api-dev",
+    ".agents/skills/gemini-omni-flash-api"
+  ],
   "team": [
     {
       "name": "@Rania",
@@ -28,8 +31,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Dina",
@@ -51,8 +63,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Vesta",
@@ -74,8 +95,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Henry",
@@ -97,8 +127,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Fei_Fei_Li",
@@ -120,8 +159,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Carol_Shaw",
@@ -143,8 +191,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Roberta_Williams",
@@ -166,8 +223,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Mary_Lou_Jepsen_Vision",
@@ -189,8 +255,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Barbara_Grosz",
@@ -212,8 +287,18 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-omni-flash-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-omni-flash-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-11-machine-vision-ocr/dept.engine.js"
 }

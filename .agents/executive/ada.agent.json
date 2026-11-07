@@ -21,5 +21,12 @@
     "gate:premium-approval-authority",
     "review:adversarial-code-verification",
     "standards:enforce-single-monolith-truth"
+  ],
+  "engine": ".agents/executive/ada.engine.js",
+  "attachedSkills": [
+    ".agents/skills/aegis-dept-01-agent-orchestration",
+    ".agents/skills/strategic-planner",
+    ".agents/skills/project-optimizer",
+    ".agents/skills/antigravity_guide"
   ]
 }

@@ -22,6 +22,12 @@
     "architecture:srs-sad-living-documentation",
     "hyperlinks:bi-directional-html-graph",
     "zoe:interactive-reading-portal-mount"
+  ],
+  "engine": ".agents/executive/aurora.engine.js",
+  "attachedSkills": [
+    ".agents/skills/aegis-dept-04-backend-systems",
+    ".agents/skills/aegis-dept-05-database-schemas",
+    ".agents/skills/security-audit",
+    ".agents/skills/strategic-planner"
   ]
 }
-

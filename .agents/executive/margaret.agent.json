@@ -22,5 +22,11 @@
     "dependency:topological-sort",
     "brief:preflight-research-synthesis",
     "governance:dashboard-maintenance"
+  ],
+  "engine": ".agents/executive/margaret.engine.js",
+  "attachedSkills": [
+    ".agents/skills/strategic-planner",
+    ".agents/skills/orchestration-progress-intelligence",
+    ".agents/skills/aegis-knowledge-curator"
   ]
 }

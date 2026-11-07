@@ -6,7 +6,9 @@
   "directorRole": "Principal Universal i18n Systems Architect",
   "nodeCount": 9,
   "protocol": "BHAKTI_1_12_108",
-  "attachedSkills": [".agents/skills/whitecaves-ui-library"],
+  "attachedSkills": [
+    ".agents/skills/whitecaves-ui-library"
+  ],
   "team": [
     {
       "name": "@Invoice",
@@ -28,8 +30,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Dora",
@@ -51,8 +61,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Theodora",
@@ -74,8 +92,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Nadia",
@@ -97,8 +123,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Lixia_Zhang",
@@ -120,8 +154,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Radhika_Nagpal",
@@ -143,8 +185,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Anupam_Chander",
@@ -166,8 +216,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Ruzena_Bajcsy",
@@ -189,8 +247,16 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Manuela_Veloso",
@@ -212,8 +278,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-10-localization-i18n-rtl/dept.engine.js"
 }

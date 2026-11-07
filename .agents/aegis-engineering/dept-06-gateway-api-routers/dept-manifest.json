@@ -37,7 +37,13 @@
         ".agents/skills/gemini-interactions-api",
         ".agents/skills/gemini-live-api-dev"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Daniela",
@@ -64,7 +70,13 @@
         ".agents/skills/gemini-interactions-api",
         ".agents/skills/gemini-live-api-dev"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Mary_Meeker",
@@ -91,7 +103,13 @@
         ".agents/skills/gemini-interactions-api",
         ".agents/skills/gemini-live-api-dev"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Amy_Hood",
@@ -118,7 +136,13 @@
         ".agents/skills/gemini-interactions-api",
         ".agents/skills/gemini-live-api-dev"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Susan_Wojcicki",
@@ -145,7 +169,13 @@
         ".agents/skills/gemini-interactions-api",
         ".agents/skills/gemini-live-api-dev"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Meg_Whitman",
@@ -172,7 +202,13 @@
         ".agents/skills/gemini-interactions-api",
         ".agents/skills/gemini-live-api-dev"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Angela_Ahrendts",
@@ -199,7 +235,13 @@
         ".agents/skills/gemini-interactions-api",
         ".agents/skills/gemini-live-api-dev"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Sheryl_Sandberg",
@@ -226,7 +268,13 @@
         ".agents/skills/gemini-interactions-api",
         ".agents/skills/gemini-live-api-dev"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Kim_Swift",
@@ -253,7 +301,14 @@
         ".agents/skills/gemini-interactions-api",
         ".agents/skills/gemini-live-api-dev"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-06-gateway-api-routers/dept.engine.js"
 }

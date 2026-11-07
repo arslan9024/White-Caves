@@ -6,7 +6,10 @@
   "directorRole": "Principal Server Infrastructure Systems Architect",
   "nodeCount": 9,
   "protocol": "BHAKTI_1_12_108",
-  "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
+  "attachedSkills": [
+    ".agents/skills/gemini-api-dev",
+    ".agents/skills/gemini-interactions-api"
+  ],
   "team": [
     {
       "name": "@Mira",
@@ -28,8 +31,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Petra",
@@ -51,8 +63,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Barbara_Liskov",
@@ -74,8 +95,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Frances_Allen",
@@ -97,8 +127,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Jean_Sammet",
@@ -120,8 +159,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Ursula_Burns",
@@ -143,8 +191,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Padmasree_Warrior",
@@ -166,8 +223,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Peggy_Johnson",
@@ -189,8 +255,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Ruth_Porat",
@@ -212,8 +287,18 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/gemini-api-dev", ".agents/skills/gemini-interactions-api"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/gemini-api-dev",
+        ".agents/skills/gemini-interactions-api"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-04-backend-distributed-systems/dept.engine.js"
 }

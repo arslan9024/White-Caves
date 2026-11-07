@@ -20,5 +20,7 @@
     "Unified contracts Form A, B & F legal verification"
   ],
   "supervisorsManagedCount": 9,
-  "slaWatchdogThresholdMinutes": 15
+  "slaWatchdogThresholdMinutes": 15,
+  "engine": ".agents/zoe-business-assistants/dept-10-rera-compliance/dept.engine.js",
+  "attachedSkill": ".agents/skills/aegis-biz-dept-10-rera-compliance"
 }

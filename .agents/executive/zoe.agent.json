@@ -20,5 +20,12 @@
     "sovereign:bypass-gate",
     "audit:monitor-security-streams",
     "workforce:cross-department-orchestration"
+  ],
+  "engine": ".agents/executive/zoe.engine.js",
+  "attachedSkills": [
+    ".agents/skills/whitecaves-ejari-rules",
+    ".agents/skills/whitecaves-ui-library",
+    ".agents/skills/orchestration-progress-intelligence",
+    ".agents/skills/aegis-white-caves-chronicler"
   ]
 }

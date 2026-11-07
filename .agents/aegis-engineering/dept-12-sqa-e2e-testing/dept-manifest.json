@@ -39,7 +39,13 @@
         ".agents/skills/pr-review-checklist",
         ".agents/skills/security-audit"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Corinne_QA",
@@ -67,7 +73,13 @@
         ".agents/skills/pr-review-checklist",
         ".agents/skills/security-audit"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Olivia_QA",
@@ -95,7 +107,13 @@
         ".agents/skills/pr-review-checklist",
         ".agents/skills/security-audit"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Nina_QA",
@@ -123,7 +141,13 @@
         ".agents/skills/pr-review-checklist",
         ".agents/skills/security-audit"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Nadia_QA",
@@ -151,7 +175,13 @@
         ".agents/skills/pr-review-checklist",
         ".agents/skills/security-audit"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Katie_Bouman",
@@ -179,7 +209,13 @@
         ".agents/skills/pr-review-checklist",
         ".agents/skills/security-audit"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Margaret_Hamilton",
@@ -207,7 +243,13 @@
         ".agents/skills/pr-review-checklist",
         ".agents/skills/security-audit"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Annette_Wagner",
@@ -235,7 +277,13 @@
         ".agents/skills/pr-review-checklist",
         ".agents/skills/security-audit"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Rebecca_Heineman",
@@ -263,7 +311,14 @@
         ".agents/skills/pr-review-checklist",
         ".agents/skills/security-audit"
       ],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-12-sqa-e2e-testing/dept.engine.js"
 }

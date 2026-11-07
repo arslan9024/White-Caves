@@ -6,7 +6,10 @@
   "directorRole": "Principal UI Component Palette Architect",
   "nodeCount": 9,
   "protocol": "BHAKTI_1_12_108",
-  "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
+  "attachedSkills": [
+    ".agents/skills/whitecaves-ui-library",
+    ".agents/skills/generative_ui"
+  ],
   "team": [
     {
       "name": "@Una",
@@ -28,8 +31,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library",
+        ".agents/skills/generative_ui"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Lea",
@@ -51,8 +63,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library",
+        ".agents/skills/generative_ui"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Marissa",
@@ -74,8 +95,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library",
+        ".agents/skills/generative_ui"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Tracy",
@@ -97,8 +127,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library",
+        ".agents/skills/generative_ui"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Africa",
@@ -120,8 +159,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library",
+        ".agents/skills/generative_ui"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Lea_Verou",
@@ -143,8 +191,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library",
+        ".agents/skills/generative_ui"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Rachel_Andrew",
@@ -166,8 +223,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library",
+        ".agents/skills/generative_ui"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Sara_Soueidan",
@@ -189,8 +255,17 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library",
+        ".agents/skills/generative_ui"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     },
     {
       "name": "@Estelle_Weyl",
@@ -212,8 +287,18 @@
         "singlePurposeFileLaw": true,
         "continuousDeduplication": true
       },
-      "attachedSkills": [".agents/skills/whitecaves-ui-library", ".agents/skills/generative_ui"],
-      "tools": ["read_file", "edit_file", "write_file", "run_command", "search_web"]
+      "attachedSkills": [
+        ".agents/skills/whitecaves-ui-library",
+        ".agents/skills/generative_ui"
+      ],
+      "tools": [
+        "read_file",
+        "edit_file",
+        "write_file",
+        "run_command",
+        "search_web"
+      ]
     }
-  ]
+  ],
+  "engine": ".agents/aegis-engineering/dept-02-ui-ux-view-primitives/dept.engine.js"
 }

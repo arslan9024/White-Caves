@@ -20,5 +20,11 @@
     "optimization:algorithmic-complexity-reduction",
     "refactoring:continuous-deduplication",
     "quality:type-safety-enforcement"
+  ],
+  "engine": ".agents/executive/grace.engine.js",
+  "attachedSkills": [
+    ".agents/skills/ts-typecheck-triage",
+    ".agents/skills/project-optimizer",
+    ".agents/skills/aegis-dept-01-agent-orchestration"
   ]
 }
