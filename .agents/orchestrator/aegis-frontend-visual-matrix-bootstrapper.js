@@ -18,7 +18,7 @@ const ROOT = process.cwd();
 
 const REPO_OWNER = 'arslan9024';
 const REPO_NAME = 'White-Caves';
-const REPORT_PATH = path.join(ROOT, 'docs', 'plans', 'AEGIS_FRONTEND_VISUAL_MATRIX_20_BACKLOG.md');
+const REPORT_PATH = path.join(ROOT, '.agents', 'plans', 'AEGIS_FRONTEND_VISUAL_MATRIX_20_BACKLOG.md');
 
 const VISUAL_MATRIX_MILESTONE = {
   wave: 48,

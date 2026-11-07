@@ -15,10 +15,10 @@ const SCAN_REPORT_FILE = path.join(LOGS_DIR, 'codebase-scan-report.json');
 const REPORT_FILE = path.join(LOGS_DIR, 'discover-upgrade-report.json');
 const SKIP_DISCOVERY_FILE = path.join(LOGS_DIR, 'SKIP_DISCOVERY');
 const MATRIX_FILE = path.join(__dirname, 'feature-gap-matrix.json');
-const DISCOVERED_UPGRADES_FILE = path.join(ROOT, 'plans', 'waves', 'DISCOVERED_UPGRADES.md');
+const DISCOVERED_UPGRADES_FILE = path.join(ROOT, '.agents', 'plans', 'waves', 'DISCOVERED_UPGRADES.md');
 const PLAN_FILES = [
-  path.join(ROOT, 'plans', 'PENDING_TASKS_ONLY.md'),
-  path.join(ROOT, 'plans', 'IMPROVEMENTS_UX.md'),
+  path.join(ROOT, '.agents', 'plans', 'PENDING_TASKS_ONLY.md'),
+  path.join(ROOT, '.agents', 'plans', 'IMPROVEMENTS_UX.md'),
 ];
 const SCAN_DIRS = ['src', 'server', 'business_docs'];
 const SCAN_MAX_AGE_MS = 6 * 60 * 60 * 1000;
@@ -120,7 +120,7 @@ function loadCodebaseIndex() {
 
 function loadPlanTexts() {
   const waveFiles = [];
-  const wavesDir = path.join(ROOT, 'plans', 'waves');
+  const wavesDir = path.join(ROOT, '.agents', 'plans', 'waves');
   walkDir(wavesDir, fullPath => {
     if (/WAVE_.*\.md$/i.test(path.basename(fullPath))) {
       waveFiles.push(fullPath);

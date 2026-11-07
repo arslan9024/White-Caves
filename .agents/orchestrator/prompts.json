@@ -54,5 +54,33 @@
     "lastUsed": "2026-11-07",
     "successCount": 0,
     "history": []
+  },
+  "DU007": {
+    "v": 1,
+    "agent": "@Salma",
+    "action": "DRAFT",
+    "target": "IMPROVEMENTS_UX.md",
+    "prompt": "@Salma -- DRAFT: IMPROVEMENTS_UX.md -> add a server route test coverage uplift plan covering critical route inventory, risk ranking, and validation gates",
+    "tags": [
+      "quality",
+      "testing"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
+  },
+  "DU008": {
+    "v": 1,
+    "agent": "@Victoria",
+    "action": "EXPAND",
+    "target": "tenancy-ejari.md",
+    "prompt": "@Victoria -- EXPAND: tenancy-ejari.md -> add bounced PDC escalation flow including cheque-return capture, landlord alerting, grace-period rules, legal escalation checkpoints, and acceptance criteria",
+    "tags": [
+      "leasing",
+      "compliance"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
   }
 }

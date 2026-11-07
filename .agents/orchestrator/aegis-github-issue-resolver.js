@@ -19,7 +19,7 @@ const ROOT = process.cwd();
 
 const REPO_OWNER = 'arslan9024';
 const REPO_NAME = 'White-Caves';
-const REPORT_PATH = path.join(ROOT, 'docs', 'plans', 'GITHUB_OPEN_ISSUES_RESOLUTION_REPORT.md');
+const REPORT_PATH = path.join(ROOT, '.agents', 'plans', 'GITHUB_OPEN_ISSUES_RESOLUTION_REPORT.md');
 
 // Codebase resolution registry mapping issue topics to verified code implementations
 const ISSUE_RESOLUTION_MAP = {

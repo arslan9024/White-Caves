@@ -19,7 +19,7 @@ const ROOT = process.cwd();
 
 const REPO_OWNER = 'arslan9024';
 const REPO_NAME = 'White-Caves';
-const TIER2_BACKLOG_MD_PATH = path.join(ROOT, 'docs', 'plans', 'AEGIS_480_SOVEREIGN_GITHUB_BACKLOG.md');
+const TIER2_BACKLOG_MD_PATH = path.join(ROOT, '.agents', 'plans', 'AEGIS_480_SOVEREIGN_GITHUB_BACKLOG.md');
 const TIER2_JSON_PATH = path.join(ROOT, '.agents', 'orchestrator', 'logs', 'aegis-tier2-240-backlog.json');
 
 // 12 NEW Advanced Strategic Milestone Domains (Waves 36 to 47)

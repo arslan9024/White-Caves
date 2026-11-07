@@ -14,3 +14,16 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Scan evidence: 1 keyword hits in codebase scan signals
 - Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
 
+## 2026-11-07T20:59:56.822Z — Queue-empty discovery run
+
+### DU008 — PDC bounce escalation
+- Feature ID: leasing-pdc-bounce-escalation
+- Agent: @Victoria
+- Target file: business_docs/09_crm_features/tenancy-ejari.md
+- Research basis: Dubai leasing ops norms for bounced cheque escalation and landlord notification
+- Score: 80
+- Gap evidence: 1/2 signatures matched
+- Plan evidence: 0 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Victoria -- EXPAND: tenancy-ejari.md -> add bounced PDC escalation flow including cheque-return capture, landlord alerting, grace-period rules, legal escalation checkpoints, and acceptance criteria
+

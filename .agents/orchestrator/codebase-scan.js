@@ -212,7 +212,7 @@ function checkBuild() {
 
 // ─── 4. Open Waves Scan ────────────────────────────────────────────────────
 function scanOpenWaves() {
-  const pendingFile = path.join(ROOT, 'plans', 'PENDING_TASKS_ONLY.md');
+  const pendingFile = path.join(ROOT, '.agents', 'plans', 'PENDING_TASKS_ONLY.md');
   if (!fs.existsSync(pendingFile)) return [];
 
   const content = readFileSafe(pendingFile);

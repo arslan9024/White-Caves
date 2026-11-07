@@ -19,7 +19,7 @@ const ROOT = process.cwd();
 
 const REPO_OWNER = 'arslan9024';
 const REPO_NAME = 'White-Caves';
-const BACKLOG_MD_PATH = path.join(ROOT, 'docs', 'plans', 'AEGIS_240_ENTERPRISE_GITHUB_BACKLOG.md');
+const BACKLOG_MD_PATH = path.join(ROOT, '.agents', 'plans', 'AEGIS_240_ENTERPRISE_GITHUB_BACKLOG.md');
 const BACKLOG_JSON_PATH = path.join(ROOT, '.agents', 'orchestrator', 'logs', 'aegis-240-backlog.json');
 
 export function generate240EnterpriseBacklog() {

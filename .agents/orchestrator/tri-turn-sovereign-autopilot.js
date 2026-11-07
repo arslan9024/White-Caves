@@ -43,7 +43,7 @@ const OWNER = 'arslan9024';
 const REPO = 'White-Caves';
 
 const STATE_PATH = path.join(ROOT, 'logs', 'orchestrator', 'tri-turn-sovereign-state.json');
-const REPORT_PATH = path.join(ROOT, 'plans', 'TRI_TURN_SOVEREIGN_AUTOPILOT_REPORT.md');
+const REPORT_PATH = path.join(ROOT, '.agents', 'plans', 'TRI_TURN_SOVEREIGN_AUTOPILOT_REPORT.md');
 const JSON_REPORT_PATH = path.join(ROOT, 'logs', 'orchestrator', 'tri-turn-sovereign-report.json');
 const GITHUB_HANDOFF_PATH = path.join(ROOT, 'logs', 'orchestrator', 'github-issue-handoff.json');
 const EXECUTION_RESULT_PATH = path.join(
