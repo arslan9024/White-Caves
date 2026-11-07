@@ -30,12 +30,39 @@ export const LindaCampaignsAndOutreachPanel: React.FC<CampaignsAndOutreachProps>
   onQueueOutreachBatch,
 }) => {
   const [selectedCluster, setSelectedCluster] = useState<string>('ALL');
+  const [searchOwner, setSearchOwner] = useState<string>('');
+  const [selectedOwners, setSelectedOwners] = useState<number[]>([]);
   const clusters = ['ALL', 'VARDON', 'JANUSIA', 'SYMFONIA', 'AKOYA', 'MARINA', 'RANCHES'];
 
-  const filteredOwners =
-    selectedCluster === 'ALL'
-      ? outreachOwners
-      : outreachOwners.filter(o => o.project.toUpperCase().includes(selectedCluster));
+  const filteredOwners = outreachOwners
+    .filter(o => {
+      if (selectedCluster !== 'ALL' && !o.project.toUpperCase().includes(selectedCluster)) {
+        return false;
+      }
+      if (searchOwner.trim()) {
+        const q = searchOwner.toLowerCase();
+        return (
+          o.name.toLowerCase().includes(q) ||
+          o.phone.toLowerCase().includes(q) ||
+          o.unitNumber.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+
+  const toggleSelectAll = () => {
+    if (selectedOwners.length === filteredOwners.length) {
+      setSelectedOwners([]);
+    } else {
+      setSelectedOwners(filteredOwners.map(o => o.rowNumber));
+    }
+  };
+
+  const toggleOwner = (row: number) => {
+    setSelectedOwners(prev =>
+      prev.includes(row) ? prev.filter(r => r !== row) : [...prev, row]
+    );
+  };
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: 16 }}>
@@ -218,31 +245,49 @@ export const LindaCampaignsAndOutreachPanel: React.FC<CampaignsAndOutreachProps>
           </div>
         </div>
 
-        {/* Cluster Filter Pills */}
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-          {clusters.map(cluster => (
-            <button
-              key={cluster}
-              type="button"
-              onClick={() => setSelectedCluster(cluster)}
-              style={{
-                background:
-                  selectedCluster === cluster ? 'rgba(236, 72, 153, 0.3)' : 'rgba(15, 23, 42, 0.9)',
-                border:
-                  selectedCluster === cluster
-                    ? '1px solid #EC4899'
-                    : '1px solid rgba(148, 163, 184, 0.25)',
-                color: selectedCluster === cluster ? '#FCE7F3' : '#CBD5E1',
-                borderRadius: 6,
-                padding: '4px 9px',
-                fontSize: 11,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              {cluster}
-            </button>
-          ))}
+        {/* Cluster Filter Pills & Search */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {clusters.map(cluster => (
+              <button
+                key={cluster}
+                type="button"
+                onClick={() => setSelectedCluster(cluster)}
+                style={{
+                  background:
+                    selectedCluster === cluster ? 'rgba(236, 72, 153, 0.3)' : 'rgba(15, 23, 42, 0.9)',
+                  border:
+                    selectedCluster === cluster
+                      ? '1px solid #EC4899'
+                      : '1px solid rgba(148, 163, 184, 0.25)',
+                  color: selectedCluster === cluster ? '#FCE7F3' : '#CBD5E1',
+                  borderRadius: 6,
+                  padding: '4px 9px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                {cluster}
+              </button>
+            ))}
+          </div>
+
+          <input
+            type="text"
+            placeholder="Search owners / unit…"
+            value={searchOwner}
+            onChange={e => setSearchOwner(e.target.value)}
+            style={{
+              background: 'rgba(2, 6, 23, 0.75)',
+              border: '1px solid rgba(236, 72, 153, 0.35)',
+              borderRadius: 6,
+              padding: '4px 8px',
+              fontSize: 11,
+              color: '#F8FAFC',
+              width: 150,
+            }}
+          />
         </div>
 
         {/* Owners Schedule Table */}
@@ -374,7 +419,24 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
             >
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <strong style={{ color: '#F8FAFC', fontSize: 13 }}>{conv.contactName}</strong>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <strong style={{ color: '#F8FAFC', fontSize: 13 }}>{conv.contactName}</strong>
+                    <span
+                      style={{
+                        fontSize: 9,
+                        padding: '1px 5px',
+                        borderRadius: 4,
+                        fontWeight: 800,
+                        background:
+                          conv.sentiment === 'URGENT'
+                            ? 'rgba(239, 68, 68, 0.2)'
+                            : 'rgba(34, 197, 94, 0.2)',
+                        color: conv.sentiment === 'URGENT' ? '#FCA5A5' : '#86EFAC',
+                      }}
+                    >
+                      {conv.sentiment}
+                    </span>
+                  </div>
                   <span
                     style={{
                       fontSize: 10,

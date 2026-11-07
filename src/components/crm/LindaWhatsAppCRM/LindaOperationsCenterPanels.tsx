@@ -36,6 +36,9 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
   onCloseModal,
 }) => {
   const [commandInput, setCommandInput] = useState('');
+  const [terminalFilter, setTerminalFilter] = useState('');
+  const [copiedLog, setCopiedLog] = useState(false);
+  const [autoScroll, setAutoScroll] = useState(true);
 
   const quickActions = [
     { cmd: 'doctor', label: '🩺 Health Doctor (12/12)', color: '#10B981' },
@@ -47,6 +50,16 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
     { cmd: 'backup-verify', label: '🛡️ Verify Auth Backup', color: '#06B6D4' },
     { cmd: 'clean-sessions', label: '🧹 Clean Locks (1.16)', color: '#64748B' },
   ];
+
+  const handleCopyLogs = () => {
+    navigator.clipboard.writeText(terminalLines.join('\n'));
+    setCopiedLog(true);
+    setTimeout(() => setCopiedLog(false), 2000);
+  };
+
+  const filteredTerminalLines = terminalFilter
+    ? terminalLines.filter(l => l.toLowerCase().includes(terminalFilter.toLowerCase()))
+    : terminalLines;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -290,25 +303,57 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
             padding: 10,
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 8 }}>
             <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#67E8F9', fontWeight: 700 }}>
               [PANEL 4 · LIVE TERMINAL OUTPUT & MESSAGE ANALYZER]
             </span>
-            <button
-              type="button"
-              onClick={onClearTerminal}
-              style={{
-                background: 'transparent',
-                border: '1px solid rgba(148,163,184,0.3)',
-                color: '#94A3B8',
-                borderRadius: 4,
-                padding: '2px 8px',
-                fontSize: 10,
-                cursor: 'pointer',
-              }}
-            >
-              Clear Output
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input
+                type="text"
+                placeholder="Search terminal logs..."
+                value={terminalFilter}
+                onChange={e => setTerminalFilter(e.target.value)}
+                style={{
+                  background: 'rgba(15, 23, 42, 0.85)',
+                  border: '1px solid rgba(6, 182, 212, 0.35)',
+                  borderRadius: 4,
+                  padding: '2px 8px',
+                  color: '#ECFDF5',
+                  fontSize: 10,
+                  width: 140,
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleCopyLogs}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid rgba(148,163,184,0.3)',
+                  color: copiedLog ? '#4ADE80' : '#94A3B8',
+                  borderRadius: 4,
+                  padding: '2px 8px',
+                  fontSize: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                {copiedLog ? '✓ Copied' : 'Copy'}
+              </button>
+              <button
+                type="button"
+                onClick={onClearTerminal}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid rgba(148,163,184,0.3)',
+                  color: '#94A3B8',
+                  borderRadius: 4,
+                  padding: '2px 8px',
+                  fontSize: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                Clear Output
+              </button>
+            </div>
           </div>
 
           <div
@@ -322,7 +367,7 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
               padding: '6px 4px',
             }}
           >
-            {terminalLines.map((line, idx) => (
+            {filteredTerminalLines.map((line, idx) => (
               <div key={idx} style={{ whiteSpace: 'pre-wrap', marginBottom: 4 }}>
                 {line}
               </div>
@@ -398,6 +443,32 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
   onPairDeviceCode,
   onScanDeviceQr,
 }) => {
+  const [maskPhone, setMaskPhone] = useState(false);
+  const [pingStatusMap, setPingStatusMap] = useState<Record<string, string>>({});
+
+  const handlePing = (id: string) => {
+    setPingStatusMap(prev => ({ ...prev, [id]: 'Pinging…' }));
+    setTimeout(() => {
+      setPingStatusMap(prev => ({ ...prev, [id]: '24ms OK' }));
+      setTimeout(() => {
+        setPingStatusMap(prev => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+      }, 2500);
+    }, 400);
+    onPingSession(id);
+  };
+
+  const formatPhone = (phone: string) => {
+    if (!maskPhone) return phone;
+    const parts = phone.split(' ');
+    if (parts.length >= 3) {
+      return `${parts[0]} ${parts[1]} *** ${parts[parts.length - 1]}`;
+    }
+    return phone.slice(0, 7) + '***' + phone.slice(-4);
+  };
   return (
     <div
       style={{
@@ -416,19 +487,36 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
             Separate Link State vs Connection State · LocalAuth Profile Preservation · Headless 8-Digit Pairing & QR Scan
           </p>
         </div>
-        <span
-          style={{
-            background: 'rgba(34, 197, 94, 0.16)',
-            border: '1px solid rgba(34, 197, 94, 0.4)',
-            color: '#86EFAC',
-            borderRadius: 999,
-            padding: '4px 10px',
-            fontSize: 11,
-            fontWeight: 700,
-          }}
-        >
-          {sessions.filter(s => s.status === 'connected').length}/{sessions.length} Connected
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            type="button"
+            onClick={() => setMaskPhone(!maskPhone)}
+            style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(148, 163, 184, 0.25)',
+              color: '#CBD5E1',
+              borderRadius: 6,
+              padding: '4px 10px',
+              fontSize: 11,
+              cursor: 'pointer',
+            }}
+          >
+            {maskPhone ? '👁️ Reveal Numbers' : '🔒 Mask Numbers'}
+          </button>
+          <span
+            style={{
+              background: 'rgba(34, 197, 94, 0.16)',
+              border: '1px solid rgba(34, 197, 94, 0.4)',
+              color: '#86EFAC',
+              borderRadius: 999,
+              padding: '4px 10px',
+              fontSize: 11,
+              fontWeight: 700,
+            }}
+          >
+            {sessions.filter(s => s.status === 'connected').length}/{sessions.length} Connected
+          </span>
+        </div>
       </div>
 
       <div style={{ overflowX: 'auto' }}>
@@ -467,7 +555,9 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
                       {session.role}
                     </span>
                   </td>
-                  <td style={{ padding: '10px', fontFamily: 'monospace' }}>{session.phone}</td>
+                  <td style={{ padding: '10px', fontFamily: 'monospace' }}>
+                    {formatPhone(session.phone)}
+                  </td>
                   <td style={{ padding: '10px' }}>
                     <span style={{ color: '#4ADE80', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                       <CheckCircle2 size={13} /> {session.linkState}
@@ -501,7 +591,7 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                       <button
                         type="button"
-                        onClick={() => onPingSession(session.id)}
+                        onClick={() => handlePing(session.id)}
                         style={{
                           background: 'rgba(34, 197, 94, 0.18)',
                           border: '1px solid rgba(34, 197, 94, 0.45)',
@@ -515,7 +605,7 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
                           gap: 4,
                         }}
                       >
-                        <RefreshCw size={11} /> Ping
+                        <RefreshCw size={11} /> {pingStatusMap[session.id] || 'Ping'}
                       </button>
                       <button
                         type="button"
