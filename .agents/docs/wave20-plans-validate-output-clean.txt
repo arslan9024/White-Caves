@@ -1,6 +1,0 @@
-﻿
-> white-caves-real-estate@1.0.0 plans:validate
-> node scripts/validate-plans-governance.js
-
-Γ£à Planning governance validation passed.
-
