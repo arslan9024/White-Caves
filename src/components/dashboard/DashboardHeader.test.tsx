@@ -1,19 +1,20 @@
+// @vitest-environment jsdom
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-/* Stub react-redux */
+// Mock react-redux
 vi.mock('react-redux', () => ({
   useSelector: vi.fn(() => 'dark'),
   useDispatch: () => vi.fn(),
 }));
 
-/* Stub react-router-dom */
+// Mock react-router-dom
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
 }));
 
-/* Stub TranslationContext */
+// Mock TranslationContext
 vi.mock('../../context/TranslationContext', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
@@ -23,7 +24,7 @@ vi.mock('../../context/TranslationContext', () => ({
   Text: ({ id }: { id: string }) => <span>{id}</span>,
 }));
 
-/* Stub lucide-react — provide simple span stubs for all icons */
+// Mock lucide-react icons
 vi.mock('lucide-react', () => {
   const IconStub = () => <span data-testid="lucide-icon" />;
   const icons = [
@@ -40,10 +41,10 @@ vi.mock('lucide-react', () => {
   return mod;
 });
 
-/* Stub CSS import */
+// Mock CSS import
 vi.mock('./DashboardHeader.css', () => ({}));
 
-/* Stub store slices */
+// Mock store slices
 vi.mock('../../store/appSlice', () => ({
   setMainViewContent: vi.fn((v: unknown) => ({ type: 'SET_MAIN', payload: v })),
 }));

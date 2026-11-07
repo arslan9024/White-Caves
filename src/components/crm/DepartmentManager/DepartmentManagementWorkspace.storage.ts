@@ -12,6 +12,38 @@ import { FALLBACK_12_DEPARTMENTS } from './DepartmentManager.data';
 export const DEPT_STORAGE_KEY = 'whitecaves_corporate_departments';
 export const SUBDEPTS_STORAGE_KEY = 'whitecaves_subdepts_map';
 export const DEPTS_SYNC_EVENT = 'whitecaves-departments-sync';
+export const DEPT_AUDIT_STORAGE_KEY = 'whitecaves_department_audit_log';
+
+export interface DepartmentAuditRecord {
+  timestamp: string;
+  action: 'RENAME' | 'BATCH_RENAME' | 'REORDER' | 'UPDATE' | 'IMPORT' | 'RESET';
+  details: string;
+  performedBy: string;
+}
+
+export function loadDepartmentAuditLog(): DepartmentAuditRecord[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(DEPT_AUDIT_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return [];
+}
+
+export function logDepartmentAction(action: DepartmentAuditRecord['action'], details: string, performedBy = 'Managing Director'): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const prev = loadDepartmentAuditLog();
+    const entry: DepartmentAuditRecord = {
+      timestamp: new Date().toISOString(),
+      action,
+      details,
+      performedBy,
+    };
+    const next = [entry, ...prev].slice(0, 50);
+    localStorage.setItem(DEPT_AUDIT_STORAGE_KEY, JSON.stringify(next));
+  } catch {}
+}
 
 export function loadStoredDepartments(): DepartmentNodeItem[] {
   if (typeof window === 'undefined') return FALLBACK_12_DEPARTMENTS;

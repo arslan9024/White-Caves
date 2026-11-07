@@ -168,6 +168,16 @@ export function useDepartmentManagementWorkspaceLogic() {
     setDepartments(resetStoredDepartmentsToCanonical());
   }, []);
 
+  const handleImportDepartments = useCallback((imported: DepartmentNodeItem[]) => {
+    const formatted = imported.slice(0, 12).map((d, idx) => ({
+      ...d,
+      order: idx + 1,
+      code: d.code || `DEPT-${String(idx + 1).padStart(2, '0')}`,
+    }));
+    setDepartments(formatted);
+    saveDepartments(formatted);
+  }, []);
+
   const handleDelete = (nodeId: string) => {
     const targetDept = departments.find(d => d._id === nodeId);
     if (!targetDept) return;
@@ -240,6 +250,7 @@ export function useDepartmentManagementWorkspaceLogic() {
     handleBatchSaveAll,
     handleMoveDepartment,
     handleResetDefaults,
+    handleImportDepartments,
     handleDelete,
     handlePromoteSubDept,
     handleOpenSubItems: (dept: DepartmentNodeItem) => setSelectedDeptForModal(dept),

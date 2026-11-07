@@ -15,6 +15,7 @@ import { SelectedDepartmentSquadsDeck } from './SelectedDepartmentSquadsDeck';
 import { DepartmentStatsDeck } from './DepartmentStatsDeck';
 import { DepartmentGridDeck } from './DepartmentGridDeck';
 import { DepartmentFinalizerTable } from './DepartmentFinalizerTable';
+import { DepartmentQuickPasteBar } from './DepartmentQuickPasteBar';
 import { DepartmentHierarchyView } from './DepartmentHierarchyView';
 import { WorkspaceContainer, WorkspaceHeader, ActionBar } from './DepartmentManagementWorkspace.styles';
 
@@ -287,17 +288,27 @@ export const DepartmentManagementWorkspace: FC<DepartmentManagementWorkspaceProp
           {viewMode === 'hierarchy' ? (
             <DepartmentHierarchyView />
           ) : viewMode === 'finalizer' ? (
-            <DepartmentFinalizerTable
-              slots={logic.slots}
-              isReadOnly={isReadOnly}
-              onInlineRename={logic.handleInlineRename}
-              onBatchSaveAll={logic.handleBatchSaveAll}
-              onMoveDepartment={logic.handleMoveDepartment}
-              onOpenEdit={logic.handleOpenEdit}
-              onOpenCreateForSlot={logic.handleOpenCreate}
-              onDelete={logic.handleDelete}
-              onResetDefaults={logic.handleResetDefaults}
-            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {!isReadOnly && (
+                <DepartmentQuickPasteBar
+                  slots={logic.slots}
+                  departments={logic.departments}
+                  onBatchSaveAll={logic.handleBatchSaveAll}
+                  onImportDepartments={logic.handleImportDepartments}
+                />
+              )}
+              <DepartmentFinalizerTable
+                slots={logic.slots}
+                isReadOnly={isReadOnly}
+                onInlineRename={logic.handleInlineRename}
+                onBatchSaveAll={logic.handleBatchSaveAll}
+                onMoveDepartment={logic.handleMoveDepartment}
+                onOpenEdit={logic.handleOpenEdit}
+                onOpenCreateForSlot={logic.handleOpenCreate}
+                onDelete={logic.handleDelete}
+                onResetDefaults={logic.handleResetDefaults}
+              />
+            </div>
           ) : (
             <>
               {viewMode === 'grid' && (

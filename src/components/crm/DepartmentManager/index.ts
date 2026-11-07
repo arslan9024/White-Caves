@@ -3,6 +3,7 @@ export * from './DepartmentManager.types';
 export * from './DepartmentManager.logic';
 export * from './DepartmentManagementWorkspace';
 export * from './DepartmentFinalizerTable';
+export * from './DepartmentQuickPasteBar';
 export * from './DepartmentSubItemsModal';
 export * from './DepartmentHierarchyView';
 export * from './DepartmentHierarchy.types';

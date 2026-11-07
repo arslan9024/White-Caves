@@ -11,6 +11,7 @@ import { saveDepartments } from './DepartmentManagementWorkspace.storage';
 
 export const INITIAL_FORM: DepartmentFormData = {
   title: '',
+  titleAr: '',
   code: '',
   slug: '',
   color: '#EF4444',
@@ -44,6 +45,7 @@ export function useDepartmentForm(
     setEditingNodeId(dept._id);
     setFormData({
       title: dept.title,
+      titleAr: dept.titleAr || '',
       code: dept.code,
       slug: dept.slug,
       color: dept.color || '#EF4444',
@@ -91,6 +93,7 @@ export function useDepartmentForm(
               ? {
                   ...d,
                   title: formData.title.trim(),
+                  titleAr: formData.titleAr?.trim() || undefined,
                   code: formData.code.trim(),
                   slug: formData.slug.trim(),
                   color: formData.color,
@@ -125,6 +128,7 @@ export function useDepartmentForm(
         const newDept: DepartmentNodeItem = {
           _id: `dept-${Date.now()}`,
           title: formData.title.trim(),
+          titleAr: formData.titleAr?.trim() || undefined,
           code: slotCode,
           slug: formData.slug.trim(),
           color: formData.color || '#EF4444',

@@ -47,6 +47,18 @@ export const DepartmentEditDrawer: FC<DepartmentEditDrawerProps> = ({
         </div>
 
         <div className="form-group">
+          <label>Arabic Department Name (DLD / Ejari)</label>
+          <input
+            type="text"
+            dir="rtl"
+            value={formData.titleAr || ''}
+            onChange={e => onFormChange('titleAr', e.target.value)}
+            placeholder="مثال: إدارة الاستثمار وأسواق رأس المال"
+            data-testid="dept-form-title-ar-input"
+          />
+        </div>
+
+        <div className="form-group">
           <label>Department Code</label>
           <input
             type="text"
@@ -85,11 +97,26 @@ export const DepartmentEditDrawer: FC<DepartmentEditDrawerProps> = ({
           <label>Director Role Title</label>
           <input
             type="text"
+            list="dept-role-presets"
             value={formData.directorRole || ''}
             onChange={e => onFormChange('directorRole', e.target.value)}
             placeholder="e.g. Director of Luxury Sales"
             data-testid="dept-form-role-input"
           />
+          <datalist id="dept-role-presets">
+            <option value="Director of Luxury Sales (L4)" />
+            <option value="Head of Strategic Off-Plan (L4)" />
+            <option value="Director of Commercial Investments (L4)" />
+            <option value="Director of Residential Leasing (L4)" />
+            <option value="Head of Asset & Facilities (L4)" />
+            <option value="Lead DLD Conveyancer & Trustee (L3)" />
+            <option value="Head of Legal & Compliance (L4)" />
+            <option value="Director of Corporate Marketing (L4)" />
+            <option value="Chief Technology Officer (L5)" />
+            <option value="Chief Financial Officer (L5)" />
+            <option value="Director of People & Culture (L4)" />
+            <option value="Managing Director & Founder (L5)" />
+          </datalist>
         </div>
 
         <div className="form-group">

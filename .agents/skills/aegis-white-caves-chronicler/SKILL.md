@@ -39,3 +39,4 @@ Every HTML page generated in `.agents/book-white-caves/` must include:
    - Dark mode aesthetic matching White Caves brand tokens (`#020617` background, `#EF4444` White Caves red accent, `#38BDF8` cyber cyan).
 4. **Zoe Integration**:
    - An embeddable iframe / viewer component mounted inside Zoe AI Assistant (`src/components/ZoeFeatures/WhiteCavesBookViewer.tsx`).
+

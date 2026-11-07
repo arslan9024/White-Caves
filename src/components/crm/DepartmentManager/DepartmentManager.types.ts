@@ -8,6 +8,7 @@ export interface DepartmentNodeItem {
   code: string;
   slug: string;
   title: string;
+  titleAr?: string;
   level: 'DEPARTMENT' | 'SUB_DEPARTMENT';
   order: number;
   parentDeptId?: string | null;
@@ -26,6 +27,7 @@ export interface DepartmentNodeItem {
 
 export interface DepartmentFormData {
   title: string;
+  titleAr?: string;
   code: string;
   slug: string;
   color: string;

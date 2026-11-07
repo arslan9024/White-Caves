@@ -79,6 +79,13 @@ export const DepartmentFinalizerTable: FC<DepartmentFinalizerTableProps> = ({
     }));
   };
 
+  const getDuplicateWarning = (deptId: string, title: string) => {
+    const trimmed = title.trim().toLowerCase();
+    if (!trimmed) return null;
+    const isDup = slots.some(s => s.dept && s.dept._id !== deptId && s.dept.title.trim().toLowerCase() === trimmed);
+    return isDup ? '⚠️ Name duplicate' : null;
+  };
+
   const handleSaveRow = (deptId: string) => {
     const d = drafts[deptId];
     if (!d || !d.title.trim()) return;
@@ -255,16 +262,23 @@ export const DepartmentFinalizerTable: FC<DepartmentFinalizerTableProps> = ({
 
                   <td style={{ padding: '10px 8px' }}>
                     {dept ? (
-                      <input
-                        type="text"
-                        disabled={isReadOnly}
-                        value={draft?.title ?? dept.title}
-                        onChange={e => handleDraftChange(dept._id, 'title', e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handleSaveRow(dept._id)}
-                        placeholder="Enter finalized department name..."
-                        data-testid={`finalizer-title-input-${slot.slotNumber}`}
-                        style={inputStyle}
-                      />
+                      <div>
+                        <input
+                          type="text"
+                          disabled={isReadOnly}
+                          value={draft?.title ?? dept.title}
+                          onChange={e => handleDraftChange(dept._id, 'title', e.target.value)}
+                          onKeyDown={e => e.key === 'Enter' && handleSaveRow(dept._id)}
+                          placeholder="Enter finalized department name..."
+                          data-testid={`finalizer-title-input-${slot.slotNumber}`}
+                          style={inputStyle}
+                        />
+                        {draft?.title && getDuplicateWarning(dept._id, draft.title) && (
+                          <span style={{ fontSize: '0.68rem', color: '#F59E0B', fontWeight: 700 }}>
+                            {getDuplicateWarning(dept._id, draft.title)}
+                          </span>
+                        )}
+                      </div>
                     ) : (
                       <span style={{ color: '#64748B', fontStyle: 'italic' }}>
                         Empty Department Slot #{slot.slotNumber}

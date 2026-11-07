@@ -12,5 +12,47 @@
     "lastUsed": "2026-11-07",
     "successCount": 0,
     "history": []
+  },
+  "DU004": {
+    "v": 1,
+    "agent": "@Timnit",
+    "action": "DRAFT",
+    "target": "dld-integration.md",
+    "prompt": "@Timnit -- DRAFT: dld-integration.md -> add end-to-end Oqood registration workflow including payload schema, retries, exception handling, and settlement checkpoints",
+    "tags": [
+      "compliance",
+      "api"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
+  },
+  "DU005": {
+    "v": 1,
+    "agent": "@Timnit",
+    "action": "DRAFT",
+    "target": "legal-management.md",
+    "prompt": "@Timnit -- DRAFT: legal-management.md -> add Form 7 and Form 12 generation workflow with notice grounds, deadlines, approval steps, evidence attachments, and delivery-proof requirements",
+    "tags": [
+      "compliance",
+      "legal"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
+  },
+  "DU006": {
+    "v": 1,
+    "agent": "@Invoice",
+    "action": "EXPAND",
+    "target": "financial-reporting.md",
+    "prompt": "@Invoice -- EXPAND: financial-reporting.md -> add UAE FTA VAT filing workflow including taxable/exempt buckets, quarterly submission steps, reconciliation checkpoints, exception handling, and acceptance criteria",
+    "tags": [
+      "finance",
+      "compliance"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
   }
 }
