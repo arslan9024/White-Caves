@@ -24,6 +24,13 @@ export type ActivityTab =
   | 'linda'
   | 'ai-command'
   | 'audit'
+  | 'governance'
+  | 'commissions'
+  | 'performance'
+  | 'viewings'
+  | 'analytics'
+  | 'module'
+  | 'dept-view'
   | 'settings';
 
 export interface UseExecutiveVSCodeSidebarProps {

@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { ShieldCheck, Award, FileCheck2, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import DldTrakheesiModal from './DldTrakheesiModal';
 
 export const RegulatoryTrustStrip: FC = () => {
   const credentials = [
@@ -36,11 +37,14 @@ export const RegulatoryTrustStrip: FC = () => {
       aria-label="Government and Regulatory Compliance Credentials"
     >
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 md:gap-8">
-        <div className="flex items-center gap-2.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs uppercase tracking-widest font-extrabold text-slate-300">
-            Regulated & Licensed in Dubai
-          </span>
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs uppercase tracking-widest font-extrabold text-slate-300">
+              Regulated & Licensed in Dubai
+            </span>
+          </div>
+          <DldTrakheesiModal />
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">

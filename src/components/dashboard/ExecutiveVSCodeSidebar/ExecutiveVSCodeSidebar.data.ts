@@ -18,6 +18,11 @@ import {
   Network,
   Contact,
   ShieldAlert,
+  ShieldCheck,
+  BarChart3,
+  Coins,
+  Eye,
+  Activity,
   UserCircle,
 } from 'lucide-react';
 
@@ -90,6 +95,34 @@ export const TAB_HEADER_MAP: Record<string, { icon: React.ReactNode; label: stri
     icon: React.createElement(UserCircle, { size: 14, color: '#A855F7' }),
     label: 'Sovereign Executive Profile',
   },
+  audit: {
+    icon: React.createElement(ShieldCheck, { size: 14, color: '#10B981' }),
+    label: 'RERA Compliance & Audit Vault',
+  },
+  governance: {
+    icon: React.createElement(ShieldCheck, { size: 14, color: '#6366F1' }),
+    label: 'Governance & Credentials Pipeline',
+  },
+  commissions: {
+    icon: React.createElement(Coins, { size: 14, color: '#F59E0B' }),
+    label: 'Commission Tracking & Splits',
+  },
+  performance: {
+    icon: React.createElement(Activity, { size: 14, color: '#EC4899' }),
+    label: 'Agent Performance & Rankings',
+  },
+  viewings: {
+    icon: React.createElement(Eye, { size: 14, color: '#06B6D4' }),
+    label: 'Property Viewings & Appointments',
+  },
+  analytics: {
+    icon: React.createElement(BarChart3, { size: 14, color: '#8B5CF6' }),
+    label: 'Unified Market Analytics Dashboard',
+  },
+  module: {
+    icon: React.createElement(Activity, { size: 14, color: '#EF4444' }),
+    label: 'Enterprise CRM Module Viewport',
+  },
 };
 
 export const SEARCH_PLACEHOLDER_MAP: Record<string, string> = {
@@ -110,4 +143,11 @@ export const SEARCH_PLACEHOLDER_MAP: Record<string, string> = {
   tenant: 'Filter lease & inspections...',
   broker: 'Filter commission splits & leads...',
   profile: 'Filter profile preferences...',
+  audit: 'Filter compliance & audit logs...',
+  governance: 'Filter licenses & credentials...',
+  commissions: 'Filter commission ledger & payouts...',
+  performance: 'Filter agent KPIs & rankings...',
+  viewings: 'Filter viewing appointments...',
+  analytics: 'Filter analytics metrics & reports...',
+  module: 'Filter module parameters...',
 };

@@ -16,9 +16,16 @@ import { GlobalEntityCommandPalette } from '../../components/dashboard/GlobalEnt
 import { CorporateDepartmentsProvider } from '../../context/CorporateDepartmentsContext';
 import { ErmsProvider } from '../../context/ErmsContext';
 import { VSCodeBreadcrumbs } from '../../components/dashboard/VSCodeBreadcrumbs';
+import { DashboardLiveTicker } from '../../components/dashboard/header/DashboardLiveTicker';
+import { MDCommandStrip } from '../../components/dashboard/header/MDCommandStrip';
 import { DashboardContentRouter } from './DashboardContentRouter';
 import { RoleConfirmationModal } from '../../components/auth/RoleConfirmationModal';
 import { useUserRole } from '../../context/UserRoleContext';
+import {
+  VALID_DASHBOARD_TABS,
+  useSidebarToggles,
+  resolveSidebarItemRoute,
+} from './ModernDashboardPage.logic';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
 export const ModernDashboardPage: FC = () => {
@@ -38,29 +45,7 @@ export const ModernDashboardPage: FC = () => {
 
   const queryParams = new URLSearchParams(location.search);
   const isReadOnly = queryParams.get('mode') === 'view' || queryParams.get('mode') === 'execution';
-
-  const validTabs: ActivityTab[] = [
-    'departments',
-    'employees',
-    'aiams',
-    'tasks',
-    'leaderboard',
-    'REproperties',
-    'deals',
-    'documents',
-    'relationships',
-    'erms',
-    'customers',
-    'roles',
-    'profile',
-    'landlord',
-    'tenant',
-    'broker',
-    'linda',
-    'ai-command',
-  ];
-
-  const activeTab: ActivityTab = rawTab && validTabs.includes(rawTab) ? rawTab : 'departments';
+  const activeTab: ActivityTab = rawTab && VALID_DASHBOARD_TABS.includes(rawTab) ? rawTab : 'departments';
 
   let ermsSubTab: 'entities' | 'relationships' | 'graph' | 'matrix' = 'entities';
   let ermsEntityId: string | null = null;
@@ -85,44 +70,11 @@ export const ModernDashboardPage: FC = () => {
 
   const [activeAgent, setActiveAgent] = useState<{ id: string; name: string } | null>(null);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-
-  // Contract 2: Symmetrical Sidebar Toggles (both initialized as hidden)
-  // Disciplined constraint switch: 'LEFT' | 'RIGHT' | 'BOTH' | null
-  // By default, selecting an icon sets exclusive focus, unless the user explicitly toggles both to be open.
-  const [isLeftCollapsed, setIsLeftCollapsed] = useState(true);
-  const [isRightCollapsed, setIsRightCollapsed] = useState(true);
-
-  const toggleLeftSidebar = (forceBoth = false) => {
-    setIsLeftCollapsed(prev => {
-      const willOpen = prev;
-      if (willOpen && !forceBoth) {
-        // mutually exclusive focus unless both explicitly requested
-        setIsRightCollapsed(true);
-      }
-      return !prev;
-    });
-  };
-
-  const toggleRightSidebar = (forceBoth = false) => {
-    setIsRightCollapsed(prev => {
-      const willOpen = prev;
-      if (willOpen && !forceBoth) {
-        // mutually exclusive focus unless both explicitly requested
-        setIsLeftCollapsed(true);
-      }
-      return !prev;
-    });
-  };
-
-  const toggleBothSidebars = () => {
-    const shouldOpen = isLeftCollapsed || isRightCollapsed;
-    setIsLeftCollapsed(!shouldOpen);
-    setIsRightCollapsed(!shouldOpen);
-  };
+  const { isLeftCollapsed, isRightCollapsed, toggleLeftSidebar, toggleRightSidebar } = useSidebarToggles();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'key' || ((e.metaKey || e.ctrlKey) && e.key === 'k')) {
         e.preventDefault();
         setIsCommandPaletteOpen(prev => !prev);
       }
@@ -133,9 +85,7 @@ export const ModernDashboardPage: FC = () => {
 
   useEffect(() => {
     const isMdOrFounder = Boolean(
-      roleContext?.isManagingDirector ||
-        roleContext?.isFounder ||
-        roleContext?.role === 'managing_director'
+      roleContext?.isManagingDirector || roleContext?.isFounder || roleContext?.role === 'managing_director'
     );
     if (isMdOrFounder) {
       setIsRoleModalOpen(false);
@@ -169,29 +119,9 @@ export const ModernDashboardPage: FC = () => {
     navigate(`/dashboard/${tab}`);
   };
 
-  const handleSelectSidebarItem = (key: string, label: string) => {
+  const handleSelectSidebarItem = (key: string) => {
     setActiveAgent(null);
-    if (key === 'departments-crud') return navigate('/dashboard/departments/slots');
-    if (key.startsWith('route-')) return navigate(key.replace('route-', ''));
-    if (key.startsWith('entity-'))
-      return navigate(`/dashboard/erms/entities/${key.replace('entity-', '')}`);
-    if (key.startsWith('rel-'))
-      return navigate(`/dashboard/erms/relationships/${key.replace('rel-', '')}`);
-    const prefixes: Record<string, string> = {
-      'emp-': '/dashboard/employees/',
-      'ai-': '/dashboard/aiams/',
-      'task-': '/dashboard/tasks/',
-      'lead-': '/dashboard/leaderboard/',
-      'prop-': '/dashboard/REproperties/',
-      'deal-': '/dashboard/deals/',
-      'doc-': '/dashboard/documents/',
-      'cust-': '/dashboard/customers/',
-      'role-': '/dashboard/roles/',
-    };
-    for (const [pfx, route] of Object.entries(prefixes)) {
-      if (key.startsWith(pfx)) return navigate(`${route}${key.replace(pfx, '')}`);
-    }
-    navigate(`/dashboard/${activeTab}`);
+    navigate(resolveSidebarItemRoute(key, activeTab));
   };
 
   const handleSelectRightExplorerItem = (key: string, label: string) => {
@@ -209,8 +139,12 @@ export const ModernDashboardPage: FC = () => {
         return navigate(`${route}${id}?mode=${mode}`);
       }
     }
-    handleSelectSidebarItem(key, label);
+    handleSelectSidebarItem(key);
   };
+
+  const isMdOrFounder = Boolean(
+    roleContext?.isManagingDirector || roleContext?.isFounder || roleContext?.role === 'managing_director'
+  );
 
   return (
     <div
@@ -251,19 +185,27 @@ export const ModernDashboardPage: FC = () => {
               }}
             >
               <span>⌘ Quick Find</span>
-              <kbd
-                style={{
-                  background: 'rgba(0, 0, 0, 0.3)',
-                  padding: '1px 5px',
-                  borderRadius: '4px',
-                  fontSize: '0.65rem',
-                }}
-              >
+              <kbd style={{ background: 'rgba(0, 0, 0, 0.3)', padding: '1px 5px', borderRadius: '4px', fontSize: '0.65rem' }}>
                 Ctrl+K
               </kbd>
             </button>
           </div>
           <VSCodeBreadcrumbs onNavigate={navigate} />
+
+          {/* Legacy Dashboard2 Executive Header Strip & Live Dubai Ticker */}
+          {isMdOrFounder && (
+            <div style={{ padding: '4px 16px', background: isDark ? '#020617' : '#FFFFFF' }}>
+              <MDCommandStrip
+                mdName={roleContext?.user?.name || 'Managing Director'}
+                mdEmail={roleContext?.user?.email}
+                onOpenModule={modId => navigate(`/dashboard/module/${modId}`)}
+              />
+            </div>
+          )}
+          <div style={{ padding: '0 16px', background: isDark ? '#020617' : '#FFFFFF' }}>
+            <DashboardLiveTicker />
+          </div>
+
           {isCommandPaletteOpen && (
             <GlobalEntityCommandPalette
               isOpen={isCommandPaletteOpen}
@@ -274,6 +216,7 @@ export const ModernDashboardPage: FC = () => {
               }}
             />
           )}
+
           <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
             <ExecutiveVSCodeSidebar
               activeTab={activeTab}

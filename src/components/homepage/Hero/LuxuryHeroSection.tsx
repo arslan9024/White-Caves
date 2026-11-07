@@ -23,6 +23,7 @@ import {
 } from './logic/HERO.logic';
 import { HERO_COUNTER_DURATION } from './data/HERO.data';
 import { heroLayerStyle } from './styles/HERO.style';
+import LuxuryMultiTabSearchBar from './LuxuryMultiTabSearchBar';
 
 interface AnimatedRedCounterProps {
   end: number;
@@ -228,6 +229,11 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         <motion.p className="luxury-hero__tagline" variants={heroItemVariants}>
           {copy.tagline}
         </motion.p>
+
+        {/* Phase 26 Upgraded: Segmented Luxury Multi-Tab Search Bar */}
+        <motion.div variants={heroItemVariants} className="w-full">
+          <LuxuryMultiTabSearchBar />
+        </motion.div>
 
         <motion.div
           className="luxury-hero__search-wrapper"

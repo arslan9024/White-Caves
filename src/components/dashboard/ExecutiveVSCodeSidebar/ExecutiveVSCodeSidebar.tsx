@@ -22,6 +22,7 @@ import { SidebarDocumentsList } from './SidebarDocumentsList';
 import { SidebarRelationshipsList } from './SidebarRelationshipsList';
 import { SidebarCustomersList } from './SidebarCustomersList';
 import { SidebarRolesList } from './SidebarRolesList';
+import { SidebarEnterpriseList } from './SidebarEnterpriseList';
 import {
   SidebarLayoutContainer,
   ExplorerDrawer,
@@ -206,6 +207,18 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
           <SidebarRolesList
             filterQuery={filterQuery}
             onSelectRole={(id, name) => handleLeafClick(`role-${id}`, `Role: ${name}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
+          />
+        ) : activeTab === 'audit' ||
+          activeTab === 'governance' ||
+          activeTab === 'commissions' ||
+          activeTab === 'performance' ||
+          activeTab === 'viewings' ||
+          activeTab === 'analytics' ||
+          activeTab === 'module' ? (
+          <SidebarEnterpriseList
+            activeTab={activeTab}
+            filterQuery={filterQuery}
             onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : (

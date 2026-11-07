@@ -311,36 +311,36 @@ export const LiveCorporateTicker = styled.div`
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  padding: 0.65rem 1.25rem;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-surface-elevated, rgba(15, 23, 42, 0.75));
+  border: 1px solid var(--border-color, rgba(51, 65, 85, 0.35));
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
   overflow-x: auto;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 
   &::-webkit-scrollbar {
     height: 3px;
   }
   &::-webkit-scrollbar-thumb {
-    background: #E2E8F0;
+    background: rgba(148, 163, 184, 0.2);
   }
 `;
 
 export const TickerItem = styled.div`
-  font-size: 0.78rem;
-  color: #475569;
+  font-size: 0.76rem;
+  color: var(--text-secondary, #94a3b8);
   display: flex;
   align-items: center;
   gap: 6px;
 
   strong {
-    color: #1E293B;
+    color: var(--text-primary, #f8fafc);
   }
 
   span {
-    color: #059669;
+    color: #10b981;
     font-weight: 700;
   }
 `;

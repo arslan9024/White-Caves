@@ -20,6 +20,10 @@ import {
   Handshake,
   Network,
   Contact,
+  Coins,
+  BarChart3,
+  Eye,
+  Activity,
   UserCircle,
   Settings,
 } from 'lucide-react';
@@ -148,8 +152,45 @@ export const SidebarActivityBar: FC<SidebarActivityBarProps> = ({
               $isActive={activeTab === 'audit'}
               onClick={() => onSelectTab('audit')}
               title="RERA Compliance & Master Audit"
+              data-testid="activity-btn-audit"
             >
               <ShieldCheck size={18} />
+            </ActivityIconBtn>
+
+            <ActivityIconBtn
+              $isActive={activeTab === 'commissions'}
+              onClick={() => onSelectTab('commissions')}
+              title="Commission Ledger & Tracking"
+              data-testid="activity-btn-commissions"
+            >
+              <Coins size={18} />
+            </ActivityIconBtn>
+
+            <ActivityIconBtn
+              $isActive={activeTab === 'performance'}
+              onClick={() => onSelectTab('performance')}
+              title="Agent Performance & KPI Tracking"
+              data-testid="activity-btn-performance"
+            >
+              <Activity size={18} />
+            </ActivityIconBtn>
+
+            <ActivityIconBtn
+              $isActive={activeTab === 'viewings'}
+              onClick={() => onSelectTab('viewings')}
+              title="Property Viewing Appointments"
+              data-testid="activity-btn-viewings"
+            >
+              <Eye size={18} />
+            </ActivityIconBtn>
+
+            <ActivityIconBtn
+              $isActive={activeTab === 'analytics'}
+              onClick={() => onSelectTab('analytics')}
+              title="Unified Market Analytics Dashboard"
+              data-testid="activity-btn-analytics"
+            >
+              <BarChart3 size={18} />
             </ActivityIconBtn>
           </>
         ) : role === 'landlord' ? (
