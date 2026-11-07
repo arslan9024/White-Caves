@@ -33,7 +33,7 @@ function validateAndClose(issueNumber) {
     const combinedOutput = `${gitDiff}\n${gitStatus}`;
     const files = combinedOutput.split(/\r?\n/).map(l => l.replace(/^[?\sMADRCU]+\s+/, '').trim()).filter(Boolean);
     
-    const modifiedDocs = files.some(f => f.includes('business_docs/') || f.includes('software_docs/') || f.includes('plans/'));
+    const modifiedDocs = files.some(f => f.includes('.agents/business_docs/') || f.includes('software_docs/') || f.includes('.agents/plans/'));
     const modifiedCode = files.some(f => f.includes('src/') || f.includes('components/'));
     const modifiedTests = files.some(f => f.includes('tests/') || f.includes('.test.'));
 

@@ -63,7 +63,7 @@ export function runDeduplicationAndOptimizationAudit() {
   console.log(`   • Console statements requiring production pruning: ${consoleLogsFound}`);
 
   // Write structural summary to CLEANUP_AND_DEDUPLICATION_PLAN.md
-  const reportPath = path.join(rootDir, 'docs/plans/CLEANUP_AND_DEDUPLICATION_PLAN.md');
+  const reportPath = path.join(rootDir, '.agents/plans/CLEANUP_AND_DEDUPLICATION_PLAN.md');
   const reportContent = `# AEGIS Deduplication & Optimization Report
 
 > **Last Updated:** ${new Date().toISOString().split('T')[0]}  

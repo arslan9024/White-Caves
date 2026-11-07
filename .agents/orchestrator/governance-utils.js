@@ -101,7 +101,15 @@ export function buildRoutingDecision(policy, input = {}) {
 }
 
 export function buildPlanPacket({ policy, dispatchPacket, routingDecision }) {
-  const filesInScope = normalizeFiles(dispatchPacket?.inputArtifacts || []);
+  const fallbackFiles = [
+    dispatchPacket?.outputArtifact,
+    '.agents/business_docs/09_crm_features/wave-16-security-hardening.md',
+    'server/routes/auth.ts',
+  ].filter(Boolean);
+  const rawFiles = (dispatchPacket?.inputArtifacts && dispatchPacket.inputArtifacts.length > 0)
+    ? dispatchPacket.inputArtifacts
+    : fallbackFiles;
+  const filesInScope = normalizeFiles(rawFiles);
   return {
     goal: dispatchPacket?.objective || 'No objective available',
     filesInScope,
@@ -127,9 +135,9 @@ export function buildContextManifest({ policy, sessionId, dispatchPacket, previo
     '.github/instructions/agentic-workflow.instructions.md',
   ]);
   const canonicalSources = normalizeFiles([
-    'plans/MASTER_PLAN.md',
-    'plans/PENDING_TASKS_ONLY.md',
-    'plans/waves/README.md',
+    '.agents/plans/MASTER_PLAN.md',
+    '.agents/plans/PENDING_TASKS_ONLY.md',
+    '.agents/plans/waves/README.md',
     'scripts/orchestrator/policy.json',
   ]);
   const waveBundles = filesInScope.filter((file) => /plans\/waves\/WAVE_/i.test(file));
@@ -197,9 +205,9 @@ export function createHandoffSummary({ policy, sessionId, dispatchPacket, routin
     blockers,
     carryForward,
     bootstrapFiles: normalizeFiles([
-      'plans/MASTER_PLAN.md',
-      'plans/PENDING_TASKS_ONLY.md',
-      'plans/waves/README.md',
+      '.agents/plans/MASTER_PLAN.md',
+      '.agents/plans/PENDING_TASKS_ONLY.md',
+      '.agents/plans/waves/README.md',
       'scripts/orchestrator/policy.json',
       ...(manifest?.filesInScope || []).slice(0, 6),
     ]),

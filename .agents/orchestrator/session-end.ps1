@@ -1,4 +1,4 @@
-﻿# session-end.ps1 -- One-command session closer for White Caves Orchestrator
+# session-end.ps1 -- One-command session closer for White Caves Orchestrator
 # Counterpart to session-start.ps1.
 # Chains: fast-complete -> gate-check -> progress-report -> error-scan -> git stage -> commit -> push
 #
@@ -30,7 +30,7 @@ param(
 
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
-$scripts  = Join-Path $root "aegis\orchestrator"
+$scripts  = Join-Path $root ".agents\orchestrator"
 $policyUtils = Join-Path $scripts "policy-utils.ps1"
 $w        = 72
 $stepNum  = 0

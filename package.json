@@ -10,6 +10,9 @@
   },
   "scripts": {
     "dev": "npm run dev:precheck && concurrently --names \"CLIENT,SERVER\" --prefix-colors \"cyan,green\" \"npm run dev:client\" \"npm run dev:server\"",
+    "aegis:ouroboros": "node .agents/orchestrator/aegis-perpetual-ouroboros.js",
+    "aegis:ouroboros:once": "node .agents/orchestrator/aegis-perpetual-ouroboros.js --once",
+    "aegis:crucible:infinite": "node .agents/orchestrator/aegis-perpetual-ouroboros.js",
     "aegis": "node .agents/orchestrator/aegis-engine.js cycle",
     "aegis:engine": "node .agents/orchestrator/aegis-engine.js",
     "aegis:health": "node .agents/orchestrator/aegis-engine.js health",

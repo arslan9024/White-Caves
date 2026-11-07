@@ -207,7 +207,7 @@ ${
 }
 `;
 
-const reportPath = path.join(ROOT_DIR, 'docs/plans/DEEP_CODEBASE_AUDIT_REPORT.md');
+const reportPath = path.join(ROOT_DIR, '.agents/plans/DEEP_CODEBASE_AUDIT_REPORT.md');
 fs.writeFileSync(reportPath, reportContent, 'utf8');
 
 console.log(`📊 Scanned ${totalFilesScanned} files in ${durationMs}ms (${cacheHits} cache hits).`);

@@ -31,7 +31,7 @@ const ISSUE_RESOLUTION_MAP = {
   '175': { status: 'RESOLVED', fix: 'Hardened PaymentInstructionDeck with strict masked account rules & CSP standards.', file: 'src/components/crm/shared/PaymentInstructionDeck.tsx' },
   '174': { status: 'RESOLVED', fix: 'Implemented 3-Tile Sidebar with Level 7 MD Sovereign Workspace and 12-Department Viewports.', file: 'src/pages/crm/CRMHubPage.tsx' },
   '173': { status: 'RESOLVED', fix: 'Completed DXB Interact benchmark gap backlog and 1-12-108 workflow parity.', file: 'src/components/dashboard/kanban/DepartmentTaskKanban.tsx' },
-  '172': { status: 'RESOLVED', fix: 'Created dual-representation business_docs and software_docs across 22 modules.', file: 'docs/business_docs/README.md' },
+  '172': { status: 'RESOLVED', fix: 'Created dual-representation business_docs and software_docs across 22 modules.', file: '.agents/docs/business_docs/README.md' },
   '171': { status: 'RESOLVED', fix: 'Created test matrices covering all 12 department pipelines & CRM hub routes.', file: 'src/pages/crm/CRMHubPage.test.tsx' },
   '170': { status: 'RESOLVED', fix: 'Consolidated API handlers into Express REST router with Gzip/Brotli streaming.', file: 'server/index.ts' },
   '169': { status: 'RESOLVED', fix: 'Applied AES-256 at rest, TLS 1.3 in transit, and goAML AED 55,000 threshold shield.', file: 'src/components/dashboard/viewport/FounderExecutiveDashboard.tsx' },

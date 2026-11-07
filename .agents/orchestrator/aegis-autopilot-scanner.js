@@ -26,9 +26,9 @@ const ROOT = process.cwd();
 
 const LOGS_DIR = path.join(ROOT, '.agents', 'orchestrator', 'logs');
 const OUT_TOP1000_JSON = path.join(LOGS_DIR, 'top-1000-targets.json');
-const OUT_TOP1000_MD = path.join(ROOT, 'docs', 'plans', 'AEGIS_TOP_1000_ISSUES.md');
-const OUT_TOP100_MD = path.join(ROOT, 'docs', 'plans', 'AEGIS_TOP_100_TARGETS.md');
-const OUT_TOP12_MD = path.join(ROOT, 'docs', 'plans', 'AEGIS_TOP_12_TARGETS.md');
+const OUT_TOP1000_MD = path.join(ROOT, '.agents', 'plans', 'AEGIS_TOP_1000_ISSUES.md');
+const OUT_TOP100_MD = path.join(ROOT, '.agents', 'plans', 'AEGIS_TOP_100_TARGETS.md');
+const OUT_TOP12_MD = path.join(ROOT, '.agents', 'plans', 'AEGIS_TOP_12_TARGETS.md');
 
 if (!fs.existsSync(LOGS_DIR)) {
   fs.mkdirSync(LOGS_DIR, { recursive: true });

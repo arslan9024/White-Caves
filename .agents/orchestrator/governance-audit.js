@@ -100,7 +100,7 @@ export function runGovernanceAudit() {
     }
   }
 
-  const wavesDir = join(ROOT, 'plans/waves');
+  const wavesDir = join(ROOT, '.agents/plans/waves');
   const highestWaveFiles = existsSync(wavesDir)
     ? readdirSync(wavesDir)
         .map((name) => {
@@ -111,25 +111,25 @@ export function runGovernanceAudit() {
     : [];
   const highestWave = highestWaveFiles.length ? Math.max(...highestWaveFiles) : null;
   if (highestWave) {
-    const master = readText(join(ROOT, 'plans/MASTER_PLAN.md'));
-    const pending = readText(join(ROOT, 'plans/PENDING_TASKS_ONLY.md'));
-    const waveIndex = readText(join(ROOT, 'plans/waves/README.md'));
-    for (const [label, text] of [['MASTER_PLAN.md', master], ['PENDING_TASKS_ONLY.md', pending], ['plans/waves/README.md', waveIndex]]) {
+    const master = readText(join(ROOT, '.agents/plans/MASTER_PLAN.md'));
+    const pending = readText(join(ROOT, '.agents/plans/PENDING_TASKS_ONLY.md'));
+    const waveIndex = readText(join(ROOT, '.agents/plans/waves/README.md'));
+    for (const [label, text] of [['MASTER_PLAN.md', master], ['PENDING_TASKS_ONLY.md', pending], ['.agents/plans/waves/README.md', waveIndex]]) {
       if (!text.includes(`Wave ${highestWave}`) && !text.includes(`WAVE_${highestWave}_`)) {
         errors.push(`${label} does not reference highest wave bundle (Wave ${highestWave})`);
       }
     }
   }
 
-  const businessDocs = readText(join(ROOT, 'business_docs/README.md'));
-  const assistantDocs = readText(join(ROOT, 'business_docs/03_ai_assistants/README.md'));
+  const businessDocs = readText(join(ROOT, '.agents/business_docs/README.md'));
+  const assistantDocs = readText(join(ROOT, '.agents/business_docs/03_ai_assistants/README.md'));
   const businessCount = parsePersonaCount(businessDocs);
   const assistantCount = parsePersonaCount(assistantDocs);
   if (businessCount && assistantCount && businessCount !== assistantCount) {
     errors.push(`AI persona count drift: business_docs/README=${businessCount}, assistants README=${assistantCount}`);
   }
 
-  const coverageMatrixPath = join(ROOT, 'plans/FEATURE_COVERAGE_MATRIX.md');
+  const coverageMatrixPath = join(ROOT, '.agents/plans/FEATURE_COVERAGE_MATRIX.md');
   if (!existsSync(coverageMatrixPath)) {
     errors.push('missing plans/FEATURE_COVERAGE_MATRIX.md');
   } else {
@@ -137,7 +137,7 @@ export function runGovernanceAudit() {
     const requiredColumns = ['Feature', 'Business Rule Doc', 'Workflow Doc', 'Wave Backlog', 'Code Module', 'Test Surface'];
     for (const column of requiredColumns) {
       if (!coverageMatrix.includes(column)) {
-        errors.push(`plans/FEATURE_COVERAGE_MATRIX.md missing column: ${column}`);
+        errors.push(`.agents/plans/FEATURE_COVERAGE_MATRIX.md missing column: ${column}`);
       }
     }
   }
