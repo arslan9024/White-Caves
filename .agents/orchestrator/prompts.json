@@ -82,5 +82,75 @@
     "lastUsed": "2026-11-07",
     "successCount": 0,
     "history": []
+  },
+  "DU009": {
+    "v": 1,
+    "agent": "@Joelle",
+    "action": "DRAFT",
+    "target": "README.md",
+    "prompt": "@Joelle -- DRAFT: README.md -> add AI lead-score re-trigger automation covering behavior triggers, cooldowns, fallback handling, and audit visibility",
+    "tags": [
+      "ai",
+      "analytics"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
+  },
+  "DU010": {
+    "v": 1,
+    "agent": "@Sofia",
+    "action": "EXPAND",
+    "target": "compliance-requirements.md",
+    "prompt": "@Sofia -- EXPAND: compliance-requirements.md -> add AML risk scoring model covering source-of-funds triggers, PEP checks, sanctions screening, review cadence, and audit outputs",
+    "tags": [
+      "compliance",
+      "security"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
+  },
+  "DU011": {
+    "v": 1,
+    "agent": "@Annie",
+    "action": "EXPAND",
+    "target": "document-generation.md",
+    "prompt": "@Annie -- EXPAND: document-generation.md -> add a document template registry with versioning, variable maps, approval controls, and deprecation workflow",
+    "tags": [
+      "documents",
+      "workflow"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
+  },
+  "DU012": {
+    "v": 1,
+    "agent": "@Cassie",
+    "action": "EXPAND",
+    "target": "analytics-dashboard.md",
+    "prompt": "@Cassie -- EXPAND: analytics-dashboard.md -> add mobile analytics view with compact KPI cards, thumb-friendly filters, offline considerations, and validation criteria",
+    "tags": [
+      "analytics",
+      "mobile"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
+  },
+  "DU013": {
+    "v": 1,
+    "agent": "@Victoria",
+    "action": "DRAFT",
+    "target": "landlord-portal.md",
+    "prompt": "@Victoria -- DRAFT: landlord-portal.md -> add tenant e-NOC generation workflow for bank, visa, and move-out use cases with approval routing, PDF issuance, and audit trail requirements",
+    "tags": [
+      "leasing",
+      "documents"
+    ],
+    "lastUsed": "2026-11-07",
+    "successCount": 0,
+    "history": []
   }
 }
