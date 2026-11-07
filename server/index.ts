@@ -128,6 +128,8 @@ import mediaRoutes from './routes/media.js';
 import whatsappRouter from './routes/broadcast.js';
 import whatsappEngineRoutes from './routes/whatsapp.js';
 import { pushRoutes } from './routes/push.js';
+import oqoodRouter from './routes/oqood.js';
+import pdcRouter from './routes/pdc.js';
 import { startViewingReminderCron } from './services/ViewingReminderCron.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -435,6 +437,10 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // AEGIS V5 Omni-Orchestrator Telemetry & Control API
 app.use('/api/aegis', aegisRoutes);
+// DLD Oqood Off-Plan Pre-Registration API (DU004 / AEG-012)
+app.use('/api/oqood', oqoodRouter);
+// UAE Law 50/2022 PDC Bounce & Direct Civil Execution API (DU008)
+app.use('/api/pdc', pdcRouter);
 
 // Database health check — Wave 15 (W15-002)
 app.get(
