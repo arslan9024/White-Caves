@@ -16,6 +16,7 @@ export const WhiteCavesBookViewer: React.FC<WhiteCavesBookViewerProps> = ({
     { id: 'chapter-01-architecture.html', title: 'Ch 1: The Grand Architecture' },
     { id: 'chapter-02-mesh.html', title: 'Ch 2: AEGIS Sovereign Mesh' },
     { id: 'chapter-03-ouroboros.html', title: 'Ch 3: Protocol Perpetual Ouroboros' },
+    { id: 'progress-intelligence.html', title: '⚡ Progress & Target Intelligence' },
   ];
 
   const currentIndex = chapters.findIndex((c) => c.id === currentChapter);
@@ -96,3 +97,4 @@ export const WhiteCavesBookViewer: React.FC<WhiteCavesBookViewerProps> = ({
 };
 
 export default WhiteCavesBookViewer;
+
