@@ -8,7 +8,7 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
 
   // Log the error with request ID if available
   const requestId = res.getHeader('X-Request-ID') as string | undefined;
-  logger.error({ err, requestId }, 'Unhandled error');
+  logger.error('Unhandled error', { err, requestId });
 
   // Do not leak internal error details in production
   const response = process.env.NODE_ENV === 'production' && status === 500

@@ -205,7 +205,7 @@ export function getOutreachBudgetSummary() {
   };
 }
 
-
+export function executeLindaCommandOrScript(rawCommand: string): {
   success: boolean;
   command: string;
   output: string;

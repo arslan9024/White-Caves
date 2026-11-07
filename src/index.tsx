@@ -14,6 +14,8 @@ import './styles/tokens.css';
 import './styles/dubaiLuxuryTheme.css';
 // Master Brand Tokens (Waves 56-65) — Red primary, Dark Luxury Slate, and custom scrollbars
 import './styles/brand-tokens.css';
+// Sovereign Zero-Runtime Tailwind Utility Engine (AEG-010) — styles all CRM & Dashboard views
+import './styles/tailwind-utilities.css';
 // RTL utility overrides — applied automatically when dir="rtl" is set on <html>
 import './styles/rtl.css';
 import { createLogger } from './utils/logger';

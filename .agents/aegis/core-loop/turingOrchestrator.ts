@@ -1,16 +1,32 @@
-// turingOrchestrator.ts
 /**
- * Thin wrapper that re‑exports the singleton instance of the refactored Turing Orchestrator.
- * All core logic now lives in ./turingCore.ts (class `TuringOrchestratorCore`).
- * This file maintains the original public API so existing imports continue to work.
+ * turingOrchestrator.ts — Public facade & singleton for the AEGIS V5.0 Turing Orchestrator.
+ * Re-exports all types, constants, and the singleton instance for backward compatibility.
  */
-import { TuringOrchestratorCore } from './turingCore.ts';
-/**
- * Alias for the core orchestrator class, kept for backward compatibility.
- * @see AEG-001 – Orchestration API contract.
- */
-export { TuringOrchestratorCore as TuringOrchestrator };
+import {
+  TuringOrchestratorCore,
+  processPlans,
+  CodebaseDebtCheckResult,
+  PromptEvaluationContext,
+  TuringAuditRule,
+  IdempotentSubmissionEnvelope,
+  CreditVelocityPlan,
+  SUPREME_CREDIT_VELOCITY_CONFIG,
+  AEGIS_PROTOCOL_FILES,
+  ALLOWED_CONTEXT_TRIAD,
+} from './turingCore';
 
+export {
+  TuringOrchestratorCore as TuringOrchestrator,
+  processPlans,
+  CodebaseDebtCheckResult,
+  PromptEvaluationContext,
+  TuringAuditRule,
+  IdempotentSubmissionEnvelope,
+  CreditVelocityPlan,
+  SUPREME_CREDIT_VELOCITY_CONFIG,
+  AEGIS_PROTOCOL_FILES,
+  ALLOWED_CONTEXT_TRIAD,
+};
 
 /**
  * Public singleton instance used throughout the codebase.

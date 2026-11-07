@@ -1,22 +1,28 @@
-// @ts-ignore
-/// <reference types="vite/client" />
+/**
+ * SignInPage.tsx
+ * Modular authentication orchestrator for White Caves Real Estate
+ * Composes 7 single-purpose sub-modules under ./components/
+ */
 
 import React from 'react';
-import { useAuth } from './components/useAuth';
-import AuthHeader from './components/AuthHeader';
-import AuthMethodTabsWrapper from './components/AuthMethodTabsWrapper';
-import EmailForm from './components/EmailForm';
-import PhoneForm from './components/PhoneForm';
-import CategorySelection from './components/CategorySelection';
-import SocialAuthButtons from './components/SocialAuthButtons';
 import Spinner from '../../components/Spinner';
+import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
+import { AuthHeader } from './components/AuthHeader';
+import { AuthMethodTabs } from './components/AuthMethodTabs';
+import { AuthModeSwitch } from './components/AuthModeSwitch';
+import { CategorySelectionCard } from './components/CategorySelectionCard';
+import { EmailAuthForm } from './components/EmailAuthForm';
+import { GmailTroubleshootingPanel } from './components/GmailTroubleshootingPanel';
+import { PhoneAuthForm } from './components/PhoneAuthForm';
+import { SocialAuthButtons } from './components/SocialAuthButtons';
+import { SocialRecoveryPanel } from './components/SocialRecoveryPanel';
+import { useSignInController } from './components/useSignInController';
+import './AuthPages.css';
 
 const SignInPage: React.FC = () => {
   const {
     mode,
-    setMode,
     activeTab,
-    setActiveTab,
     email,
     setEmail,
     password,
@@ -26,50 +32,36 @@ const SignInPage: React.FC = () => {
     phone,
     setPhone,
     loading,
-    setLoading,
     error,
-    setError,
     successMsg,
-    setSuccessMsg,
     signupStep,
-    setSignupStep,
-    registeredUser,
-    setRegisteredUser,
     selectedCategory,
     setSelectedCategory,
     rememberMe,
     setRememberMe,
     socialRecovery,
-    setSocialRecovery,
     showGmailTroubleshooting,
     setShowGmailTroubleshooting,
-    resetState,
+    isSignup,
+    isFirebaseAuthConfigured,
+    googleHelperText,
     switchMode,
+    handleTabChange,
     handleEmailSubmit,
+    handleCategoryContinue,
     handleFounderDevLogin,
     handleSocialAuth,
     handleSocialRetry,
     handleSocialRecoveryDismiss,
     handleBiometricSuccess,
-    googleHelperText,
-    isSignup,
-    retriesLeft,
-  } = useAuth();
+  } = useSignInController();
 
-  // Render steps
   if (isSignup && signupStep === 2) {
     return (
-      <CategorySelection
+      <CategorySelectionCard
         selectedCategory={selectedCategory}
-        onSelect={setSelectedCategory}
-        onContinue={() => {
-          if (selectedCategory) {
-            // proceed to next step (role selection not implemented)
-            // For now just reset to signin mode
-            switchMode();
-          }
-        }}
-        loading={loading}
+        onSelectCategory={setSelectedCategory}
+        onContinue={handleCategoryContinue}
       />
     );
   }
@@ -78,8 +70,9 @@ const SignInPage: React.FC = () => {
     <div className="auth-page-container">
       <div className="auth-card">
         <AuthHeader isSignup={isSignup} />
-        <AuthMethodTabsWrapper activeTab={activeTab} setActiveTab={setActiveTab} setError={setError} />
+
         {loading && <Spinner />}
+
         <SocialAuthButtons
           loading={loading}
           onSocialAuth={handleSocialAuth}
@@ -90,27 +83,66 @@ const SignInPage: React.FC = () => {
           googleDisabled={!isFirebaseAuthConfigured}
           helperText={googleHelperText}
         />
+
+        <GmailTroubleshootingPanel
+          visible={showGmailTroubleshooting}
+          isDev={Boolean(import.meta.env?.DEV)}
+          loading={loading}
+          onContinueWithEmail={() => {
+            setShowGmailTroubleshooting(false);
+            handleTabChange('email');
+          }}
+          onFounderDevLogin={handleFounderDevLogin}
+        />
+
+        <SocialRecoveryPanel
+          socialRecovery={socialRecovery}
+          onRetry={handleSocialRetry}
+          onDismiss={handleSocialRecoveryDismiss}
+        />
+
+        <AuthMethodTabs
+          activeTab={activeTab}
+          onChange={handleTabChange}
+          emailLabel="Email"
+          phoneLabel="Phone"
+        />
+
         {activeTab === 'email' && (
-          <EmailForm
+          <EmailAuthForm
             email={email}
-            setEmail={setEmail}
+            onEmailChange={setEmail}
             password={password}
-            setPassword={setPassword}
+            onPasswordChange={setPassword}
             confirmPassword={confirmPassword}
-            setConfirmPassword={setConfirmPassword}
+            onConfirmPasswordChange={setConfirmPassword}
+            rememberMe={rememberMe}
+            onRememberMeChange={setRememberMe}
             isSignup={isSignup}
             loading={loading}
             error={error}
             successMsg={successMsg}
-            rememberMe={rememberMe}
-            setRememberMe={setRememberMe}
-            handleSubmit={handleEmailSubmit}
+            onSubmit={handleEmailSubmit}
           />
         )}
+
         {activeTab === 'phone' && (
-          <PhoneForm phone={phone} setPhone={setPhone} loading={loading} handleSubmit={handleEmailSubmit} />
+          <PhoneAuthForm
+            phone={phone}
+            onPhoneChange={setPhone}
+            loading={loading}
+            error={error}
+          />
         )}
-        {/* Social Recovery and other panels could be added here if needed */}
+
+        <BiometricLoginButton onSuccess={handleBiometricSuccess} onError={() => {}} />
+
+        <AuthModeSwitch
+          mode={mode}
+          onSwitch={switchMode}
+          signInPromptText="Already have an account? Sign In"
+          signUpPromptText="Don't have an account? Sign Up"
+        />
       </div>
     </div>
   );

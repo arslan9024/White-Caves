@@ -57,7 +57,7 @@ export default defineConfig(async ({ command }) => {
               runtimeCaching: [
                 {
                   // Private originals, OAuth codes and review mutations must never enter caches or replay queues.
-                  urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\//|$)/,
+                  urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
                   method: 'GET',
                   handler: 'NetworkOnly',
                 },

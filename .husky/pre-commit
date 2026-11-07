@@ -1,6 +1,1 @@
-# .husky/pre-commit
-#!/usr/bin/env sh
-. "$(dirname "$0")/_/husky.sh"
-
-# Run lint and tests before committing
-npm run lint && npm test
+npx lint-staged

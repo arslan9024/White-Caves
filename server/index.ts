@@ -1386,9 +1386,18 @@ const startServer = async () => {
   );
 
   dbInitPromise = (async () => {
-    logger.info('Connecting to MongoDB with Mongoose...');
-    await connectDB(DATABASE_URL);
-    logger.info('Mongoose connected successfully');
+    if (DATABASE_URL && /^mongodb(\+srv)?:\/\//i.test(DATABASE_URL)) {
+      try {
+        logger.info('Connecting to MongoDB with Mongoose...');
+        await connectDB(DATABASE_URL);
+        logger.info('Mongoose connected successfully');
+      } catch (mongoErr: unknown) {
+        const msg = mongoErr instanceof Error ? mongoErr.message : String(mongoErr);
+        logger.warn(`Mongoose connection failed: ${msg}`);
+      }
+    } else {
+      logger.warn('MongoDB URI not configured — skipping Mongoose connection in development');
+    }
 
     try {
       await connectDatabase();

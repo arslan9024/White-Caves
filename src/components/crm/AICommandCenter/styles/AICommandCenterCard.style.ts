@@ -17,7 +17,7 @@ export const CapabilityTag = styled.span`
   padding: 3px 8px;
   border-radius: 6px;
   background: var(--bg-secondary, #f1f5f9);
-  color: var(--text-secondary, #475569);
+  color: var(--text-secondary, #334155);
   font-size: 0.72rem;
   font-weight: 600;
 `;
@@ -39,7 +39,7 @@ export const MetricsRow = styled.div`
     gap: 2px;
 
     span.label {
-      color: var(--text-muted, #94a3b8);
+      color: var(--text-muted, #475569);
       font-size: 0.68rem;
       text-transform: uppercase;
     }
@@ -71,5 +71,10 @@ export const LaunchBtn = styled.button`
     background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     transform: translateY(-1px);
     box-shadow: 0 6px 18px rgba(239, 68, 68, 0.4);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #ef4444;
+    outline-offset: 2px;
   }
 `;

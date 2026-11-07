@@ -1,7 +1,7 @@
 /* eslint-disable security/detect-non-literal-fs-filename, no-console */
 import fs from 'fs';
 import path from 'path';
-import { runGovernanceAudit } from './orchestrator/governance-audit.js';
+import { runGovernanceAudit } from '../orchestrator/governance-audit.js';
 
 const repoRoot = process.cwd();
 const plansDir = path.join(repoRoot, 'docs', 'plans');

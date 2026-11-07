@@ -7,16 +7,18 @@ import csurf from 'csurf';
 // `/csrf-token` endpoint.
 export const csrfProtection = csurf({ cookie: true });
 
+type CsrfRequest = Request & { csrfToken: () => string };
+
 // Helper endpoint to expose a fresh CSRF token for SPA clients.
 export function csrfTokenHandler(req: Request, res: Response) {
-  res.json({ csrfToken: req.csrfToken() });
+  res.json({ csrfToken: (req as CsrfRequest).csrfToken() });
 }
 
 // Middleware that ensures a CSRF token cookie exists on GET requests.
 export function setCsrfCookie(req: Request, res: Response, next: NextFunction) {
   if (req.method === 'GET') {
     // Generate token and set as cookie for subsequent POST/PUT DELETE.
-    const token = req.csrfToken();
+    const token = (req as CsrfRequest).csrfToken();
     res.cookie('csrf_token', token, { httpOnly: true, sameSite: 'strict' });
   }
   next();

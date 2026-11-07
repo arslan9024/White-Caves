@@ -1,11 +1,14 @@
 // src/server.ts
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import morgan from 'morgan';
+import compression from 'compression';
 import { json, urlencoded } from 'body-parser';
 import { v4 as uuidv4 } from 'uuid';
 import pinoHttp from 'pino-http';
 import logger from './utils/logger.js';
+import { backendLogger } from './utils/backendLogger';
 import { authRateLimiter } from './middleware/authRateLimiter';
 
 import { errorHandler } from './middleware/errorHandler';
@@ -18,6 +21,8 @@ import swaggerSpec from './docs/swagger';
 import './tracing'; // initialize OpenTelemetry tracing
 import { initMongo, closeMongo } from './services/db';
 import { metricsMiddleware } from './middleware/metricsMiddleware';
+
+const app = express();
 
 app.use(cookieParser());
 
@@ -59,7 +64,7 @@ app.use(morgan('combined'));
 app.use(compression());
 
 // ---- Request ID for tracing ----
-app.use((req, _res, next) => {
+app.use((req: Request, _res: Response, next: NextFunction) => {
   const requestId = req.headers['x-request-id'] ?? uuidv4();
   req.headers['x-request-id'] = requestId as string;
   _res.setHeader('X-Request-ID', requestId as string);

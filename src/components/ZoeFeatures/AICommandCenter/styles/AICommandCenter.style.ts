@@ -186,9 +186,9 @@ export const DepartmentPills = styled.div`
 export const DeptPill = styled.button<{ $active: boolean }>`
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid ${p => (p.$active ? '#EF4444' : 'var(--border-color, #E2E8F0)')};
+  border: 1px solid ${p => (p.$active ? '#EF4444' : 'var(--border-color, #CBD5E1)')};
   background: ${p => (p.$active ? '#EF4444' : 'var(--bg-secondary, #F8FAFC)')};
-  color: ${p => (p.$active ? '#FFFFFF' : 'var(--text-secondary, #475569)')};
+  color: ${p => (p.$active ? '#FFFFFF' : 'var(--text-secondary, #334155)')};
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
@@ -198,12 +198,22 @@ export const DeptPill = styled.button<{ $active: boolean }>`
     border-color: #EF4444;
     color: ${p => (p.$active ? '#FFFFFF' : '#EF4444')};
   }
+
+  &:focus-visible {
+    outline: 2px solid #EF4444;
+    outline-offset: 2px;
+  }
 `;
 
 export const AssistantsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
 `;
 
 export const AssistantCard = styled.div<{ $active?: boolean }>`

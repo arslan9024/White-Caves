@@ -7,4 +7,5 @@ const logger = pino({
   timestamp: pino.stdTimeFunctions.isoTime,
 });
 
+export const backendLogger = logger;
 export default logger;

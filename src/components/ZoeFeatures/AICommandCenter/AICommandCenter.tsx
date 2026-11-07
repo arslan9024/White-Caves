@@ -208,9 +208,10 @@ export const AICommandCenter: FC = () => {
           {/* ── FILTER & SEARCH BAR ──────────────────────────────────────────── */}
           <FilterBar>
             <SearchInputWrapper>
-              <Search size={18} className="search-icon" />
+              <Search size={18} className="search-icon" aria-hidden="true" />
               <input
                 type="text"
+                aria-label="Search AI assistants, departments, or capabilities"
                 placeholder={COMMAND_CENTER_TEXT.filters.searchPlaceholder}
                 value={searchTerm}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
@@ -218,9 +219,11 @@ export const AICommandCenter: FC = () => {
               />
             </SearchInputWrapper>
 
-            <DepartmentPills>
+            <DepartmentPills role="group" aria-label="Filter by corporate department">
               <DeptPill
+                type="button"
                 $active={selectedDept === 'all'}
+                aria-pressed={selectedDept === 'all'}
                 onClick={() => setSelectedDept('all')}
                 data-testid="dept-pill-all"
               >
@@ -228,8 +231,10 @@ export const AICommandCenter: FC = () => {
               </DeptPill>
               {departments.map((dept: DepartmentDef) => (
                 <DeptPill
+                  type="button"
                   key={dept.id}
                   $active={selectedDept === dept.id}
+                  aria-pressed={selectedDept === dept.id}
                   onClick={() => setSelectedDept(dept.id)}
                   data-testid={`dept-pill-${dept.id}`}
                 >
@@ -240,17 +245,19 @@ export const AICommandCenter: FC = () => {
           </FilterBar>
 
           {/* ── 108 OPERATIONAL SUPERVISORS GRID ─────────────────────────────── */}
-          <AssistantsGrid data-testid="assistants-grid">
+          <AssistantsGrid data-testid="assistants-grid" aria-live="polite">
             {filteredAssistants.map((agent: SupervisorDef) => {
               const isSelected = selectedAssistantId === agent.id;
               return (
                 <AssistantCard
                   key={agent.id}
                   $active={isSelected}
+                  role="region"
+                  aria-label={`${agent.name} — ${agent.title}`}
                   data-testid={`agent-card-${agent.id}`}
                 >
                   <AssistantHeader>
-                    <img src={agent.avatar} alt={agent.name} />
+                    <img src={agent.avatar} alt={agent.name} loading="lazy" />
                     <div className="meta">
                       <h3>
                         <span>{agent.name}</span>
@@ -264,11 +271,11 @@ export const AICommandCenter: FC = () => {
                     📋 Specialty: {agent.specialty}
                   </div>
 
-                  <div style={{ margin: '0 0 8px', fontSize: '0.75rem', color: 'var(--text-secondary, #475569)', lineHeight: 1.4 }}>
-                    <strong style={{ display: 'block', color: 'var(--color-1e293b, #1E293B)', marginBottom: '2px' }}>Assigned Tasks:</strong>
+                  <div style={{ margin: '0 0 8px', fontSize: '0.75rem', color: 'var(--text-secondary, #334155)', lineHeight: 1.4 }}>
+                    <strong style={{ display: 'block', color: 'var(--color-1e293b, #0F172A)', marginBottom: '2px' }}>Assigned Tasks:</strong>
                     {agent.assignedTasks.map((t, idx) => (
                       <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ color: '#10B981', fontWeight: 800 }}>•</span> {t}
+                        <span style={{ color: '#10B981', fontWeight: 800 }} aria-hidden="true">•</span> {t}
                       </div>
                     ))}
                   </div>
@@ -291,11 +298,14 @@ export const AICommandCenter: FC = () => {
                   </MetricsRow>
 
                   <LaunchBtn
+                    type="button"
+                    aria-label={`Launch ${agent.name} (${agent.title})`}
+                    title={`Launch ${agent.name}`}
                     onClick={() => handleSelectAssistant(agent.id)}
                     data-testid={`btn-launch-${agent.id}`}
                   >
                     <span>Launch {agent.name}</span>
-                    <ArrowUpRight size={16} />
+                    <ArrowUpRight size={16} aria-hidden="true" />
                   </LaunchBtn>
                 </AssistantCard>
               );

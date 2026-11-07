@@ -33,6 +33,10 @@ const OUT_TOP12_MD = path.join(ROOT, 'docs', 'plans', 'AEGIS_TOP_12_TARGETS.md')
 if (!fs.existsSync(LOGS_DIR)) {
   fs.mkdirSync(LOGS_DIR, { recursive: true });
 }
+const PLANS_DIR = path.dirname(OUT_TOP1000_MD);
+if (!fs.existsSync(PLANS_DIR)) {
+  fs.mkdirSync(PLANS_DIR, { recursive: true });
+}
 
 // ── 10 STRATEGIC DOMAINS DEFINITION (100 ISSUES PER DOMAIN = 1,000 ISSUES) ───
 const STRATEGIC_DOMAINS = [

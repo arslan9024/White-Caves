@@ -18,7 +18,7 @@ const ERMSDiagramViewer: React.FC<{ diagram: string }> = ({ diagram }) => {
     mermaid.initialize({ startOnLoad: false, theme: 'default' });
     if (containerRef.current) {
       // Render the diagram into the container
-      mermaid.render('generatedDiagram', diagram, (svgCode) => {
+      mermaid.render('generatedDiagram', diagram, (svgCode: string) => {
         containerRef.current!.innerHTML = svgCode;
       });
     }

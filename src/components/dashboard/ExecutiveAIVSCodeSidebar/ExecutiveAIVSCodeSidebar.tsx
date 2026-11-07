@@ -142,7 +142,7 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
                 }}
                 style={{
                   width: '100%',
-                  marginBottom: '10px',
+                  marginBottom: '8px',
                   padding: '8px 10px',
                   borderRadius: '8px',
                   background:
@@ -159,6 +159,33 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
               >
                 <span>🔱 Open Full AI Command Center</span>
                 <span style={{ color: '#FCA5A5', fontSize: '0.65rem' }}>Main Screen →</span>
+              </button>
+
+              <button
+                type="button"
+                data-testid="open-linda-main-btn"
+                onClick={() => {
+                  handleTileClick('linda', 'AI Linda · WhatsApp Bot Operations Center');
+                }}
+                style={{
+                  width: '100%',
+                  marginBottom: '12px',
+                  padding: '8px 10px',
+                  borderRadius: '8px',
+                  background:
+                    'linear-gradient(135deg, rgba(37, 211, 102, 0.22), rgba(15, 23, 42, 0.92))',
+                  border: '1px solid rgba(37, 211, 102, 0.5)',
+                  color: '#ECFDF5',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span>🤖 WhatsApp Bot Operations Center (v2.0)</span>
+                <span style={{ color: '#86EFAC', fontSize: '0.65rem' }}>Launch UI →</span>
               </button>
 
               <div

@@ -1,0 +1,10 @@
+// FILE: .agents/aegis/protocols/PHOENIX_SHIELD_ISOLATION.csv
+Rule_ID,Department_Code,Orchestration_Domain,Rule_Definition,Execution_Trigger,Validation_Criteria,Verification_File
+AEG-018,WC-SEC,Security Control,Inject runtime environment properties abstraction via centralized secrets management systems.,Runtime Boot Sequence,OAuth credentials for Zoho Books are never mapped inside plaintext files.,.env.example
+AEG-019,WC-INF,Infrastructure,Deploy Next.js Dynamic Partial Prerendering to deliver dashboard shells at edge speed.,Server Route Handshakes,Static structural navigation layers serve in 0ms while data blocks stream.,app/layout.tsx
+AEG-020,WC-INF,Infrastructure,Wrap dynamic data tables inside React Server Component Suspense streaming pipelines.,Client Route Mounting,Renders layout loading skeletons asynchronously until fetch sequences resolve.,app/dashboard/pms/page.tsx
+AEG-021,WC-INF,Infrastructure,Maintain broad administrative personal access token scopes under the classic Aegis shield.,GitHub Actions Workflow,Authenticates CI/CD pipeline code quality audits without credentials leakage.,.github/workflows/ci.yml
+AEG-022,WC-SQA,Quality Assurance,Enforce strict TypeScript compilation checks to block dead variables from staging lines.,Pull Request Assembly,The build pipeline terminates immediately if type checking parameters return warnings.,package.json
+AEG-023,WC-SQA,Quality Assurance,Run comprehensive Vitest local assertions across workflow engine modules.,Repository Code Merge,Requires a 100% test completion metric before release pipelines can execute.,vitest.config.js
+AEG-024,WC-SQA,Quality Assurance,Integrate end-to-end Playwright tests to monitor cross-language directional presentation logic.,CI Quality Gate Check,Validates fluid navigation alignment on both LTR and RTL viewports.,playwright.config.ts
+AEG-025,WC-LMS,Leasing Operations,Isolate Dubai Land Department contract parsing scripts into pure stateless workflow engines.,Lease Ingestion Stage,Extracts field mappings cleanly without altering original government document templates.,src/components/dashboard/LeasingModule/workflow.ts

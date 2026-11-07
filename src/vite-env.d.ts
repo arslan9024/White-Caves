@@ -69,4 +69,23 @@ declare module '*.woff2' {
   const src: string;
   export default src;
 }
+declare module '*.mjs?url' {
+  const src: string;
+  export default src;
+}
+declare module 'mermaid';
+declare module 'node-cache';
+declare module 'csurf';
+declare module 'dotenv-safe';
+declare module 'pino';
+declare module 'pino-http';
+declare module 'prom-client';
+declare module 'swagger-jsdoc';
+declare module 'swagger-ui-express';
+declare module '@opentelemetry/instrumentation-express';
+declare module '@opentelemetry/instrumentation-http';
+declare module '@opentelemetry/instrumentation';
+declare module '@opentelemetry/sdk-trace-base';
+declare module '@opentelemetry/sdk-trace-node';
+
 

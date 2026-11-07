@@ -1,10 +1,5 @@
 // FILE: src/components/crm/AiAssistantManager/AiAssistantManagerView.tsx
-/**
- * White Caves Real Estate LLC - AI Assistants Management System (AIAMS) Main View
- * Standard: AEGIS Canonical 12-Way Architecture Standard (View Layer)
- * Single Purpose File Law: < 350 lines
- */
-
+// White Caves Real Estate LLC - AIAMS Main View (< 350 lines)
 import React, { useState, useEffect, useMemo } from 'react';
 import { Bot, Plus, RotateCcw, Search, GitFork, MessageSquare } from 'lucide-react';
 import { aiamsStyles as s } from './AiAssistantManager.styles';
@@ -21,15 +16,7 @@ export interface AiAssistantManagerViewProps {
   onNavigate?: (route: string) => void;
 }
 
-const RESERVED_SUBROUTES = new Set([
-  'agents',
-  'crud',
-  'managers',
-  'supervisors',
-  'organogram',
-  'linda',
-  'create',
-]);
+const RESERVED_SUBROUTES = new Set(['agents', 'crud', 'managers', 'supervisors', 'organogram', 'linda', 'create']);
 
 export const AiAssistantManagerView: React.FC<AiAssistantManagerViewProps> = ({
   selectedSubRoute = null,
@@ -181,11 +168,11 @@ export const AiAssistantManagerView: React.FC<AiAssistantManagerViewProps> = ({
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                     viewMode === 'linda'
                       ? 'bg-emerald-600 text-white'
-                      : 'text-slate-400 hover:text-white'
+                      : 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-600 hover:text-white'
                   }`}
                 >
                   <MessageSquare size={13} />
-                  <span>AI Linda CRM</span>
+                  <span>🤖 AI Linda Operations Center (v2.0)</span>
                 </button>
               </div>
 
