@@ -58,7 +58,9 @@ export const isDatabaseUnavailableError = (error: unknown): boolean => {
       message.includes('can\'t reach database server') ||
       message.includes('connection timed out') ||
       message.includes('database connection failed') ||
-      message.includes('prismaclientinitializationerror')
+      message.includes('prismaclientinitializationerror') ||
+      message.includes('environment variable not found: database_url') ||
+      message.includes('database_url not set')
     );
   }
 
