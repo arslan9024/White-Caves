@@ -27,7 +27,7 @@
 ## Key Codebase Ownership
 
 - `.github/`
-- `scripts/orchestrator/`
+- `.agents/orchestrator/`
 - `.husky/`
 - `package.json`
 - `vercel.json`
@@ -52,7 +52,7 @@
 - **TypeScript Pre-flight:** `npx tsc --noEmit --skipLibCheck`
 - **Full Test Suite:** `npx vitest run`
 - **Lint Check:** `npx eslint --max-warnings 0 .`
-- **PR Unblock:** `node scripts/orchestrator/aegis-unblock-pr.js <pr_number>`
+- **PR Unblock:** `node .agents/orchestrator/aegis-unblock-pr.js <pr_number>`
 - **Branch Cleanup:** `git remote prune origin && git branch --merged main | grep -v main | xargs git branch -d`
 
 ---

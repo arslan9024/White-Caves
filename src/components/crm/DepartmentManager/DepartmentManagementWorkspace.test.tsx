@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import DepartmentManagementWorkspace from './DepartmentManagementWorkspace';
 import { enforceMaxNineSubDepts } from './DepartmentManager.data';
 
@@ -45,6 +45,7 @@ const mockDepartments = [
 describe('DepartmentManagementWorkspace Component (7-Category Co-Location Spec)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
     global.fetch = vi.fn().mockImplementation((url: string) => {
       if (url.includes('/api/corporate-departments')) {
         return Promise.resolve({
@@ -54,6 +55,11 @@ describe('DepartmentManagementWorkspace Component (7-Category Co-Location Spec)'
       }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true }) });
     });
+  });
+
+  afterEach(() => {
+    cleanup();
+    localStorage.clear();
   });
 
   it('renders workspace title, stats deck (108 sub-depts), and department cards', async () => {
@@ -142,14 +148,11 @@ describe('DepartmentManagementWorkspace Component (7-Category Co-Location Spec)'
       expect(screen.getByText('Luxury Sales & Brokerage')).toBeInTheDocument();
     });
 
-    // Demote luxury_sales by clicking its delete/demote button
     const deleteBtn = screen.getByTestId('dept-delete-btn-luxury_sales');
     fireEvent.click(deleteBtn);
 
-    // It is no longer in top-level departments grid
     expect(screen.queryByTestId('dept-card-luxury_sales')).toBeNull();
 
-    // But its content is preserved and now in the workspace unassigned pool deck!
     await waitFor(() => {
       expect(screen.getByTestId('workspace-unassigned-pool-deck')).toBeInTheDocument();
       expect(
@@ -157,18 +160,15 @@ describe('DepartmentManagementWorkspace Component (7-Category Co-Location Spec)'
       ).toBeInTheDocument();
     });
 
-    // Promote it back to corporate tier
     const promoteBtn = screen.getByTestId('promote-btn-sub-from-dept-luxury_sales');
     fireEvent.click(promoteBtn);
 
-    // It should be promoted back to top-level departments!
     await waitFor(() => {
       expect(screen.getByText(/Luxury Sales & Brokerage/i)).toBeInTheDocument();
     });
   }, 10000);
 
   it('enforces maximum 9 sub-departments per department and shifts overflow to pool', () => {
-    // Test data helper directly
     const testSquads = Array.from({ length: 12 }, (_, i) => ({
       id: `squad-${i + 1}`,
       name: `Squad ${i + 1}`,
@@ -208,6 +208,39 @@ describe('DepartmentManagementWorkspace Component (7-Category Co-Location Spec)'
     fireEvent.click(cancelBtn);
 
     expect(screen.queryByText('Create New Corporate Department')).toBeNull();
+  }, 10000);
+
+  it('supports quick inline rename on department cards and 12-Dept Name Finalizer matrix', async () => {
+    render(<DepartmentManagementWorkspace />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Luxury Sales & Brokerage')).toBeInTheDocument();
+    });
+
+    // Quick inline rename on card
+    const quickRenameBtn = screen.getByTestId('dept-quick-rename-btn-luxury_sales');
+    fireEvent.click(quickRenameBtn);
+
+    const renameInput = screen.getByTestId('dept-inline-rename-input-luxury_sales');
+    fireEvent.change(renameInput, { target: { value: 'Ultra-Prime Private Brokerage' } });
+
+    const saveBtn = screen.getByTestId('dept-inline-rename-save-luxury_sales');
+    fireEvent.click(saveBtn);
+
+    expect(screen.getByText('Ultra-Prime Private Brokerage')).toBeInTheDocument();
+
+    // Switch to 12-Dept Name Finalizer table view
+    const finalizerTabBtn = screen.getByTestId('viewmode-finalizer-btn');
+    fireEvent.click(finalizerTabBtn);
+
+    expect(screen.getByTestId('department-finalizer-table')).toBeInTheDocument();
+    const row1TitleInput = screen.getByTestId('finalizer-title-input-1') as HTMLInputElement;
+    expect(row1TitleInput.value).toBe('Ultra-Prime Private Brokerage');
+
+    fireEvent.change(row1TitleInput, { target: { value: 'Sovereign Luxury Brokerage' } });
+    fireEvent.click(screen.getByTestId('finalizer-save-all-btn'));
+
+    expect(screen.getByTestId('finalizer-saved-toast')).toBeInTheDocument();
   }, 10000);
 
   it('opens 9 sub-items modal with active squads and unassigned pool', async () => {

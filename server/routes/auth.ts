@@ -49,7 +49,7 @@ const {
 const router = Router();
 
 // ─── Authentication & Session ──────────────────────────────────────────────
-router.post('/login', authLimiter, loginHandler);
+router.post('/login', authLimiter, requireDoubleSubmitCsrf, loginHandler);
 router.post('/register', registerLimiter, registerHandler);
 router.post('/logout', authMiddleware, requireDoubleSubmitCsrf, logoutHandler);
 router.post('/refresh', requireDoubleSubmitCsrf, refreshHandler);
@@ -84,6 +84,9 @@ router.get('/security/stats', authMiddleware, getSecurityStatsHandler);
 
 // ─── WebAuthn / FIDO2 Biometrics ───────────────────────────────────────────
 router.post('/webauthn/register/options', authMiddleware, webauthnRegisterOptionsHandler);
+// Quick login (WebAuthn) endpoints – no password required, uses stored credentials
+router.post('/webauthn/quick-login/options', webauthnAuthenticateOptionsHandler);
+router.post('/webauthn/quick-login/verify', webauthnAuthenticateVerifyHandler);
 router.post('/webauthn/register/verify', authMiddleware, webauthnRegisterVerifyHandler);
 router.post('/webauthn/authenticate/options', webauthnAuthenticateOptionsHandler);
 router.post('/webauthn/authenticate/verify', webauthnAuthenticateVerifyHandler);

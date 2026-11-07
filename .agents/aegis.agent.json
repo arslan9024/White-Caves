@@ -4,8 +4,8 @@
   "name": "AEGIS",
   "fullName": "Autonomous Enterprise Governance & Intelligent Orchestration System",
   "tagline": "Unified Multi-Expert Autonomous Mesh & Enterprise Governance Architecture",
-  "version": "4.1.0",
-  "lastUpdated": "2026-11-02",
+  "version": "5.0.0",
+  "lastUpdated": "2026-11-06",
   "protocol": "AEGIS_SOVEREIGN_ORCHESTRATOR",
   "hierarchy": {
     "level": 0,
@@ -174,10 +174,22 @@
     "identifier": "aegis:nova:protocol:infinite:crucible",
     "commander": "@Nova",
     "batchCycleSize": 10,
-    "autoSolver": "aegis/orchestrator/aegis-auto-solver.js",
-    "issueGenerator": "aegis/orchestrator/aegis-1000-issues-generator.js",
-    "validator": "aegis/orchestrator/aegis-issue-validator.js",
+    "autoSolver": ".agents/orchestrator/aegis-auto-solver.js",
+    "issueGenerator": ".agents/orchestrator/aegis-1000-issues-generator.js",
+    "validator": ".agents/orchestrator/aegis-issue-validator.js",
     "stateFile": ".agents/crucible-state.json"
+  },
+  "protocolConstitutionV5": {
+    "coreLoop": ".agents/aegis/core-loop/turingOrchestrator.ts",
+    "leaderboardXpHooks": ".agents/aegis/protocols/leaderboardXpHooks.ts",
+    "zeroContextMatrix": ".agents/aegis/protocols/ZERO_CONTEXT_OVERCROWDING_MATRIX.md",
+    "matrices": [
+      ".agents/aegis/protocols/PROMETHEUS_CORE_UNBOUND.csv",
+      ".agents/aegis/protocols/TURING_SILENT_VELOCITY.csv",
+      ".agents/aegis/protocols/PHOENIX_SHIELD_ISOLATION.csv",
+      ".agents/aegis/protocols/VALKYRIE_LEDGER_RISE.csv",
+      ".agents/aegis/protocols/APOCALYPSE_OVERDRIVE_MATRIX.csv"
+    ]
   },
   "modelRoutingMatrix": {
     "freeTier": {
@@ -211,42 +223,47 @@
   "orchestratorTools": [
     {
       "name": "aegis-engine",
-      "path": "aegis/orchestrator/aegis-engine.js",
+      "path": ".agents/orchestrator/aegis-engine.js",
       "description": "Core orchestration loop for autonomous task execution and dispatch"
     },
     {
+      "name": "turing-orchestrator",
+      "path": ".agents/aegis/core-loop/turingOrchestrator.ts",
+      "description": "Turing Protocol real-time prompt/codebase auditing & Context Triad enforcement"
+    },
+    {
       "name": "aegis-dedup-optimizer",
-      "path": "aegis/orchestrator/aegis-dedup-optimizer.js",
+      "path": ".agents/orchestrator/aegis-dedup-optimizer.js",
       "description": "Automated deduplication and algorithmic time-complexity optimization"
     },
     {
       "name": "aegis-token-guard",
-      "path": "aegis/orchestrator/aegis-token-guard.js",
+      "path": ".agents/orchestrator/aegis-token-guard.js",
       "description": "Enforces strict token preservation shield and 15,000 ceiling"
     },
     {
       "name": "aegis-deep-analyzer",
-      "path": "aegis/orchestrator/aegis-deep-analyzer.js",
+      "path": ".agents/orchestrator/aegis-deep-analyzer.js",
       "description": "Static AST analyzer for code quality, dead-code, and dependency cycles"
     },
     {
       "name": "aegis-issue-solver-engine",
-      "path": "aegis/orchestrator/aegis-issue-solver-engine.js",
+      "path": ".agents/orchestrator/aegis-issue-solver-engine.js",
       "description": "Protocol: Infinite Crucible backlog resolution engine"
     },
     {
       "name": "verification-gates",
-      "path": "aegis/orchestrator/verification-gates.js",
+      "path": ".agents/orchestrator/verification-gates.js",
       "description": "Enforces preflight, reality gate, test runner, and readiness checks"
     },
     {
       "name": "trace-emitter",
-      "path": "aegis/orchestrator/trace-emitter.js",
+      "path": ".agents/orchestrator/trace-emitter.js",
       "description": "LangGraph-inspired durable checkpointing and trace emission"
     },
     {
       "name": "checkpoint",
-      "path": "aegis/orchestrator/checkpoint.js",
+      "path": ".agents/orchestrator/checkpoint.js",
       "description": "State persistence, task checkpointing, and safe rollback mechanisms"
     }
   ],

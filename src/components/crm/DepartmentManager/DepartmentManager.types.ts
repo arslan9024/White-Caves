@@ -1,6 +1,6 @@
 /**
  * DepartmentManager.types.ts
- * Type definitions for Corporate Department CRUD Management
+ * Type definitions for Corporate Department CRUD Management (Fixed 12-Slot Architecture)
  */
 
 export interface DepartmentNodeItem {
@@ -31,6 +31,8 @@ export interface DepartmentFormData {
   color: string;
   icon: string;
   description: string;
+  directorName?: string;
+  directorRole?: string;
 }
 
 export interface SubDepartmentFormData {

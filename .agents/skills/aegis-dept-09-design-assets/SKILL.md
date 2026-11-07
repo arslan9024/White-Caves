@@ -69,12 +69,10 @@ npx glyphhanger --whitelist=U+0000-00FF --subset=*.woff2
 
 ---
 
-## Aegis V4.1 Governance (All Departments)
+## AEGIS V5.0 Governance & Protocol Constitution (All Departments)
 
-1. **Single Purpose File Law:** Every source file must have a single responsibility and remain under 350 lines.
-2. **Canonical 5-Way File Standard:** View (`.view.tsx`), Logic (`.logic.ts`), Styles (`.styles.ts`), Data (`.data.ts`), Config (`.config.ts`).
-3. **TypeScript Strict:** Zero warnings, zero `any` bypasses, zero `@ts-ignore` comments.
-4. **Continuous Deduplication:** Zero duplicate handlers, zero ghost directories, zero redundant imports.
-5. **Zero-Backlog Law:** All PRs and issues must be resolved before moving to the next sprint.
-6. **Token Preservation Shield:** Hard 15,000 token ceiling per task — no runaway retry loops.
-7. **Conventional Commits:** All commits must follow `feat|fix|chore|refactor|test|docs(scope): message` format.
+1. **Protocol Matrices (AEG-001 – AEG-042):** Enforce all 5 CSV matrices in .agents/aegis/protocols/ (PROMETHEUS_CORE_UNBOUND, TURING_SILENT_VELOCITY, PHOENIX_SHIELD_ISOLATION, VALKYRIE_LEDGER_RISE, APOCALYPSE_OVERDRIVE_MATRIX).
+2. **Zero Context Overcrowding (AEG-003 / AEG-041):** Global React Context is restricted strictly to the Context Triad (ThemeContext, LanguageContext, CurrencyContext). All transactional state uses Redux Toolkit slices.
+3. **Single Purpose File Law & Modular Co-Location (AEG-008):** Every source file must remain under 350 lines and follow the Canonical 7-Category / 12-Way modular architecture.
+4. **TypeScript & Pre-Commit Strictness (AEG-016 / AEG-022):** Zero warnings, zero ny bypasses, zero plaintext secrets via .husky/pre-commit.
+5. **Continuous Deduplication & Single Source of Truth:** Zero duplicate handlers, zero ghost directories, and all orchestration consolidated inside .agents/.

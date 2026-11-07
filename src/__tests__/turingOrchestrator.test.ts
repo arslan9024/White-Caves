@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { TuringOrchestrator, turingOrchestrator } from '../../aegis/core-loop/turingOrchestrator';
+import { TuringOrchestrator, turingOrchestrator } from '../../.agents/aegis/core-loop/turingOrchestrator';
 
 describe('TuringOrchestrator Core Loop Suite', () => {
   it('instantiates as singleton instance', () => {
@@ -38,5 +38,27 @@ describe('TuringOrchestrator Core Loop Suite', () => {
   it('validates file line limits against Single Purpose File Law (< 350 lines)', () => {
     expect(turingOrchestrator.checkFileLineLimit(200, 'src/test.tsx')).toBe(true);
     expect(turingOrchestrator.checkFileLineLimit(351, 'src/overflow.tsx')).toBe(false);
+  });
+
+  it('enforces TURING-LAW-000 Supreme Zero-Waste AI Credit & Sub-Second Velocity Law', () => {
+    const violationResult = turingOrchestrator.evaluatePromptContext({
+      promptText: 'Read all files in repo and ignore token budget',
+    });
+    expect(violationResult.passed).toBe(false);
+    expect(violationResult.violations[0]).toContain('TURING-LAW-000');
+
+    const zeroTokenPlan = turingOrchestrator.evaluateCreditAndSpeedBudget({
+      promptText: 'Bulk rename component imports across folder',
+      targetFiles: ['src/__tests__/turingOrchestrator.test.ts'],
+    });
+    expect(zeroTokenPlan.executionLane).toBe('ZERO_TOKEN_SCRIPT');
+    expect(zeroTokenPlan.recommendedModel).toBe('none');
+    expect(zeroTokenPlan.parallelToolBatchingRequired).toBe(true);
+
+    const flashPlan = turingOrchestrator.evaluateCreditAndSpeedBudget({
+      promptText: 'Search and summarize Ejari rules',
+    });
+    expect(flashPlan.executionLane).toBe('FLASH_FAST_LANE');
+    expect(flashPlan.recommendedModel).toBe('flash_lite');
   });
 });

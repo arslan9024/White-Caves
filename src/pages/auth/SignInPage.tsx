@@ -30,7 +30,12 @@ import {
   navigateToPostLoginDestination,
   resolvePostLoginDestination,
 } from '../../utils/authSession';
+// Added imports earlier
 import { SocialAuthButtons } from './components/SocialAuthButtons';
+import PasswordStrength from '../../components/PasswordStrength';
+import Spinner from '../../components/Spinner';
+import zxcvbn from 'zxcvbn';
+// Existing code continues...
 import { AuthMethodTabs } from './components/AuthMethodTabs';
 import { AuthModeSwitch } from './components/AuthModeSwitch';
 import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
@@ -95,7 +100,7 @@ const SignInPage: React.FC = () => {
               user: user as any,
               token: backendResponse.data.token,
               provider: 'google' as any,
-              rememberMe: false,
+              rememberMe: rememberMe,
               returnTo,
             });
             setSuccessMsg('Sign in successful!');
@@ -131,6 +136,7 @@ const SignInPage: React.FC = () => {
   const [signupStep, setSignupStep] = useState<SignupStep>(1);
   const [registeredUser, setRegisteredUser] = useState<AuthUser | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+const [rememberMe, setRememberMe] = useState(false);
 
   // Social recovery panel
   const [socialRecovery, setSocialRecovery] = useState<SocialRecoveryState>({
@@ -200,7 +206,7 @@ const SignInPage: React.FC = () => {
             user: user as any,
             token: response.data.token,
             provider: 'email',
-            rememberMe: false,
+            rememberMe: rememberMe,
             returnTo,
           });
           setRegisteredUser(user);
@@ -225,7 +231,7 @@ const SignInPage: React.FC = () => {
             user: user as any,
             token: successData.token,
             provider: 'email',
-            rememberMe: false,
+            rememberMe: rememberMe,
             returnTo,
           });
           setSuccessMsg('Sign in successful!');
@@ -307,7 +313,7 @@ const SignInPage: React.FC = () => {
           user: user as any,
           token: backendResponse.data.token,
           provider: 'google' as any,
-          rememberMe: false,
+          rememberMe: rememberMe,
           returnTo,
         });
         setSuccessMsg('Signed in as Managing Director!');
@@ -400,7 +406,7 @@ const SignInPage: React.FC = () => {
               user: user as any,
               token: backendResponse.data.token,
               provider,
-              rememberMe: false,
+              rememberMe: rememberMe,
               returnTo,
             });
             setSuccessMsg('Sign in successful!');
@@ -492,7 +498,7 @@ const SignInPage: React.FC = () => {
           user: user as any,
           token: backendResponse.data.token,
           provider: socialRecovery.provider as any,
-          rememberMe: false,
+          rememberMe: rememberMe,
           returnTo,
         });
         setSocialRecovery(prev => ({ ...prev, visible: false, isRetrying: false }));
@@ -591,6 +597,7 @@ const SignInPage: React.FC = () => {
           </p>
         </div>
 
+        {loading && <Spinner />}
         {/* Social Auth */}
         <SocialAuthButtons
           loading={loading}
@@ -749,7 +756,15 @@ const SignInPage: React.FC = () => {
                 className="form-input"
               />
             </div>
-
+            {isSignup && <PasswordStrength password={password} />}
+            {isSignup && (
+              <div className="form-group remember-me">
+                <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />
+                  Remember me
+                </label>
+              </div>
+            )}
             {isSignup && (
               <div className="form-group">
                 <input

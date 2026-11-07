@@ -139,7 +139,7 @@ async function analyzeWithDeepSeek(issue) {
 function executeCodebaseSweeps(issue, methodology) {
     console.log(`⚙️ Executing Local Codebase Optimization Sweeps...`);
     try {
-        const scriptPath = path.join(__dirname, '../../aegis/orchestrator/aegis-dedup-optimizer.js');
+        const scriptPath = path.join(__dirname, 'aegis-dedup-optimizer.js');
         if (fs.existsSync(scriptPath)) {
             execSync(`node "${scriptPath}"`, { stdio: 'inherit' });
         } else {

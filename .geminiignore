@@ -1,0 +1,23 @@
+# Antigravity / Gemini Context Shield (.geminiignore)
+# Enforces TURING-LAW-000: Prevents heavy build caches, lockfiles, and archives
+# from consuming AI context tokens or slowing down workspace indexing.
+
+node_modules/
+.next/
+dist/
+build/
+coverage/
+playwright-report/
+test-results/
+tsconfig.tsbuildinfo
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+.agents/logs/
+docs/archive/
+*.backup.ts
+*.backup.tsx
+*.legacy.jsx
+*.min.js
+*.min.css
+*.map

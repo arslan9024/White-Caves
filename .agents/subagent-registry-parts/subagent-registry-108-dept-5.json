@@ -1,0 +1,18 @@
+{
+  "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+  "version": "v2",
+  "totalDepartments": 12,
+  "nodesPerDepartment": 9,
+  "totalNodes": 108,
+  "generatedAt": "2026-11-02T01:59:35.869Z",
+  "departments": [
+    {
+      "id": 5,
+      "name": "Relational Schemas & Cloud Object Key Data Stores",
+      "slug": "dept-05-relational-schemas-data",
+      "director": "@Barbara",
+      "directorRole": "Principal Relational Database Architect",
+      "nodeCount": 9
+    }
+  ]
+}

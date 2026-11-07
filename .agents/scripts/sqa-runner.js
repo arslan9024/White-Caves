@@ -22,7 +22,7 @@ function runStep(name, command) {
 function runFullSQAAudit() {
   console.log(`\n🚀 Starting White Caves AEGIS V4 SQA Quality Control Suite...`);
 
-  const stage0 = runStep('Deep Codebase Static Analysis & Gap Detection', 'node aegis/orchestrator/aegis-deep-analyzer.js');
+  const stage0 = runStep('Deep Codebase Static Analysis & Gap Detection', 'node .agents/orchestrator/aegis-deep-analyzer.js');
   const stage1 = runStep('Governance & Planning Audit', 'npm run plans:validate');
   const stage2 = runStep('Unit & Integration Test Suite', 'npm run test:run -- src/components/owner/tabs/__tests__/SQATab.test.tsx');
   const stage3 = runStep('Production Bundle Compilation', 'npm run build');

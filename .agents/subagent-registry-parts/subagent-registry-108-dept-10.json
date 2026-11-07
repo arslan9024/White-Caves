@@ -1,0 +1,18 @@
+{
+  "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+  "version": "v2",
+  "totalDepartments": 12,
+  "nodesPerDepartment": 9,
+  "totalNodes": 108,
+  "generatedAt": "2026-11-02T01:59:35.869Z",
+  "departments": [
+    {
+      "id": 10,
+      "name": "Localization i18n Translation & Bidirectional Compilers",
+      "slug": "dept-10-localization-i18n-rtl",
+      "director": "@Invoice",
+      "directorRole": "Principal Universal i18n Systems Architect",
+      "nodeCount": 9
+    }
+  ]
+}

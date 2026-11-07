@@ -211,7 +211,7 @@ export async function resolveMilestoneBatch(targetMilestoneNumber, isDryRun = fa
     try {
       // INVOCATION OF REAL IMPLEMENTATION LOGIC
       console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
-      execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'inherit' });
+      execSync(`node .agents/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'inherit' });
       console.log(`   ✅ Successfully queued #${iss.number} for Implementation.`);
     } catch (e) {
       console.error(`   ❌ Failed to queue #${iss.number}:`, e.message);
@@ -265,7 +265,7 @@ export async function resolveAllMilestones(isDryRun = false) {
         try {
           // INVOCATION OF REAL IMPLEMENTATION LOGIC
           console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
-          execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'pipe' });
+          execSync(`node .agents/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'pipe' });
 
           totalClosed++;
           closedIssueNumbers.push(iss.number);
@@ -301,7 +301,7 @@ export async function resolveAllMilestones(isDryRun = false) {
 
         try {
           console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
-          execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'pipe' });
+          execSync(`node .agents/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'pipe' });
           
           totalClosed++;
           closedIssueNumbers.push(iss.number);

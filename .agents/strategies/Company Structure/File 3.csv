@@ -1,0 +1,72 @@
+task_id,dept_id,manager_id,manager_name,task_name,priority,frequency
+T163,D07,M55,Inbound Lead Manager,Respond to website form inquiries,P0,Daily
+T164,D07,M55,Inbound Lead Manager,Respond to portal inquiries within 15 minutes,P0,Daily
+T165,D07,M55,Inbound Lead Manager,Log all inquiries in CRM,P0,Daily
+T166,D07,M56,WhatsApp Response Manager,Respond to WhatsApp messages within 5 minutes,P0,Daily
+T167,D07,M56,WhatsApp Response Manager,Qualify WhatsApp leads before handoff,P0,Daily
+T168,D07,M56,WhatsApp Response Manager,Tag WhatsApp lead source,P1,Daily
+T169,D07,M57,Cold Outreach Manager,Build landlord prospect lists,P1,Weekly
+T170,D07,M57,Cold Outreach Manager,Send cold outreach messages,P1,Weekly
+T171,D07,M57,Cold Outreach Manager,Track outreach response rate,P1,Weekly
+T172,D07,M58,Referral Program Manager,Track all client referrals,P1,Per referral
+T173,D07,M58,Referral Program Manager,Issue referral rewards,P1,Per referral
+T174,D07,M58,Referral Program Manager,Follow up on referral leads,P1,Per referral
+T175,D07,M59,Lead Scoring Manager,Score leads by budget and urgency,P1,Daily
+T176,D07,M59,Lead Scoring Manager,Prioritize high-score leads,P0,Daily
+T177,D07,M59,Lead Scoring Manager,Refine AI scoring model,P2,Monthly
+T178,D07,M60,CRM Data Manager,Deduplicate contact records,P1,Weekly
+T179,D07,M60,CRM Data Manager,Enrich contact records,P1,Weekly
+T180,D07,M60,CRM Data Manager,Archive inactive contacts,P2,Monthly
+T181,D07,M61,Follow-up Sequence Manager,Build automated nurture sequences,P1,Monthly
+T182,D07,M61,Follow-up Sequence Manager,Trigger follow-up after 48h silence,P0,Daily
+T183,D07,M61,Follow-up Sequence Manager,Track sequence open rates,P1,Weekly
+T184,D07,M62,Lead Source Attribution Manager,Tag every lead with source,P0,Per lead
+T185,D07,M62,Lead Source Attribution Manager,Build attribution reports,P1,Monthly
+T186,D07,M62,Lead Source Attribution Manager,Identify best channels,P1,Monthly
+T187,D07,M63,Conversion Analytics Manager,Measure lead-to-deal funnel,P1,Weekly
+T188,D07,M63,Conversion Analytics Manager,Identify drop-off points,P1,Monthly
+T189,D07,M63,Conversion Analytics Manager,Report conversion to MD,P1,Monthly
+T190,D08,M64,CRM Administration Manager,Manage user accounts and roles,P0,As needed
+T191,D08,M64,CRM Administration Manager,Backup CRM database,P0,Daily
+T192,D08,M64,CRM Administration Manager,Monitor app performance,P1,Daily
+T193,D08,M65,AI Agent Orchestration Manager,Route tasks to AI employees,P0,Daily
+T194,D08,M65,AI Agent Orchestration Manager,Monitor AI task completion,P0,Daily
+T195,D08,M65,AI Agent Orchestration Manager,Escalate AI failures to MD,P0,As needed
+T196,D08,M66,WhatsApp Automation Manager,Maintain whatsapp-web.js session,P0,Daily
+T197,D08,M66,WhatsApp Automation Manager,Reconnect on disconnect,P0,As needed
+T198,D08,M66,WhatsApp Automation Manager,Monitor message delivery,P1,Daily
+T199,D08,M67,Document Automation Manager,Maintain PDF templates,P1,Monthly
+T200,D08,M67,Document Automation Manager,Generate leases and forms from data,P0,Per deal
+T201,D08,M67,Document Automation Manager,Verify generated document accuracy,P0,Per deal
+T202,D08,M68,Database Manager,Monitor MongoDB performance,P1,Daily
+T203,D08,M68,Database Manager,Add indexes for slow queries,P1,Weekly
+T204,D08,M68,Database Manager,Validate schema integrity,P1,Monthly
+T205,D08,M69,Security Manager,Review RBAC permissions,P1,Monthly
+T206,D08,M69,Security Manager,Rotate API keys and secrets,P1,Quarterly
+T207,D08,M69,Security Manager,Audit PII access logs,P1,Monthly
+T208,D08,M70,Integration Manager,Monitor third-party API health,P1,Daily
+T209,D08,M70,Integration Manager,Update integration credentials,P1,Quarterly
+T210,D08,M70,Integration Manager,Troubleshoot integration failures,P0,As needed
+T211,D08,M71,Deployment Manager,Deploy to production on merge,P0,Per release
+T212,D08,M71,Deployment Manager,Run pre-deploy build and tests,P0,Per release
+T213,D08,M71,Deployment Manager,Rollback on failed deploy,P0,As needed
+T214,D08,M72,Analytics Dashboard Manager,Build KPI dashboards,P1,Monthly
+T215,D08,M72,Analytics Dashboard Manager,Refresh dashboard data,P1,Daily
+T216,D08,M72,Analytics Dashboard Manager,Report insights to MD,P1,Weekly
+T217,D09,M73,Recruitment Manager,Post job openings,P1,As needed
+T218,D09,M73,Recruitment Manager,Screen candidate CVs,P1,As needed
+T219,D09,M73,Recruitment Manager,Coordinate interviews,P1,As needed
+T220,D09,M74,Onboarding Manager,Prepare new hire documentation,P1,Per hire
+T221,D09,M74,Onboarding Manager,Set up workstation and accounts,P1,Per hire
+T222,D09,M74,Onboarding Manager,Run first-week orientation,P1,Per hire
+T223,D09,M75,Contract & WPS Manager,Draft labour contracts,P0,Per hire
+T224,D09,M75,Contract & WPS Manager,Register employees in WPS,P0,Per hire
+T225,D09,M75,Contract & WPS Manager,Maintain contract expiry tracker,P1,Monthly
+T226,D09,M76,Performance Review Manager,Set KPIs per employee,P1,Quarterly
+T227,D09,M76,Performance Review Manager,Run quarterly reviews,P1,Quarterly
+T228,D09,M76,Performance Review Manager,Document performance issues,P1,As needed
+T229,D09,M77,Training Manager,Create training curriculum,P2,Quarterly
+T230,D09,M77,Training Manager,Deliver sales training sessions,P2,Monthly
+T231,D09,M77,Training Manager,Track training completion,P2,Monthly
+T232,D09,M78,Compensation Manager,Benchmark salary against market,P2,Annual
+T233,D09,M78,Compensation

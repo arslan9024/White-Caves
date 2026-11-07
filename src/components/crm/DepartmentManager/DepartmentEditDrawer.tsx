@@ -28,20 +28,21 @@ export const DepartmentEditDrawer: FC<DepartmentEditDrawerProps> = ({
     <EditDrawerCard data-testid="department-edit-drawer">
       <div className="drawer-header">
         <h3>{editingNodeId ? 'Edit Corporate Department' : 'Create New Corporate Department'}</h3>
-        <button onClick={onClose} title="Close form">
+        <button type="button" onClick={onClose} title="Close form">
           <X size={18} />
         </button>
       </div>
 
       <form onSubmit={onSubmit}>
         <div className="form-group">
-          <label>Department Title</label>
+          <label>Department Title (Final Name)</label>
           <input
             type="text"
             value={formData.title}
             onChange={e => onFormChange('title', e.target.value)}
             placeholder="e.g. VIP Investment & Capital Markets"
             required
+            data-testid="dept-form-title-input"
           />
         </div>
 
@@ -51,8 +52,9 @@ export const DepartmentEditDrawer: FC<DepartmentEditDrawerProps> = ({
             type="text"
             value={formData.code}
             onChange={e => onFormChange('code', e.target.value)}
-            placeholder="e.g. DEPT-CAPITAL"
+            placeholder="e.g. DEPT-01"
             required
+            data-testid="dept-form-code-input"
           />
         </div>
 
@@ -64,6 +66,29 @@ export const DepartmentEditDrawer: FC<DepartmentEditDrawerProps> = ({
             onChange={e => onFormChange('slug', e.target.value)}
             placeholder="e.g. vip-investment-capital"
             required
+            data-testid="dept-form-slug-input"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Director / Lead Name</label>
+          <input
+            type="text"
+            value={formData.directorName || ''}
+            onChange={e => onFormChange('directorName', e.target.value)}
+            placeholder="e.g. AI Clara / Director Name"
+            data-testid="dept-form-director-input"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Director Role Title</label>
+          <input
+            type="text"
+            value={formData.directorRole || ''}
+            onChange={e => onFormChange('directorRole', e.target.value)}
+            placeholder="e.g. Director of Luxury Sales"
+            data-testid="dept-form-role-input"
           />
         </div>
 

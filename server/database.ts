@@ -6,7 +6,10 @@
 import { PrismaClient } from '@prisma/client';
 import { DATABASE_URL } from './config/env.js';
 import { createLogger } from './utils/logger.js';
-import { registerLeadScoringMiddleware } from './services/ai/leadScoringMiddleware.js';
+import {
+  registerLeadScoringMiddleware,
+  handleLeadScoringOperation,
+} from './services/ai/leadScoringMiddleware.js';
 import { CONNECTION_POOL_CONFIG, tuneMongoConnectionString } from './config/connectionPool.js';
 
 const log = createLogger('Database');
@@ -43,41 +46,44 @@ if (process.env.NODE_ENV === 'production') {
   prisma = global.prisma;
 }
 
-// Slow-query extension — logs queries exceeding SLOW_QUERY_THRESHOLD_MS
+// Slow-query + Lead-scoring extension
 // Note: Prisma 5+ removed $use; we now use $extends (Prisma Client Extensions).
 // The extended type is cast back to PrismaClient so downstream code keeps its types.
-const prismaWithExtensions = prisma.$extends({
-  query: {
-    $allModels: {
-      async $allOperations({
-        model,
-        operation,
-        args,
-        query,
-      }: {
-        model: string;
-        operation: string;
-        args: unknown;
-        query: (args: unknown) => Promise<unknown>;
-      }) {
-        const before = Date.now();
-        const result = await query(args);
-        const elapsed = Date.now() - before;
-        if (elapsed > SLOW_QUERY_THRESHOLD_MS) {
-          log.warn(`Slow query detected (${elapsed}ms): ${model}.${operation}`, {
-            model,
-            action: operation,
-            elapsedMs: elapsed,
-          });
-        }
-        return result;
+if (typeof prisma.$extends === 'function') {
+  const prismaWithExtensions = prisma.$extends({
+    query: {
+      $allModels: {
+        async $allOperations({
+          model,
+          operation,
+          args,
+          query,
+        }: {
+          model: string;
+          operation: string;
+          args: unknown;
+          query: (args: unknown) => Promise<unknown>;
+        }) {
+          const before = Date.now();
+          const result = await query(args);
+          const elapsed = Date.now() - before;
+          if (elapsed > SLOW_QUERY_THRESHOLD_MS) {
+            log.warn(`Slow query detected (${elapsed}ms): ${model}.${operation}`, {
+              model,
+              action: operation,
+              elapsedMs: elapsed,
+            });
+          }
+          handleLeadScoringOperation(model, operation, args, result);
+          return result;
+        },
       },
     },
-  },
-});
-// Re-assign: cast to base PrismaClient to keep downstream type compatibility
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-prisma = prismaWithExtensions as any;
+  });
+  // Re-assign: cast to base PrismaClient to keep downstream type compatibility
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  prisma = prismaWithExtensions as any;
+}
 
 // Register real-time lead scoring middleware (Phase 4A)
 registerLeadScoringMiddleware(prisma);
@@ -92,7 +98,7 @@ declare global {
  * FIX 09 (AEGIS): Retry with exponential backoff (max 3 attempts)
  */
 export const connectDatabase = async (): Promise<void> => {
-  const MAX_RETRIES = 3;
+  const MAX_RETRIES = process.env.NODE_ENV === 'test' || process.env.VITEST ? 1 : 3;
   let attempt = 0;
 
   while (attempt < MAX_RETRIES) {

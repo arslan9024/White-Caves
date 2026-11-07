@@ -45,6 +45,8 @@ const DEFAULT_VALUE: CorporateDepartmentsContextType = {
   draggedSubIndex: null,
   dragOverSubIndex: null,
   selectSlot: () => {},
+  handleInlineRename: () => {},
+  handleResetDefaults: () => {},
   handleSlotDragStart: () => {},
   handleSlotDragOver: () => {},
   handleSlotDragLeave: () => {},

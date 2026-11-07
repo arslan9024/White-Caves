@@ -183,6 +183,49 @@ const SCORING_TRIGGERS: Record<string, string[]> = {
  *
  * @param _prisma - PrismaClient instance (kept for backward-compatible signature)
  */
+export function handleLeadScoringOperation(
+  model: string | undefined,
+  action: string,
+  args: unknown,
+  result: unknown
+): void {
+  if (!model || !action) return;
+
+  const triggeredActions = SCORING_TRIGGERS[model];
+  if (!triggeredActions || !triggeredActions.includes(action)) {
+    return;
+  }
+
+  let leadId: string | null = null;
+
+  if (model === 'Lead') {
+    if (action === 'create') {
+      leadId = ((result as Record<string, unknown>)?.id as string) || null;
+    } else {
+      leadId = extractLeadIdFromArgs(model, action, args as Record<string, unknown>);
+    }
+  } else {
+    leadId = extractLeadIdFromArgs(model, action, args as Record<string, unknown>);
+    if (!leadId && result) {
+      leadId = ((result as Record<string, unknown>)?.leadId as string) || null;
+    }
+  }
+
+  if (model === 'Activity' && action === 'create') {
+    const data = (args as Record<string, unknown>)?.data as Record<string, unknown> | undefined;
+    if (data?.action === 'score_changed' || data?.action === 'score_override') {
+      return;
+    }
+  }
+
+  if (leadId) {
+    const reason = `${model}.${action}`;
+    triggerScoring(leadId, reason).catch(() => {
+      // Already handled inside triggerScoring
+    });
+  }
+}
+
 export function registerLeadScoringMiddleware(prisma: PrismaClient): void {
   const middlewareApi = prisma as PrismaClient & {
     $use?: (
@@ -194,68 +237,14 @@ export function registerLeadScoringMiddleware(prisma: PrismaClient): void {
   };
 
   if (typeof middlewareApi.$use !== 'function') {
-    const message = '[LeadScoringMiddleware] Prisma middleware API ($use) not available; skipping registration';
-    if (process.env.NODE_ENV === 'development') {
-      logger.info(message);
-    } else {
-      logger.warn(message);
-    }
+    logger.debug('[LeadScoringMiddleware] Active via Prisma $extends query extension');
     return;
   }
 
   type MiddlewareParams = { model?: string; action: string; args: unknown; dataPath: string[]; runInTransaction: boolean };
   middlewareApi.$use(async (params: MiddlewareParams, next: (params: MiddlewareParams) => Promise<unknown>) => {
-    const model = params.model;
-    const action = params.action;
-
-    if (!model || !action) return next(params);
-
-    // Check if this operation should trigger scoring
-    const triggeredActions = SCORING_TRIGGERS[model];
-    if (!triggeredActions || !triggeredActions.includes(action)) {
-      return next(params);
-    }
-
-    // Execute the original operation first
     const result = await next(params);
-
-    // Extract lead ID for scoring
-    let leadId: string | null = null;
-
-    if (model === 'Lead') {
-      if (action === 'create') {
-        // For new leads, get the ID from the result
-        leadId = (result as Record<string, unknown>)?.id as string || null;
-      } else {
-        leadId = extractLeadIdFromArgs(model, action, params.args as Record<string, unknown>);
-      }
-    } else {
-      // For related models (Activity, Viewing, Offer, Transaction, Commission)
-      leadId = extractLeadIdFromArgs(model, action, params.args as Record<string, unknown>);
-
-      // If not in args, try to get it from the result
-      if (!leadId && result) {
-        leadId = (result as Record<string, unknown>)?.leadId as string || null;
-      }
-    }
-
-    // Skip scoring for score_changed / score_override activities (avoid infinite loop)
-    if (model === 'Activity' && action === 'create') {
-      const data = (params.args as Record<string, unknown>)?.data as Record<string, unknown> | undefined;
-      if (data?.action === 'score_changed' || data?.action === 'score_override') {
-        return result;
-      }
-    }
-
-    // Trigger async scoring (fire-and-forget)
-    if (leadId) {
-      const reason = `${model}.${action}`;
-      // Intentionally not awaiting — fire and forget
-      triggerScoring(leadId, reason).catch(() => {
-        // Already handled inside triggerScoring
-      });
-    }
-
+    handleLeadScoringOperation(params.model, params.action, params.args, result);
     return result;
   });
 

@@ -19,6 +19,13 @@ import {
   getSessions,
   getStats,
   getStatus,
+  getLindaMetrics,
+  runLindaScript,
+  getLindaFeaturesAndPlaybooks,
+  getLindaOutreachPlan,
+  getLindaMasterPosture,
+  pingLindaSession,
+  toggleLindaCampaignStatus,
   henryTrigger,
   inventoryBroadcast,
   nlpRoute,
@@ -62,5 +69,14 @@ router.post('/transcribe', requirePermission('view_whatsapp_conversations'), tra
 router.get('/sentiment-alerts', requirePermission('view_whatsapp_conversations'), getSentimentAlerts);
 router.post('/sentiment-alerts/:alertId/acknowledge', requirePermission('view_whatsapp_conversations'), acknowledgeSentimentAlert);
 router.post('/background-analysis/opt-in', requireRole('owner', 'admin'), backgroundAnalysisOptIn);
+
+// Operations Center V2 (Ported from whatsapp-bot-linda repo)
+router.get('/metrics', requirePermission('view_whatsapp_conversations'), getLindaMetrics);
+router.post('/run-script', requirePermission('view_whatsapp_conversations'), runLindaScript);
+router.get('/features', requirePermission('view_whatsapp_conversations'), getLindaFeaturesAndPlaybooks);
+router.get('/outreach-plan', requirePermission('view_whatsapp_conversations'), getLindaOutreachPlan);
+router.get('/master-posture', requirePermission('view_whatsapp_conversations'), getLindaMasterPosture);
+router.post('/sessions/:id/ping', requirePermission('view_whatsapp_conversations'), pingLindaSession);
+router.patch('/campaigns/:id/status', requirePermission('view_whatsapp_conversations'), toggleLindaCampaignStatus);
 
 export default router;

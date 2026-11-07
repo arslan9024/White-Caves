@@ -1,0 +1,18 @@
+{
+  "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+  "version": "v2",
+  "totalDepartments": 12,
+  "nodesPerDepartment": 9,
+  "totalNodes": 108,
+  "generatedAt": "2026-11-02T01:59:35.869Z",
+  "departments": [
+    {
+      "id": 6,
+      "name": "Distributed Gateway Hubs & Cross-Service API Routers",
+      "slug": "dept-06-gateway-api-routers",
+      "director": "@Ruchi",
+      "directorRole": "Principal API Platform Gateway Architect",
+      "nodeCount": 9
+    }
+  ]
+}

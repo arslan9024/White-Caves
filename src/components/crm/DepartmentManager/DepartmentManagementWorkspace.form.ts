@@ -1,6 +1,6 @@
 /**
  * DepartmentManagementWorkspace.form.ts
- * White Caves Real Estate LLC - Department Form & Drawer Sub-Hook
+ * White Caves Real Estate LLC - Department Form & Drawer Sub-Hook (12-Slot CRUD)
  * Standard: AEGIS Canonical 7-Category Architecture Standard (Logic Layer)
  * Single Purpose File Law: < 350 lines
  */
@@ -16,6 +16,8 @@ export const INITIAL_FORM: DepartmentFormData = {
   color: '#EF4444',
   icon: 'Briefcase',
   description: '',
+  directorName: '',
+  directorRole: 'Department Director',
 };
 
 export function useDepartmentForm(
@@ -30,7 +32,11 @@ export function useDepartmentForm(
 
   const handleOpenCreate = () => {
     setEditingNodeId(null);
-    setFormData(INITIAL_FORM);
+    const nextSlotNum = Math.min(departments.length + 1, 12);
+    setFormData({
+      ...INITIAL_FORM,
+      code: `DEPT-${String(nextSlotNum).padStart(2, '0')}`,
+    });
     setIsFormOpen(true);
   };
 
@@ -43,6 +49,8 @@ export function useDepartmentForm(
       color: dept.color || '#EF4444',
       icon: dept.icon || 'Briefcase',
       description: dept.description || '',
+      directorName: dept.directorOrManagerId?.fullName || 'Managing Director',
+      directorRole: dept.directorOrManagerId?.role || 'Department Director',
     });
     setIsFormOpen(true);
   };
@@ -78,25 +86,62 @@ export function useDepartmentForm(
       setError(null);
       if (editingNodeId) {
         setDepartments(prev => {
-          const updated = prev.map(d => (d._id === editingNodeId ? { ...d, ...formData } : d));
+          const updated = prev.map(d =>
+            d._id === editingNodeId
+              ? {
+                  ...d,
+                  title: formData.title.trim(),
+                  code: formData.code.trim(),
+                  slug: formData.slug.trim(),
+                  color: formData.color,
+                  icon: formData.icon,
+                  description: formData.description,
+                  directorOrManagerId: {
+                    fullName:
+                      formData.directorName?.trim() ||
+                      d.directorOrManagerId?.fullName ||
+                      'Appointed Lead',
+                    role:
+                      formData.directorRole?.trim() ||
+                      d.directorOrManagerId?.role ||
+                      'Department Director',
+                  },
+                }
+              : d
+          );
           saveDepartments(updated);
           return updated;
         });
       } else {
-        const slotCode = `DEPT-${String(departments.length + 1).padStart(2, '0')}`;
+        if (departments.length >= 12) {
+          setError(
+            'All 12 corporate department slots are currently filled. Edit an existing slot or demote one to the pool first.'
+          );
+          setIsSubmitting(false);
+          return;
+        }
+        const slotOrder = departments.length + 1;
+        const slotCode = formData.code.trim() || `DEPT-${String(slotOrder).padStart(2, '0')}`;
         const newDept: DepartmentNodeItem = {
           _id: `dept-${Date.now()}`,
-          ...formData,
+          title: formData.title.trim(),
           code: slotCode,
+          slug: formData.slug.trim(),
+          color: formData.color || '#EF4444',
+          icon: formData.icon || 'Briefcase',
+          description: formData.description || '',
           level: 'DEPARTMENT',
-          order: departments.length + 1,
+          order: slotOrder,
           subDeptsCount: 9,
           squadsCount: 9,
           headcount: 18,
-          directorOrManagerId: { fullName: 'Appointed Lead', role: 'Department Director' },
+          directorOrManagerId: {
+            fullName: formData.directorName?.trim() || 'Appointed Lead',
+            role: formData.directorRole?.trim() || 'Department Director',
+          },
         };
         setDepartments(prev => {
-          const updated = [...prev, newDept];
+          const updated = [...prev, newDept].slice(0, 12);
           saveDepartments(updated);
           return updated;
         });

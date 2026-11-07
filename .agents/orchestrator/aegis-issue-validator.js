@@ -52,7 +52,7 @@ function validateAndClose(issueNumber) {
     console.log(`\n🏛️ [3/4] Calling GitHub API to definitively close Issue #${issueNumber}...`);
     // This executes the actual close on GitHub now that QA is complete
     execSync(`node -e "
-      import { closeIssueOnGitHub, fetchMilestonesAndIssues } from './aegis/orchestrator/aegis-issue-solver-engine.js';
+      import { closeIssueOnGitHub, fetchMilestonesAndIssues } from './.agents/orchestrator/aegis-issue-solver-engine.js';
       (async () => {
         const { headers } = await fetchMilestonesAndIssues();
         await closeIssueOnGitHub(${issueNumber}, headers, '✅ **Validated & Closed by AEGIS Validation Sub-Agent (@Katherine)**\\n\\n- Mathematical \`git diff\` validation passed.\\n- Full A-Z resolution verified.\\n- SRS, SDD, Code, and UI/UX journey successfully updated and documented.\\n- Tests generated and passed.');

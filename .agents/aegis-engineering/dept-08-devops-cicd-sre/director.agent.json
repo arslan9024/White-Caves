@@ -41,7 +41,7 @@
   "codingInstructions": {
     "keyFiles": [
       ".github/",
-      "scripts/orchestrator/",
+      ".agents/orchestrator/",
       ".husky/",
       "package.json",
       "vercel.json"
@@ -71,7 +71,7 @@
       },
       {
         "name": "PR Unblock",
-        "command": "node scripts/orchestrator/aegis-unblock-pr.js <pr_number>"
+        "command": "node .agents/orchestrator/aegis-unblock-pr.js <pr_number>"
       },
       {
         "name": "Branch Cleanup",

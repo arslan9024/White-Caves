@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { DepartmentNodeItem, DepartmentFormData } from './DepartmentManager.types';
+import type { DepartmentNodeItem } from './DepartmentManager.types';
 import type { SupervisorDef } from '../../../data/assistants108Registry.data';
 import {
   FALLBACK_12_DEPARTMENTS,
@@ -14,15 +14,16 @@ import {
   handleDepartmentSlotDropHelper,
   handleSubDeptDropHelper,
   handleDropOnPoolHelper,
-  type DragPayload,
 } from './DepartmentManagementWorkspace.dnd';
 import {
   loadStoredDepartments,
   saveDepartments,
+  resetStoredDepartmentsToCanonical,
   computeDepartmentMetrics,
   filterDepartmentsBySearch,
+  DEPTS_SYNC_EVENT,
 } from './DepartmentManagementWorkspace.storage';
-import { useDepartmentForm, INITIAL_FORM } from './DepartmentManagementWorkspace.form';
+import { useDepartmentForm } from './DepartmentManagementWorkspace.form';
 
 export function useDepartmentManagementWorkspaceLogic() {
   const [departments, setDepartments] = useState<DepartmentNodeItem[]>(loadStoredDepartments);
@@ -34,17 +35,7 @@ export function useDepartmentManagementWorkspaceLogic() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDeptForModal, setSelectedDeptForModal] = useState<DepartmentNodeItem | null>(null);
 
-  const {
-    isFormOpen,
-    editingNodeId,
-    formData,
-    isSubmitting,
-    handleOpenCreate,
-    handleOpenEdit,
-    handleCloseForm,
-    handleFormChange,
-    handleSubmit,
-  } = useDepartmentForm(departments, setDepartments, setError);
+  const form = useDepartmentForm(departments, setDepartments, setError);
 
   const [draggedDeptIndex, setDraggedDeptIndex] = useState<number | null>(null);
   const [dragOverDeptIndex, setDragOverDeptIndex] = useState<number | null>(null);
@@ -62,13 +53,16 @@ export function useDepartmentManagementWorkspaceLogic() {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          setDepartments(data.data);
-          saveDepartments(data.data);
+        if (data.success && Array.isArray(data.data)) {
+          if (data.data.length > 0) {
+            setDepartments(data.data.slice(0, 12));
+            saveDepartments(data.data.slice(0, 12));
+            return;
+          }
+          setDepartments(FALLBACK_12_DEPARTMENTS);
           return;
         }
       }
-      // If backend call doesn't succeed, load from localStorage first
       setDepartments(loadStoredDepartments());
     } catch {
       setDepartments(loadStoredDepartments());
@@ -81,6 +75,15 @@ export function useDepartmentManagementWorkspaceLogic() {
     fetchDepartments();
   }, [fetchDepartments]);
 
+  useEffect(() => {
+    const onSync = (e: Event) => {
+      const custom = e as CustomEvent<DepartmentNodeItem[]>;
+      if (Array.isArray(custom.detail)) setDepartments(custom.detail);
+    };
+    window.addEventListener(DEPTS_SYNC_EVENT, onSync);
+    return () => window.removeEventListener(DEPTS_SYNC_EVENT, onSync);
+  }, []);
+
   const slots: DepartmentSlotDef[] = useMemo(() => buildFixed12Slots(departments), [departments]);
   const activeSlot = slots[selectedSlotIndex] || slots[0];
   const activeDepartment = activeSlot?.dept || null;
@@ -88,18 +91,86 @@ export function useDepartmentManagementWorkspaceLogic() {
   const activeSubDepts = useMemo(() => {
     if (!activeDepartment) return [];
     const deptKey = activeDepartment._id || activeDepartment.slug;
-    if (subDeptsMap[deptKey]) return subDeptsMap[deptKey];
-    return getDepartmentSubItems(activeDepartment.slug || activeDepartment._id);
+    return subDeptsMap[deptKey] || getDepartmentSubItems(activeDepartment.slug || activeDepartment._id);
   }, [activeDepartment, subDeptsMap]);
 
   const selectSlot = useCallback((index: number) => {
     if (index >= 0 && index < 12) setSelectedSlotIndex(index);
   }, []);
 
+  const handleInlineRename = useCallback(
+    (deptId: string, newTitle: string, directorName?: string, code?: string) => {
+      if (!newTitle.trim()) return;
+      setDepartments(prev => {
+        const updated = prev.map(d =>
+          d._id !== deptId
+            ? d
+            : {
+                ...d,
+                title: newTitle.trim(),
+                code: code?.trim() || d.code,
+                directorOrManagerId: directorName
+                  ? {
+                      fullName: directorName.trim(),
+                      role: d.directorOrManagerId?.role || 'Department Director',
+                    }
+                  : d.directorOrManagerId,
+              }
+        );
+        saveDepartments(updated);
+        return updated;
+      });
+    },
+    []
+  );
+
+  const handleBatchSaveAll = useCallback(
+    (updates: Record<string, { title: string; code: string; directorName: string }>) => {
+      setDepartments(prev => {
+        const updated = prev.map(d => {
+          const u = updates[d._id];
+          if (!u || !u.title.trim()) return d;
+          return {
+            ...d,
+            title: u.title.trim(),
+            code: u.code.trim() || d.code,
+            directorOrManagerId: {
+              fullName:
+                u.directorName.trim() || d.directorOrManagerId?.fullName || 'Managing Director',
+              role: d.directorOrManagerId?.role || 'Department Director',
+            },
+          };
+        });
+        saveDepartments(updated);
+        return updated;
+      });
+    },
+    []
+  );
+
+  const handleMoveDepartment = useCallback((fromIdx: number, toIdx: number) => {
+    setDepartments(prev => {
+      if (fromIdx < 0 || toIdx < 0 || fromIdx >= prev.length || toIdx >= prev.length) return prev;
+      const next = [...prev];
+      const itemA = next[fromIdx];
+      const itemB = next[toIdx];
+      if (!itemA || !itemB) return prev;
+      const codeA = itemA.code || `DEPT-${String(fromIdx + 1).padStart(2, '0')}`;
+      const codeB = itemB.code || `DEPT-${String(toIdx + 1).padStart(2, '0')}`;
+      next[toIdx] = { ...itemA, code: codeB, order: toIdx + 1 };
+      next[fromIdx] = { ...itemB, code: codeA, order: fromIdx + 1 };
+      saveDepartments(next);
+      return next;
+    });
+  }, []);
+
+  const handleResetDefaults = useCallback(() => {
+    setDepartments(resetStoredDepartmentsToCanonical());
+  }, []);
+
   const handleDelete = (nodeId: string) => {
     const targetDept = departments.find(d => d._id === nodeId);
     if (!targetDept) return;
-
     setUnassignedPool(prev => [convertDepartmentToSubDept(targetDept), ...prev]);
     setDepartments(prev => {
       const updated = prev
@@ -112,122 +183,22 @@ export function useDepartmentManagementWorkspaceLogic() {
       saveDepartments(updated);
       return updated;
     });
-
-    if (token && !nodeId.startsWith('canonical-')) {
-      fetch('/api/corporate-departments/demote-to-subdept', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ departmentId: nodeId }),
-      }).catch(() => {});
-    }
   };
 
   const handlePromoteSubDept = (subId: string) => {
+    if (departments.length >= 12) {
+      setError('All 12 corporate slots are occupied. Demote a slot before promoting from pool.');
+      return;
+    }
     const targetSub = unassignedPool.find(s => s.id === subId);
     if (!targetSub) return;
-
     setUnassignedPool(prev => prev.filter(s => s.id !== subId));
-    const nextOrder = departments.length + 1;
-    const promotedDept = convertSubDeptToDepartment(targetSub, nextOrder);
+    const promotedDept = convertSubDeptToDepartment(targetSub, departments.length + 1);
     setDepartments(prev => {
-      const updated = [...prev, promotedDept];
+      const updated = [...prev, promotedDept].slice(0, 12);
       saveDepartments(updated);
       return updated;
     });
-
-    if (token && !subId.startsWith('sub-from-dept-canonical-')) {
-      fetch('/api/corporate-departments/promote-to-dept', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ subDeptId: subId, targetOrder: nextOrder }),
-      }).catch(() => {});
-    }
-  };
-
-  const handleOpenSubItems = (dept: DepartmentNodeItem) => setSelectedDeptForModal(dept);
-  const handleCloseSubItems = () => setSelectedDeptForModal(null);
-
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'dept-slot', slotIndex: index }));
-    e.dataTransfer.effectAllowed = 'move';
-    setDraggedDeptIndex(index);
-  };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    if (dragOverDeptIndex !== index) setDragOverDeptIndex(index);
-  };
-
-  const handleDragLeave = (e: React.DragEvent, index: number) => {
-    if (dragOverDeptIndex === index) setDragOverDeptIndex(null);
-  };
-
-  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
-    e.preventDefault();
-    setDraggedDeptIndex(null);
-    setDragOverDeptIndex(null);
-    handleDepartmentSlotDropHelper(
-      e,
-      targetIndex,
-      departments,
-      slots,
-      unassignedPool,
-      draggedDeptIndex,
-      token,
-      setDepartments,
-      setUnassignedPool,
-      setSelectedSlotIndex
-    );
-  };
-
-  const handleDragEnd = () => {
-    setDraggedDeptIndex(null);
-    setDragOverDeptIndex(null);
-  };
-
-  const handleDropOnPool = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDraggedDeptIndex(null);
-    setDragOverDeptIndex(null);
-    const rawData = e.dataTransfer.getData('text/plain');
-    handleDropOnPoolHelper(rawData, departments, handleDelete, handleDemoteSubDept);
-  };
-
-  const handleSubDragStart = (e: React.DragEvent, subIndex: number) => {
-    e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'sub-slot', subIndex }));
-    e.dataTransfer.effectAllowed = 'move';
-    setDraggedSubIndex(subIndex);
-  };
-
-  const handleSubDragOver = (e: React.DragEvent, subIndex: number) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    if (dragOverSubIndex !== subIndex) setDragOverSubIndex(subIndex);
-  };
-
-  const handleSubDragLeave = (e: React.DragEvent, subIndex: number) => {
-    if (dragOverSubIndex === subIndex) setDragOverSubIndex(null);
-  };
-
-  const handleSubDrop = (e: React.DragEvent, targetSubIndex: number) => {
-    e.preventDefault();
-    setDraggedSubIndex(null);
-    setDragOverSubIndex(null);
-    handleSubDeptDropHelper(
-      e,
-      targetSubIndex,
-      activeDepartment,
-      activeSubDepts,
-      unassignedPool,
-      setUnassignedPool,
-      setSubDeptsMap
-    );
-  };
-
-  const handleSubDragEnd = () => {
-    setDraggedSubIndex(null);
-    setDragOverSubIndex(null);
   };
 
   const handleDemoteSubDept = (subIndex: number) => {
@@ -236,23 +207,19 @@ export function useDepartmentManagementWorkspaceLogic() {
     const currentSubs = [...activeSubDepts];
     const targetSub = currentSubs[subIndex];
     if (!targetSub) return;
-
     setUnassignedPool(prev => [targetSub, ...prev]);
     currentSubs.splice(subIndex, 1);
     setSubDeptsMap(prev => ({ ...prev, [deptKey]: currentSubs }));
   };
 
-  const metrics = useMemo(() => computeDepartmentMetrics(departments), [departments]);
-
-  const filteredDepartments = useMemo(
-    () => filterDepartmentsBySearch(departments, searchTerm),
-    [departments, searchTerm]
-  );
-
   return {
+    ...form,
     slots,
     departments,
-    filteredDepartments,
+    filteredDepartments: useMemo(
+      () => filterDepartmentsBySearch(departments, searchTerm),
+      [departments, searchTerm]
+    ),
     selectedSlotIndex,
     activeSlot,
     activeDepartment,
@@ -262,37 +229,97 @@ export function useDepartmentManagementWorkspaceLogic() {
     error,
     searchTerm,
     setSearchTerm,
-    isFormOpen,
-    editingNodeId,
-    formData,
-    isSubmitting,
     selectedDeptForModal,
     draggedDeptIndex,
     dragOverDeptIndex,
     draggedSubIndex,
     dragOverSubIndex,
-    metrics,
+    metrics: useMemo(() => computeDepartmentMetrics(departments), [departments]),
     selectSlot,
-    handleOpenCreate,
-    handleOpenEdit,
-    handleCloseForm,
-    handleFormChange,
-    handleSubmit,
+    handleInlineRename,
+    handleBatchSaveAll,
+    handleMoveDepartment,
+    handleResetDefaults,
     handleDelete,
     handlePromoteSubDept,
-    handleOpenSubItems,
-    handleCloseSubItems,
-    handleDragStart,
-    handleDragOver,
-    handleDragLeave,
-    handleDrop,
-    handleDragEnd,
-    handleDropOnPool,
-    handleSubDragStart,
-    handleSubDragOver,
-    handleSubDragLeave,
-    handleSubDrop,
-    handleSubDragEnd,
+    handleOpenSubItems: (dept: DepartmentNodeItem) => setSelectedDeptForModal(dept),
+    handleCloseSubItems: () => setSelectedDeptForModal(null),
+    handleDragStart: (e: React.DragEvent, index: number) => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'dept-slot', slotIndex: index }));
+      e.dataTransfer.effectAllowed = 'move';
+      setDraggedDeptIndex(index);
+    },
+    handleDragOver: (e: React.DragEvent, index: number) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (dragOverDeptIndex !== index) setDragOverDeptIndex(index);
+    },
+    handleDragLeave: (_e: React.DragEvent, index: number) => {
+      if (dragOverDeptIndex === index) setDragOverDeptIndex(null);
+    },
+    handleDrop: (e: React.DragEvent, targetIndex: number) => {
+      e.preventDefault();
+      setDraggedDeptIndex(null);
+      setDragOverDeptIndex(null);
+      handleDepartmentSlotDropHelper(
+        e,
+        targetIndex,
+        departments,
+        slots,
+        unassignedPool,
+        draggedDeptIndex,
+        token,
+        setDepartments,
+        setUnassignedPool,
+        setSelectedSlotIndex
+      );
+    },
+    handleDragEnd: () => {
+      setDraggedDeptIndex(null);
+      setDragOverDeptIndex(null);
+    },
+    handleDropOnPool: (e: React.DragEvent) => {
+      e.preventDefault();
+      setDraggedDeptIndex(null);
+      setDragOverDeptIndex(null);
+      handleDropOnPoolHelper(
+        e.dataTransfer.getData('text/plain'),
+        departments,
+        handleDelete,
+        handleDemoteSubDept
+      );
+    },
+    handleSubDragStart: (e: React.DragEvent, subIndex: number) => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'sub-slot', subIndex }));
+      e.dataTransfer.effectAllowed = 'move';
+      setDraggedSubIndex(subIndex);
+    },
+    handleSubDragOver: (e: React.DragEvent, subIndex: number) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (dragOverSubIndex !== subIndex) setDragOverSubIndex(subIndex);
+    },
+    handleSubDragLeave: (_e: React.DragEvent, subIndex: number) => {
+      if (dragOverSubIndex === subIndex) setDragOverSubIndex(null);
+    },
+    handleSubDrop: (e: React.DragEvent, targetSubIndex: number) => {
+      e.preventDefault();
+      setDraggedSubIndex(null);
+      setDragOverSubIndex(null);
+      handleSubDeptDropHelper(
+        e,
+        targetSubIndex,
+        activeDepartment,
+        activeSubDepts,
+        unassignedPool,
+        setUnassignedPool,
+        setSubDeptsMap
+      );
+    },
+    handleSubDragEnd: () => {
+      setDraggedSubIndex(null);
+      setDragOverSubIndex(null);
+    },
     handleDemoteSubDept,
   };
 }

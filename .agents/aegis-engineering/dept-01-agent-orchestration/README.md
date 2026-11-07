@@ -28,7 +28,7 @@
 
 - `.agents/aegis.agent.json`
 - `.agents/aegis-engineering/`
-- `scripts/orchestrator/`
+- `.agents/orchestrator/`
 - `AGENTS.md`
 
 ---

@@ -33,6 +33,8 @@ export interface CorporateDepartmentsContextType {
   draggedSubIndex: number | null;
   dragOverSubIndex: number | null;
   selectSlot: (index: number) => void;
+  handleInlineRename: (deptId: string, newTitle: string) => void;
+  handleResetDefaults: () => void;
   handleSlotDragStart: (e: React.DragEvent, slotIndex: number) => void;
   handleSlotDragOver: (e: React.DragEvent, slotIndex: number) => void;
   handleSlotDragLeave: (e: React.DragEvent, slotIndex: number) => void;

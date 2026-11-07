@@ -44,21 +44,25 @@ export default defineConfig(async ({ command }) => {
           // Let the plugin generate the SW using Workbox (generateSW strategy)
           strategies: 'generateSW',
           workbox: {
-            importScripts: ['/custom-sw.js'],
-            // Precache all static assets produced by the Vite build
-            globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
-            // Navigation fallback: serve offline.html when network is unreachable
-            navigateFallback: '/offline.html',
-            // Don't apply the navigation fallback for API and asset requests
-            navigateFallbackDenylist: [/^\/api\//, /^\/favicon/, /^\/manifest/],
-            // API responses can contain account-specific data; never persist or replay them offline.
-            runtimeCaching: [
-              {
-                // Private originals, OAuth codes and review mutations must never enter caches or replay queues.
-                urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
-                method: 'GET',
-                handler: 'NetworkOnly',
-              },
+              // Increase cache limit to accommodate large generated assets like stats.html
+              maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+  
+              // Precache all static assets produced by the Vite build
+              globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+              // Navigation fallback: serve offline.html when network is unreachable
+              navigateFallback: '/offline.html',
+              // Don't apply the navigation fallback for API and asset requests
+              navigateFallbackDenylist: [/^\/api\//, /^\/favicon/, /^\/manifest/],
+              // API responses can contain account-specific data; never persist or replay them offline.
+              runtimeCaching: [
+                {
+                  // Private originals, OAuth codes and review mutations must never enter caches or replay queues.
+                  urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\//|$)/,
+                  method: 'GET',
+                  handler: 'NetworkOnly',
+                },
+
+
               {
                 urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
                 method: 'POST',
@@ -180,23 +184,36 @@ export default defineConfig(async ({ command }) => {
       },
       proxy: {
         '/api': {
-          target: 'http://localhost:5001',
+          target: 'http://127.0.0.1:5001',
           changeOrigin: true,
           configure: (proxy) => {
-            proxy.on('error', (err, _req, res) => {
-              if (err && err.code === 'ECONNREFUSED') {
-                if (res && res.writeHead && !res.headersSent) {
-                  res.writeHead(503, { 'Content-Type': 'application/json' });
-                  res.end(JSON.stringify({
-                    success: false,
-                    message: 'Backend server is starting up. Please wait a few moments...',
-                    code: 'BACKEND_INITIALIZING',
-                  }));
+            const origEmit = proxy.emit.bind(proxy);
+            proxy.emit = (event, ...args) => {
+              if (event === 'error') {
+                const [err, _req, res] = args;
+                const isConnRefused =
+                  err &&
+                  (err.code === 'ECONNREFUSED' ||
+                    err.name === 'AggregateError' ||
+                    (Array.isArray(err.errors) &&
+                      err.errors.some((e) => e && e.code === 'ECONNREFUSED')));
+                if (isConnRefused) {
+                  if (res && typeof res.writeHead === 'function' && !res.headersSent) {
+                    res.writeHead(503, { 'Content-Type': 'application/json' });
+                    res.end(
+                      JSON.stringify({
+                        success: false,
+                        message: 'Backend server is starting up. Please wait a few moments...',
+                        code: 'BACKEND_INITIALIZING',
+                      })
+                    );
+                  }
+                  return true;
                 }
               }
-            });
+              return origEmit(event, ...args);
+            };
           },
-          
         },
       },
     },

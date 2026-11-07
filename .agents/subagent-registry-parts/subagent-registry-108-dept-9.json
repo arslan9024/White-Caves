@@ -1,0 +1,18 @@
+{
+  "framework": "White Caves Engineering Matrix V2 (1-12-108 Software Core)",
+  "version": "v2",
+  "totalDepartments": 12,
+  "nodesPerDepartment": 9,
+  "totalNodes": 108,
+  "generatedAt": "2026-11-02T01:59:35.869Z",
+  "departments": [
+    {
+      "id": 9,
+      "name": "Vector Typography, UI Layout Assets & Canvas Tuning",
+      "slug": "dept-09-typography-layout-assets",
+      "director": "@Victoria",
+      "directorRole": "Principal Visual Branding Token Architect",
+      "nodeCount": 9
+    }
+  ]
+}
