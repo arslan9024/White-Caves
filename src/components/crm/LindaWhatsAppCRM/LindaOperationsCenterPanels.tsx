@@ -10,6 +10,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
+import { useTheme } from '../../../context/ThemeContext';
 import type {
   LindaSessionItem,
   LindaFeatureBadge,
@@ -24,6 +25,8 @@ interface QuickActionsAndTerminalProps {
   onClearTerminal: () => void;
   activeModalOutput: { title: string; output: string } | null;
   onCloseModal: () => void;
+  qrCodeDataUrl?: string | null;
+  isQrLoading?: boolean;
 }
 
 export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps> = ({
@@ -34,7 +37,10 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
   onClearTerminal,
   activeModalOutput,
   onCloseModal,
+  qrCodeDataUrl,
+  isQrLoading,
 }) => {
+  const { isDark } = useTheme();
   const [commandInput, setCommandInput] = useState('');
   const [terminalFilter, setTerminalFilter] = useState('');
   const [copiedLog, setCopiedLog] = useState(false);
@@ -78,20 +84,21 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
       {/* Quick Actions Bar */}
       <div
         style={{
-          background: 'rgba(15, 23, 42, 0.82)',
-          border: '1px solid rgba(37, 211, 102, 0.28)',
+          background: isDark ? 'rgba(15, 23, 42, 0.82)' : '#FFFFFF',
+          border: isDark ? '1px solid rgba(37, 211, 102, 0.28)' : '1px solid rgba(37, 211, 102, 0.4)',
           borderRadius: 12,
           padding: 14,
+          boxShadow: isDark ? 'none' : '0 2px 8px rgba(15, 23, 42, 0.05)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Sparkles size={16} color="#25D366" />
-            <strong style={{ color: '#ECFDF5', fontSize: 13 }}>
+            <strong style={{ color: isDark ? '#ECFDF5' : '#065F46', fontSize: 13 }}>
               Administrative Quick Actions & Diagnostics (whatsapp-bot-linda v2.0)
             </strong>
           </div>
-          <span style={{ fontSize: 11, color: '#94A3B8' }}>
+          <span style={{ fontSize: 11, color: isDark ? '#94A3B8' : '#64748B' }}>
             Click any action to execute live script & inspect output
           </span>
         </div>
@@ -103,9 +110,9 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
               type="button"
               onClick={() => onExecuteCommand(action.cmd, action.label)}
               style={{
-                background: `${action.color}1F`,
+                background: isDark ? `${action.color}1F` : `${action.color}14`,
                 border: `1px solid ${action.color}66`,
-                color: '#F8FAFC',
+                color: isDark ? '#F8FAFC' : '#0F172A',
                 borderRadius: 8,
                 padding: '7px 12px',
                 fontSize: 12,
@@ -128,24 +135,24 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
           role="dialog"
           aria-label="Linda Script Output Modal"
           style={{
-            background: '#090D16',
-            border: '1px solid #25D366',
+            background: isDark ? '#090D16' : '#FFFFFF',
+            border: isDark ? '1px solid #25D366' : '1px solid #16A34A',
             borderRadius: 12,
             padding: 14,
-            boxShadow: '0 10px 30px rgba(0,0,0,0.45)',
+            boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.45)' : '0 10px 30px rgba(0,0,0,0.1)',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <strong style={{ color: '#86EFAC', fontSize: 13 }}>
+            <strong style={{ color: isDark ? '#86EFAC' : '#15803D', fontSize: 13 }}>
               ⚡ Executed: {activeModalOutput.title}
             </strong>
             <button
               type="button"
               onClick={onCloseModal}
               style={{
-                background: 'rgba(255,255,255,0.08)',
-                border: 'none',
-                color: '#CBD5E1',
+                background: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9',
+                border: isDark ? 'none' : '1px solid #E2E8F0',
+                color: isDark ? '#CBD5E1' : '#475569',
                 borderRadius: 6,
                 padding: '4px 8px',
                 cursor: 'pointer',
@@ -158,13 +165,38 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
               <X size={13} /> Close
             </button>
           </div>
+          {qrCodeDataUrl && (
+            <div
+              style={{
+                margin: '10px 0',
+                padding: 12,
+                background: '#FFFFFF',
+                borderRadius: 8,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 8,
+                border: '1px solid #E2E8F0',
+              }}
+            >
+              <img
+                src={qrCodeDataUrl}
+                alt="WhatsApp Linking QR Code"
+                style={{ width: 180, height: 180, borderRadius: 6 }}
+              />
+              <span style={{ fontSize: 11, color: '#334155', fontWeight: 600 }}>
+                Point WhatsApp Camera at this QR code (Linked Devices)
+              </span>
+            </div>
+          )}
           <pre
             style={{
               margin: 0,
               padding: 12,
-              background: '#020617',
+              background: isDark ? '#020617' : '#F8FAFC',
+              border: isDark ? 'none' : '1px solid #E2E8F0',
               borderRadius: 8,
-              color: '#A7F3D0',
+              color: isDark ? '#A7F3D0' : '#065F46',
               fontSize: 12,
               fontFamily: 'monospace',
               whiteSpace: 'pre-wrap',
@@ -180,12 +212,13 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
       {/* Pinned 4-Panel Terminal Architecture from whatsapp-bot-linda */}
       <div
         style={{
-          background: '#090D16',
-          border: '1px solid rgba(148, 163, 184, 0.28)',
+          background: isDark ? '#090D16' : '#FFFFFF',
+          border: isDark ? '1px solid rgba(148, 163, 184, 0.28)' : '1px solid #CBD5E1',
           borderRadius: 12,
           padding: 14,
           display: 'grid',
           gap: 10,
+          boxShadow: isDark ? 'none' : '0 2px 10px rgba(0,0,0,0.04)',
         }}
       >
         {/* PANEL 1: Pinned Header (Magenta Border) */}
@@ -443,6 +476,7 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
   onPairDeviceCode,
   onScanDeviceQr,
 }) => {
+  const { isDark } = useTheme();
   const [maskPhone, setMaskPhone] = useState(false);
   const [pingStatusMap, setPingStatusMap] = useState<Record<string, string>>({});
 
@@ -472,18 +506,19 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
   return (
     <div
       style={{
-        background: 'rgba(15, 23, 42, 0.82)',
-        border: '1px solid rgba(37, 211, 102, 0.28)',
+        background: isDark ? 'rgba(15, 23, 42, 0.82)' : '#FFFFFF',
+        border: isDark ? '1px solid rgba(37, 211, 102, 0.28)' : '1px solid rgba(37, 211, 102, 0.4)',
         borderRadius: 12,
         padding: 14,
+        boxShadow: isDark ? 'none' : '0 2px 8px rgba(15, 23, 42, 0.05)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <h3 style={{ margin: 0, color: '#ECFDF5', fontSize: 15 }}>
+          <h3 style={{ margin: 0, color: isDark ? '#ECFDF5' : '#065F46', fontSize: 15 }}>
             📱 Multi-Account WhatsApp Sessions & Device Linking Desk (Menu 1.1 / 2.1 / 2.2)
           </h3>
-          <p style={{ margin: '4px 0 0 0', color: '#94A3B8', fontSize: 12 }}>
+          <p style={{ margin: '4px 0 0 0', color: isDark ? '#94A3B8' : '#64748B', fontSize: 12 }}>
             Separate Link State vs Connection State · LocalAuth Profile Preservation · Headless 8-Digit Pairing & QR Scan
           </p>
         </div>
@@ -492,9 +527,9 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
             type="button"
             onClick={() => setMaskPhone(!maskPhone)}
             style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              border: '1px solid rgba(148, 163, 184, 0.25)',
-              color: '#CBD5E1',
+              background: isDark ? 'rgba(255, 255, 255, 0.08)' : '#F1F5F9',
+              border: isDark ? '1px solid rgba(148, 163, 184, 0.25)' : '1px solid #CBD5E1',
+              color: isDark ? '#CBD5E1' : '#475569',
               borderRadius: 6,
               padding: '4px 10px',
               fontSize: 11,
@@ -505,9 +540,9 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
           </button>
           <span
             style={{
-              background: 'rgba(34, 197, 94, 0.16)',
+              background: isDark ? 'rgba(34, 197, 94, 0.16)' : 'rgba(34, 197, 94, 0.12)',
               border: '1px solid rgba(34, 197, 94, 0.4)',
-              color: '#86EFAC',
+              color: isDark ? '#86EFAC' : '#15803D',
               borderRadius: 999,
               padding: '4px 10px',
               fontSize: 11,
@@ -520,9 +555,9 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
       </div>
 
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, color: '#E2E8F0' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, color: isDark ? '#E2E8F0' : '#1E293B' }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid rgba(148, 163, 184, 0.2)', textAlign: 'left', color: '#94A3B8' }}>
+            <tr style={{ borderBottom: isDark ? '1px solid rgba(148, 163, 184, 0.2)' : '1px solid #E2E8F0', textAlign: 'left', color: isDark ? '#94A3B8' : '#64748B' }}>
               <th style={{ padding: '8px 10px' }}>Account / Role</th>
               <th style={{ padding: '8px 10px' }}>Phone Number</th>
               <th style={{ padding: '8px 10px' }}>Link State</th>
@@ -537,9 +572,9 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
             {sessions.map(session => {
               const isConn = session.connState === 'CONNECTED';
               return (
-                <tr key={session.id} style={{ borderBottom: '1px solid rgba(148, 163, 184, 0.12)' }}>
+                <tr key={session.id} style={{ borderBottom: isDark ? '1px solid rgba(148, 163, 184, 0.12)' : '1px solid #F1F5F9' }}>
                   <td style={{ padding: '10px' }}>
-                    <div style={{ fontWeight: 700, color: '#F8FAFC' }}>{session.name}</div>
+                    <div style={{ fontWeight: 700, color: isDark ? '#F8FAFC' : '#0F172A' }}>{session.name}</div>
                     <span
                       style={{
                         display: 'inline-block',
@@ -548,7 +583,7 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
                         padding: '1px 6px',
                         borderRadius: 4,
                         background: session.role === 'MASTER' ? 'rgba(234,179,8,0.2)' : 'rgba(59,130,246,0.2)',
-                        color: session.role === 'MASTER' ? '#FDE047' : '#93C5FD',
+                        color: session.role === 'MASTER' ? (isDark ? '#FDE047' : '#B45309') : (isDark ? '#93C5FD' : '#1D4ED8'),
                         fontWeight: 700,
                       }}
                     >
@@ -559,14 +594,14 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
                     {formatPhone(session.phone)}
                   </td>
                   <td style={{ padding: '10px' }}>
-                    <span style={{ color: '#4ADE80', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ color: '#10B981', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                       <CheckCircle2 size={13} /> {session.linkState}
                     </span>
                   </td>
                   <td style={{ padding: '10px' }}>
                     <span
                       style={{
-                        color: isConn ? '#4ADE80' : '#FBBF24',
+                        color: isConn ? '#10B981' : '#D97706',
                         fontWeight: 700,
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -577,15 +612,15 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
                     </span>
                   </td>
                   <td style={{ padding: '10px' }}>
-                    <span style={{ color: session.savedProfile ? '#67E8F9' : '#94A3B8', fontSize: 11 }}>
+                    <span style={{ color: session.savedProfile ? (isDark ? '#67E8F9' : '#0284C7') : (isDark ? '#94A3B8' : '#64748B'), fontSize: 11 }}>
                       {session.savedProfile ? '✅ LocalAuth Saved' : 'None'}
                     </span>
                   </td>
                   <td style={{ padding: '10px', fontFamily: 'monospace' }}>
                     ↑{session.messagesSent} / ↓{session.messagesReceived}
                   </td>
-                  <td style={{ padding: '10px', color: '#CBD5E1' }}>
-                    {session.uptime} · <span style={{ color: '#94A3B8' }}>{session.lastActivity}</span>
+                  <td style={{ padding: '10px', color: isDark ? '#CBD5E1' : '#475569' }}>
+                    {session.uptime} · <span style={{ color: isDark ? '#94A3B8' : '#64748B' }}>{session.lastActivity}</span>
                   </td>
                   <td style={{ padding: '10px' }}>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -593,9 +628,9 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
                         type="button"
                         onClick={() => handlePing(session.id)}
                         style={{
-                          background: 'rgba(34, 197, 94, 0.18)',
+                          background: isDark ? 'rgba(34, 197, 94, 0.18)' : '#DCFCE7',
                           border: '1px solid rgba(34, 197, 94, 0.45)',
-                          color: '#DCFCE7',
+                          color: isDark ? '#DCFCE7' : '#166534',
                           borderRadius: 6,
                           padding: '4px 8px',
                           fontSize: 11,
@@ -611,9 +646,9 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
                         type="button"
                         onClick={() => onPairDeviceCode(session)}
                         style={{
-                          background: 'rgba(234, 179, 8, 0.18)',
+                          background: isDark ? 'rgba(234, 179, 8, 0.18)' : '#FEF9C3',
                           border: '1px solid rgba(234, 179, 8, 0.45)',
-                          color: '#FEF08A',
+                          color: isDark ? '#FEF08A' : '#854D0E',
                           borderRadius: 6,
                           padding: '4px 8px',
                           fontSize: 11,
@@ -629,9 +664,9 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
                         type="button"
                         onClick={() => onScanDeviceQr(session)}
                         style={{
-                          background: 'rgba(59, 130, 246, 0.18)',
+                          background: isDark ? 'rgba(59, 130, 246, 0.18)' : '#DBEAFE',
                           border: '1px solid rgba(59, 130, 246, 0.45)',
-                          color: '#BFDBFE',
+                          color: isDark ? '#BFDBFE' : '#1E40AF',
                           borderRadius: 6,
                           padding: '4px 8px',
                           fontSize: 11,

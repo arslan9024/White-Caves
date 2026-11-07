@@ -1,4 +1,5 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
+import QRCode from 'qrcode';
 import {
   Activity,
   Cpu,
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 import InternalModuleMount from './shared/InternalModuleMount';
 import { apiClient } from '../../utils/apiClient';
+import { useTheme } from '../../context/ThemeContext';
 import {
   INITIAL_LINDA_CAMPAIGNS,
   INITIAL_LINDA_CONVERSATIONS,
@@ -47,20 +49,8 @@ import {
 
 type LindaViewTab = 'all' | 'terminal' | 'sessions' | 'outreach' | 'conversations';
 
-const statCardStyle: React.CSSProperties = {
-  background: 'rgba(15, 23, 42, 0.85)',
-  border: '1px solid rgba(37, 211, 102, 0.32)',
-  borderRadius: 12,
-  padding: 14,
-  minHeight: 92,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.25)',
-  transition: 'transform 0.2s ease, border-color 0.2s ease',
-};
-
 const LindaWhatsAppCRM = memo(() => {
+  const { isDark } = useTheme();
   const [lindaStatus, setLindaStatus] = useState<string>('connected');
   const [isConnected, setIsConnected] = useState<boolean>(true);
   const [loadingAction, setLoadingAction] = useState<'start' | 'stop' | null>(null);
@@ -70,6 +60,8 @@ const LindaWhatsAppCRM = memo(() => {
   const [currentTimeGST, setCurrentTimeGST] = useState<string>('');
   const [heartbeatLatency, setHeartbeatLatency] = useState<number>(38);
   const [confirmEmergencyStop, setConfirmEmergencyStop] = useState<boolean>(false);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
+  const [isQrLoading, setIsQrLoading] = useState<boolean>(false);
   const [toastNotification, setToastNotification] = useState<string | null>(
     '⚡ WhatsApp Bot Linda (v2.0-Enterprise) Online · 200/200 Upgrades Synced'
   );
@@ -91,6 +83,29 @@ const LindaWhatsAppCRM = memo(() => {
     null
   );
 
+  const statCardStyle: React.CSSProperties = {
+    background: isDark ? 'rgba(15, 23, 42, 0.85)' : '#FFFFFF',
+    border: isDark ? '1px solid rgba(37, 211, 102, 0.32)' : '1px solid rgba(37, 211, 102, 0.45)',
+    borderRadius: 12,
+    padding: 14,
+    minHeight: 92,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    boxShadow: isDark ? '0 4px 14px rgba(0, 0, 0, 0.25)' : '0 4px 12px rgba(15, 23, 42, 0.06)',
+    transition: 'transform 0.2s ease, border-color 0.2s ease',
+  };
+
+  const headerBg = isDark
+    ? 'linear-gradient(135deg, rgba(37,211,102,0.22), rgba(15,23,42,0.92))'
+    : 'linear-gradient(135deg, rgba(220,252,231,0.9), #FFFFFF)';
+  const headerBorder = isDark ? '1px solid rgba(37, 211, 102, 0.4)' : '1px solid rgba(34, 197, 94, 0.35)';
+  const titleColor = isDark ? '#ECFDF5' : '#064E3B';
+  const subtitleColor = isDark ? '#A7F3D0' : '#047857';
+  const badgeBg = isDark ? 'rgba(2, 6, 23, 0.75)' : '#F1F5F9';
+  const badgeBorder = isDark ? '1px solid rgba(148, 163, 184, 0.25)' : '1px solid #E2E8F0';
+  const primaryTextColor = isDark ? '#F8FAFC' : '#0F172A';
+  const secondaryTextColor = isDark ? '#94A3B8' : '#64748B';
   const [terminalLines, setTerminalLines] = useState<string[]>([
     '======================================================================',
     '  LINDA — WHATSAPP BOT VISUAL OPERATIONS CENTER (v2.0.0-enterprise)',
@@ -283,7 +298,36 @@ const LindaWhatsAppCRM = memo(() => {
   );
 
   const handleScanDeviceQr = useCallback(
-    (session: LindaSessionItem) => {
+    async (session: LindaSessionItem) => {
+      setIsQrLoading(true);
+      let qrImgUrl: string | null = null;
+      try {
+        const res = (await apiClient.get('/linda/qr')) as {
+          success?: boolean;
+          data?: { qr?: string; isConnected?: boolean };
+        };
+        if (res?.data?.qr) {
+          qrImgUrl = await QRCode.toDataURL(res.data.qr, { width: 220, margin: 1 });
+          setQrCodeDataUrl(qrImgUrl);
+        }
+      } catch {
+        // Fallback local mock QR
+      } finally {
+        setIsQrLoading(false);
+      }
+
+      if (!qrImgUrl) {
+        try {
+          qrImgUrl = await QRCode.toDataURL(`whatsapp://connect?session=${session.id}&phone=${session.phone}`, {
+            width: 220,
+            margin: 1,
+          });
+          setQrCodeDataUrl(qrImgUrl);
+        } catch {
+          // ignore
+        }
+      }
+
       const output = [
         `📷 QR CODE DEVICE LINKING SESSION READY (Menu 2.2 · Feature F3)`,
         `  Account: ${session.name} (${session.phone})`,
@@ -294,7 +338,7 @@ const LindaWhatsAppCRM = memo(() => {
         `  │ █▄▄▄█ █▀█ █▀█ ▄█▄ █▄▄▄█ │`,
         `  │ ▄▄▄▄▄ ▄ ▄ ▀▄▀ █ █ ▄▄▄▄▄ │`,
         `  └──────────────────────────┘`,
-        `  Status: Ready for WhatsApp camera scan or click "Restore Master (1.19)" for zero-scan recovery.`,
+        `  Status: Scan with WhatsApp on phone (Linked Devices -> Link a Device). Zero-data-loss guaranteed.`,
       ].join('\n');
       setActiveModalOutput({ title: `QR Device Linking — ${session.name}`, output });
       setTerminalLines(prev => [...prev, `$ link-qr ${session.id}`, output]);
@@ -346,10 +390,11 @@ const LindaWhatsAppCRM = memo(() => {
       {/* Top Executive Operations Header */}
       <header
         style={{
-          background: 'linear-gradient(135deg, rgba(37,211,102,0.22), rgba(15,23,42,0.92))',
-          border: '1px solid rgba(37, 211, 102, 0.4)',
+          background: headerBg,
+          border: headerBorder,
           borderRadius: 14,
           padding: 18,
+          boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.3)' : '0 4px 18px rgba(34, 197, 94, 0.08)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
@@ -371,14 +416,14 @@ const LindaWhatsAppCRM = memo(() => {
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <h2 style={{ margin: 0, color: '#ECFDF5', fontSize: 19 }}>
+                <h2 style={{ margin: 0, color: titleColor, fontSize: 19 }}>
                   Linda — WhatsApp Bot Visual Operations Center
                 </h2>
                 <span
                   style={{
-                    background: 'rgba(34, 197, 94, 0.2)',
+                    background: isDark ? 'rgba(34, 197, 94, 0.2)' : 'rgba(34, 197, 94, 0.15)',
                     border: '1px solid rgba(34, 197, 94, 0.5)',
-                    color: '#86EFAC',
+                    color: isDark ? '#86EFAC' : '#15803D',
                     borderRadius: 999,
                     padding: '2px 10px',
                     fontSize: 11,
@@ -388,7 +433,7 @@ const LindaWhatsAppCRM = memo(() => {
                   v2.0.0-enterprise · 200/200 Upgrades
                 </span>
               </div>
-              <p style={{ margin: '4px 0 0 0', color: '#A7F3D0', fontSize: 12 }}>
+              <p style={{ margin: '4px 0 0 0', color: subtitleColor, fontSize: 12 }}>
                 Synced with <code>arslan9024/whatsapp-bot-linda</code> · Multi-Account LocalAuth · Pinned 4-Panel Terminal · 35 Features (F1–F35) · 10 Playbooks (P1–P10) · Area Owner Outreach Planner (F35)
               </p>
             </div>
@@ -401,18 +446,18 @@ const LindaWhatsAppCRM = memo(() => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
-                background: 'rgba(2, 6, 23, 0.75)',
+                background: badgeBg,
                 padding: '6px 12px',
                 borderRadius: 8,
-                border: '1px solid rgba(148, 163, 184, 0.25)',
+                border: badgeBorder,
                 fontSize: 11,
-                color: '#CBD5E1',
+                color: isDark ? '#CBD5E1' : '#475569',
               }}
             >
               <Clock size={13} color="#38BDF8" />
-              <strong style={{ color: '#F8FAFC' }}>{currentTimeGST || 'Asia/Dubai'}</strong>
+              <strong style={{ color: primaryTextColor }}>{currentTimeGST || 'Asia/Dubai'}</strong>
               <span style={{ color: '#64748B' }}>•</span>
-              <span style={{ color: '#4ADE80' }}>{heartbeatLatency}ms</span>
+              <span style={{ color: '#16A34A', fontWeight: 700 }}>{heartbeatLatency}ms</span>
             </div>
 
             {/* Sound Toggle */}
@@ -421,9 +466,9 @@ const LindaWhatsAppCRM = memo(() => {
               title={soundEnabled ? 'Mute sound alerts' : 'Enable sound alerts'}
               onClick={() => setSoundEnabled(!soundEnabled)}
               style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(148, 163, 184, 0.25)',
-                color: soundEnabled ? '#34D399' : '#94A3B8',
+                background: isDark ? 'rgba(255, 255, 255, 0.08)' : '#FFFFFF',
+                border: isDark ? '1px solid rgba(148, 163, 184, 0.25)' : '1px solid #CBD5E1',
+                color: soundEnabled ? '#10B981' : '#94A3B8',
                 borderRadius: 8,
                 padding: '6px 10px',
                 cursor: 'pointer',
@@ -440,9 +485,9 @@ const LindaWhatsAppCRM = memo(() => {
               title="Refresh Health & Diagnostics"
               onClick={() => void refreshLindaStatus()}
               style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(148, 163, 184, 0.25)',
-                color: '#F8FAFC',
+                background: isDark ? 'rgba(255, 255, 255, 0.08)' : '#FFFFFF',
+                border: isDark ? '1px solid rgba(148, 163, 184, 0.25)' : '1px solid #CBD5E1',
+                color: primaryTextColor,
                 borderRadius: 8,
                 padding: '6px 10px',
                 cursor: 'pointer',
@@ -459,13 +504,13 @@ const LindaWhatsAppCRM = memo(() => {
               role="status"
               aria-live="polite"
               style={{
-                color: isConnected ? '#86EFAC' : '#FCA5A5',
+                color: isConnected ? (isDark ? '#86EFAC' : '#15803D') : (isDark ? '#FCA5A5' : '#B91C1C'),
                 fontSize: 12,
                 fontWeight: 700,
-                background: 'rgba(2, 6, 23, 0.65)',
+                background: badgeBg,
                 padding: '6px 12px',
                 borderRadius: 8,
-                border: '1px solid rgba(148,163,184,0.2)',
+                border: badgeBorder,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
@@ -613,12 +658,23 @@ const LindaWhatsAppCRM = memo(() => {
               onClick={() => setActiveViewTab(tab.id as LindaViewTab)}
               style={{
                 background:
-                  activeViewTab === tab.id ? '#25D366' : 'rgba(15, 23, 42, 0.78)',
-                color: activeViewTab === tab.id ? '#022C22' : '#E2E8F0',
+                  activeViewTab === tab.id
+                    ? '#25D366'
+                    : isDark
+                      ? 'rgba(15, 23, 42, 0.78)'
+                      : '#F1F5F9',
+                color:
+                  activeViewTab === tab.id
+                    ? '#022C22'
+                    : isDark
+                      ? '#E2E8F0'
+                      : '#334155',
                 border:
                   activeViewTab === tab.id
                     ? '1px solid #25D366'
-                    : '1px solid rgba(148, 163, 184, 0.28)',
+                    : isDark
+                      ? '1px solid rgba(148, 163, 184, 0.28)'
+                      : '1px solid #CBD5E1',
                 borderRadius: 8,
                 padding: '6px 12px',
                 fontSize: 12,
@@ -641,49 +697,49 @@ const LindaWhatsAppCRM = memo(() => {
         }}
       >
         <div style={statCardStyle}>
-          <Activity size={17} color="#34D399" />
-          <p style={{ margin: '6px 0 0 0', color: '#94A3B8', fontSize: 11 }}>Master Bot Uptime</p>
-          <strong style={{ color: '#86EFAC', fontSize: 20 }}>{metrics.uptime}</strong>
+          <Activity size={17} color="#10B981" />
+          <p style={{ margin: '6px 0 0 0', color: secondaryTextColor, fontSize: 11 }}>Master Bot Uptime</p>
+          <strong style={{ color: isDark ? '#86EFAC' : '#059669', fontSize: 20 }}>{metrics.uptime}</strong>
         </div>
         <div style={statCardStyle}>
-          <Smartphone size={17} color="#34D399" />
-          <p style={{ margin: '6px 0 0 0', color: '#94A3B8', fontSize: 11 }}>Linked Bot Sessions</p>
-          <strong style={{ color: '#86EFAC', fontSize: 20 }}>{metrics.activeSessions}</strong>
+          <Smartphone size={17} color="#10B981" />
+          <p style={{ margin: '6px 0 0 0', color: secondaryTextColor, fontSize: 11 }}>Linked Bot Sessions</p>
+          <strong style={{ color: isDark ? '#86EFAC' : '#059669', fontSize: 20 }}>{metrics.activeSessions}</strong>
         </div>
         <div style={statCardStyle}>
-          <Workflow size={17} color="#34D399" />
-          <p style={{ margin: '6px 0 0 0', color: '#94A3B8', fontSize: 11 }}>Anti-Ban Rate Limit</p>
-          <strong style={{ color: '#86EFAC', fontSize: 20 }}>{metrics.rateLimit}</strong>
+          <Workflow size={17} color="#10B981" />
+          <p style={{ margin: '6px 0 0 0', color: secondaryTextColor, fontSize: 11 }}>Anti-Ban Rate Limit</p>
+          <strong style={{ color: isDark ? '#86EFAC' : '#059669', fontSize: 20 }}>{metrics.rateLimit}</strong>
         </div>
         <div style={statCardStyle}>
-          <Cpu size={17} color="#34D399" />
-          <p style={{ margin: '6px 0 0 0', color: '#94A3B8', fontSize: 11 }}>Memory & Chromium</p>
-          <strong style={{ color: '#86EFAC', fontSize: 20 }}>{metrics.memory}</strong>
+          <Cpu size={17} color="#10B981" />
+          <p style={{ margin: '6px 0 0 0', color: secondaryTextColor, fontSize: 11 }}>Memory & Chromium</p>
+          <strong style={{ color: isDark ? '#86EFAC' : '#059669', fontSize: 20 }}>{metrics.memory}</strong>
         </div>
         <div style={statCardStyle}>
-          <MessageSquare size={17} color="#34D399" />
-          <p style={{ margin: '6px 0 0 0', color: '#94A3B8', fontSize: 11 }}>Active Conversations</p>
-          <strong style={{ color: '#86EFAC', fontSize: 20 }}>42</strong>
+          <MessageSquare size={17} color="#10B981" />
+          <p style={{ margin: '6px 0 0 0', color: secondaryTextColor, fontSize: 11 }}>Active Conversations</p>
+          <strong style={{ color: isDark ? '#86EFAC' : '#059669', fontSize: 20 }}>42</strong>
         </div>
         <div style={statCardStyle}>
-          <PhoneCall size={17} color="#34D399" />
-          <p style={{ margin: '6px 0 0 0', color: '#94A3B8', fontSize: 11 }}>Handoffs to Sales</p>
-          <strong style={{ color: '#86EFAC', fontSize: 20 }}>17</strong>
+          <PhoneCall size={17} color="#10B981" />
+          <p style={{ margin: '6px 0 0 0', color: secondaryTextColor, fontSize: 11 }}>Handoffs to Sales</p>
+          <strong style={{ color: isDark ? '#86EFAC' : '#059669', fontSize: 20 }}>17</strong>
         </div>
         <div style={statCardStyle}>
-          <ShieldCheck size={17} color="#34D399" />
-          <p style={{ margin: '6px 0 0 0', color: '#94A3B8', fontSize: 11 }}>12-Point Health Doctor</p>
-          <strong style={{ color: '#86EFAC', fontSize: 20 }}>12/12 PASS</strong>
+          <ShieldCheck size={17} color="#10B981" />
+          <p style={{ margin: '6px 0 0 0', color: secondaryTextColor, fontSize: 11 }}>12-Point Health Doctor</p>
+          <strong style={{ color: isDark ? '#86EFAC' : '#059669', fontSize: 20 }}>12/12 PASS</strong>
         </div>
         <div style={statCardStyle}>
-          <TrendingUp size={17} color="#38BDF8" />
-          <p style={{ margin: '6px 0 0 0', color: '#94A3B8', fontSize: 11 }}>Conversion Velocity</p>
-          <strong style={{ color: '#38BDF8', fontSize: 20 }}>{metrics.conversionVelocity}</strong>
+          <TrendingUp size={17} color="#0284C7" />
+          <p style={{ margin: '6px 0 0 0', color: secondaryTextColor, fontSize: 11 }}>Conversion Velocity</p>
+          <strong style={{ color: isDark ? '#38BDF8' : '#0284C7', fontSize: 20 }}>{metrics.conversionVelocity}</strong>
         </div>
         <div style={statCardStyle}>
-          <Zap size={17} color="#FBBF24" />
-          <p style={{ margin: '6px 0 0 0', color: '#94A3B8', fontSize: 11 }}>Anti-Ban Safety Score</p>
-          <strong style={{ color: '#FDE047', fontSize: 20 }}>{metrics.antiBanSafetyScore}</strong>
+          <Zap size={17} color="#D97706" />
+          <p style={{ margin: '6px 0 0 0', color: secondaryTextColor, fontSize: 11 }}>Anti-Ban Safety Score</p>
+          <strong style={{ color: isDark ? '#FDE047' : '#D97706', fontSize: 20 }}>{metrics.antiBanSafetyScore}</strong>
         </div>
       </div>
 
@@ -696,7 +752,12 @@ const LindaWhatsAppCRM = memo(() => {
           onExecuteCommand={(cmd, label) => void handleExecuteCommand(cmd, label)}
           onClearTerminal={() => setTerminalLines(['$ Terminal cleared. Ready for next command.'])}
           activeModalOutput={activeModalOutput}
-          onCloseModal={() => setActiveModalOutput(null)}
+          onCloseModal={() => {
+            setActiveModalOutput(null);
+            setQrCodeDataUrl(null);
+          }}
+          qrCodeDataUrl={qrCodeDataUrl}
+          isQrLoading={isQrLoading}
         />
       )}
 

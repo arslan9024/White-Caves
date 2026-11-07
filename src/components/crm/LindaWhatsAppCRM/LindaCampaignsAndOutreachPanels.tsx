@@ -9,6 +9,7 @@ import {
   Radio,
   Layers,
 } from 'lucide-react';
+import { useTheme } from '../../../context/ThemeContext';
 import type {
   LindaCampaignItem,
   LindaOutreachOwnerRow,
@@ -29,6 +30,7 @@ export const LindaCampaignsAndOutreachPanel: React.FC<CampaignsAndOutreachProps>
   outreachOwners,
   onQueueOutreachBatch,
 }) => {
+  const { isDark } = useTheme();
   const [selectedCluster, setSelectedCluster] = useState<string>('ALL');
   const [searchOwner, setSearchOwner] = useState<string>('');
   const [selectedOwners, setSelectedOwners] = useState<number[]>([]);
@@ -69,22 +71,23 @@ export const LindaCampaignsAndOutreachPanel: React.FC<CampaignsAndOutreachProps>
       {/* Outreach Campaigns Table (CampaignTable.jsx) */}
       <div
         style={{
-          background: 'rgba(15, 23, 42, 0.82)',
-          border: '1px solid rgba(37, 211, 102, 0.28)',
+          background: isDark ? 'rgba(15, 23, 42, 0.82)' : '#FFFFFF',
+          border: isDark ? '1px solid rgba(37, 211, 102, 0.28)' : '1px solid rgba(37, 211, 102, 0.4)',
           borderRadius: 12,
           padding: 14,
+          boxShadow: isDark ? 'none' : '0 2px 8px rgba(15, 23, 42, 0.05)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <div>
-            <h3 style={{ margin: 0, color: '#ECFDF5', fontSize: 15 }}>
+            <h3 style={{ margin: 0, color: isDark ? '#ECFDF5' : '#065F46', fontSize: 15 }}>
               📢 Outreach Campaigns & Drip Broadcasts (Menu 5.1)
             </h3>
-            <p style={{ margin: '4px 0 0 0', color: '#94A3B8', fontSize: 12 }}>
+            <p style={{ margin: '4px 0 0 0', color: isDark ? '#94A3B8' : '#64748B', fontSize: 12 }}>
               Spintax v3 + Gaussian Typing Jitter · Pause or Resume live campaigns
             </p>
           </div>
-          <span style={{ fontSize: 11, color: '#4ADE80', fontWeight: 700 }}>
+          <span style={{ fontSize: 11, color: isDark ? '#4ADE80' : '#16A34A', fontWeight: 700 }}>
             {campaigns.filter(c => c.status === 'active').length} Active
           </span>
         </div>
@@ -97,17 +100,17 @@ export const LindaCampaignsAndOutreachPanel: React.FC<CampaignsAndOutreachProps>
               <div
                 key={camp.id}
                 style={{
-                  background: 'rgba(2, 6, 23, 0.65)',
-                  border: '1px solid rgba(148, 163, 184, 0.2)',
+                  background: isDark ? 'rgba(2, 6, 23, 0.65)' : '#F8FAFC',
+                  border: isDark ? '1px solid rgba(148, 163, 184, 0.2)' : '1px solid #E2E8F0',
                   borderRadius: 10,
                   padding: 12,
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                   <div>
-                    <div style={{ fontWeight: 700, color: '#F8FAFC', fontSize: 13 }}>{camp.name}</div>
-                    <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>
-                      Cluster: <strong style={{ color: '#CBD5E1' }}>{camp.cluster}</strong> · {camp.rateLimit} · Next:{' '}
+                    <div style={{ fontWeight: 700, color: isDark ? '#F8FAFC' : '#0F172A', fontSize: 13 }}>{camp.name}</div>
+                    <div style={{ fontSize: 11, color: isDark ? '#94A3B8' : '#64748B', marginTop: 2 }}>
+                      Cluster: <strong style={{ color: isDark ? '#CBD5E1' : '#334155' }}>{camp.cluster}</strong> · {camp.rateLimit} · Next:{' '}
                       {camp.nextBatch}
                     </div>
                   </div>
@@ -115,11 +118,23 @@ export const LindaCampaignsAndOutreachPanel: React.FC<CampaignsAndOutreachProps>
                     type="button"
                     onClick={() => onToggleCampaignStatus(camp.id)}
                     style={{
-                      background: isActive ? 'rgba(245, 158, 11, 0.18)' : 'rgba(34, 197, 94, 0.2)',
+                      background: isActive
+                        ? isDark
+                          ? 'rgba(245, 158, 11, 0.18)'
+                          : '#FEF3C7'
+                        : isDark
+                          ? 'rgba(34, 197, 94, 0.2)'
+                          : '#DCFCE7',
                       border: isActive
                         ? '1px solid rgba(245, 158, 11, 0.5)'
                         : '1px solid rgba(34, 197, 94, 0.5)',
-                      color: isActive ? '#FDE68A' : '#BBF7D0',
+                      color: isActive
+                        ? isDark
+                          ? '#FDE68A'
+                          : '#92400E'
+                        : isDark
+                          ? '#BBF7D0'
+                          : '#166534',
                       borderRadius: 6,
                       padding: '5px 10px',
                       fontSize: 11,
@@ -377,27 +392,29 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
   liveLogs,
   onSendQuickReply,
 }) => {
+  const { isDark } = useTheme();
   return (
     <div style={{ display: 'grid', gap: 16 }}>
       {/* Conversation Analyzer (F34 / 8.11) & Mary Inventory Match */}
       <div
         style={{
-          background: 'rgba(15, 23, 42, 0.82)',
-          border: '1px solid rgba(139, 92, 246, 0.35)',
+          background: isDark ? 'rgba(15, 23, 42, 0.82)' : '#FFFFFF',
+          border: isDark ? '1px solid rgba(139, 92, 246, 0.35)' : '1px solid #E2E8F0',
           borderRadius: 12,
           padding: 14,
+          boxShadow: isDark ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.04)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
           <div>
-            <h3 style={{ margin: 0, color: '#F5F3FF', fontSize: 15 }}>
+            <h3 style={{ margin: 0, color: isDark ? '#F5F3FF' : '#0F172A', fontSize: 15, fontWeight: 700 }}>
               💬 WhatsApp Conversation Analyzer (F34 · Menu 8.11) & Mary Inventory Match
             </h3>
-            <p style={{ margin: '4px 0 0 0', color: '#C4B5FD', fontSize: 12 }}>
+            <p style={{ margin: '4px 0 0 0', color: isDark ? '#C4B5FD' : '#64748B', fontSize: 12 }}>
               CONSUMES ← Nina Intents & Mary Inventory Snapshots · FEEDS → Clara Lead Qualification & Henry Audit
             </p>
           </div>
-          <span style={{ fontSize: 11, color: '#A78BFA', fontWeight: 700 }}>
+          <span style={{ fontSize: 11, color: isDark ? '#A78BFA' : '#7C3AED', fontWeight: 700 }}>
             Confidence Gate: ≥ 70% Auto-Assisted
           </span>
         </div>
@@ -407,8 +424,8 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
             <div
               key={conv.id}
               style={{
-                background: 'rgba(2, 6, 23, 0.7)',
-                border: '1px solid rgba(139, 92, 246, 0.28)',
+                background: isDark ? 'rgba(2, 6, 23, 0.7)' : '#F8FAFC',
+                border: isDark ? '1px solid rgba(139, 92, 246, 0.28)' : '1px solid #CBD5E1',
                 borderRadius: 10,
                 padding: 12,
                 display: 'flex',
@@ -420,7 +437,7 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <strong style={{ color: '#F8FAFC', fontSize: 13 }}>{conv.contactName}</strong>
+                    <strong style={{ color: isDark ? '#F8FAFC' : '#0F172A', fontSize: 13 }}>{conv.contactName}</strong>
                     <span
                       style={{
                         fontSize: 9,
@@ -429,9 +446,9 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
                         fontWeight: 800,
                         background:
                           conv.sentiment === 'URGENT'
-                            ? 'rgba(239, 68, 68, 0.2)'
-                            : 'rgba(34, 197, 94, 0.2)',
-                        color: conv.sentiment === 'URGENT' ? '#FCA5A5' : '#86EFAC',
+                            ? (isDark ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2')
+                            : (isDark ? 'rgba(34, 197, 94, 0.2)' : '#DCFCE7'),
+                        color: conv.sentiment === 'URGENT' ? (isDark ? '#FCA5A5' : '#B91C1C') : (isDark ? '#86EFAC' : '#15803D'),
                       }}
                     >
                       {conv.sentiment}
@@ -442,49 +459,50 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
                       fontSize: 10,
                       padding: '2px 6px',
                       borderRadius: 4,
-                      background: 'rgba(34, 197, 94, 0.18)',
-                      color: '#86EFAC',
+                      background: isDark ? 'rgba(34, 197, 94, 0.18)' : '#DCFCE7',
+                      color: isDark ? '#86EFAC' : '#15803D',
                       fontWeight: 700,
                     }}
                   >
                     {conv.confidence}% AI Confidence
                   </span>
                 </div>
-                <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: isDark ? '#94A3B8' : '#64748B', marginTop: 2 }}>
                   {conv.phone} · {conv.cluster} ({conv.unit})
                 </div>
                 <div
                   style={{
                     marginTop: 8,
                     padding: '6px 8px',
-                    background: 'rgba(15, 23, 42, 0.9)',
+                    background: isDark ? 'rgba(15, 23, 42, 0.9)' : '#FFFFFF',
+                    border: isDark ? 'none' : '1px solid #E2E8F0',
                     borderRadius: 6,
                     fontSize: 12,
-                    color: '#E2E8F0',
+                    color: isDark ? '#E2E8F0' : '#334155',
                     fontStyle: 'italic',
                   }}
                 >
                   “{conv.lastMessage}”
                 </div>
-                <div style={{ marginTop: 8, fontSize: 11, color: '#67E8F9' }}>
+                <div style={{ marginTop: 8, fontSize: 11, color: isDark ? '#67E8F9' : '#0284C7' }}>
                   <strong>Intent:</strong> {conv.intent}
                 </div>
-                <div style={{ marginTop: 4, fontSize: 11, color: '#FDE047' }}>
+                <div style={{ marginTop: 4, fontSize: 11, color: isDark ? '#FDE047' : '#B45309' }}>
                   <strong>🏠 Mary Match:</strong> {conv.maryMatch}
                 </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
-                <span style={{ fontSize: 10, color: '#94A3B8' }}>
+                <span style={{ fontSize: 10, color: isDark ? '#94A3B8' : '#64748B' }}>
                   {conv.gorahaSaved ? '✅ Saved in Goraha' : '⚠️ Unsaved'} · {conv.timestamp}
                 </span>
                 <button
                   type="button"
                   onClick={() => onSendQuickReply(conv)}
                   style={{
-                    background: 'rgba(37, 211, 102, 0.2)',
-                    border: '1px solid rgba(37, 211, 102, 0.5)',
-                    color: '#DCFCE7',
+                    background: isDark ? 'rgba(37, 211, 102, 0.2)' : '#DCFCE7',
+                    border: isDark ? '1px solid rgba(37, 211, 102, 0.5)' : '1px solid #22C55E',
+                    color: isDark ? '#DCFCE7' : '#15803D',
                     borderRadius: 6,
                     padding: '4px 10px',
                     fontSize: 11,
@@ -507,15 +525,16 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 16 }}>
         <div
           style={{
-            background: 'rgba(15, 23, 42, 0.82)',
-            border: '1px solid rgba(56, 189, 248, 0.3)',
+            background: isDark ? 'rgba(15, 23, 42, 0.82)' : '#FFFFFF',
+            border: isDark ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid #E2E8F0',
             borderRadius: 12,
             padding: 14,
+            boxShadow: isDark ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.04)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <Layers size={16} color="#38BDF8" />
-            <h3 style={{ margin: 0, color: '#F0F9FF', fontSize: 14 }}>
+            <Layers size={16} color={isDark ? '#38BDF8' : '#0284C7'} />
+            <h3 style={{ margin: 0, color: isDark ? '#F0F9FF' : '#0F172A', fontSize: 14, fontWeight: 700 }}>
               🏛️ Linda Master System Registry — 10 Pillars (200/200 Upgrades Active)
             </h3>
           </div>
@@ -524,23 +543,23 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
               <div
                 key={p.id}
                 style={{
-                  background: 'rgba(2, 6, 23, 0.65)',
-                  border: '1px solid rgba(148, 163, 184, 0.16)',
+                  background: isDark ? 'rgba(2, 6, 23, 0.65)' : '#F8FAFC',
+                  border: isDark ? '1px solid rgba(148, 163, 184, 0.16)' : '1px solid #E2E8F0',
                   borderRadius: 8,
                   padding: '6px 10px',
                   fontSize: 11,
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#E2E8F0', fontWeight: 700 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: isDark ? '#E2E8F0' : '#1E293B', fontWeight: 700 }}>
                   <span>
-                    <strong style={{ color: '#38BDF8' }}>{p.id}:</strong> {p.name}
+                    <strong style={{ color: isDark ? '#38BDF8' : '#0284C7' }}>{p.id}:</strong> {p.name}
                   </span>
-                  <span style={{ color: '#4ADE80' }}>
+                  <span style={{ color: isDark ? '#4ADE80' : '#16A34A' }}>
                     <ShieldCheck size={11} style={{ display: 'inline', marginRight: 3 }} />
                     {p.upgrades} {p.status}
                   </span>
                 </div>
-                <div style={{ color: '#94A3B8', fontSize: 10, marginTop: 2 }}>{p.highlight}</div>
+                <div style={{ color: isDark ? '#94A3B8' : '#64748B', fontSize: 10, marginTop: 2 }}>{p.highlight}</div>
               </div>
             ))}
           </div>
@@ -549,29 +568,31 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
         {/* Live Event Stream (LogViewer.jsx) */}
         <div
           style={{
-            background: '#090D16',
-            border: '1px solid rgba(34, 197, 94, 0.35)',
+            background: isDark ? '#090D16' : '#FFFFFF',
+            border: isDark ? '1px solid rgba(34, 197, 94, 0.35)' : '1px solid #CBD5E1',
             borderRadius: 12,
             padding: 14,
+            boxShadow: isDark ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.04)',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Radio size={15} color="#4ADE80" />
-              <h3 style={{ margin: 0, color: '#ECFDF5', fontSize: 14 }}>
+              <Radio size={15} color={isDark ? '#4ADE80' : '#16A34A'} />
+              <h3 style={{ margin: 0, color: isDark ? '#ECFDF5' : '#0F172A', fontSize: 14, fontWeight: 700 }}>
                 📡 Real-Time Bot Event Stream & Audit Log
               </h3>
             </div>
-            <span style={{ fontSize: 10, color: '#4ADE80', fontFamily: 'monospace' }}>● STREAMING LIVE</span>
+            <span style={{ fontSize: 10, color: isDark ? '#4ADE80' : '#16A34A', fontFamily: 'monospace', fontWeight: 700 }}>● STREAMING LIVE</span>
           </div>
           <div
             style={{
-              background: '#020617',
+              background: isDark ? '#020617' : '#F1F5F9',
+              border: isDark ? 'none' : '1px solid #E2E8F0',
               borderRadius: 8,
               padding: 10,
               fontFamily: 'monospace',
               fontSize: 11,
-              color: '#A7F3D0',
+              color: isDark ? '#A7F3D0' : '#0F766E',
               maxHeight: 230,
               overflowY: 'auto',
               lineHeight: 1.55,

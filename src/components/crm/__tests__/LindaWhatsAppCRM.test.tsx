@@ -2,10 +2,15 @@ import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import LindaWhatsAppCRM from '../LindaWhatsAppCRM';
+import { ThemeProvider } from '../../../context/ThemeContext';
 
 afterEach(() => {
   cleanup();
 });
+
+const renderWithTheme = (ui: React.ReactElement) => {
+  return render(<ThemeProvider>{ui}</ThemeProvider>);
+};
 
 vi.mock('../../../utils/apiClient', () => ({
   apiClient: {
@@ -22,7 +27,7 @@ vi.mock('../../../utils/apiClient', () => ({
 
 describe('LindaWhatsAppCRM — Upgraded Visual Operations Center (v2.0.0-enterprise)', () => {
   it('renders all upgraded Linda components in unified view', () => {
-    render(<LindaWhatsAppCRM />);
+    renderWithTheme(<LindaWhatsAppCRM />);
 
     expect(
       screen.getByRole('heading', { name: /Linda — WhatsApp Bot Visual Operations Center/i })
@@ -64,7 +69,7 @@ describe('LindaWhatsAppCRM — Upgraded Visual Operations Center (v2.0.0-enterpr
   });
 
   it('executes quick actions and opens script output modal when clicked', async () => {
-    render(<LindaWhatsAppCRM />);
+    renderWithTheme(<LindaWhatsAppCRM />);
 
     const doctorBtn = screen.getByRole('button', { name: /Health Doctor \(12\/12\)/i });
     fireEvent.click(doctorBtn);
