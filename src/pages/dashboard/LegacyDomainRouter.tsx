@@ -19,6 +19,7 @@ const ViewingsPage = lazy(() => import('../crm/ViewingsPage'));
 const GovernanceDashboard = lazy(() => import('../crm/GovernanceDashboard/GovernanceDashboard'));
 const UnifiedDashboardPage = lazy(() => import('../crm/UnifiedDashboardPage'));
 const ModuleViewport = lazy(() => import('../../components/dashboard/viewport/ModuleViewport'));
+const TheodoraFinanceCRM = lazy(() => import('../../components/crm/TheodoraFinanceCRM_NEW'));
 
 // Dedicated legacy department views
 const ExecutiveDepartmentView = lazy(() => import('../crm/ExecutiveDepartmentView'));
@@ -47,6 +48,9 @@ export const LegacyDomainRouter: FC<LegacyDomainRouterProps> = ({
       <Suspense fallback={<SkeletonLoader width="100%" height="450px" borderRadius="16px" />}>
         {(() => {
           switch (tab) {
+            case 'finance':
+              return <TheodoraFinanceCRM moduleId={subItemId || undefined} />;
+
             case 'audit':
               return <AuditLogPage />;
 

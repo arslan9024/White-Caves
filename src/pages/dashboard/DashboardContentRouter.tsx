@@ -259,6 +259,7 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
       return <ProfileDashboardView />;
 
     // Migrated Legacy & Enterprise Domain Suite
+    case 'finance' as ActivityTab:
     case 'audit' as ActivityTab:
     case 'governance' as ActivityTab:
     case 'commissions' as ActivityTab:
