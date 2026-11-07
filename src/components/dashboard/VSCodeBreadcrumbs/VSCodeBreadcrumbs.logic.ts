@@ -34,6 +34,16 @@ const SYSTEM_MAP: Record<
       },
     ],
   },
+  aiams: {
+    label: 'AIAMS: AI Assistants Management',
+    root: '/dashboard/aiams',
+    categories: [
+      { id: 'agents', label: '121+ AI Agents CRUD', route: '/dashboard/aiams/agents' },
+      { id: 'managers', label: '12 Dept AI Directors', route: '/dashboard/aiams/managers' },
+      { id: 'supervisors', label: '108 AI Supervisors', route: '/dashboard/aiams/supervisors' },
+      { id: 'organogram', label: '1-12-108 Organogram', route: '/dashboard/aiams/organogram' },
+    ],
+  },
   tasks: {
     label: 'TMS: Tasks & Statutory Catalog',
     root: '/dashboard/tasks',

@@ -11,6 +11,7 @@ import { DepartmentManagementWorkspace } from '../../components/crm/DepartmentMa
 import { DepartmentOverviewView } from '../../components/crm/DepartmentManager/DepartmentOverviewView';
 import { EmployeeManagerView } from '../../components/crm/EmployeeManager';
 import { EmployeeOverviewView } from '../../components/crm/EmployeeManager/EmployeeOverviewView';
+import { AiAssistantManagerView } from '../../components/crm/AiAssistantManager';
 import { TaskManagerView } from '../../components/crm/TaskManager';
 import { TaskOverviewView } from '../../components/crm/TaskManager/TaskOverviewView';
 import { LeaderboardView } from '../../components/crm/Leaderboard';
@@ -176,12 +177,22 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
     );
   }
 
+  if (activeTab === 'aiams') {
+    return (
+      <AiAssistantManagerView
+        selectedSubRoute={activeItemId}
+        isReadOnly={isReadOnly}
+        onNavigate={navigate}
+      />
+    );
+  }
+
   if (activeTab === 'ai-command' || activeAgent?.id === 'ai-command') {
     return (
       <div style={{ padding: '16px', flex: 1 }}>
         <AICommandCenter
           onSelectAgent={id =>
-            navigate(id === 'linda' ? '/dashboard/linda' : `/dashboard/ai-command/${id}`)
+            navigate(id === 'linda' ? '/dashboard/linda' : `/dashboard/aiams/${id}`)
           }
         />
       </div>
@@ -283,27 +294,14 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
         />
       );
 
-    case 'relationships': {
-      const initialRelTab =
-        ermsSubTab === 'entities' || ermsSubTab === 'relationships' ? ermsSubTab : 'erd';
-      return (
-        <RelationshipManagerView
-          initialTab={initialRelTab}
-          selectedEntityId={ermsEntityId}
-          selectedRelationshipId={ermsRelationshipId}
-          onSelectEntity={id => navigate(`/dashboard/erms/entities/${id}`)}
-          onSelectRelationship={id => navigate(`/dashboard/erms/relationships/${id}`)}
-          onNavigateToDeepRoute={route => navigate(route)}
-        />
-      );
-    }
-
+    case 'relationships':
     case 'erms': {
       const initialErmsTab =
         ermsSubTab === 'entities' || ermsSubTab === 'relationships' ? ermsSubTab : 'erd';
-      return isErmsRootOverview ? (
-        <ErmsOverviewView onNavigate={navigate} />
-      ) : (
+      if (activeTab === 'erms' && isErmsRootOverview) {
+        return <ErmsOverviewView onNavigate={navigate} />;
+      }
+      return (
         <RelationshipManagerView
           initialTab={initialErmsTab}
           selectedEntityId={ermsEntityId}
@@ -339,29 +337,15 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
 
     case 'profile':
       return <ProfileDashboardView />;
-
     case 'landlord' as ActivityTab:
       return <LandlordManagerView />;
-
     case 'tenant' as ActivityTab:
       return <TenantManagerView />;
-
     case 'broker' as ActivityTab:
       return <BrokerManagerView />;
-
     default:
       return (
-        <div
-          style={{
-            flex: 1,
-            padding: '32px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#94a3b8',
-          }}
-        >
+        <div style={{ flex: 1, padding: '32px', textAlign: 'center', color: '#94a3b8' }}>
           <span>🎯 {activeTab.toUpperCase()} Viewport Initialized</span>
         </div>
       );

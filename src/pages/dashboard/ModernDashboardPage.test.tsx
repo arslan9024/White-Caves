@@ -96,6 +96,17 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
     expect(screen.getByTestId('employee-manager-view')).toBeInTheDocument();
   }, 30000);
 
+  it('renders AI Assistants Management System (AIAMS) CRUD workspace on /dashboard/aiams', () => {
+    renderDashboardWithProviders('/dashboard/aiams');
+    expect(screen.getByTestId('aiams-manager-view')).toBeInTheDocument();
+    expect(screen.getByTestId('aiams-cards-grid')).toBeInTheDocument();
+  }, 30000);
+
+  it('renders AI Assistant single dossier on deep route /dashboard/aiams/zoe', () => {
+    renderDashboardWithProviders('/dashboard/aiams/zoe');
+    expect(screen.getByTestId('aiams-agent-dossier-view')).toBeInTheDocument();
+  }, 30000);
+
   it('renders Task Overview on icon route /dashboard/tasks', () => {
     renderDashboardWithProviders('/dashboard/tasks');
     expect(screen.getByTestId('task-overview-view')).toBeInTheDocument();

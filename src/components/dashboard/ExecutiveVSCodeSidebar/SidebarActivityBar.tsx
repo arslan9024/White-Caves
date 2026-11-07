@@ -13,6 +13,7 @@ import {
   ShieldAlert,
   Building2,
   Users,
+  Bot,
   CheckSquare,
   Trophy,
   Home,
@@ -60,6 +61,15 @@ export const SidebarActivityBar: FC<SidebarActivityBarProps> = ({
               data-testid="activity-btn-employees"
             >
               <Users size={18} />
+            </ActivityIconBtn>
+
+            <ActivityIconBtn
+              $isActive={activeTab === 'aiams' || activeTab === 'ai-command'}
+              onClick={() => onSelectTab('aiams')}
+              title="AI Assistants Management System (AIAMS — 121+ Agents CRUD)"
+              data-testid="activity-btn-aiams"
+            >
+              <Bot size={18} />
             </ActivityIconBtn>
 
             <ActivityIconBtn

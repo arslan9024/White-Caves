@@ -59,9 +59,10 @@
         "src/lib/*"
       ]
     },
-    "types": [
-      "vite/client"
-    ],
+  "types": [
+    "vite/client",
+    "node"
+  ],
     "incremental": true,
     "plugins": [
       {

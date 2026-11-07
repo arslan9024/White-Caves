@@ -42,6 +42,7 @@ export const ModernDashboardPage: FC = () => {
   const validTabs: ActivityTab[] = [
     'departments',
     'employees',
+    'aiams',
     'tasks',
     'leaderboard',
     'REproperties',
@@ -178,6 +179,7 @@ export const ModernDashboardPage: FC = () => {
       return navigate(`/dashboard/erms/relationships/${key.replace('rel-', '')}`);
     const prefixes: Record<string, string> = {
       'emp-': '/dashboard/employees/',
+      'ai-': '/dashboard/aiams/',
       'task-': '/dashboard/tasks/',
       'lead-': '/dashboard/leaderboard/',
       'prop-': '/dashboard/REproperties/',
@@ -315,9 +317,9 @@ export const ModernDashboardPage: FC = () => {
                 if (agentId === 'linda') {
                   navigate('/dashboard/linda');
                 } else if (agentId === 'ai-command') {
-                  navigate('/dashboard/ai-command');
+                  navigate('/dashboard/aiams');
                 } else {
-                  navigate(`/dashboard/ai-command/${agentId}`);
+                  navigate(`/dashboard/aiams/${agentId}`);
                 }
               }}
               onSelectItem={handleSelectRightExplorerItem}

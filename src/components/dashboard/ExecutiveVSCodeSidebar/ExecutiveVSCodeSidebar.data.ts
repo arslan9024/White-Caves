@@ -9,6 +9,7 @@ import React from 'react';
 import {
   Building2,
   Users,
+  Bot,
   CheckSquare,
   Trophy,
   Home,
@@ -28,6 +29,14 @@ export const TAB_HEADER_MAP: Record<string, { icon: React.ReactNode; label: stri
   employees: {
     icon: React.createElement(Users, { size: 14, color: '#3B82F6' }),
     label: 'Employees Hub (Roster)',
+  },
+  aiams: {
+    icon: React.createElement(Bot, { size: 14, color: '#EF4444' }),
+    label: 'AI Assistants Hub (AIAMS)',
+  },
+  'ai-command': {
+    icon: React.createElement(Bot, { size: 14, color: '#EF4444' }),
+    label: 'AI Assistants Hub (AIAMS)',
   },
   tasks: {
     icon: React.createElement(CheckSquare, { size: 14, color: '#10B981' }),
@@ -86,6 +95,8 @@ export const TAB_HEADER_MAP: Record<string, { icon: React.ReactNode; label: stri
 export const SEARCH_PLACEHOLDER_MAP: Record<string, string> = {
   departments: 'Filter 12 slots & depts...',
   employees: 'Filter employees & roles...',
+  aiams: 'Filter 121+ AI agents, models & roles...',
+  'ai-command': 'Filter 121+ AI agents, models & roles...',
   tasks: 'Filter 200 tasks & SLAs...',
   leaderboard: 'Filter leaderboard & tiers...',
   REproperties: 'Filter properties & units...',

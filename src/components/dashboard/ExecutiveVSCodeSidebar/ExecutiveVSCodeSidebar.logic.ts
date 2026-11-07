@@ -7,6 +7,7 @@ import {
 export type ActivityTab =
   | 'departments'
   | 'employees'
+  | 'aiams'
   | 'tasks'
   | 'leaderboard'
   | 'REproperties'

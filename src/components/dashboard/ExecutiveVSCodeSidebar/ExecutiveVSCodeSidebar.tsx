@@ -13,6 +13,7 @@ import { UserRoleContext } from '../../../context/UserRoleContext';
 import { SidebarActivityBar } from './SidebarActivityBar';
 import { SidebarDepartmentsList } from './SidebarDepartmentsList';
 import { SidebarEmployeesList } from './SidebarEmployeesList';
+import { SidebarAiAssistantsList } from './SidebarAiAssistantsList';
 import { SidebarTasksList } from './SidebarTasksList';
 import { SidebarLeaderboardList } from './SidebarLeaderboardList';
 import { SidebarREPropertiesList } from './SidebarREPropertiesList';
@@ -150,6 +151,12 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
           <SidebarEmployeesList
             filterQuery={filterQuery}
             onSelectEmployee={(id, name) => handleLeafClick(`emp-${id}`, `Employee: ${name}`)}
+            onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
+          />
+        ) : activeTab === 'aiams' || activeTab === 'ai-command' ? (
+          <SidebarAiAssistantsList
+            filterQuery={filterQuery}
+            onSelectAgent={(id, name) => handleLeafClick(`ai-${id}`, `AI Agent: ${name}`)}
             onNavigateToView={route => handleLeafClick(`route-${route}`, route)}
           />
         ) : activeTab === 'tasks' ? (

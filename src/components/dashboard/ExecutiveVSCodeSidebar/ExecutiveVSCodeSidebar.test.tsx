@@ -38,6 +38,19 @@ describe('ExecutiveVSCodeSidebar Component (7-Category Co-Location Spec)', () =>
     expect(screen.getByText(/Employees Hub/i)).toBeInTheDocument();
   }, 15000);
 
+  it('renders Activity Bar icon for AI Assistants Management System (AIAMS) and switches tabs', () => {
+    const onSelectTab = vi.fn();
+    render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
+
+    const aiamsBtn = screen.getByTestId('activity-btn-aiams');
+    expect(aiamsBtn).toBeInTheDocument();
+
+    fireEvent.click(aiamsBtn);
+    expect(onSelectTab).toHaveBeenCalledWith('aiams');
+    expect(screen.getByText(/AI Assistants Hub \(AIAMS\)/i)).toBeInTheDocument();
+    expect(screen.getByTestId('sidebar-ai-assistants-list')).toBeInTheDocument();
+  }, 15000);
+
   it('renders 7th Activity Bar icon for Tasks and switches tabs', () => {
     const onSelectTab = vi.fn();
     render(<ExecutiveVSCodeSidebar onSelectTab={onSelectTab} />);
