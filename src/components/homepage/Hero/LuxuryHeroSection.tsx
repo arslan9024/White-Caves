@@ -26,6 +26,7 @@ import { heroLayerStyle } from './styles/HERO.style';
 import LuxuryMultiTabSearchBar from './LuxuryMultiTabSearchBar';
 import LuxuryComplianceTrustBadge from './LuxuryComplianceTrustBadge';
 import DeveloperFilterQuickChips from './DeveloperFilterQuickChips';
+import LuxuryTrustStrip from './LuxuryTrustStrip';
 
 interface AnimatedRedCounterProps {
   end: number;
@@ -347,32 +348,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           ))}
         </motion.div>
 
-        <motion.div
-          className="luxury-hero__trust-strip"
-          variants={heroItemVariants}
-          role="group"
-          aria-label={copy.trustLabel}
-        >
-          <div className="luxury-hero__trust-badge">
-            <Shield size={14} aria-hidden="true" />
-            <span>{copy.reraLicensed}</span>
-          </div>
-          <div className="luxury-hero__trust-divider" aria-hidden="true" />
-          <div className="luxury-hero__trust-badge">
-            <Award size={14} aria-hidden="true" />
-            <span>{copy.verifiedProperties}</span>
-          </div>
-          <div className="luxury-hero__trust-divider" aria-hidden="true" />
-          <div className="luxury-hero__trust-badge">
-            <Star size={14} aria-hidden="true" />
-            <span>{copy.fiveStarRated}</span>
-          </div>
-          <div className="luxury-hero__trust-divider" aria-hidden="true" />
-          <div className="luxury-hero__trust-badge">
-            <Phone size={14} aria-hidden="true" />
-            <span>{copy.support247}</span>
-          </div>
-        </motion.div>
+        <LuxuryTrustStrip copy={copy} />
       </motion.div>
 
       <motion.button
