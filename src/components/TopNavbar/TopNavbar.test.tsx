@@ -88,13 +88,16 @@ describe('Unified Merged TopNavbar (Consolidation & Even Wings)', () => {
     expect(screen.getByTestId('pref-theme-dark')).toBeDefined();
   });
 
-  it('theme toggle works for full page switching', () => {
+  it('theme toggle works from inside profile dropdown for full page switching', () => {
     renderNavbar(<TopNavbar />);
-    const themeBtn = screen.getByTestId('theme-toggle-btn');
-    expect(themeBtn).toBeDefined();
+    const profileTrigger = screen.getByTestId('profile-trigger');
+    fireEvent.click(profileTrigger);
+
+    const lightBtn = screen.getByTestId('pref-theme-light');
+    expect(lightBtn).toBeDefined();
 
     // Toggle theme
-    fireEvent.click(themeBtn);
+    fireEvent.click(lightBtn);
     expect(document.documentElement.getAttribute('data-theme')).toBeDefined();
   });
 
