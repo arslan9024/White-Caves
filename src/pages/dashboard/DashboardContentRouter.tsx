@@ -115,6 +115,11 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
       />
     );
   }
+        isReadOnly={isReadOnly}
+        onNavigate={navigate}
+      />
+    );
+  }
 
   // Tier 1 Internal Corporate Directorate (L3, L4, L5)
   switch (activeTab) {
