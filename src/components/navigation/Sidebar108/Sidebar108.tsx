@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Sidebar108.tsx — Pure Presentational View (1-12-108 Command Panel)
  */
 
@@ -175,22 +175,22 @@ export const Sidebar108: FC = () => {
           {!isCollapsed && isZoeExpanded && (
             <div className="pl-6 pr-2 py-1 space-y-1">
               <button
-                onClick={() => handleNavigate('/crm/zoe/overview')}
+                onClick={() => handleNavigate('/dashboard/aiams')}
                 className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-red-500/10 text-slate-400 hover:text-red-500 flex items-center justify-between group transition-colors"
               >
                 <span className="truncate">Overview</span>
               </button>
               <button
-                onClick={() => handleNavigate('/crm/zoe/ai-hub')}
+                onClick={() => handleNavigate('/dashboard/aiams/organogram')}
                 className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-red-500/10 text-slate-400 hover:text-red-500 flex items-center justify-between group transition-colors"
               >
-                <span className="truncate">AI Hub</span>
+                <span className="truncate">AI Hub & Organogram</span>
               </button>
               <button
-                onClick={() => handleNavigate('/crm/zoe/ai-command-center')}
+                onClick={() => handleNavigate('/dashboard/aiams')}
                 className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-red-500/10 text-slate-400 hover:text-red-500 flex items-center justify-between group transition-colors"
               >
-                <span className="truncate">AI Command Center</span>
+                <span className="truncate">AI Assistants System (AIAMS)</span>
               </button>
             </div>
           )}

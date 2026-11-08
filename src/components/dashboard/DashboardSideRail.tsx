@@ -87,10 +87,10 @@ const DashboardSideRail: FC<DashboardSideRailProps> = ({
 
     const mdWorkspaceId = workspaceId as MDWorkspaceId;
     if (mdWorkspaceId === 'md-ai-command-center') {
-      return activeTab === 'ai-command' || activeTab === 'ai-hub';
+      return activeTab === 'aiams' || activeTab === 'ai-command' || activeTab === 'ai-hub';
     }
 
-    return activeTab !== 'ai-command' && activeTab !== 'ai-hub';
+    return activeTab !== 'aiams' && activeTab !== 'ai-command' && activeTab !== 'ai-hub';
   };
 
   // Track which zones are collapsed; all open by default
