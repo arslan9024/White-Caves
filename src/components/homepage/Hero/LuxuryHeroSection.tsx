@@ -188,6 +188,11 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           </span>
         </motion.div>
 
+        {/* Targets T-0002 & T-0003: Bayut TruCheck™ & DLD Trakheesi Trust Chips */}
+        <motion.div variants={heroItemVariants} className="my-1">
+          <LuxuryComplianceTrustBadge />
+        </motion.div>
+
         <motion.h1
           id="luxury-hero-title"
           className="luxury-hero__title"
