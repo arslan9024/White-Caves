@@ -243,3 +243,21 @@
 - **Cycle Execution Time:** 5.95 seconds
 - **Zero Token AI Consumption:** All scanning, AST verification, and deduplication executed deterministically.
 - **Sovereign Root State:** Enforced TURING-ROOT-007; zero ghost directories permitted.
+
+### [2026-11-08T06:05:00.000Z] AEGIS Knowledge & Software Engineering Marvels Ingestion
+
+#### 1. Multi-Chat TS & Dependency Isolation (`TURING-LAW-000` & `Multi-Chat Safety`)
+- **Lesson:** In a multi-agent concurrent environment, having `"vite/client"` inside `tsconfig.json`'s `compilerOptions.types` makes the TypeScript server treat `node_modules/vite/client.d.ts` as a hard prerequisite. If a parallel agent runs `npm ci` or wipes `node_modules`, `tsconfig.json` immediately breaks on line 1.
+- **Solution:** Decouple `tsconfig.json` from ambient package roots. Place complete, self-contained declarations for `ImportMeta`, `ImportMetaEnv`, and asset module wildcards (`*.css`, `*.svg`, `*.png`) directly inside `src/vite-env.d.ts`. This makes the workspace 100% resilient to concurrent dependency rebuilds.
+
+#### 2. Test DOM State Pollution Prevention
+- **Lesson:** When Vitest runs in single-fork mode with JSDOM, components rendered in previous test suites persist in the DOM if an explicit cleanup is missing. Subsequent queries like `getByPlaceholderText` fail due to multiple matching elements across consecutive tests.
+- **Solution:** Always inject `cleanup()` from `@testing-library/react` inside the global `afterEach()` hook in `src/test/setup.ts` and `src/setupTests.ts`.
+
+#### 3. Strict Secrets Directory Hierarchy
+- **Lesson:** Server bootstrap modules (e.g. `server/index.ts`) must import the environment loader (`import './config/env.js'`) before any database or route imports to ensure `DATABASE_URL` and `JWT_SECRET` are fully injected into `process.env` before Prisma and Mongoose initialize.
+- **Solution:** `secrets/.env` takes priority over `.env` and `.env.production`. It remains strictly local and 100% gitignored.
+
+#### 4. The Living Technical Encyclopedia
+- **Lesson:** An autonomous continuous development system should not only improve code, but also chronicle its own architectural evolution.
+- **Solution:** `@Aurora` continuously compiles *.agents/book-white-caves/* with dual-way hyperlinked navigation, viewable directly inside Zoe AI Assistant via `WhiteCavesBookViewer.tsx`.
