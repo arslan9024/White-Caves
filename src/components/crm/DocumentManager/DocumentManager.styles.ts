@@ -16,6 +16,10 @@ export const DocumentContainer = styled.div`
   padding: 24px 32px;
   background-color: transparent;
   color: #f1f5f9;
+
+  [data-theme='light'] & {
+    color: #0f172a;
+  }
 `;
 
 export const DocumentHeader = styled.div`
@@ -33,11 +37,19 @@ export const DocumentHeader = styled.div`
       display: flex;
       align-items: center;
       gap: 10px;
+
+      [data-theme='light'] & {
+        color: #0f172a;
+      }
     }
     p {
       font-size: 0.85rem;
       color: #94a3b8;
       margin: 0;
+
+      [data-theme='light'] & {
+        color: #64748b;
+      }
     }
   }
 
@@ -62,12 +74,23 @@ export const MetricCard = styled.div<{ $accentColor: string }>`
   padding: 16px 20px;
   backdrop-filter: blur(8px);
 
+  [data-theme='light'] & {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid ${props => props.$accentColor};
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
   .label {
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     color: #94a3b8;
     margin-bottom: 6px;
+
+    [data-theme='light'] & {
+      color: #64748b;
+    }
   }
 
   .value {
@@ -78,10 +101,18 @@ export const MetricCard = styled.div<{ $accentColor: string }>`
     align-items: baseline;
     gap: 6px;
 
+    [data-theme='light'] & {
+      color: #0f172a;
+    }
+
     .sub {
       font-size: 0.75rem;
       font-weight: 500;
       color: #64748b;
+
+      [data-theme='light'] & {
+        color: #94a3b8;
+      }
     }
   }
 `;
@@ -98,6 +129,12 @@ export const DocumentFilterBar = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
 
+  [data-theme='light'] & {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  }
+
   .search-input {
     flex: 1;
     min-width: 240px;
@@ -109,6 +146,11 @@ export const DocumentFilterBar = styled.div`
     border-radius: 6px;
     padding: 6px 12px;
 
+    [data-theme='light'] & {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+    }
+
     input {
       background: transparent;
       border: none;
@@ -116,6 +158,10 @@ export const DocumentFilterBar = styled.div`
       font-size: 0.85rem;
       width: 100%;
       outline: none;
+
+      [data-theme='light'] & {
+        color: #0f172a;
+      }
 
       &::placeholder {
         color: #64748b;
