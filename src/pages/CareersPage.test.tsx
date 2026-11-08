@@ -89,7 +89,7 @@ describe('CareersPage', () => {
       renderCareers();
       const previewBtns = screen.getAllByText(/Preview Offer Letter/i);
       fireEvent.click(previewBtns[0]);
-      expect(screen.getByText(/White Caves Real Estate LLC Official Employment Offer/i)).toBeInTheDocument();
+      expect(screen.getByText(/Official White Caves Employment Package/i)).toBeInTheDocument();
     });
   });
 });
