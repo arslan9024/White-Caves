@@ -267,4 +267,22 @@
 - **Solution:** Implement a dual-layer architecture:
   1. **Canonical Schema Topologies:** RUP-compliant structural ERD with interactive canvas, multiplicity edge inspection, and domain filtering.
   2. **Deterministic Transaction Chains:** Explicit step-by-step pipeline flows with visual badges and deep-route inspection modals (`/dashboard/erms/entities/:id` and `/dashboard/erms/relationships/:id`).
-  3. **Multi-Model Documentation Standard:** Keep markdown documentation (`.agents/docs/ENTITIES_MANAGEMENT_LIST.md` and `ERMS_OVERVIEW.md`) in sync with source code and render diagrams on-the-fly via client-side Mermaid SVG viewers, avoiding stale static screenshot drift.
+
+#### 6. Resilient In-Memory Fallbacks for Local Dev & Microservice Isolation
+- **Lesson:** In high-velocity local environments or multi-agent test runners, external services (Redis cluster, WhatsApp Meta Cloud API, live Postgres DBs) may be momentarily absent or unconfigured. Crashing server bootstrap or failing API calls outright grinds development velocity to a halt.
+- **Solution:** 
+  1. *Graceful Degradation:* When `REDIS_URL` is omitted, fall back dynamically to an in-memory TTL LRU cache map rather than throwing a fatal error.
+  2. *Development Messaging Mocks:* In development (`NODE_ENV !== 'production'`), mock external WhatsApp/Twilio transports and log outbound payloads safely without halting the bot engine or Linda CRM controllers.
+  3. *Resilient Biometric / WebAuthn Storage:* Provide an in-memory session challenge and credential fallback cache in development so frontend engineers and automated E2E tests can register and authenticate passkeys seamlessly without needing a running MongoDB/PostgreSQL instance.
+
+#### 7. Component Re-render Throttling under Streaming Telemetry
+- **Lesson:** Operations dashboards and live streaming terminals (e.g. `LindaWhatsAppCRM`, Agent Command Center) emit rapid heartbeat events and WebSocket metrics. Re-rendering massive composite view trees on every heartbeat causes UI micro-stutters and high CPU consumption.
+- **Solution:**
+  1. Co-locate volatile telemetry state (`metrics`, `heartbeatLatency`) into dedicated leaf nodes or wrap complex sub-panels (`LindaCampaignsAndOutreachPanels`, `LindaOperationsCenterPanels`) with `React.memo` and shallow prop comparators.
+  2. Throttle metric polling to 10–15s intervals and decouple static bot control action dispatches from dynamic streaming telemetry feeds.
+
+#### 8. Statutory KYC Gateway Enforcement & Contract Invariance
+- **Lesson:** High-value property transactions and financial escrow releases require strict anti-money laundering (AML) and KYC checks under UAE law. Deleting or refactoring middleware signatures can inadvertently break compliance tests and expose financial endpoints.
+- **Solution:**
+  1. Maintain statutory middleware contracts (`requireKycForRiskyTransaction`) with explicit exported interfaces and clear threshold validations (e.g. transactions > AED 55,000 requiring Level 2+ KYC).
+  2. Retain comprehensive unit suites (`server/__tests__/kycGate.test.ts`) that test pass, warning, and block boundary conditions before permitting PR merges to `main`.
