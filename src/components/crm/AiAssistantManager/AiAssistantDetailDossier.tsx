@@ -6,7 +6,7 @@
  */
 
 import React, { FC, useState } from 'react';
-import { ArrowLeft, Edit3, Trash2, Cpu, Zap, CheckCircle2, Play } from 'lucide-react';
+import { ArrowLeft, Edit3, Trash2, Cpu, Zap, CheckCircle2, Play, MessageSquare } from 'lucide-react';
 import type { AiAgentRecord } from './AiAssistantManager.types';
 
 export interface AiAssistantDetailDossierProps {

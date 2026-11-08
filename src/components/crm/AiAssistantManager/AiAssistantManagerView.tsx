@@ -16,7 +16,7 @@ export interface AiAssistantManagerViewProps {
   onNavigate?: (route: string) => void;
 }
 
-const RESERVED_SUBROUTES = new Set(['agents', 'crud', 'managers', 'supervisors', 'organogram', 'linda', 'create']);
+const RESERVED_SUBROUTES = new Set(['agents', 'crud', 'managers', 'supervisors', 'organogram', 'create']);
 
 export const AiAssistantManagerView: React.FC<AiAssistantManagerViewProps> = ({
   selectedSubRoute = null,
