@@ -42,3 +42,4 @@ describe('ErmsEntityDrawer (Pillars 1 & 4 Verification)', () => {
     expect(savedEntity.details.emiratesId).toBe('784-1990-1234567-1');
   });
 });
+
