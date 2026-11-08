@@ -29,6 +29,7 @@ export const VALID_DASHBOARD_TABS: ActivityTab[] = [
   'analytics',
   'module',
   'dept-view',
+  'explorer',
 ];
 
 export function useSidebarToggles() {
