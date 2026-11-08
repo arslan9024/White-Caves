@@ -175,18 +175,44 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({
 
       {/* Links & Actions */}
       <LinksGroup>
-        <MenuLinkBtn onClick={() => handleNavigate('/profile')}>
-          <span>👤 {PREFERENCE_LABELS.profileLink}</span>
+        <MenuLinkBtn onClick={() => handleNavigate('/crm')}>
+          <span>📊 CRM Hub & Master Pipeline</span>
           <span>→</span>
         </MenuLinkBtn>
-        <MenuLinkBtn onClick={() => handleNavigate('/crm')}>
-          <span>📊 {PREFERENCE_LABELS.dashboardLink}</span>
+        <MenuLinkBtn onClick={() => handleNavigate('/off-plan')}>
+          <span>🏗️ Primary Market Portal</span>
+          <span>→</span>
+        </MenuLinkBtn>
+        <MenuLinkBtn onClick={() => handleNavigate('/properties')}>
+          <span>🏡 Secondary Market Portal</span>
+          <span>→</span>
+        </MenuLinkBtn>
+        <MenuLinkBtn onClick={() => handleNavigate('/profile')}>
+          <span>👤 {PREFERENCE_LABELS.profileLink}</span>
           <span>→</span>
         </MenuLinkBtn>
         <MenuLinkBtn className="logout-btn" onClick={handleLogout}>
           <span>🚪 {PREFERENCE_LABELS.logoutBtn}</span>
         </MenuLinkBtn>
       </LinksGroup>
+
+      {/* Dubai Land Department, RERA & Zoe Mesh Regulatory Telemetry */}
+      <TelemetryPillsRow data-testid="dropdown-telemetry-row">
+        <DropdownTelemetryPill title="DLD Dubai Land Department License">
+          <div className="live-dot" />
+          <span>DLD:</span>
+          <span className="val">1388443</span>
+        </DropdownTelemetryPill>
+        <DropdownTelemetryPill title="RERA Office Registration Number">
+          <span>RERA:</span>
+          <span className="val">44483</span>
+        </DropdownTelemetryPill>
+        <DropdownTelemetryPill title="AI Zoe Mesh Distributed Agents">
+          <Cpu size={11} color="#10B981" />
+          <span>Zoe:</span>
+          <span className="val" style={{ color: '#10B981' }}>121</span>
+        </DropdownTelemetryPill>
+      </TelemetryPillsRow>
     </DropdownContainer>
   );
 };
