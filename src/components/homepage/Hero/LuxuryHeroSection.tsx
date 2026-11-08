@@ -258,19 +258,13 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
             <span>{copy.searchAction}</span>
           </button>
 
-          <div className="luxury-hero__developer-list">
-            <span className="luxury-hero__developer-label">{copy.developerHeading}</span>
-            {developers.map(dev => (
-              <button
-                type="button"
-                key={dev}
-                className="luxury-hero__developer-chip"
-                onClick={() => handleDeveloperClick(dev)}
-              >
-                {dev}
-              </button>
-            ))}
-          </div>
+        {/* Target T-0004: Emaar & DAMAC Developer Quick-Chips Active State */}
+        <motion.div variants={heroItemVariants} className="my-2">
+          <DeveloperFilterQuickChips
+            developers={developers}
+            onSelectDeveloper={handleDeveloperClick}
+          />
+        </motion.div>
         </motion.div>
 
         <motion.div className="luxury-hero__cta-group" variants={heroItemVariants}>
