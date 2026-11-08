@@ -74,13 +74,13 @@ export async function extractDocumentText(
 
     if (isPdf) {
       const { canvasDataUrls, pdfText } = await bounded(
-        renderPdfToCanvasAndText(file, requiredCoverage)
+        doRenderPdf(file, requiredCoverage)
       );
       pageImages = canvasDataUrls;
       ocrInput = canvasDataUrls[0] || file;
       streamText = pdfText;
     } else if (file.type.startsWith('image/')) {
-      const processedUrl = await preProcessImageOnCanvas(file, 0, true, warnings);
+      const processedUrl = await doPreProcess(file, 0, true, warnings);
       if (!processedUrl) throw new Error('Image could not be safely decoded.');
       ocrInput = processedUrl;
     }
@@ -135,7 +135,7 @@ export async function extractDocumentText(
           // At most five passes per page; clean complete documents use one.
           for (const angle of [0, 90, 180, 270]) {
             const retryInput = await bounded(
-              preProcessImageOnCanvas(pageImages.length ? input : file, angle, false),
+              doPreProcess(pageImages.length ? input : file, angle, false),
               15000
             );
             if (!retryInput) continue;

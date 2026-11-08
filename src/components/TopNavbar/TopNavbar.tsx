@@ -50,7 +50,7 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
       }}
       data-testid="top-navbar"
     >
-      {/* ── Left Wing: Navigation Links + Statutory & Telemetry Badges ── */}
+      {/* ── Left Wing: Navigation Links ── */}
       <NavWing $align="left">
         <NavLink $active={currentPath === '/'} onClick={() => handleNavigate('/')}>
           🏢 Corporate HQ
@@ -64,26 +64,6 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
         >
           🏡 Secondary Market
         </NavLink>
-
-        {/* Live DLD & AI Mesh Telemetry (Left Anchor) */}
-        <CenterTeleGroup>
-          <TelemetryPill title="DLD Dubai Land Department License">
-            <div className="live-dot" />
-            <span className="label">DLD:</span>
-            <span className="val">1388443</span>
-          </TelemetryPill>
-          <TelemetryPill title="RERA Office Registration Number">
-            <span className="label">RERA:</span>
-            <span className="val">44483</span>
-          </TelemetryPill>
-          <TelemetryPill title="AI Zoe Mesh Distributed Agents">
-            <Cpu size={12} color="#10B981" />
-            <span className="label">Zoe:</span>
-            <span className="val" style={{ color: '#10B981' }}>
-              121
-            </span>
-          </TelemetryPill>
-        </CenterTeleGroup>
       </NavWing>
 
       {/* ── Central Overhanging Logo (64px, 50% overhang, Dead Center) ──── */}
@@ -108,27 +88,15 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
         <img src="/company-logo.jpg" alt="White Caves Logo" />
       </OverhangingLogoWrapper>
 
-      {/* ── Right Wing: Workspace Controls, Profile & Master Theme Toggle ── */}
+      {/* ── Right Wing: Notifications & Centralized Profile Menu ── */}
       <NavWing $align="right">
-        <NavLink
-          $active={currentPath.startsWith('/crm') || currentPath.startsWith('/dashboard')}
-          onClick={() => handleNavigate('/dashboard')}
-        >
-          📊 CRM Hub
-        </NavLink>
-
         {/* Notifications & Escalations */}
         <QuickActionBtn title="Notifications & Escalations" aria-label="Notifications">
           <Bell size={16} />
           <div className="alert-pip" />
         </QuickActionBtn>
 
-        {/* Dynamic 14-Role Clearance Level Badge */}
-        <RoleBadge $level={accessLevel}>
-          {isFounder ? '👑 Founder (L5)' : `L${accessLevel} · ${ROLE_LABELS[role] || role}`}
-        </RoleBadge>
-
-        {/* Reused Profile Component (with centralized theme, language, currency controls) */}
+        {/* Centralized Profile Component (with telemetry, role badge, theme, and full suite) */}
         <ProfileMenuWrapper>
           <ProfileTrigger
             onClick={toggleProfile}
