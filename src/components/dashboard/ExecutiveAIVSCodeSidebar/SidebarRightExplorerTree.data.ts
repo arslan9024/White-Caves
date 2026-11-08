@@ -28,14 +28,16 @@ export function useExplorerTreeData(activeQuery: string) {
     return departments
       .map(dept => {
         const deptMatches =
-          dept.name.toLowerCase().includes(activeQuery) ||
-          dept.code.toLowerCase().includes(activeQuery) ||
-          dept.manager.toLowerCase().includes(activeQuery);
+          dept.name?.toLowerCase().includes(activeQuery) ||
+          dept.code?.toLowerCase().includes(activeQuery) ||
+          dept.managerAi?.name?.toLowerCase().includes(activeQuery) ||
+          dept.managerAi?.title?.toLowerCase().includes(activeQuery);
         const matchedSupervisors = dept.supervisors.filter(
           s =>
-            s.name.toLowerCase().includes(activeQuery) ||
-            s.code.toLowerCase().includes(activeQuery) ||
-            s.specialty.toLowerCase().includes(activeQuery)
+            s.name?.toLowerCase().includes(activeQuery) ||
+            s.code?.toLowerCase().includes(activeQuery) ||
+            s.specialty?.toLowerCase().includes(activeQuery) ||
+            s.title?.toLowerCase().includes(activeQuery)
         );
         if (deptMatches || matchedSupervisors.length > 0) {
           return {
@@ -55,9 +57,9 @@ export function useExplorerTreeData(activeQuery: string) {
     return allTasks
       .filter(
         t =>
-          t.title.toLowerCase().includes(activeQuery) ||
-          t.taskCode.toLowerCase().includes(activeQuery) ||
-          t.priority.toLowerCase().includes(activeQuery)
+          t.title?.toLowerCase().includes(activeQuery) ||
+          t.taskCode?.toLowerCase().includes(activeQuery) ||
+          t.priority?.toLowerCase().includes(activeQuery)
       )
       .slice(0, 15);
   }, [allTasks, activeQuery]);
@@ -80,9 +82,9 @@ export function useExplorerTreeData(activeQuery: string) {
       const commMatches = comm.toLowerCase().includes(activeQuery);
       const matchedProps = props.filter(
         p =>
-          p.title.toLowerCase().includes(activeQuery) ||
-          p.repropertyId.toLowerCase().includes(activeQuery) ||
-          p.propertyType.toLowerCase().includes(activeQuery)
+          p.title?.toLowerCase().includes(activeQuery) ||
+          p.repropertyId?.toLowerCase().includes(activeQuery) ||
+          p.propertyType?.toLowerCase().includes(activeQuery)
       );
       if (commMatches) {
         filtered[comm] = props;
@@ -100,9 +102,9 @@ export function useExplorerTreeData(activeQuery: string) {
     return deals
       .filter(
         d =>
-          d.title.toLowerCase().includes(activeQuery) ||
-          d.dealNumber.toLowerCase().includes(activeQuery) ||
-          d.status.toLowerCase().includes(activeQuery)
+          d.title?.toLowerCase().includes(activeQuery) ||
+          d.dealNumber?.toLowerCase().includes(activeQuery) ||
+          d.status?.toLowerCase().includes(activeQuery)
       )
       .slice(0, 15);
   }, [activeQuery]);
@@ -114,10 +116,10 @@ export function useExplorerTreeData(activeQuery: string) {
     return emps
       .filter(
         e =>
-          e.fullName.toLowerCase().includes(activeQuery) ||
-          e.employeeCode.toLowerCase().includes(activeQuery) ||
-          e.designation.toLowerCase().includes(activeQuery) ||
-          e.departmentName.toLowerCase().includes(activeQuery)
+          e.fullName?.toLowerCase().includes(activeQuery) ||
+          e.employeeCode?.toLowerCase().includes(activeQuery) ||
+          e.designation?.toLowerCase().includes(activeQuery) ||
+          e.departmentName?.toLowerCase().includes(activeQuery)
       )
       .slice(0, 15);
   }, [activeQuery]);
