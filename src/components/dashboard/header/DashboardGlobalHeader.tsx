@@ -115,9 +115,12 @@ export const DashboardGlobalHeader: FC<DashboardGlobalHeaderProps> = ({
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', position: 'relative' }}>
         <button
-          onClick={() => navigate('/profile')}
+          onClick={() => setIsProfileOpen(prev => !prev)}
+          data-testid="dashboard-profile-trigger"
+          aria-expanded={isProfileOpen}
+          aria-label="User profile and preferences"
           style={{
             background: '#FFFFFF',
             border: 'none',
@@ -128,10 +131,32 @@ export const DashboardGlobalHeader: FC<DashboardGlobalHeaderProps> = ({
             color: '#0F172A',
             cursor: 'pointer',
             boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
           }}
         >
-          👤 Executive Profile
+          <span>👤 Executive Profile</span>
+          <span style={{ fontSize: '0.65rem', color: '#EF4444' }}>{isProfileOpen ? '▲' : '▼'}</span>
         </button>
+
+        {isProfileOpen && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '115%',
+              right: 0,
+              zIndex: 9999,
+              filter: 'drop-shadow(0 12px 30px rgba(0, 0, 0, 0.4))',
+            }}
+          >
+            <UserPreferencesDropdown
+              user={user}
+              onClose={() => setIsProfileOpen(false)}
+            />
+          </div>
+        )}
+
         <button
           onClick={() => onToggleCollapse(true)}
           title="Collapse Top Header Bar"
