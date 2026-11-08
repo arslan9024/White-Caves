@@ -106,6 +106,19 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
               <Trash2 size={14} />
               <span>Delete</span>
             </button>
+            {agent.agentId.toLowerCase() === 'linda' && (
+              <div className="pt-3 border-t border-slate-800">
+                <div className="flex items-center gap-2 mb-3">
+                  <MessageSquare size={14} className="text-emerald-400" />
+                  <span className="text-xs font-bold text-emerald-400 font-mono uppercase">
+                    Live Operational WhatsApp Console
+                  </span>
+                </div>
+                <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50 p-2">
+                  <LindaWhatsAppCRM />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -126,6 +139,19 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
           <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800/80">
             <span className="text-[10px] text-slate-500 uppercase block">Tasks Executed Today</span>
             <span className="text-sm font-bold text-amber-400">{agent.activeWorkload} Tasks</span>
+            {agent.agentId.toLowerCase() === 'linda' && (
+              <div className="pt-3 border-t border-slate-800">
+                <div className="flex items-center gap-2 mb-3">
+                  <MessageSquare size={14} className="text-emerald-400" />
+                  <span className="text-xs font-bold text-emerald-400 font-mono uppercase">
+                    Live Operational WhatsApp Console
+                  </span>
+                </div>
+                <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50 p-2">
+                  <LindaWhatsAppCRM />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -194,6 +220,19 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
                   <span className="text-[10px] text-slate-400">{activeRunResult.time}</span>
                 </div>
                 <div>{activeRunResult.details}</div>
+              </div>
+            )}
+            {agent.agentId.toLowerCase() === 'linda' && (
+              <div className="pt-3 border-t border-slate-800">
+                <div className="flex items-center gap-2 mb-3">
+                  <MessageSquare size={14} className="text-emerald-400" />
+                  <span className="text-xs font-bold text-emerald-400 font-mono uppercase">
+                    Live Operational WhatsApp Console
+                  </span>
+                </div>
+                <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50 p-2">
+                  <LindaWhatsAppCRM />
+                </div>
               </div>
             )}
           </div>
