@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import {
   Pause,
   Play,
@@ -24,7 +24,7 @@ interface CampaignsAndOutreachProps {
   onQueueOutreachBatch: (cluster: string) => void;
 }
 
-export const LindaCampaignsAndOutreachPanel: React.FC<CampaignsAndOutreachProps> = ({
+export const LindaCampaignsAndOutreachPanel: React.FC<CampaignsAndOutreachProps> = memo(({
   campaigns,
   onToggleCampaignStatus,
   outreachOwners,
@@ -377,7 +377,7 @@ export const LindaCampaignsAndOutreachPanel: React.FC<CampaignsAndOutreachProps>
       </div>
     </div>
   );
-};
+});
 
 interface ConversationsAndPillarsProps {
   conversations: LindaConversationItem[];
@@ -386,7 +386,7 @@ interface ConversationsAndPillarsProps {
   onSendQuickReply: (conv: LindaConversationItem) => void;
 }
 
-export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillarsProps> = ({
+export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillarsProps> = memo(({
   conversations,
   pillars,
   liveLogs,
@@ -608,4 +608,4 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
       </div>
     </div>
   );
-};
+});

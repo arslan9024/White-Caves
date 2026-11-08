@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import {
   Terminal,
   Play,
@@ -29,7 +29,7 @@ interface QuickActionsAndTerminalProps {
   isQrLoading?: boolean;
 }
 
-export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps> = ({
+export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps> = memo(({
   features,
   playbooks,
   terminalLines,
@@ -461,7 +461,7 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
       </div>
     </div>
   );
-};
+});
 
 interface SessionsPanelProps {
   sessions: LindaSessionItem[];
@@ -470,7 +470,7 @@ interface SessionsPanelProps {
   onScanDeviceQr: (session: LindaSessionItem) => void;
 }
 
-export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
+export const LindaSessionsPanel: React.FC<SessionsPanelProps> = memo(({
   sessions,
   onPingSession,
   onPairDeviceCode,
@@ -688,4 +688,4 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = ({
       </div>
     </div>
   );
-};
+});
