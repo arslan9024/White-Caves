@@ -39,9 +39,33 @@ export const ModernDashboardPage: FC = () => {
     .replace(/^\/dashboard\/?/, '')
     .split('/')
     .filter(Boolean);
-  const rawTab = pathParts[0] as ActivityTab | undefined;
-  const activeItemId = pathParts[1] || null;
-  const isRootOverview = !pathParts[1];
+
+  // Normalize /dashboard/explorer/* to direct dashboard entity routes
+  let rawTab = pathParts[0] as ActivityTab | undefined;
+  let activeItemId = pathParts[1] || null;
+
+  if (rawTab === ('explorer' as ActivityTab) && pathParts.length > 1) {
+    const explorerSub = pathParts[1];
+    const explorerId = pathParts[2] || null;
+    if (explorerSub === 'departments') {
+      rawTab = 'departments';
+      activeItemId = explorerId;
+    } else if (explorerSub === 'tasks') {
+      rawTab = 'tasks';
+      activeItemId = explorerId;
+    } else if (explorerSub === 'properties' || explorerSub === 'REproperties') {
+      rawTab = 'REproperties';
+      activeItemId = explorerId;
+    } else if (explorerSub === 'deals') {
+      rawTab = 'deals';
+      activeItemId = explorerId;
+    } else if (explorerSub === 'employees') {
+      rawTab = 'employees';
+      activeItemId = explorerId;
+    }
+  }
+
+  const isRootOverview = !activeItemId;
 
   const queryParams = new URLSearchParams(location.search);
   const isReadOnly = queryParams.get('mode') === 'view' || queryParams.get('mode') === 'execution';
