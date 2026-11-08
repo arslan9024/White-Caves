@@ -107,6 +107,11 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
     expect(screen.getByTestId('aiams-agent-dossier-view')).toBeInTheDocument();
   }, 30000);
 
+  it('renders AI Assistant single dossier on unique route /dashboard/aiams/linda', () => {
+    renderDashboardWithProviders('/dashboard/aiams/linda');
+    expect(screen.getByTestId('aiams-agent-dossier-view')).toBeInTheDocument();
+  }, 30000);
+
   it('renders Task Overview on icon route /dashboard/tasks', () => {
     renderDashboardWithProviders('/dashboard/tasks');
     expect(screen.getByTestId('task-overview-view')).toBeInTheDocument();
