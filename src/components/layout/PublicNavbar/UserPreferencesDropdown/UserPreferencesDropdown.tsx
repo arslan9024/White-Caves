@@ -4,6 +4,7 @@
  */
 
 import React, { FC } from 'react';
+import { Cpu } from 'lucide-react';
 import {
   useUserPreferencesDropdownLogic,
   UseUserPreferencesDropdownProps,
@@ -19,6 +20,8 @@ import {
   SelectBtn,
   RoleSelectBox,
   LinksGroup,
+  TelemetryPillsRow,
+  DropdownTelemetryPill,
   MenuLinkBtn,
 } from './styles/UserPreferencesDropdown.style';
 import { type ThemeMode } from '../../../../context/ThemeContext';

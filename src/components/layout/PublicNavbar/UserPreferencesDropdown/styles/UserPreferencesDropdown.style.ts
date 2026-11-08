@@ -154,6 +154,40 @@ export const LinksGroup = styled.div`
   border-top: 1px solid var(--border-color, #f1f5f9);
 `;
 
+export const TelemetryPillsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 8px;
+  background: var(--bg-secondary, #f8fafc);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e2e8f0);
+`;
+
+export const DropdownTelemetryPill = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px #10b981;
+  }
+
+  .val {
+    color: var(--text-primary, #0f172a);
+    font-weight: 800;
+  }
+`;
+
 export const MenuLinkBtn = styled.button`
   display: flex;
   align-items: center;

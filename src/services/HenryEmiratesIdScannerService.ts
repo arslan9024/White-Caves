@@ -132,7 +132,13 @@ export class HenryEmiratesIdScannerService {
     onProgress?: (progress: number) => void,
     coverage?: (text: string) => number
   ): Promise<{ ocrText: string; streamText: string; ocrConfidence?: number; warnings?: string[] }> {
-    return extractDocumentText(file, onProgress, coverage);
+    return extractDocumentText(
+      file,
+      onProgress,
+      coverage,
+      (f, rot, enh, w) => this.preProcessImageOnCanvas(f, rot, enh, w),
+      (f, cov) => this.renderPdfToCanvasAndText(f, cov)
+    );
   }
 
   async preProcessImageOnCanvas(
