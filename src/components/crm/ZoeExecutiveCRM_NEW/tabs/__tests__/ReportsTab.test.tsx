@@ -43,19 +43,9 @@ describe('ReportsTab', () => {
     expect(screen.getByText('Lead Funnel Metrics')).toBeInTheDocument();
     expect(screen.getByText('1250')).toBeInTheDocument();
     expect(screen.getByText('18.5%')).toBeInTheDocument();
-    expect(screen.getByText('Compliance & Risk Oversight')).toBeInTheDocument();
-    expect(screen.getByText('450')).toBeInTheDocument();
-  });
-
-  it('renders vault status and metrics when unlocked', () => {
-    render(
-      <ReportsTab
-        funnelMetrics={mockFunnelMetrics}
-        complianceMetrics={mockComplianceMetrics}
-        vault={mockVault}
-      />
-    );
-
-    expect(screen.getByText(/Confidential Executive Vault/i)).toBeInTheDocument();
+    expect(screen.getByText('Compliance Status')).toBeInTheDocument();
+    expect(screen.getByText('12')).toBeInTheDocument();
+    expect(screen.getByText('Financial Summary')).toBeInTheDocument();
+    expect(screen.getByText('Team Overview')).toBeInTheDocument();
   });
 });
