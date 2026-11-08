@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #751 Blueprint
-**Generated:** 2026-11-08T09:07:17.528Z
+# AEGIS Perpetual Ouroboros — Cycle #752 Blueprint
+**Generated:** 2026-11-08T09:07:27.991Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-01 — Dubai Luxury Discovery & Visual Hero Immersion
-- **Lead Researcher:** @Elena (CRO)
-- **Core Objective:** Adaptive Bitrate 4K Stream & TruCheck™ Verification
+- **Domain:** DOM-02 — Founder Sovereign Executive Deck & RBAC Gateway
+- **Lead Researcher:** @Aurora (CTO)
+- **Core Objective:** Level 5 Multi-Org Tenant Clearance & Audit Isolation
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
