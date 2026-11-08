@@ -28,6 +28,7 @@ import fs from 'fs';
 import path from 'path';
 import { performance } from 'perf_hooks';
 import { fileURLToPath } from 'url';
+import { generateSovereignAutopilotPrompt, savePromptToRegistry } from './aegis-prompt-synthesizer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -198,6 +199,16 @@ export async function runPerpetualLoop(options = {}) {
 `;
       fs.writeFileSync(blueprintPath, waveBlueprint, 'utf8');
       console.log(`   ✅ Software Requirements Document updated: .agents/plans/CURRENT_OUROBOROS_WAVE.md`);
+
+      // Synthesize Sovereign Autopilot Prompt payload for this cycle
+      const cyclePrompt = generateSovereignAutopilotPrompt({
+        targetIssue: `${activeDomain.id}: ${activeDomain.target}`,
+        assignedTeam: activeDomain.lead,
+        domain: activeDomain.area,
+        cycleId
+      });
+      savePromptToRegistry(cyclePrompt);
+      console.log(`   ✨ Autonomous Cycle Execution Prompt registered in prompts.json & ACTIVE_OUROBOROS_PROMPT.md`);
 
       // ───────────────────────────────────────────────────────────────────
       // 4. PHASE 3: MULTI-AGENT MATRIX DELEGATION (Depts 01–12)
