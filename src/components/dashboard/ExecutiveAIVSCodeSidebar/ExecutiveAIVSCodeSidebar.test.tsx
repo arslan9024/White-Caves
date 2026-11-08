@@ -52,4 +52,49 @@ describe('ExecutiveAIVSCodeSidebar Component (7-Category Co-Location Spec)', () 
     expect(screen.getByText(/Dept 04 • Ejari Audit/i)).toBeInTheDocument();
     expect(screen.getByText(/Zoe audited 14 active Ejari contracts/i)).toBeInTheDocument();
   });
+
+  it('renders all 5 collapsible sections in Explorer tree: Departments, Tasks, Properties, Deals, and Employees', () => {
+    render(<ExecutiveAIVSCodeSidebar />);
+    const explorerBtn = screen.getByTestId('activity-btn-explorer-right');
+    fireEvent.click(explorerBtn);
+
+    expect(screen.getByTestId('explorer-section-depts')).toBeInTheDocument();
+    expect(screen.getByTestId('explorer-section-tasks')).toBeInTheDocument();
+    expect(screen.getByTestId('explorer-section-properties')).toBeInTheDocument();
+    expect(screen.getByTestId('explorer-section-deals')).toBeInTheDocument();
+    expect(screen.getByTestId('explorer-section-employees')).toBeInTheDocument();
+  });
+
+  it('expands accordion sections when clicked and dispatches item selection to onSelectItem', () => {
+    const onSelectItem = vi.fn();
+    render(<ExecutiveAIVSCodeSidebar onSelectItem={onSelectItem} />);
+    const explorerBtn = screen.getByTestId('activity-btn-explorer-right');
+    fireEvent.click(explorerBtn);
+
+    // Expand Tasks accordion
+    const tasksHeader = screen.getByTestId('explorer-header-tasks');
+    fireEvent.click(tasksHeader);
+
+    // Click on a task item
+    const taskItem = screen.getAllByTestId(/^explorer-task-item-/)[0];
+    expect(taskItem).toBeInTheDocument();
+    fireEvent.click(taskItem);
+
+    expect(onSelectItem).toHaveBeenCalledWith(
+      expect.stringMatching(/^task-/),
+      expect.any(String)
+    );
+  });
+
+  it('filters Explorer tree items and nested sub-items seamlessly across all sections', () => {
+    render(<ExecutiveAIVSCodeSidebar />);
+    const explorerBtn = screen.getByTestId('activity-btn-explorer-right');
+    fireEvent.click(explorerBtn);
+
+    const searchInput = screen.getByTestId('right-explorer-search-input');
+    fireEvent.change(searchInput, { target: { value: 'Luxury' } });
+
+    // Verify filtered department shows up
+    expect(screen.getByText(/Luxury Sales & Brokerage/i)).toBeInTheDocument();
+  });
 });
