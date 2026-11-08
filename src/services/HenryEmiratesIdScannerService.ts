@@ -136,7 +136,10 @@ export class HenryEmiratesIdScannerService {
       file,
       onProgress,
       coverage,
-      (f, rot, enh, w) => this.preProcessImageOnCanvas(f, rot, enh, w),
+      (f, rot, enh, w) =>
+        w !== undefined
+          ? this.preProcessImageOnCanvas(f, rot, enh, w)
+          : this.preProcessImageOnCanvas(f, rot, enh),
       (f, cov) => this.renderPdfToCanvasAndText(f, cov)
     );
   }
