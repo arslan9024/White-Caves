@@ -47,7 +47,7 @@ const LindaWhatsAppCRM = memo(() => {
     '⚡ WhatsApp Bot Linda (v2.0-Enterprise) Online · 200/200 Upgrades Synced'
   );
 
-  const [metrics] = useState<LindaMetricsState>({
+  const [metrics, setMetrics] = useState<LindaMetricsState>({
     uptime: '14d 06h 42m',
     activeSessions: '4 / 5 Online',
     rateLimit: '18 / 60 min (Safe)',
@@ -115,6 +115,31 @@ const LindaWhatsAppCRM = memo(() => {
         setLindaStatus(response.data.status);
         setIsConnected(Boolean(response.data.isConnected));
       }
+
+      // Fetch live metrics from backend
+      try {
+        const metricsRes = (await apiClient.get('/linda/metrics')) as {
+          success?: boolean;
+          data?: {
+            uptime?: string;
+            activeSessions?: number;
+            rateLimit?: string;
+            memory?: string;
+          };
+        };
+        if (metricsRes?.data) {
+          setMetrics(prev => ({
+            ...prev,
+            uptime: metricsRes.data?.uptime || prev.uptime,
+            activeSessions: `${metricsRes.data?.activeSessions || 4} / 5 Online`,
+            rateLimit: metricsRes.data?.rateLimit || prev.rateLimit,
+            memory: metricsRes.data?.memory || prev.memory,
+          }));
+        }
+      } catch {
+        // preserve current metrics
+      }
+
       setControlError('');
     } catch {
       setHeartbeatLatency(42);
