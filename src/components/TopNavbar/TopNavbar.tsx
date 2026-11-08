@@ -11,7 +11,6 @@ import {
 } from './TopNavbar.style';
 import { useTopNavbarLogic, TopNavbarProps } from './TopNavbar.logic';
 import { UserPreferencesDropdown } from '../layout/PublicNavbar/UserPreferencesDropdown';
-import { ROLE_LABELS } from '../../context/UserRoleContext';
 
 export type { TopNavbarProps };
 
@@ -20,10 +19,6 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
     scrolled,
     currentPath,
     isDark,
-    toggleTheme,
-    role,
-    accessLevel,
-    isFounder,
     user,
     displayName,
     displayRole,
