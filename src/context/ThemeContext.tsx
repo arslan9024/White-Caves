@@ -125,7 +125,16 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    // Graceful fallback for isolated component testing or external renderers
+    return {
+      isDark: false,
+      themeMode: 'light',
+      setThemeMode: () => {},
+      toggleTheme: () => {},
+      updateTheme: () => {},
+      isLoading: false,
+      setIsDark: () => {},
+    };
   }
   return context;
 };
