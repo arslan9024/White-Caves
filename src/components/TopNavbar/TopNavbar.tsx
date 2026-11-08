@@ -1,14 +1,10 @@
 import React, { FC } from 'react';
-import { Sun, Moon, Bell, ChevronDown, Cpu } from 'lucide-react';
+import { Bell, ChevronDown } from 'lucide-react';
 import {
   NavbarContainer,
   NavWing,
   OverhangingLogoWrapper,
   NavLink,
-  ThemeToggleBtn,
-  RoleBadge,
-  CenterTeleGroup,
-  TelemetryPill,
   QuickActionBtn,
   ProfileMenuWrapper,
   ProfileTrigger,
