@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #115 Blueprint
-**Generated:** 2026-11-08T07:13:09.941Z
+# AEGIS Perpetual Ouroboros — Cycle #198 Blueprint
+**Generated:** 2026-11-08T07:13:18.037Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-05 — 3D Matterport Digital Twin & Floorplan Engine
-- **Lead Researcher:** @Una (Dept 02)
-- **Core Objective:** WebGL 60FPS Spatial Walkthrough & Room Dimension Vector Overlay
+- **Domain:** DOM-08 — FinTech, Escrow Law No. 8 & UAE VAT Form 201
+- **Lead Researcher:** @Zoe (COO)
+- **Core Objective:** Automated 5% VAT Split, 9% Corporate Tax Reserve & Trust Accounting
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
