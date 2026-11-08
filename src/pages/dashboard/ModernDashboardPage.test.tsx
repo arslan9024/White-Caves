@@ -228,7 +228,7 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
   it('resolves explorer sub-routes seamlessly to entity management views', () => {
     // 1. /dashboard/explorer/departments/slots -> DepartmentManagementWorkspace
     renderDashboardWithProviders('/dashboard/explorer/departments/slots');
-    expect(screen.getByTestId('dept-mgmt-workspace')).toBeInTheDocument();
+    expect(screen.getByTestId('department-management-workspace')).toBeInTheDocument();
     cleanup();
 
     // 2. /dashboard/explorer/tasks/catalog -> TaskManagerView
