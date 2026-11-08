@@ -65,47 +65,31 @@ describe('CareersPage', () => {
     });
   });
 
-  // ─── Hiring Models & Benefits ──────────────────────────
-  describe('benefits & hiring models', () => {
-    it('renders 50/50 and high-split models', () => {
+  // ─── Job Positions & Apply ─────────────────────────────
+  describe('job positions and application flow', () => {
+    it('shows Apply Now and Preview Offer Letter buttons', () => {
       renderCareers();
-      expect(screen.getByText(/Hired Employee \(50\/50 Model\)/i)).toBeInTheDocument();
-      expect(screen.getByText(/Freelance \/ High-Split \(60-70%\)/i)).toBeInTheDocument();
-    });
-
-    it('renders comprehensive compensation perks', () => {
-      renderCareers();
-      expect(screen.getByText(/UAE Investor & Employment Visas/i)).toBeInTheDocument();
-      expect(screen.getByText(/Marketing & Portals Budget/i)).toBeInTheDocument();
-    });
-  });
-
-  // ─── Job Positions ─────────────────────────────────────
-  describe('job positions', () => {
-    it('renders open executive positions', () => {
-      renderCareers();
-      expect(screen.getByText(/Open Executive Positions/i)).toBeInTheDocument();
-      expect(screen.getByText(/Luxury Secondary Sales Specialist/i)).toBeInTheDocument();
-      expect(screen.getByText(/Senior Off-Plan Investment Advisor/i)).toBeInTheDocument();
-    });
-
-    it('shows Apply buttons and Offer Letter preview', () => {
-      renderCareers();
-      const applyBtns = screen.getAllByText(/Apply For Position/i);
+      const applyBtns = screen.getAllByText(/Apply Now ➔/i);
       expect(applyBtns.length).toBeGreaterThanOrEqual(1);
 
       const previewBtns = screen.getAllByText(/Preview Offer Letter/i);
       expect(previewBtns.length).toBeGreaterThanOrEqual(1);
     });
-  });
 
-  // ─── Apply Modal Flow ──────────────────────────────────
-  describe('apply modal flow', () => {
     it('opens application modal when apply button is clicked', () => {
       renderCareers();
-      const applyBtns = screen.getAllByText(/Apply For Position/i);
+      const applyBtns = screen.getAllByText(/Apply Now ➔/i);
       fireEvent.click(applyBtns[0]);
-      expect(screen.getByText(/Official Employment Application/i)).toBeInTheDocument();
+      expect(screen.getByText(/Full Name \*/i)).toBeInTheDocument();
+      expect(screen.getByText(/Email Address \*/i)).toBeInTheDocument();
+      expect(screen.getByText(/Mobile Number \*/i)).toBeInTheDocument();
+    });
+
+    it('opens offer letter preview modal when clicked', () => {
+      renderCareers();
+      const previewBtns = screen.getAllByText(/Preview Offer Letter/i);
+      fireEvent.click(previewBtns[0]);
+      expect(screen.getByText(/White Caves Real Estate LLC Official Employment Offer/i)).toBeInTheDocument();
     });
   });
 });
