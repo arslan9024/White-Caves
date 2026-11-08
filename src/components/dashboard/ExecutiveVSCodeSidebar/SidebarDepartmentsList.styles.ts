@@ -41,9 +41,21 @@ export const SidebarCardItem = styled.div<{
   opacity: ${({ $isDragging }) => ($isDragging ? 0.4 : 1)};
   transition: all 0.18s ease;
 
+  [data-theme='light'] & {
+    background: ${({ $isSelected }) => ($isSelected ? 'rgba(239, 68, 68, 0.08)' : '#FFFFFF')};
+    border-color: ${({ $isSelected, $isDragOver }) =>
+      $isDragOver ? '#3B82F6' : $isSelected ? '#EF4444' : '#E2E8F0'};
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
   &:hover {
     background: rgba(255, 255, 255, 0.05);
     border-color: ${({ $isSelected }) => ($isSelected ? '#EF4444' : 'rgba(255, 255, 255, 0.14)')};
+
+    [data-theme='light'] & {
+      background: ${({ $isSelected }) => ($isSelected ? 'rgba(239, 68, 68, 0.12)' : '#F8FAFC')};
+      border-color: ${({ $isSelected }) => ($isSelected ? '#EF4444' : '#CBD5E1')};
+    }
   }
 
   .card-top-row {
@@ -110,6 +122,10 @@ export const SidebarCardItem = styled.div<{
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+
+      [data-theme='light'] & {
+        color: ${({ $isEmpty }) => ($isEmpty ? '#94A3B8' : '#0F172A')};
+      }
     }
   }
 

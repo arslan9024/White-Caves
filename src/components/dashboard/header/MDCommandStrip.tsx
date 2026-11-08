@@ -6,6 +6,7 @@
  */
 
 import React, { FC } from 'react';
+import { useTheme } from '../../../context/ThemeContext';
 
 export interface MDCommandStripProps {
   mdName?: string;
@@ -27,6 +28,7 @@ export const MDCommandStrip: FC<MDCommandStripProps> = ({
   onOpenModule,
   onLaunch,
 }) => {
+  const { isDark } = useTheme();
   const launch = onOpenModule || onLaunch;
 
   return (
@@ -42,8 +44,10 @@ export const MDCommandStrip: FC<MDCommandStripProps> = ({
         padding: '0.55rem 0.85rem',
         marginBottom: '0.75rem',
         borderRadius: '12px',
-        background: 'linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(15,23,42,0.06) 100%)',
-        border: '1px solid rgba(239, 68, 68, 0.35)',
+        background: isDark
+          ? 'linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(15,23,42,0.06) 100%)'
+          : 'linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(241,245,249,0.7) 100%)',
+        border: isDark ? '1px solid rgba(239, 68, 68, 0.35)' : '1px solid rgba(239, 68, 68, 0.25)',
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'column', marginRight: '0.5rem' }}>
@@ -56,11 +60,11 @@ export const MDCommandStrip: FC<MDCommandStripProps> = ({
             color: '#EF4444',
           }}
         >
-          \ud83d\udc51 MD L5
+          👑 MD L5
         </span>
-        <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 600 }}>
+        <span style={{ fontSize: '0.7rem', color: isDark ? '#94A3B8' : '#64748B', fontWeight: 600 }}>
           {mdName}
-          {mdEmail ? ` \u00b7 ${mdEmail}` : ''}
+          {mdEmail ? ` · ${mdEmail}` : ''}
         </span>
       </div>
       {CHIPS.map(chip => (
@@ -76,12 +80,12 @@ export const MDCommandStrip: FC<MDCommandStripProps> = ({
             padding: '4px 10px',
             borderRadius: '999px',
             border: `1px solid ${chip.tone}55`,
-            background: '#0F172A',
-            color: '#F8FAFC',
+            background: isDark ? '#0F172A' : '#FFFFFF',
+            color: isDark ? '#F8FAFC' : '#0F172A',
             fontSize: '0.75rem',
             fontWeight: 700,
             cursor: 'pointer',
-            boxShadow: '0 1px 4px rgba(15,23,42,0.15)',
+            boxShadow: isDark ? '0 1px 4px rgba(15,23,42,0.15)' : '0 1px 4px rgba(0,0,0,0.06)',
           }}
         >
           <span aria-hidden>{chip.icon}</span>
