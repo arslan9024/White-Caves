@@ -96,20 +96,10 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
     );
   }
 
-  if (activeTab === 'aiams') {
+  if (activeTab === 'aiams' || activeTab === 'ai-command' || activeAgent?.id === 'ai-command') {
     return (
       <AiAssistantManagerView
         selectedSubRoute={activeItemId}
-
-  if (activeTab === 'ai-command' || activeAgent?.id === 'ai-command') {
-    return (
-      <AiAssistantManagerView
-        selectedSubRoute={activeItemId}
-        isReadOnly={isReadOnly}
-        onNavigate={navigate}
-      />
-    );
-  }
         isReadOnly={isReadOnly}
         onNavigate={navigate}
       />
