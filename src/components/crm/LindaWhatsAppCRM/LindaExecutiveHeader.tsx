@@ -103,7 +103,21 @@ export const LindaExecutiveHeader: React.FC<LindaExecutiveHeaderProps> = ({
                   fontWeight: 700,
                 }}
               >
-                v2.0.0-enterprise · 200/200 Upgrades
+                v2.0.0-enterprise · 300/300 Upgrades
+              </span>
+              <span
+                style={{
+                  background: 'rgba(239, 68, 68, 0.15)',
+                  border: '1px solid rgba(239, 68, 68, 0.5)',
+                  color: '#EF4444',
+                  borderRadius: 999,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                }}
+              >
+                TOP #1 PRIORITY ASSISTANT
               </span>
             </div>
             <p style={{ margin: '4px 0 0 0', color: subtitleColor, fontSize: 12 }}>

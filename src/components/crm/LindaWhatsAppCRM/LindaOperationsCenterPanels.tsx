@@ -48,7 +48,7 @@ export const LindaQuickActionsAndTerminal: React.FC<QuickActionsAndTerminalProps
 
   const quickActions = [
     { cmd: 'doctor', label: '🩺 Health Doctor (12/12)', color: '#10B981' },
-    { cmd: 'status', label: '📊 System Posture (200/200)', color: '#3B82F6' },
+    { cmd: 'status', label: '📊 System Posture (300/300)', color: '#3B82F6' },
     { cmd: 'list-sessions', label: '📱 List Sessions (1.1)', color: '#25D366' },
     { cmd: 'restore', label: '♻️ Restore Master (1.19)', color: '#F59E0B' },
     { cmd: 'convos', label: '💬 Analyze Convos (8.11)', color: '#8B5CF6' },

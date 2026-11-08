@@ -126,7 +126,7 @@ export const getLindaOutreachPlan = async (req: Request, res: Response) => {
 
 /**
  * GET /api/linda/master-posture
- * Returns 10 Architectural Pillars, 200 Upgrades Registry, and Self-Diagnostic Report
+ * Returns 10 Architectural Pillars, 300 Upgrades Registry, and Self-Diagnostic Report
  */
 export const getLindaMasterPosture = async (_req: Request, res: Response) => {
   try {

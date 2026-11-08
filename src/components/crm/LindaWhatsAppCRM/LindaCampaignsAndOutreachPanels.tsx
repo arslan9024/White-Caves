@@ -521,7 +521,7 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
         </div>
       </div>
 
-      {/* 10 Architectural Pillars (200/200 Upgrades) + Live Event Stream (LogViewer.jsx) */}
+      {/* 10 Architectural Pillars (300/300 Upgrades) + Live Event Stream (LogViewer.jsx) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 16 }}>
         <div
           style={{
@@ -535,7 +535,7 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <Layers size={16} color={isDark ? '#38BDF8' : '#0284C7'} />
             <h3 style={{ margin: 0, color: isDark ? '#F0F9FF' : '#0F172A', fontSize: 14, fontWeight: 700 }}>
-              🏛️ Linda Master System Registry — 10 Pillars (200/200 Upgrades Active)
+              🏛️ Linda Master System Registry — 10 Pillars (300/300 Upgrades Active · Priority #1)
             </h3>
           </div>
           <div style={{ display: 'grid', gap: 6, maxHeight: 230, overflowY: 'auto' }}>

@@ -32,7 +32,8 @@ describe('LindaWhatsAppCRM — Upgraded Visual Operations Center (v2.0.0-enterpr
     expect(
       screen.getByRole('heading', { name: /Linda — WhatsApp Bot Visual Operations Center/i })
     ).toBeInTheDocument();
-    expect(screen.getByText(/v2.0.0-enterprise · 200\/200 Upgrades/i)).toBeInTheDocument();
+    expect(screen.getByText(/v2.0.0-enterprise · 300\/300 Upgrades/i)).toBeInTheDocument();
+    expect(screen.getByText(/TOP #1 PRIORITY ASSISTANT/i)).toBeInTheDocument();
 
     // 4-Panel Terminal & Feature Catalog (F1-F35) & Playbooks (P1-P6)
     expect(

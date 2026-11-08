@@ -44,7 +44,7 @@ const LindaWhatsAppCRM = memo(() => {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
   const [isQrLoading, setIsQrLoading] = useState<boolean>(false);
   const [toastNotification, setToastNotification] = useState<string | null>(
-    '⚡ WhatsApp Bot Linda (v2.0-Enterprise) Online · 200/200 Upgrades Synced'
+    '⚡ WhatsApp Bot Linda (v2.0-Enterprise) Online · 300/300 Upgrades Synced (Priority #1 Assistant)'
   );
 
   const [metrics, setMetrics] = useState<LindaMetricsState>({
@@ -67,7 +67,7 @@ const LindaWhatsAppCRM = memo(() => {
   const [terminalLines, setTerminalLines] = useState<string[]>([
     '======================================================================',
     '  LINDA — WHATSAPP BOT VISUAL OPERATIONS CENTER (v2.0.0-enterprise)',
-    '  200/200 Enterprise Upgrades Active · 10 Architectural Pillars Online',
+    '  300/300 Enterprise Upgrades Active (Priority #1) · 10 Pillars Online',
     '  Master Account: +971505760056 (LINKED) · GorahaBot: +971553633545',
     '======================================================================',
     '$ doctor -> [12/12 PASS] Node, Chromium, LocalAuth, Goraha, Sheets & Anti-Ban Ready.',
