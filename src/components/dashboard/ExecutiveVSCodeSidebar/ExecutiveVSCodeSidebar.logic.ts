@@ -31,6 +31,7 @@ export type ActivityTab =
   | 'analytics'
   | 'module'
   | 'dept-view'
+  | 'explorer'
   | 'settings';
 
 export interface UseExecutiveVSCodeSidebarProps {
