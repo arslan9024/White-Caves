@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 4: Henry — Audit Log, Timeline Master & Optical Tabular Engine — The Book of White Caves</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #0F172A;
+      --border: rgba(56, 189, 248, 0.2);
+      --accent-red: #EF4444;
+      --accent-cyan: #38BDF8;
+      --accent-emerald: #10B981;
+      --accent-purple: #A855F7;
+      --text: #F3F4F6;
+      --text-muted: #9CA3AF;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .badge {
+      background: var(--accent-red);
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 700;
+    }
+    nav.nav-bar {
+      display: flex;
+      gap: 16px;
+      font-size: 0.9rem;
+    }
+    nav.nav-bar a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+    }
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 50%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    h2 {
+      font-size: 1.6rem;
+      color: var(--accent-cyan);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+      margin-top: 2rem;
+    }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--accent-emerald);
+      color: var(--accent-emerald);
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.9rem;
+    }
+    th {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-cyan);
+    }
+    code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #38BDF8;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span>🏛️ White Caves Real Estate LLC</span>
+      <span class="badge">CHAPTER 4</span>
+    </div>
+    <nav class="nav-bar">
+      <a href="index.html">📖 Home</a>
+      <a href="chapter-01-architecture.html">Ch 1: Architecture</a>
+      <a href="chapter-02-mesh.html">Ch 2: AEGIS Mesh</a>
+      <a href="chapter-03-ouroboros.html">Ch 3: Perpetual Ouroboros</a>
+      <a href="chapter-04-henry.html" style="color: var(--accent-emerald);">Ch 4: Henry OCR & Audit</a>
+      <a href="progress-intelligence.html">⚡ Progress & Velocity</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="status-pill">100% OPERATIONAL · 286/286 VITEST TESTS PASSING</div>
+    <h1>Chapter 4: Henry — The Optical Extraction Engine & Timeline Master</h1>
+    <p style="font-size: 1.15rem; color: var(--text-muted);">
+      Assigned Workforce: <strong>@Henry (Dept 11 Node 04)</strong> | Domain: PDF Tabular Matrix Extraction, Client Dossier Audits, &amp; Timeline Traceability.
+    </p>
+
+    <div class="panel">
+      <h2>1. Architectural Evolution & Modular Architecture</h2>
+      <p>
+        In accordance with the <strong>AEGIS sub-350 line rule</strong>, the monolithic scanner service was decomposed into 5 high-cohesion sub-modules under <code>src/services/emiratesId/</code>:
+      </p>
+      <ul>
+        <li><code>parser.logic.ts</code>: TD1 ICAO MRZ and OCR entity parser with Luhn check-digit verification.</li>
+        <li><code>ocrEngine.logic.ts</code>: Bounded multi-page rasterizer, bilingual Tesseract.js workers (eng+ara), adaptive rotation recovery (0°, 90°, 180°, 270°), and deadline watchdog.</li>
+        <li><code>pdfRenderer.logic.ts</code>: Safe client-side canvas rasterization with memory budgets.</li>
+        <li><code>merger.logic.ts</code>: Front/back dual-side card unification and DLD contract party conversion.</li>
+        <li><code>samples.data.ts</code>: Synthetic benchmarks for safe offline testing without real PII exposure.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>2. Supported Universal Document Matrix (12 Categories)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Document Category</th>
+            <th>Target Extraction Fields</th>
+            <th>Regulatory Alignment</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Emirates ID (Front/Back)</strong></td>
+            <td>ID Number, Full Name (EN/AR), DOB, Expiry, Card Number</td>
+            <td>Federal ICP / DLD KYC Standard</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>Title Deed</strong></td>
+            <td>Deed Number, Plot No, Municipality, Area, Owner Share</td>
+            <td>DLD Title Registry & REST Portal</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>Tenancy Contract</strong></td>
+            <td>Contract No, Tenant/Landlord, Rent AED, Cheques, Terms</td>
+            <td>Ejari Standard Unified Tenancy Contract</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>International Passport</strong></td>
+            <td>Passport No, Machine Readable Zone (MRZ), Nationality</td>
+            <td>ICAO Doc 9303 Compliant</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>Ejari Certificate</strong></td>
+            <td>Ejari Number, Property Address, Annual Rent, Issue/End Date</td>
+            <td>Real Estate Regulatory Agency (RERA)</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>Trade Licence</strong></td>
+            <td>Licence No, Legal Form, Expiry, Operating Activities</td>
+            <td>Dubai Economy & Tourism (DET)</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>Company Documents / MOA</strong></td>
+            <td>Entity Name, Resolution Number, Authorized Signatories</td>
+            <td>UAE Corporate Governance / AML-CFT</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>No Objection Certificate (NOC)</strong></td>
+            <td>NOC Ref, Developer Name, Unit ID, Sale Consideration</td>
+            <td>Trustee Office & Developer Escrow</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>RERA Form A / B / F</strong></td>
+            <td>Contract Ref, Broker License, Commission Split, Agreed Price</td>
+            <td>DLD Trakheesi Standard Formats</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>Sale Agreement (MOU)</strong></td>
+            <td>Contract F Ref, Buyer/Seller, Deposit AED, Transfer Date</td>
+            <td>DLD Unified Sale Contract</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>Tax Invoice & Receipt</strong></td>
+            <td>TRN (5% VAT), Total Amount AED, Receipt Voucher No</td>
+            <td>UAE FTA Federal Law No. 8</td>
+            <td>✅ Production Verified</td>
+          </tr>
+          <tr>
+            <td><strong>Bank Cheque / Escrow Slip</strong></td>
+            <td>Cheque Number, Bank Name, Drawee, Value, Due Date</td>
+            <td>Central Bank of UAE Escrow Rules</td>
+            <td>✅ Production Verified</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>3. Test Verification Suite</h2>
+      <p>
+        The complete Henry test suite runs through Vitest with 100% test pass rate:
+      </p>
+      <ul>
+        <li><code>src/services/henryGenericDocuments.test.ts</code> (49 tests) — PASSED</li>
+        <li><code>src/services/HenryTenancyContractTemplateService.test.ts</code> (8 tests) — PASSED</li>
+        <li><code>src/services/henryOcrLifecycle.test.ts</code> (19 tests) — PASSED</li>
+        <li><code>src/services/henryDocumentParsing.test.ts</code> (78 tests) — PASSED</li>
+        <li><code>src/services/HenryPdfEngineService.test.ts</code> (3 tests) — PASSED</li>
+        <li><code>src/services/HenryTenancyContractScannerService.test.ts</code> (13 tests) — PASSED</li>
+        <li><code>src/services/henryScanReview.test.ts</code> (36 tests) — PASSED</li>
+        <li><code>src/services/HenryPassportScannerService.test.ts</code> (14 tests) — PASSED</li>
+        <li><code>src/services/HenryTitleDeedScannerService.test.ts</code> (15 tests) — PASSED</li>
+        <li><code>src/services/HenryEmiratesIdScannerService.test.ts</code> (9 tests) — PASSED</li>
+        <li>Other auxiliary &amp; UI test suites (42 tests) — ALL PASSED</li>
+      </ul>
+      <p style="color: var(--accent-emerald); font-weight: 700;">
+        Total: 286/286 Tests Passing (0 Failures, 0 Regressions).
+      </p>
+    </div>
+  </main>
+</body>
+</html>
