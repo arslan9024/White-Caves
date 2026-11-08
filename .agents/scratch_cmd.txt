@@ -1,0 +1,1 @@
+"node"   "C:\Users\Dell\Documents\White-Caves\node_modules\.bin\\..\tsx\dist\cli.mjs" -e "
