@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #51 Blueprint
-**Generated:** 2026-11-08T06:58:44.621Z
+# AEGIS Perpetual Ouroboros — Cycle #135 Blueprint
+**Generated:** 2026-11-08T06:59:02.013Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-01 — Dubai Luxury Discovery & Visual Hero Immersion
-- **Lead Researcher:** @Elena (CRO)
-- **Core Objective:** Adaptive Bitrate 4K Stream & TruCheck™ Verification
+- **Domain:** DOM-05 — 3D Matterport Digital Twin & Floorplan Engine
+- **Lead Researcher:** @Una (Dept 02)
+- **Core Objective:** WebGL 60FPS Spatial Walkthrough & Room Dimension Vector Overlay
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
