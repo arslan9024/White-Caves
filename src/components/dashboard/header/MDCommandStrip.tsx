@@ -5,7 +5,7 @@
  * Visible only when isManagingDirector is true (founder email / MD role).
  */
 
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { useTheme } from '../../../context/ThemeContext';
 
 export interface MDCommandStripProps {
@@ -22,7 +22,7 @@ const CHIPS: { id: string; label: string; icon: string; tone: string }[] = [
   { id: 'overview', label: 'Override Desk', icon: '\u26a1', tone: '#EF4444' },
 ];
 
-export const MDCommandStrip: FC<MDCommandStripProps> = ({
+export const MDCommandStrip: FC<MDCommandStripProps> = memo(({
   mdName = 'Managing Director',
   mdEmail,
   onOpenModule,
@@ -94,6 +94,6 @@ export const MDCommandStrip: FC<MDCommandStripProps> = ({
       ))}
     </div>
   );
-};
+});
 
 export default MDCommandStrip;
