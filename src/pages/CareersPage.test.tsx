@@ -48,105 +48,64 @@ describe('CareersPage', () => {
   describe('hero section', () => {
     it('renders hero heading', () => {
       renderCareers();
-      expect(screen.getByText('Build Your Career with White Caves')).toBeInTheDocument();
+      expect(screen.getByText(/Shape the Future of/i)).toBeInTheDocument();
+      expect(screen.getByText(/Dubai Luxury Real Estate/i)).toBeInTheDocument();
     });
 
     it('renders hero subtitle', () => {
       renderCareers();
-      expect(screen.getByText(/fastest-growing real estate team/)).toBeInTheDocument();
+      expect(screen.getByText(/Join our team of high-performing brokers/i)).toBeInTheDocument();
     });
 
-    it('shows 50+ team members stat', () => {
+    it('shows 4-stage executive hiring pipeline', () => {
       renderCareers();
-      expect(screen.getByText('50+')).toBeInTheDocument();
-      expect(screen.getByText('Team Members')).toBeInTheDocument();
-    });
-
-    it('shows AED 2B+ transactions stat', () => {
-      renderCareers();
-      expect(screen.getByText(/AED 2B\+ in transactions/i)).toBeInTheDocument();
-    });
-
-    it('highlights growth support in hero copy', () => {
-      renderCareers();
-      expect(screen.getByText(/unlock your potential/i)).toBeInTheDocument();
+      expect(screen.getByText(/White Caves 4-Stage Executive Hiring Pipeline/i)).toBeInTheDocument();
+      expect(screen.getByText(/CV Screening/i)).toBeInTheDocument();
+      expect(screen.getByText(/Video Assessment/i)).toBeInTheDocument();
     });
   });
 
-  // ─── Benefits ──────────────────────────────────────────
-  describe('benefits section', () => {
-    it('renders Why Join heading', () => {
+  // ─── Hiring Models & Benefits ──────────────────────────
+  describe('benefits & hiring models', () => {
+    it('renders 50/50 and high-split models', () => {
       renderCareers();
-      expect(screen.getByText('Why Join White Caves?')).toBeInTheDocument();
+      expect(screen.getByText(/Hired Employee \(50\/50 Model\)/i)).toBeInTheDocument();
+      expect(screen.getByText(/Freelance \/ High-Split \(60-70%\)/i)).toBeInTheDocument();
     });
 
-    it('renders competitive commission benefit', () => {
+    it('renders comprehensive compensation perks', () => {
       renderCareers();
-      expect(screen.getByText('Competitive Commission')).toBeInTheDocument();
-    });
-
-    it('renders training benefit', () => {
-      renderCareers();
-      expect(screen.getByText('Training & Development')).toBeInTheDocument();
-    });
-
-    it('renders career growth benefit', () => {
-      renderCareers();
-      expect(screen.getByText('Career Growth')).toBeInTheDocument();
+      expect(screen.getByText(/UAE Investor & Employment Visas/i)).toBeInTheDocument();
+      expect(screen.getByText(/Marketing & Portals Budget/i)).toBeInTheDocument();
     });
   });
 
   // ─── Job Positions ─────────────────────────────────────
   describe('job positions', () => {
-    it('renders Open Positions heading', () => {
+    it('renders open executive positions', () => {
       renderCareers();
-      expect(screen.getByText('Open Positions')).toBeInTheDocument();
+      expect(screen.getByText(/Open Executive Positions/i)).toBeInTheDocument();
+      expect(screen.getByText(/Luxury Secondary Sales Specialist/i)).toBeInTheDocument();
+      expect(screen.getByText(/Senior Off-Plan Investment Advisor/i)).toBeInTheDocument();
     });
 
-    it('renders Secondary Sales Agent position', () => {
+    it('shows Apply buttons and Offer Letter preview', () => {
       renderCareers();
-      expect(screen.getByText('Secondary Sales Agent')).toBeInTheDocument();
-    });
+      const applyBtns = screen.getAllByText(/Apply For Position/i);
+      expect(applyBtns.length).toBeGreaterThanOrEqual(1);
 
-    it('renders Off-Plan Sales Consultant position', () => {
-      renderCareers();
-      expect(screen.getByText('Off-Plan Sales Consultant')).toBeInTheDocument();
-    });
-
-    it('shows job type and experience', () => {
-      renderCareers();
-      expect(screen.getByText(/Full-time • 1-3 years/)).toBeInTheDocument();
-    });
-
-    it('shows Apply Now buttons', () => {
-      renderCareers();
-      const applyBtns = screen.getAllByText('Apply Now');
-      expect(applyBtns.length).toBeGreaterThanOrEqual(2);
+      const previewBtns = screen.getAllByText(/Preview Offer Letter/i);
+      expect(previewBtns.length).toBeGreaterThanOrEqual(1);
     });
   });
 
-  // ─── Apply Flow ────────────────────────────────────────
-  describe('apply flow', () => {
-    it('does not show form by default', () => {
+  // ─── Apply Modal Flow ──────────────────────────────────
+  describe('apply modal flow', () => {
+    it('opens application modal when apply button is clicked', () => {
       renderCareers();
-      expect(screen.queryByText('Application Form')).not.toBeInTheDocument();
-    });
-
-    it('no success message by default', () => {
-      renderCareers();
-      expect(screen.queryByText('Application Submitted Successfully!')).not.toBeInTheDocument();
-    });
-  });
-
-  // ─── Form Interaction ──────────────────────────────────
-  describe('form interaction via Apply', () => {
-    it('apply button triggers form rendering without errors', () => {
-      renderCareers();
-      const applyBtns = screen.getAllByText('Apply Now');
-      // Click first Apply Now button
+      const applyBtns = screen.getAllByText(/Apply For Position/i);
       fireEvent.click(applyBtns[0]);
-      // Form should be present (or at least no crash)
-      // The form might not be visible in test env since scrollIntoView is a no-op
+      expect(screen.getByText(/Official Employment Application/i)).toBeInTheDocument();
     });
   });
 });
