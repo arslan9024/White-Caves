@@ -224,4 +224,26 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
     expect(screen.getByTestId('guest-dashboard-gateway')).toBeInTheDocument();
     expect(screen.getByText(/Sovereign Identity Gateway • Role Verification/i)).toBeInTheDocument();
   }, 30000);
+
+  it('resolves explorer sub-routes seamlessly to entity management views', () => {
+    // 1. /dashboard/explorer/departments/slots -> DepartmentManagementWorkspace
+    renderDashboardWithProviders('/dashboard/explorer/departments/slots');
+    expect(screen.getByTestId('dept-mgmt-workspace')).toBeInTheDocument();
+    cleanup();
+
+    // 2. /dashboard/explorer/tasks/catalog -> TaskManagerView
+    renderDashboardWithProviders('/dashboard/explorer/tasks/catalog');
+    expect(screen.getByTestId('task-manager-view')).toBeInTheDocument();
+    cleanup();
+
+    // 3. /dashboard/explorer/properties/inventory -> REPropertyManagerView
+    renderDashboardWithProviders('/dashboard/explorer/properties/inventory');
+    expect(screen.getByTestId('reproperty-manager-view')).toBeInTheDocument();
+    cleanup();
+
+    // 4. /dashboard/explorer/deals/pipeline -> DealManagerView
+    renderDashboardWithProviders('/dashboard/explorer/deals/pipeline');
+    expect(screen.getByTestId('deal-manager-view')).toBeInTheDocument();
+    cleanup();
+  }, 30000);
 });
