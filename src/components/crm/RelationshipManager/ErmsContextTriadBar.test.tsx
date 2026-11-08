@@ -33,7 +33,7 @@ describe('ErmsContextTriadBar (Pillar 8 Verification)', () => {
     const handleLanguage = vi.fn();
     render(<ErmsContextTriadBar onLanguageChange={handleLanguage} />);
 
-    const arBtn = screen.getByRole('button', { name: 'AR' });
+    const arBtn = screen.getByRole('button', { name: 'ar' });
     fireEvent.click(arBtn);
 
     expect(handleLanguage).toHaveBeenCalledWith('ar');
