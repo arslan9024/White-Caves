@@ -70,7 +70,11 @@ export async function downloadHenryOriginal(id: string, side: number, current = 
       anchor.download = `original-${side}`;
       anchor.click();
     } finally {
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setTimeout(() => {
+        if (typeof URL?.revokeObjectURL === 'function') {
+          URL.revokeObjectURL(url);
+        }
+      }, 1000);
     }
   } catch {
     logger.error('Henry original download failed', { side });
