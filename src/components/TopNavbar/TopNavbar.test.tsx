@@ -50,28 +50,21 @@ describe('Unified Merged TopNavbar (Consolidation & Even Wings)', () => {
     expect(logoImg.getAttribute('src')).toBe('/company-logo.jpg');
   });
 
-  it('renders left navigation wing with platform links and telemetry', () => {
+  it('renders left navigation wing with platform links', () => {
     renderNavbar(<TopNavbar />);
     expect(screen.getByText(/Corporate HQ/i)).toBeDefined();
     expect(screen.getByText(/Primary Market/i)).toBeDefined();
     expect(screen.getByText(/Secondary Market/i)).toBeDefined();
-    expect(screen.getByText(/DLD:/i)).toBeDefined();
-    expect(screen.getByText('1388443')).toBeDefined();
-    expect(screen.getByText(/RERA:/i)).toBeDefined();
-    expect(screen.getByText('44483')).toBeDefined();
-    expect(screen.getByText(/Zoe:/i)).toBeDefined();
-    expect(screen.getByText('121')).toBeDefined();
   });
 
-  it('renders right navigation wing with CRM hub, notifications, role badge and theme toggle', () => {
+  it('renders right navigation wing with notifications and profile trigger', () => {
     renderNavbar(<TopNavbar />);
 
-    expect(screen.getByText(/CRM Hub/i)).toBeDefined();
     expect(screen.getByLabelText(/Notifications/i)).toBeDefined();
     expect(screen.getByTestId('profile-trigger')).toBeDefined();
   });
 
-  it('renders profile trigger and opens shared UserPreferencesDropdown with centralized theme controls', () => {
+  it('renders profile trigger and opens shared UserPreferencesDropdown with centralized telemetry, role badge, navigation and theme controls', () => {
     renderNavbar(<TopNavbar />);
     const profileTrigger = screen.getByTestId('profile-trigger');
     expect(profileTrigger).toBeDefined();
@@ -86,6 +79,21 @@ describe('Unified Merged TopNavbar (Consolidation & Even Wings)', () => {
     // Centralized theme controls inside the profile dropdown
     expect(screen.getByTestId('pref-theme-light')).toBeDefined();
     expect(screen.getByTestId('pref-theme-dark')).toBeDefined();
+
+    // Centralized role badge inside the profile dropdown
+    expect(screen.getByTestId('active-role-badge')).toBeDefined();
+
+    // Centralized telemetry row inside the profile dropdown
+    expect(screen.getByTestId('dropdown-telemetry-row')).toBeDefined();
+    expect(screen.getByText(/DLD:/i)).toBeDefined();
+    expect(screen.getByText('1388443')).toBeDefined();
+    expect(screen.getByText(/RERA:/i)).toBeDefined();
+    expect(screen.getByText('44483')).toBeDefined();
+    expect(screen.getByText(/Zoe:/i)).toBeDefined();
+    expect(screen.getByText('121')).toBeDefined();
+
+    // Centralized CRM Hub navigation link inside the profile dropdown
+    expect(screen.getByText(/CRM Hub & Master Pipeline/i)).toBeDefined();
   });
 
   it('theme toggle works from inside profile dropdown for full page switching', () => {
