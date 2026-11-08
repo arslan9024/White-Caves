@@ -261,3 +261,10 @@
 #### 4. The Living Technical Encyclopedia
 - **Lesson:** An autonomous continuous development system should not only improve code, but also chronicle its own architectural evolution.
 - **Solution:** `@Aurora` continuously compiles *.agents/book-white-caves/* with dual-way hyperlinked navigation, viewable directly inside Zoe AI Assistant via `WhiteCavesBookViewer.tsx`.
+
+#### 5. ERMS Dual-Layer Architecture & RUP Visualizer Paradigm
+- **Lesson:** Large-scale enterprise CRMs have complex multi-hop relationship chains (Users -> Landlords -> Properties -> Tenants -> Leases -> Financial Ledgers -> Invoices -> Commissions). Representing these purely as tabular CRUD leads to mental fatigue and poor data integrity comprehension.
+- **Solution:** Implement a dual-layer architecture:
+  1. **Canonical Schema Topologies:** RUP-compliant structural ERD with interactive canvas, multiplicity edge inspection, and domain filtering.
+  2. **Deterministic Transaction Chains:** Explicit step-by-step pipeline flows with visual badges and deep-route inspection modals (`/dashboard/erms/entities/:id` and `/dashboard/erms/relationships/:id`).
+  3. **Multi-Model Documentation Standard:** Keep markdown documentation (`.agents/docs/ENTITIES_MANAGEMENT_LIST.md` and `ERMS_OVERVIEW.md`) in sync with source code and render diagrams on-the-fly via client-side Mermaid SVG viewers, avoiding stale static screenshot drift.
