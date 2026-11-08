@@ -4,8 +4,10 @@
  * Collapsible executive system header banner for White Caves ERP Command Core.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserPreferencesDropdown } from '../../layout/PublicNavbar/UserPreferencesDropdown';
+import { useAuth } from '../../../context/AuthContext';
 import type { BuildingTier, AIAssistantOption } from '../../../pages/crm/CRMHubPage.logic';
 
 export interface DashboardGlobalHeaderProps {
@@ -26,6 +28,8 @@ export const DashboardGlobalHeader: FC<DashboardGlobalHeaderProps> = ({
   activeLocationTag,
 }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   if (isHeaderCollapsed) {
     return (
