@@ -31,7 +31,6 @@ import { LandlordManagerView } from '../../components/crm/LandlordManager';
 import { TenantManagerView } from '../../components/crm/TenantManager';
 import { BrokerManagerView } from '../../components/crm/BrokerManager';
 import LindaWhatsAppCRM from '../../components/crm/LindaWhatsAppCRM';
-import { AICommandCenter } from '../../components/crm/AICommandCenter/AICommandCenter';
 import { ProfileDashboardView } from './ProfileDashboardView';
 import { LegacyDomainRouter } from './LegacyDomainRouter';
 import { checkDashboardRoleGuard } from './DashboardRoleGuards';
