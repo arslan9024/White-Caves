@@ -154,7 +154,7 @@ export const Sidebar108: FC = () => {
             $isDark={isDark}
             onClick={() => {
               if (isCollapsed) {
-                handleNavigate('/crm/zoe/overview');
+                handleNavigate('/dashboard/aiams');
               } else {
                 toggleZoeFeatures();
               }
