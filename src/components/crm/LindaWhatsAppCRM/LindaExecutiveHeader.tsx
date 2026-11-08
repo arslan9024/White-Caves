@@ -8,6 +8,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
+import { LindaViewTabs } from './LindaViewTabs';
 import type { LindaViewTab } from './LindaWhatsAppCRM.types';
 
 export interface LindaExecutiveHeaderProps {
@@ -315,49 +316,11 @@ export const LindaExecutiveHeader: React.FC<LindaExecutiveHeaderProps> = ({
         <p style={{ margin: '8px 0 0 0', color: '#FCA5A5', fontSize: 12 }}>{controlError}</p>
       )}
 
-      {/* View Mode Switcher Tabs */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
-        {[
-          { id: 'all', label: '🎛️ All Components Unified View (Default)' },
-          { id: 'terminal', label: '📟 4-Panel Terminal, F1–F35 & Playbooks' },
-          { id: 'sessions', label: '📱 Multi-Account Sessions & QR/Code (2.1/2.2)' },
-          { id: 'outreach', label: '📢 Campaigns & Area Owner Outreach (F35)' },
-          { id: 'conversations', label: '💬 Convos (F34), Mary Sourcing & 10 Pillars' },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveViewTab(tab.id as LindaViewTab)}
-            style={{
-              background:
-                activeViewTab === tab.id
-                  ? '#25D366'
-                  : isDark
-                    ? 'rgba(15, 23, 42, 0.78)'
-                    : '#F1F5F9',
-              color:
-                activeViewTab === tab.id
-                  ? '#022C22'
-                  : isDark
-                    ? '#E2E8F0'
-                    : '#334155',
-              border:
-                activeViewTab === tab.id
-                  ? '1px solid #25D366'
-                  : isDark
-                    ? '1px solid rgba(148, 163, 184, 0.28)'
-                    : '1px solid #CBD5E1',
-              borderRadius: 8,
-              padding: '6px 12px',
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <LindaViewTabs
+        isDark={isDark}
+        activeViewTab={activeViewTab}
+        setActiveViewTab={setActiveViewTab}
+      />
     </header>
   );
 };
