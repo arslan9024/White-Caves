@@ -68,10 +68,10 @@ describe('Unified Merged TopNavbar (Consolidation & Even Wings)', () => {
 
     expect(screen.getByText(/CRM Hub/i)).toBeDefined();
     expect(screen.getByLabelText(/Notifications/i)).toBeDefined();
-    expect(screen.getByTestId('theme-toggle-btn')).toBeDefined();
+    expect(screen.getByTestId('profile-trigger')).toBeDefined();
   });
 
-  it('renders profile trigger and opens shared UserPreferencesDropdown without duplicate theme controls', () => {
+  it('renders profile trigger and opens shared UserPreferencesDropdown with centralized theme controls', () => {
     renderNavbar(<TopNavbar />);
     const profileTrigger = screen.getByTestId('profile-trigger');
     expect(profileTrigger).toBeDefined();
@@ -83,9 +83,9 @@ describe('Unified Merged TopNavbar (Consolidation & Even Wings)', () => {
     fireEvent.click(profileTrigger);
     expect(screen.getByTestId('user-preferences-dropdown')).toBeDefined();
 
-    // Zero duplicate theme controls inside the dropdown
-    expect(screen.queryByTestId('pref-theme-light')).toBeNull();
-    expect(screen.queryByTestId('pref-theme-dark')).toBeNull();
+    // Centralized theme controls inside the profile dropdown
+    expect(screen.getByTestId('pref-theme-light')).toBeDefined();
+    expect(screen.getByTestId('pref-theme-dark')).toBeDefined();
   });
 
   it('theme toggle works for full page switching', () => {

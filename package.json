@@ -345,7 +345,8 @@
     "test:ops": "npm run test:run -- server/__tests__/generate-seo-assets.script.test.ts",
     "test:runtime-stability:full": "playwright test src/e2e/dashboard.spec.ts",
     "dev:all": "npm run preview -- --port 3000 --host 0.0.0.0",
-    "org:migrate": "npx tsx src/scripts/migrateAndSeedOrganization.ts"
+    "org:migrate": "npx tsx src/scripts/migrateAndSeedOrganization.ts",
+    "aegis:task": "node .agents/orchestrator/aegis-task.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

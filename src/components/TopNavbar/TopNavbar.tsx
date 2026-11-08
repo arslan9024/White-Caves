@@ -128,7 +128,7 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
           {isFounder ? '👑 Founder (L5)' : `L${accessLevel} · ${ROLE_LABELS[role] || role}`}
         </RoleBadge>
 
-        {/* Reused Profile Component (hideThemeSelector={true} removes duplicate theme controls) */}
+        {/* Reused Profile Component (with centralized theme, language, currency controls) */}
         <ProfileMenuWrapper>
           <ProfileTrigger
             onClick={toggleProfile}
@@ -150,20 +150,9 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
             <UserPreferencesDropdown
               user={user}
               onClose={() => setIsProfileOpen(false)}
-              hideThemeSelector={true}
             />
           )}
         </ProfileMenuWrapper>
-
-        {/* Canonical Master Full-Page Theme Toggle */}
-        <ThemeToggleBtn
-          onClick={toggleTheme}
-          title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          data-testid="theme-toggle-btn"
-          aria-label="Toggle color theme"
-        >
-          {isDark ? <Sun size={18} /> : <Moon size={18} />}
-        </ThemeToggleBtn>
       </NavWing>
     </NavbarContainer>
   );
