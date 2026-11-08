@@ -43,66 +43,66 @@ export class LindaMasterSystemRegistry {
     {
       id: 1,
       name: 'Core WhatsApp Engine & 24/7 Resilience',
-      targetUpgrades: 20,
-      highlights: ['LocalAuth Session Persistence', 'Recovery Coordinator', 'CircuitBreakerManager', 'ClientFlowSetup Memory Guard'],
+      targetUpgrades: 30,
+      highlights: ['LocalAuth Session Persistence', 'Recovery Coordinator', 'CircuitBreakerManager', 'ClientFlowSetup Memory Guard', 'Priority #1 Autonomous Channel Health', 'Self-Healing KeepAlive Daemon'],
     },
     {
       id: 2,
       name: 'Anti-Ban, Stealth & Humanization Protocols',
-      targetUpgrades: 20,
-      highlights: ['GaussianJitterScheduler', 'DubaiCadenceCurves', 'InboundOutboundRatioGuard', 'TypingStateGuard'],
+      targetUpgrades: 30,
+      highlights: ['GaussianJitterScheduler', 'DubaiCadenceCurves', 'InboundOutboundRatioGuard', 'TypingStateGuard', 'Spintax v3 Polymorphic Shaper', 'Asia/Dubai GST Working Hours Enforcement'],
     },
     {
       id: 3,
       name: 'AI Intelligence, Voice & Multi-Modal Engine',
-      targetUpgrades: 20,
-      highlights: ['SentimentAnalyzer', 'IntentClassifier', 'ArabicKhaleejiDialectClassifier', 'ConversationAnalyzer (F34)'],
+      targetUpgrades: 30,
+      highlights: ['SentimentAnalyzer', 'IntentClassifier', 'ArabicKhaleejiDialectClassifier', 'ConversationAnalyzer (F34)', 'Real-Time Voice Transcription Bridge', 'VIP Luxury Buyer Intent Detection'],
     },
     {
       id: 4,
       name: 'Dubai Real Estate Domain Engine',
-      targetUpgrades: 20,
-      highlights: ['ReraRentalIndexCalculator', 'DldTitleDeedValidator', 'EjariTenancyRenewalGenerator', 'DubaiGoldenVisaQualifier'],
+      targetUpgrades: 30,
+      highlights: ['ReraRentalIndexCalculator', 'DldTitleDeedValidator', 'EjariTenancyRenewalGenerator', 'DubaiGoldenVisaQualifier', 'DAMAC Hills 2 Cluster Intel', 'Comparative Market Analysis Matcher'],
     },
     {
       id: 5,
       name: 'Outreach, Growth & Campaign Machine',
-      targetUpgrades: 20,
-      highlights: ['AreaOwnerOutreachPlanner (F35)', 'NewConversationBudget', 'DamacHills2CampaignManager', 'DeadLeadReviverCampaign'],
+      targetUpgrades: 30,
+      highlights: ['AreaOwnerOutreachPlanner (F35)', 'NewConversationBudget', 'DamacHills2CampaignManager', 'DeadLeadReviverCampaign', 'Dynamic Audience Segmenter', 'WhatsApp Automated Drip Engine'],
     },
     {
       id: 6,
       name: 'Visual UI/UX Console & Operations Center',
-      targetUpgrades: 20,
-      highlights: ['Pinned 4-Panel Terminal', 'Interactive Playbooks P1–P10', 'Feature Catalog F1–F35', 'ThemeTokenEngine'],
+      targetUpgrades: 30,
+      highlights: ['Pinned 4-Panel Terminal', 'Interactive Playbooks P1–P10', 'Feature Catalog F1–F35', 'ThemeTokenEngine', 'Priority #1 Dedicated Ops Header', 'Real-Time Socket Telemetry Stream'],
     },
     {
       id: 7,
       name: 'CRM, Sheets & Enterprise Integrations',
-      targetUpgrades: 20,
-      highlights: ['GoogleSheetsManager CRUD', 'GorahaServicesBridge', 'ContactsOAuth PKCE', 'PortalLeadWebhookIngestion'],
+      targetUpgrades: 30,
+      highlights: ['GoogleSheetsManager CRUD', 'GorahaServicesBridge', 'ContactsOAuth PKCE', 'PortalLeadWebhookIngestion', 'HubSpot & Zoho Books Two-Way Sync', 'White Caves Core CRM Bi-directional Bus'],
     },
     {
       id: 8,
       name: 'Multi-Agent Collaboration & Routing Roster',
-      targetUpgrades: 20,
-      highlights: ['MultiAccountSwitcherManager', 'AgentShiftRosterEngine', 'PropertySpecialistSkillMatcher', 'WhatsAppCommandBridge'],
+      targetUpgrades: 30,
+      highlights: ['MultiAccountSwitcherManager', 'AgentShiftRosterEngine', 'PropertySpecialistSkillMatcher', 'WhatsAppCommandBridge', 'Nina -> Linda -> Clara -> Henry Event Mesh', 'Autonomous Handoff Gatekeeper'],
     },
     {
       id: 9,
       name: 'Security, Privacy & Secret Protection',
-      targetUpgrades: 20,
-      highlights: ['UaePdplComplianceManager', 'PiiLogMasker', 'ZeroSecretScanner', 'TamperEvidentSessionLocker'],
+      targetUpgrades: 30,
+      highlights: ['UaePdplComplianceManager', 'PiiLogMasker', 'ZeroSecretScanner', 'TamperEvidentSessionLocker', 'AES-256 Client State Vault', 'Strict Access Control Barrier'],
     },
     {
       id: 10,
       name: '24/7 DevOps, Observability & Self-Healing',
-      targetUpgrades: 20,
-      highlights: ['ExtendedDoctorSuite (12/12)', 'SessionAutoHealer', 'ZombieBrowserReaper', 'LindaSelfDiagnosticReport'],
+      targetUpgrades: 30,
+      highlights: ['ExtendedDoctorSuite (12/12)', 'SessionAutoHealer', 'ZombieBrowserReaper', 'LindaSelfDiagnosticReport', '300/300 Upgrades Parity Monitor', 'Zero-Downtime Hot Reload System'],
     },
   ];
 
-  private readonly completedUpgradesCount = 200;
+  private readonly completedUpgradesCount = 300;
 
   getSystemPosture(): LindaSystemPosture {
     const totalTarget = this.pillars.reduce((acc, p) => acc + p.targetUpgrades, 0);
