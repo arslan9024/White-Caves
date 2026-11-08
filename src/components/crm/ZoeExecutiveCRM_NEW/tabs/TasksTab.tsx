@@ -1,4 +1,5 @@
-import { CheckCircle, AlertCircle, Clock, Plus, Filter } from 'lucide-react';
+import React from 'react';
+import { CheckCircle, AlertCircle, Clock } from 'lucide-react';
 
 interface Task {
   id: string | number;
