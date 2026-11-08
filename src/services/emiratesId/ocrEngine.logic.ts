@@ -11,8 +11,20 @@ import { PdfPageLimitError } from './types';
 export async function extractDocumentText(
   file: File,
   onProgress?: (progress: number) => void,
-  coverage?: (text: string) => number
+  coverage?: (text: string) => number,
+  customPreProcessImage?: (
+    file: File | string,
+    rotation?: number,
+    enhance?: boolean,
+    warnings?: string[]
+  ) => Promise<string>,
+  customRenderPdf?: (
+    file: File,
+    coverage?: (text: string) => number
+  ) => Promise<{ canvasDataUrls: string[]; pdfText: string }>
 ): Promise<{ ocrText: string; streamText: string; ocrConfidence?: number; warnings?: string[] }> {
+  const doPreProcess = customPreProcessImage || preProcessImageOnCanvas;
+  const doRenderPdf = customRenderPdf || renderPdfToCanvasAndText;
   let streamText = '';
   let worker: import('tesseract.js').Worker | undefined;
   const warnings: string[] = [];
