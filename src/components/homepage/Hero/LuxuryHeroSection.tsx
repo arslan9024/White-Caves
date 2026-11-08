@@ -24,6 +24,8 @@ import {
 import { HERO_COUNTER_DURATION } from './data/HERO.data';
 import { heroLayerStyle } from './styles/HERO.style';
 import LuxuryMultiTabSearchBar from './LuxuryMultiTabSearchBar';
+import LuxuryComplianceTrustBadge from './LuxuryComplianceTrustBadge';
+import DeveloperFilterQuickChips from './DeveloperFilterQuickChips';
 
 interface AnimatedRedCounterProps {
   end: number;
