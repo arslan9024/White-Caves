@@ -238,7 +238,7 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
 
     // 3. /dashboard/explorer/properties/inventory -> REPropertyManagerView
     renderDashboardWithProviders('/dashboard/explorer/properties/inventory');
-    expect(screen.getByTestId('reproperty-manager-view')).toBeInTheDocument();
+    expect(screen.getByTestId('re-property-manager-view')).toBeInTheDocument();
     cleanup();
 
     // 4. /dashboard/explorer/deals/pipeline -> DealManagerView
