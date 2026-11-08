@@ -40,7 +40,7 @@ import {
   parseOcrText,
 } from './emiratesId/parser.logic';
 import { extractDocumentText } from './emiratesId/ocrEngine.logic';
-import { preProcessImageOnCanvas } from './emiratesId/pdfRenderer.logic';
+import { renderPdfToCanvasAndText, preProcessImageOnCanvas } from './emiratesId/pdfRenderer.logic';
 import {
   mergeDualSideResults,
   toContractParty,
@@ -142,6 +142,13 @@ export class HenryEmiratesIdScannerService {
     warnings?: string[]
   ): Promise<string> {
     return preProcessImageOnCanvas(file, rotation, enhance, warnings);
+  }
+
+  async renderPdfToCanvasAndText(
+    file: File,
+    coverage?: (text: string) => number
+  ): Promise<{ canvasDataUrls: string[]; pdfText: string }> {
+    return renderPdfToCanvasAndText(file, coverage);
   }
 
   parseOcrText(rawText: string, fileName: string): Partial<EmiratesIdExtractedData> {

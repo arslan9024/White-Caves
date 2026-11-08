@@ -1,7 +1,14 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PdcEscalationPanel } from './PdcEscalationPanel';
+
+// Mock apiClient to prevent real network calls
+vi.mock('../../utils/apiClient', () => ({
+  apiClient: {
+    patch: vi.fn().mockResolvedValue({ success: true }),
+  },
+}));
 
 describe('PdcEscalationPanel (UAE Law 50/2022)', () => {
   it('renders cheque details and statutory dates', () => {
@@ -22,7 +29,7 @@ describe('PdcEscalationPanel (UAE Law 50/2022)', () => {
     expect(screen.getByText(/PDC_BOUNCED/)).toBeInTheDocument();
   });
 
-  it('triggers escalation to formal notice', () => {
+  it('triggers escalation to formal notice', async () => {
     const handleEscalate = vi.fn();
     render(
       <PdcEscalationPanel
@@ -35,7 +42,9 @@ describe('PdcEscalationPanel (UAE Law 50/2022)', () => {
     const warnBtn = screen.getByRole('button', { name: /Dispatch 30-Day Legal Warning/i });
     fireEvent.click(warnBtn);
 
-    expect(screen.getByText(/FORMAL_NOTICE_ISSUED/)).toBeInTheDocument();
-    expect(handleEscalate).toHaveBeenCalledWith('FORMAL_NOTICE_ISSUED');
+    await waitFor(() => {
+      expect(screen.getByText(/FORMAL_NOTICE_ISSUED/)).toBeInTheDocument();
+      expect(handleEscalate).toHaveBeenCalledWith('FORMAL_NOTICE_ISSUED');
+    });
   });
 });
