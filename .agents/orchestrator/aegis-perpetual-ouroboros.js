@@ -224,11 +224,18 @@ export async function runPerpetualLoop(options = {}) {
         enforceRootHygiene();
         const gitStatus = run('git status --short');
         if (gitStatus.out && gitStatus.out.length > 0) {
-          run('git add .agents/ src/ server/');
+          run('git add -A');
           const commitMsg = `chore(aegis-ouroboros): autonomous milestone cycle #${cycleIndex} [${cycleId}]`;
           const commitRes = run(`git commit -m "${commitMsg}"`);
           if (commitRes.ok) {
             console.log(`   ✅ Atomic milestone committed cleanly.`);
+            // Auto-Push to origin/main on every committed milestone
+            const pushRes = run('git push origin main');
+            if (pushRes.ok) {
+              console.log(`   🚀 [Auto-Push] Synchronized cleanly to origin/main.`);
+            } else {
+              console.warn(`   ⚠️ [Auto-Push] Push deferred: ${pushRes.err || pushRes.out}`);
+            }
           } else {
             console.log(`   ℹ️ Git state clean, zero uncommitted changes.`);
           }
