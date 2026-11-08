@@ -206,8 +206,8 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
                   justifyContent: 'space-between',
                 }}
               >
-                <span>🔱 Open Full AI Command Center</span>
-                <span style={{ color: '#FCA5A5', fontSize: '0.65rem' }}>Main Screen →</span>
+                <span>🔱 Open AIAMS Workforce Hub</span>
+                <span style={{ color: '#FCA5A5', fontSize: '0.65rem' }}>AIAMS →</span>
               </button>
 
               <button

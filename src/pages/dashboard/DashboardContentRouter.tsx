@@ -109,13 +109,11 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
 
   if (activeTab === 'ai-command' || activeAgent?.id === 'ai-command') {
     return (
-      <div style={{ padding: '16px', flex: 1 }}>
-        <AICommandCenter
-          onSelectAgent={id =>
-            navigate(id === 'linda' ? '/dashboard/linda' : `/dashboard/aiams/${id}`)
-          }
-        />
-      </div>
+      <AiAssistantManagerView
+        selectedSubRoute={activeItemId}
+        isReadOnly={isReadOnly}
+        onNavigate={navigate}
+      />
     );
   }
 
