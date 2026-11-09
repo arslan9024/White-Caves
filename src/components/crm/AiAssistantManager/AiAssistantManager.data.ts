@@ -90,6 +90,39 @@ function buildCanonicalAiAgentsSeed(): AiAgentRecord[] {
     avatar: 'https://ui-avatars.com/api/?name=Linda+Bot&background=25D366&color=fff',
   };
 
+  const maryAgent: AiAgentRecord = {
+    id: 'ai-mary-001',
+    agentId: 'mary',
+    code: 'AI_MARY',
+    name: 'AI Mary',
+    role: 'Listing Ingestion & Data Hygiene Specialist (Inventory Master)',
+    departmentId: 'asset_facilities',
+    department: 'Asset Management & Facilities (DH2 Hub)',
+    tier: 'SUPERVISOR',
+    status: 'OPTIMAL',
+    model: 'gemini-1.5-pro',
+    specialty: '9,378+ DAMAC Hills 2 Inventory Ingestion, Title Deed Normalization & De-duplication',
+    systemPrompt:
+      'Single source of truth for 9,378+ portfolio listings across Dubai. Normalizes property specs, validates square footage from title deeds, and eliminates duplicate listings.',
+    capabilities: [
+      'Listing Deduplication Engine',
+      'Photo Resolution Enhancer',
+      'Title Deed Data Harmonizer',
+      'Live DAMAC Hills 2 Cluster Grid',
+      'Direct Landlord Acquisition Form',
+    ],
+    assignedTasks: [
+      'Batch Property Ingestion & Title Deed Match',
+      'Normalize Plot, Cluster & P-Number Integrity',
+      'Landlord Contact & Multi-Owner Deduplication',
+      'Sync Active Inventory to Live Brokerage Roster',
+    ],
+    slaResponseTime: '< 5s',
+    accuracyRate: 100.0,
+    activeWorkload: 512,
+    avatar: 'https://ui-avatars.com/api/?name=Mary+AI&background=3B82F6&color=fff',
+  };
+
   const managerAgents: AiAgentRecord[] = CORPORATE_DEPARTMENTS_12.map((dept, idx) => ({
     id: `ai-mgr-${String(idx + 1).padStart(2, '0')}`,
     agentId: dept.managerAi.id,
@@ -132,7 +165,7 @@ function buildCanonicalAiAgentsSeed(): AiAgentRecord[] {
     avatar: sup.avatar,
   }));
 
-  return [zoeAgent, lindaAgent, ...managerAgents, ...supervisorAgents];
+  return [zoeAgent, lindaAgent, maryAgent, ...managerAgents, ...supervisorAgents];
 }
 
 export const INITIAL_AI_AGENTS_SEED: AiAgentRecord[] = buildCanonicalAiAgentsSeed();
