@@ -145,17 +145,35 @@ export function useDealManager({
   const handleOpenCreateDrawer = useCallback(() => {
     setEditingDeal(null);
     setIsDrawerOpen(true);
-  }, []);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('drawer', 'create');
+      next.delete('id');
+      return next;
+    });
+  }, [setSearchParams]);
 
   const handleOpenEditDrawer = useCallback((deal: DealItem) => {
     setEditingDeal(deal);
     setIsDrawerOpen(true);
-  }, []);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('drawer', 'edit');
+      next.set('id', deal.id);
+      return next;
+    });
+  }, [setSearchParams]);
 
   const handleCloseDrawer = useCallback(() => {
     setIsDrawerOpen(false);
     setEditingDeal(null);
-  }, []);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.delete('drawer');
+      next.delete('id');
+      return next;
+    });
+  }, [setSearchParams]);
 
   const handleAdvanceStatus = useCallback(
     (dealId: string, newStatus: DealStatus) => {
