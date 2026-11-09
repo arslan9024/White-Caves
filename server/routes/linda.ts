@@ -72,6 +72,7 @@ router.post('/sentiment-alerts/:alertId/acknowledge', requirePermission('view_wh
 router.post('/background-analysis/opt-in', requireRole('owner', 'admin'), backgroundAnalysisOptIn);
 
 // Operations Center V2 (Ported from whatsapp-bot-linda repo)
+router.get('/metrics/stream', requirePermission('view_whatsapp_conversations'), streamLindaMetrics);
 router.get('/metrics', requirePermission('view_whatsapp_conversations'), getLindaMetrics);
 router.post('/run-script', requirePermission('view_whatsapp_conversations'), runLindaScript);
 router.get('/features', requirePermission('view_whatsapp_conversations'), getLindaFeaturesAndPlaybooks);
