@@ -280,6 +280,8 @@ export const ModernDashboardPage: FC = () => {
             </main>
 
             <ExecutiveAIVSCodeSidebar
+              activeDomain={activeTab}
+              activeEntityId={activeItemId || undefined}
               onSelectAgent={(agentId, agentName) => {
                 setActiveAgent({ id: agentId, name: agentName });
                 if (agentId === 'linda') {
