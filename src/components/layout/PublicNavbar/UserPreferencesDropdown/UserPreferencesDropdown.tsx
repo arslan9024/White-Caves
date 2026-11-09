@@ -3,8 +3,9 @@
  * Sits at folder root: Pure presentational shell drawing data variables and logic hooks.
  */
 
-import React, { FC } from 'react';
-import { Cpu } from 'lucide-react';
+import React, { FC, useState } from 'react';
+import { Cpu, Pencil } from 'lucide-react';
+import { AvatarUploadCropModal } from '../../../profile/AvatarUploadCropModal/AvatarUploadCropModal';
 import {
   useUserPreferencesDropdownLogic,
   UseUserPreferencesDropdownProps,
@@ -13,7 +14,10 @@ import { PREFERENCE_LABELS } from './data/UserPreferencesDropdown.data';
 import {
   DropdownContainer,
   UserHeader,
+  AvatarWrapper,
+  AvatarEditBadge,
   UserDetails,
+  EditProfileInlineLink,
   RoleBadge,
   SectionTitle,
   ButtonGrid,
