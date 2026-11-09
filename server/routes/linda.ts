@@ -20,6 +20,7 @@ import {
   getStats,
   getStatus,
   getLindaMetrics,
+  streamLindaMetrics,
   runLindaScript,
   getLindaFeaturesAndPlaybooks,
   getLindaOutreachPlan,
