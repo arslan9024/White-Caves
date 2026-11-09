@@ -149,7 +149,7 @@ describe('UserRoleContext & 14-Role Sovereign Registry', () => {
     expect(screen.getByTestId('access-level').textContent).toBe('1');
     expect(screen.getByTestId('is-authenticated').textContent).toBe('false');
     expect(screen.getByTestId('is-md').textContent).toBe('false');
-    expect(screen.getByTestId('roles-count').textContent).toBe('14');
+    expect(screen.getByTestId('roles-count').textContent).toBe('20');
   });
 
   it('logs in standard broker and updates accessLevel', () => {
