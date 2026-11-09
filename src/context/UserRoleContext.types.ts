@@ -42,8 +42,11 @@ export type AccessLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 export type RoleTier =
   | 'Tier 1: Internal Corporate Staff'
+  | 'Tier 1: Internal Corporate'
   | 'Tier 2: External Client Portals'
-  | 'Tier 3: Strategic Partners & Unconfirmed';
+  | 'Tier 2: Client Portals'
+  | 'Tier 3: Strategic Partners & Unconfirmed'
+  | 'Tier 3: Strategic Partners';
 
 export interface UserProfile {
   id: string;
