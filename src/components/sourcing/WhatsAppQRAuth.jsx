@@ -58,11 +58,18 @@ export default function WhatsAppQRAuth({ onSuccess, onClose, isModal = false }) 
     initializeWhatsAppConnection();
   };
 
+  const [showManualModal, setShowManualModal] = useState(false);
+  const [manualCodeInput, setManualCodeInput] = useState('');
+
   const handleManualEntry = () => {
-    // Alternative: Manual session code entry
-    const code = prompt('Enter your WhatsApp session code:');
-    if (code) {
-      simulateAuthentication(code);
+    setShowManualModal(true);
+  };
+
+  const handleConfirmManualCode = () => {
+    if (manualCodeInput.trim()) {
+      setShowManualModal(false);
+      simulateAuthentication(manualCodeInput.trim());
+      setManualCodeInput('');
     }
   };
 
