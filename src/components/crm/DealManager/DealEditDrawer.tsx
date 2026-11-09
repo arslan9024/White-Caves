@@ -414,48 +414,24 @@ export const DealEditDrawer: FC<DealEditDrawerProps> = ({ isOpen, deal, onClose,
             />
           </div>
 
-          <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', gap: '12px' }}>
-            <button
-              type="submit"
-              data-testid="save-deal-btn"
-              style={{
-                flex: 1,
-                padding: '10px',
-                borderRadius: '8px',
-                background: '#EF4444',
-                color: '#FFFFFF',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-              }}
-            >
-              <Save size={16} />
-              Save Deal
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              style={{
-                padding: '10px 16px',
-                borderRadius: '8px',
-                background: 'rgba(255, 255, 255, 0.08)',
-                color: '#94A3B8',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-              }}
-            >
-              Cancel
-            </button>
+          <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
+            <TaskActionBar
+              isDirty={isDirty}
+              onSave={() => handleSaveData(false)}
+              onSaveAndClose={() => handleSaveData(true)}
+              onCancel={() => confirmExit(onClose)}
+              saveLabel="Save Deal"
+              saveAndCloseLabel="Save & Close"
+            />
           </div>
         </form>
       </div>
+
+      <UnsavedChangesModal
+        isOpen={showPrompt}
+        onProceed={proceed}
+        onCancel={cancel}
+      />
     </div>
   );
 };
