@@ -15,9 +15,14 @@ export const AuthModeSwitch = memo(function AuthModeSwitch({
 }: AuthModeSwitchProps) {
   return (
     <div className="auth-switch">
-      <button className="btn btn-link" onClick={onSwitch}>
+      <div className="auth-switch-divider">
+        <span>or</span>
+      </div>
+      <button type="button" className="btn btn-link auth-switch-link" onClick={onSwitch}>
         {mode === 'signup' ? signInPromptText : signUpPromptText}
       </button>
     </div>
   );
 });
+
+export default AuthModeSwitch;
