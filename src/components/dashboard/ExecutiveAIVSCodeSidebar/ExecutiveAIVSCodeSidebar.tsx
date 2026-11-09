@@ -21,6 +21,8 @@ export interface ExecutiveAIVSCodeSidebarProps {
   onSelectItem?: (key: string, label: string) => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  activeDomain?: string;
+  activeEntityId?: string;
 }
 
 export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
@@ -28,6 +30,8 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
   onSelectItem,
   isCollapsed: controlledCollapsed,
   onToggleCollapse,
+  activeDomain,
+  activeEntityId,
 }) => {
   const {
     activeTab,
