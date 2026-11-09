@@ -84,6 +84,19 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   });
   if (guardedView) return guardedView;
 
+  // Direct Zoe Sovereign Node / Executive Command selection
+  if (
+    activeTab === 'zoe' ||
+    activeAgent?.id === 'zoe' ||
+    (activeTab === 'ai-command' && activeItemId === 'zoe')
+  ) {
+    return (
+      <div style={{ padding: '20px', flex: 1, overflowY: 'auto' }}>
+        <ZoeExecutiveCRM />
+      </div>
+    );
+  }
+
   // Direct Linda / AI Command Center selection
   if (
     activeTab === 'linda' ||
