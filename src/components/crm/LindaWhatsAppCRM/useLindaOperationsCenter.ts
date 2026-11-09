@@ -178,7 +178,7 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
 
     // Prefer persistent real-time Server-Sent Events (SSE) stream
     let eventSource: EventSource | null = null;
-    let fallbackIntervalId: number | null = null;
+    let fallbackIntervalId: ReturnType<typeof setInterval> | null = null;
 
     if (typeof window !== 'undefined' && 'EventSource' in window) {
       try {
@@ -210,18 +210,18 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
             eventSource = null;
           }
           if (!fallbackIntervalId) {
-            fallbackIntervalId = window.setInterval(() => {
+            fallbackIntervalId = setInterval(() => {
               void refreshLindaStatus();
             }, 15000);
           }
         };
       } catch {
-        fallbackIntervalId = window.setInterval(() => {
+        fallbackIntervalId = setInterval(() => {
           void refreshLindaStatus();
         }, 15000);
       }
     } else {
-      fallbackIntervalId = window.setInterval(() => {
+      fallbackIntervalId = setInterval(() => {
         void refreshLindaStatus();
       }, 15000);
     }
@@ -231,7 +231,7 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
         eventSource.close();
       }
       if (fallbackIntervalId) {
-        window.clearInterval(fallbackIntervalId);
+        clearInterval(fallbackIntervalId);
       }
     };
   }, [refreshLindaStatus]);
