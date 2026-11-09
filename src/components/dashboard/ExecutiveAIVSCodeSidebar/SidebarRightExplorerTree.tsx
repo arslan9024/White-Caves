@@ -149,10 +149,10 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
                         {dept.name}
                       </span>
                     </div>
-                    <span style={{ fontSize: '0.62rem', color: '#64748B' }}>{dept.supervisors.length}</span>
+                    <span style={{ fontSize: '0.62rem', color: '#64748B' }}>{(dept.supervisors || []).length}</span>
                   </SubgroupHeader>
                   {isSubExpanded &&
-                    dept.supervisors.map(sup => (
+                    (dept.supervisors || []).map((sup: any) => (
                       <TreeItemRow
                         key={sup.id}
                         $isActive={(currentDomain === 'employees' || currentDomain === 'departments') && (currentEntityId === sup.id || currentEntityId === sup.code)}
