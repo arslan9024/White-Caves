@@ -738,3 +738,273 @@
 .auth-modal-window::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* ==========================================================================
+   AEGIS V5.0 Multi-Layered Auth Enhancements (Professional Luxury UI)
+   ========================================================================== */
+
+/* Multi-Layered Flow Segmented Navigation */
+.auth-segmented-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.auth-segmented-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-segmented-btn:hover:not(:disabled) {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.auth-segmented-btn.active {
+  background: #EF4444;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.auth-nav-icon {
+  display: flex;
+  align-items: center;
+}
+
+/* Channel Switcher Styling */
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+.auth-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-tab.active {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #EF4444;
+  color: #ffffff;
+}
+
+.auth-tab-icon {
+  display: flex;
+  align-items: center;
+}
+
+/* Phone Field Layer */
+.auth-field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.auth-phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.auth-phone-prefix {
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #cbd5e1;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+
+.auth-phone-field {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  width: 100%;
+}
+
+/* Switch Footnote */
+.auth-switch-divider {
+  display: flex;
+  align-items: center;
+  margin: 16px 0 10px;
+  color: #64748b;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.auth-switch-divider::before,
+.auth-switch-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.auth-switch-divider span {
+  padding: 0 10px;
+}
+
+/* Dedicated Security Verification Overlay */
+.auth-verification-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 10000;
+  padding: 20px;
+  animation: authOverlayIn 0.3s ease-out;
+}
+
+.auth-verification-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(165deg, #0f172a 0%, #162038 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 18px;
+  padding: 32px 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(239, 68, 68, 0.15);
+  color: #ffffff;
+}
+
+.auth-verification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.auth-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #EF4444;
+}
+
+.auth-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #EF4444;
+  box-shadow: 0 0 8px #EF4444;
+}
+
+.auth-verification-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.auth-verification-close:hover {
+  color: #ffffff;
+}
+
+.auth-verification-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.auth-verification-desc {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.auth-target-id {
+  color: #EF4444;
+}
+
+.auth-channel-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.auth-channel-chip {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-channel-chip.selected {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #EF4444;
+  color: #ffffff;
+}
+
+.auth-otp-field {
+  text-align: center;
+  font-size: 24px !important;
+  letter-spacing: 0.3em;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.auth-success-badge {
+  padding: 8px 12px;
+  background: rgba(52, 211, 153, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 8px;
+  color: #34d399;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
