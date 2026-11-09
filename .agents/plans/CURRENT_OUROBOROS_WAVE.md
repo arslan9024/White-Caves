@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #12484 Blueprint
-**Generated:** 2026-11-09T23:55:45.432Z
+# AEGIS Perpetual Ouroboros — Cycle #12485 Blueprint
+**Generated:** 2026-11-09T23:55:57.196Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-04 — Curated Architectural Photography & CDN Sharding
-- **Lead Researcher:** @Victoria (Dept 09)
-- **Core Objective:** WebP/AVIF Lossless Compression & Cloudflare Edge Cache
+- **Domain:** DOM-05 — 3D Matterport Digital Twin & Floorplan Engine
+- **Lead Researcher:** @Una (Dept 02)
+- **Core Objective:** WebGL 60FPS Spatial Walkthrough & Room Dimension Vector Overlay
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
