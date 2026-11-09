@@ -24,8 +24,7 @@ import { useLindaOperationsCenter } from './LindaWhatsAppCRM/useLindaOperationsC
  * Modularized under AEGIS APOCALYPSE-AEG-042 (< 350 lines).
  */
 const LindaWhatsAppCRM = memo(() => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const { isDark } = useTheme();
   const [activeViewTab, setActiveViewTab] = useState<LindaViewTab>('all');
 
   const {
