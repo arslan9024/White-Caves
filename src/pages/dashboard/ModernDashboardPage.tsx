@@ -121,7 +121,7 @@ export const ModernDashboardPage: FC = () => {
 
   const handleSelectSidebarTab = (tab: ActivityTab) => {
     setActiveAgent(null);
-    navigate(`/dashboard/${tab}`);
+    navigate(resolveSidebarItemRoute(tab, tab));
   };
 
   const handleSelectSidebarItem = (key: string) => {
@@ -131,11 +131,11 @@ export const ModernDashboardPage: FC = () => {
 
   const handleSelectRightExplorerItem = (key: string, label: string) => {
     const viewPrefixes: Record<string, string> = {
-      'dept-': '/dashboard/departments/',
-      'task-': '/dashboard/tasks/',
-      'prop-': '/dashboard/REproperties/',
-      'deal-': '/dashboard/deals/',
-      'emp-': '/dashboard/employees/',
+      'dept-': '/dashboard/dms/departments/',
+      'task-': '/dashboard/tms/tasks/',
+      'prop-': '/dashboard/pms/properties/',
+      'deal-': '/dashboard/fms/deals/',
+      'emp-': '/dashboard/ems/employees/',
     };
     for (const [pfx, route] of Object.entries(viewPrefixes)) {
       if (key.startsWith(pfx)) {
