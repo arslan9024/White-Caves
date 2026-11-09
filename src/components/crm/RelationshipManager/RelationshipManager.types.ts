@@ -4,23 +4,45 @@
  * Single Purpose File Law: < 350 lines
  */
 
+export type EntityCategory = 'ACTOR' | 'OBJECT';
+
 export type EntityType =
-  | 'COMPANY'
-  | 'BANK_ACCOUNT'
-  | 'BRANCH'
+  // ── ACTORS (Who exists / Human & AI Agents) ──────────────────────────────────
   | 'USER'
   | 'EMPLOYEE'
   | 'ROLE'
-  | 'PROPERTY'
+  | 'STAFF_PROFILE'
   | 'CLIENT'
-  | 'TENANT'
   | 'LANDLORD'
-  | 'CONTRACT'
-  | 'TASK'
-  | 'DOCUMENT'
-  | 'DEAL'
-  | 'INVOICE'
+  | 'TENANT'
+  | 'BUYER'
+  | 'SELLER'
+  | 'BROKER_AGENT'
+  | 'AI_ASSISTANT'
+  | 'CONTRACTOR'
+  | 'CANDIDATE'
+  // ── OBJECTS (What exists / Assets, Accounts, Contracts, Receipts) ────────────
+  | 'COMPANY'
+  | 'BRANCH'
+  | 'BANK_ACCOUNT'
+  | 'PROPERTY'
+  | 'PROPERTY_UNIT'
+  | 'TITLE_DEED'
+  | 'TENANCY_CONTRACT'
+  | 'LEASE_ADDENDUM'
+  | 'DEAL_PIPELINE'
+  | 'TAX_INVOICE'
   | 'CHEQUE'
+  | 'ESCROW_DEPOSIT'
+  | 'COMMISSION_RECORD'
+  | 'COMMISSION_SPLIT'
+  | 'KYC_RECORD'
+  | 'TRAKHEESI_PERMIT'
+  | 'NOC_CERTIFICATE'
+  | 'VALUATION_REPORT'
+  | 'MAINTENANCE_ORDER'
+  | 'DOCUMENT'
+  | 'AUDIT_LOG'
   | 'REVENUE';
 
 export type RelationshipTab = 'entities' | 'relationships' | 'erd';
@@ -57,6 +79,7 @@ export interface EntityNode {
   id: string; // e.g. 'user-001', 'emp-001', 'deal-001'
   name: string;
   type: EntityType;
+  category: EntityCategory; // 'ACTOR' vs 'OBJECT' (Strict Turing Law 010)
   badge: string;
   description: string;
   color: string;
