@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import InternalModuleMount from '../InternalModuleMount';
 import LindaExecutiveHeader from './LindaWhatsAppCRM/LindaExecutiveHeader';
 import LindaTelemetryGrid from './LindaWhatsAppCRM/LindaTelemetryGrid';
