@@ -268,7 +268,9 @@ export const ModernDashboardPage: FC = () => {
               activeEntityId={activeItemId || undefined}
               onSelectAgent={(agentId, agentName) => {
                 setActiveAgent({ id: agentId, name: agentName });
-                if (agentId === 'linda') {
+                if (agentId === 'zoe') {
+                  navigate('/dashboard/zoe');
+                } else if (agentId === 'linda') {
                   navigate('/dashboard/linda');
                 } else if (agentId === 'ai-command') {
                   navigate('/dashboard/aiams');
