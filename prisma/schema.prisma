@@ -2456,3 +2456,37 @@ model AiAssistantAgent {
   @@index([status])
   @@index([tier])
 }
+
+// ==========================================
+// White Caves Real Estate LLC - Apex Organization Model
+// Anchors the Corporate Umbrella & 2 Trade License Activities
+// ==========================================
+model Organization {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  companyName           String   @default("White Caves Real Estate LLC")
+  legalName             String   @default("White Caves Real Estate L.L.C")
+  jurisdiction          String   @default("Dubai, UAE")
+  tradeLicenseNumber    String   @unique @default("CN-1094821")
+  ornNumber             String   @unique @default("ORN-28491")
+  taxRegistrationNumber String   @unique @default("TRN-100458920100003")
+  fiuGoAmlId            String   @default("FIU-AE-ORG-9182")
+  headquartersAddress   String   @default("Level 24, Boulevard Plaza Tower 1, Downtown Dubai, UAE")
+  primaryPhone          String   @default("+971 56 361 6136")
+  officialEmail         String   @default("admin@whitecaves.ae")
+  websiteUrl            String   @default("https://whitecaves.ae")
+  
+  // Dual Trade License Statutory Activities
+  activityOneCode       String   @default("7010.01")
+  activityOneName       String   @default("Real Estate Buying & Selling Brokerage")
+  activityTwoCode       String   @default("7020.01")
+  activityTwoName       String   @default("Leasing Property Brokerage Agents")
+  
+  isActive              Boolean  @default(true)
+  establishedDate       DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([tradeLicenseNumber])
+  @@index([ornNumber])
+}
+
