@@ -19,20 +19,33 @@ White Caves Real Estate LLC balances two foundational principles:
 
 ```
 ========================================================================================
-BHAKTI PROTOCOL: Fixed Spatial Coordinates (Anchor)
-  ├─ L0: MD Office (Fixed Slot: MD-01)
-  ├─ L1: 12 Corporate Directors (Fixed Slots: D01 to D12)
-  └─ L2: 108 Division Managers (Fixed Slots: M01 to M108)
-                       ▲
-                       │ Pure State Transitions (δ) via Meritocratic Promotion
-                       ▼
-TURING PROTOCOL: Universal Discrete Enumeration & State Machine
-  ├─ L3: Operational Supervisors (Dynamic Scale: SUP-001, SUP-002...)
-  ├─ L4: Frontline Specialists / Employees (Dynamic Scale: EMP-001, EMP-002...)
-  ├─ L5: Operational & Statutory Tasks (Dynamic Scale: T001, T002... T324+)
-  └─ Unassigned Pools: EMP-POOL-xxx, TASK-POOL-xxx
+BHAKTI PROTOCOL: Fixed Spatial Coordinates & 13-Floor Building Matrix
+  ├─ Floor 13 [Penthouse]: Managing Director & Founder Suite (Fixed Slot: MD-01)
+  │
+  ├─ SECTION A: INSTITUTIONAL GOVERNANCE & CORE (Floors 9 to 12)
+  │    ├─ Floor 12: DEPT-12 — Executive, Governance & Strategy (Dir: Zayed)
+  │    ├─ Floor 11: DEPT-11 — Legal, Compliance & Audit (Dir: Sofia)
+  │    ├─ Floor 10: DEPT-10 — Accounting, Finance & Tax (Dir: Theodora)
+  │    └─ Floor 09: DEPT-09 — Research, Analytics & Market Intelligence (Dir: Elena)
+  │
+  ├─ SECTION B: REVENUE ENGINES & TRANSACTION ASSETS (Floors 5 to 8)
+  │    ├─ Floor 08: DEPT-08 — Media, Public Relations & Communications (Dir: Maya)
+  │    ├─ Floor 07: DEPT-07 — Partnerships, Alliances & Capital Growth (Dir: Maktoum)
+  │    ├─ Floor 06: DEPT-06 — Inventory, Portfolio & Asset Management (Dir: Sentinel)
+  │    └─ Floor 05: DEPT-05 — Sales, Services & Operations (Dir: Clara)
+  │
+  └─ SECTION C: FOUNDATION, PEOPLE & PLATFORM BACKBONE (Floors 1 to 4)
+       ├─ Floor 04: DEPT-04 — Technology, Systems & Digital Infrastructure (Dir: Aurora)
+       ├─ Floor 03: DEPT-03 — Human Resources, Performance & Recruiting (Dir: Selena)
+       ├─ Floor 02: DEPT-02 — Marketing, Branding & Digital Acquisition (Dir: Olivia)
+       └─ Floor 01: DEPT-01 — Customer Experience, Concierge & Hospitality (Dir: Corinne)
 ========================================================================================
 ```
+
+### The Canonical Bhakti Recursive Math Formula:
+$$\text{Level 0: Leader (1 MD)} \xrightarrow{\times 12} \text{Tier A: 12 Floor Directors} \xrightarrow{\times 9} \text{Tier B: 108 Division Managers}$$
+When scaled recursively down the operational chain:
+$$\xrightarrow{\times 12} \text{Tier C: 1,296 Operational Supervisors} \xrightarrow{\times 9} \text{Tier D: 11,664 Team Leads}$$
 
 ---
 
