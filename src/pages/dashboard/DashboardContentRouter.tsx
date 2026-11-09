@@ -31,10 +31,9 @@ import { LandlordManagerView } from '../../components/crm/LandlordManager';
 import { TenantManagerView } from '../../components/crm/TenantManager';
 import { BrokerManagerView } from '../../components/crm/BrokerManager';
 import LindaWhatsAppCRM from '../../components/crm/LindaWhatsAppCRM';
-import { AICommandCenter } from '../../components/crm/AICommandCenter/AICommandCenter';
 import { ProfileDashboardView } from './ProfileDashboardView';
-import { GuestDashboardGatewayView } from './GuestDashboardGatewayView';
-import { AccessDeniedView } from './AccessDeniedView';
+import { LegacyDomainRouter } from './LegacyDomainRouter';
+import { checkDashboardRoleGuard } from './DashboardRoleGuards';
 import { UserRoleContext } from '../../context/UserRoleContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
@@ -72,99 +71,19 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   );
   const isConfirmed = isMdOrFounder || Boolean(roleContext?.isRoleConfirmed && role !== 'guest');
 
-  // Guard 1: Unconfirmed or Guest users are restricted from internal corporate machinery
-  if (!isMdOrFounder && (!isConfirmed || role === 'guest')) {
-    if (activeTab === 'landlord') return <LandlordManagerView />;
-    if (activeTab === 'tenant') return <TenantManagerView />;
-    if (activeTab === 'broker') return <BrokerManagerView />;
-    if (activeTab === 'profile') return <ProfileDashboardView />;
-    return <GuestDashboardGatewayView onOpenRoleModal={onOpenRoleModal} onNavigate={navigate} />;
-  }
+  // Check portal / role isolation guards
+  const guardedView = checkDashboardRoleGuard({
+    role,
+    isConfirmed,
+    isMdOrFounder,
+    activeTab,
+    isRootOverview,
+    navigate,
+    onOpenRoleModal,
+  });
+  if (guardedView) return guardedView;
 
-  // Guard 2: Sovereign Landlord portal isolation
-  if (role === 'landlord') {
-    if (activeTab === 'departments' || activeTab === 'landlord') return <LandlordManagerView />;
-    if (activeTab === 'documents') {
-      return isRootOverview ? (
-        <DocumentOverviewView onNavigate={navigate} />
-      ) : (
-        <DocumentManagerView onNavigateBack={() => navigate('/dashboard/documents/vault')} />
-      );
-    }
-    if (activeTab === 'profile') return <ProfileDashboardView />;
-    return (
-      <AccessDeniedView
-        requiredRole="Corporate Directorate (L3+)"
-        onNavigateBack={() => navigate('/dashboard/landlord')}
-        onNavigateHome={() => navigate('/dashboard/landlord')}
-      />
-    );
-  }
-
-  // Guard 3: Sovereign Tenant portal isolation
-  if (role === 'tenant') {
-    if (activeTab === 'departments' || activeTab === 'tenant') return <TenantManagerView />;
-    if (activeTab === 'documents') {
-      return isRootOverview ? (
-        <DocumentOverviewView onNavigate={navigate} />
-      ) : (
-        <DocumentManagerView onNavigateBack={() => navigate('/dashboard/documents/vault')} />
-      );
-    }
-    if (activeTab === 'profile') return <ProfileDashboardView />;
-    return (
-      <AccessDeniedView
-        requiredRole="Corporate Directorate (L3+)"
-        onNavigateBack={() => navigate('/dashboard/tenant')}
-        onNavigateHome={() => navigate('/dashboard/tenant')}
-      />
-    );
-  }
-
-  // Guard 4: Sovereign Broker hub isolation
-  if (role === 'agent' || (role as string) === 'broker') {
-    if (activeTab === 'departments' || activeTab === 'broker') return <BrokerManagerView />;
-    if (activeTab === 'REproperties') {
-      return isRootOverview ? (
-        <REPropertyOverviewView onNavigate={navigate} />
-      ) : (
-        <REPropertyManagerView
-          onNavigateBack={() => navigate('/dashboard/REproperties/inventory')}
-        />
-      );
-    }
-    if (activeTab === 'deals') {
-      return isRootOverview ? (
-        <DealOverviewView onNavigate={navigate} />
-      ) : (
-        <DealManagerView onNavigateBack={() => navigate('/dashboard/deals/pipeline')} />
-      );
-    }
-    if (activeTab === 'customers') {
-      return isRootOverview ? (
-        <CustomerOverviewView onNavigate={navigate} />
-      ) : (
-        <CustomerManagerView onNavigateBack={() => navigate('/dashboard/customers/leads')} />
-      );
-    }
-    if (activeTab === 'documents') {
-      return isRootOverview ? (
-        <DocumentOverviewView onNavigate={navigate} />
-      ) : (
-        <DocumentManagerView onNavigateBack={() => navigate('/dashboard/documents/vault')} />
-      );
-    }
-    if (activeTab === 'profile') return <ProfileDashboardView />;
-    return (
-      <AccessDeniedView
-        requiredRole="Corporate Directorate (L3+)"
-        onNavigateBack={() => navigate('/dashboard/broker')}
-        onNavigateHome={() => navigate('/dashboard/broker')}
-      />
-    );
-  }
-
-  // Direct Linda / AI Command Center selection from Right Sidebar or URL
+  // Direct Linda / AI Command Center selection
   if (
     activeTab === 'linda' ||
     activeAgent?.id === 'linda' ||
@@ -177,25 +96,13 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
     );
   }
 
-  if (activeTab === 'aiams') {
+  if (activeTab === 'aiams' || activeTab === 'ai-command' || activeAgent?.id === 'ai-command') {
     return (
       <AiAssistantManagerView
         selectedSubRoute={activeItemId}
         isReadOnly={isReadOnly}
         onNavigate={navigate}
       />
-    );
-  }
-
-  if (activeTab === 'ai-command' || activeAgent?.id === 'ai-command') {
-    return (
-      <div style={{ padding: '16px', flex: 1 }}>
-        <AICommandCenter
-          onSelectAgent={id =>
-            navigate(id === 'linda' ? '/dashboard/linda' : `/dashboard/aiams/${id}`)
-          }
-        />
-      </div>
     );
   }
 
@@ -337,6 +244,26 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
 
     case 'profile':
       return <ProfileDashboardView />;
+
+    // Migrated Legacy & Enterprise Domain Suite
+    case 'finance' as ActivityTab:
+    case 'audit' as ActivityTab:
+    case 'governance' as ActivityTab:
+    case 'commissions' as ActivityTab:
+    case 'performance' as ActivityTab:
+    case 'viewings' as ActivityTab:
+    case 'analytics' as ActivityTab:
+    case 'module' as ActivityTab:
+    case 'dept-view' as ActivityTab:
+      return (
+        <LegacyDomainRouter
+          tab={activeTab}
+          subItemId={activeItemId}
+          user={roleContext?.user || null}
+          onNavigate={navigate}
+        />
+      );
+
     case 'landlord' as ActivityTab:
       return <LandlordManagerView />;
     case 'tenant' as ActivityTab:
