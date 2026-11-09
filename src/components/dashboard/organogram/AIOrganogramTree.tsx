@@ -30,7 +30,7 @@ export interface AIOrganogramTreeProps {
 }
 
 export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant }) => {
-  const [selectedDeptId, setSelectedDeptId] = useState<string>('luxury_sales');
+  const [selectedDeptId, setSelectedDeptId] = useState<string>('customer_experience');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [inspectedSupervisor, setInspectedSupervisor] = useState<SupervisorDef | null>(null);
   const [taskPrompt, setTaskPrompt] = useState<string>('');

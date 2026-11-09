@@ -50,8 +50,8 @@ export function useExecutiveVSCodeSidebarLogic(props?: UseExecutiveVSCodeSidebar
   const [filterQuery, setFilterQuery] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
     'md-hub': true,
-    'dept-luxury_sales': false,
-    'dept-residential_leasing': false,
+    'dept-customer_experience': false,
+    'dept-sales_operations': false,
   });
   const [activeItemKey, setActiveItemKey] = useState<string>('departments-hub');
 

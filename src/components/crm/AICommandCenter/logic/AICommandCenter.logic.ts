@@ -13,7 +13,7 @@ export function useAICommandCenterLogic() {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedDept, setSelectedDept] = useState<string>('all');
-  const [selectedAssistantId, setSelectedAssistantId] = useState<string>(ASSISTANTS_DATA[0]?.id || 'sup_luxury_sales_1');
+  const [selectedAssistantId, setSelectedAssistantId] = useState<string>(ASSISTANTS_DATA[0]?.id || 'sup_customer_experience_1');
 
   const filteredAssistants = useMemo(() => {
     return ASSISTANTS_DATA.filter((agent: SupervisorDef) => {
