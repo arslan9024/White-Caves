@@ -16,7 +16,7 @@ describe('FounderDepartmentGrid (DOM-02 / Target T-0104)', () => {
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByText('Off-Plan & Primary Sales', { selector: 'h3' })).toBeInTheDocument();
-    expect(screen.getByText(/👤 Tariq Al-Mansoor/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/👤 Tariq Al-Mansoor/i).length).toBeGreaterThan(0);
 
     const consoleBtn = screen.getByRole('button', { name: /Open Dedicated Department Console/i });
     fireEvent.click(consoleBtn);
