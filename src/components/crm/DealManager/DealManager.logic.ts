@@ -6,6 +6,7 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import type { DealItem, DealType, DealStatus } from './DealManager.types';
 import { CANONICAL_DEALS } from './DealManager.data';
 import { v1DealsApi } from '../../../services/api/v1ApiClient';
