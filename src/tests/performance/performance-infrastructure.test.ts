@@ -182,7 +182,7 @@ describe('Image CLS Prevention', () => {
 
 describe('Native Lazy Loading', () => {
   it('PropertyCard uses loading="lazy"', () => {
-    const source = readSource('src/components/common/PropertyCard.tsx');
+    const source = readSource('src/components/common/PropertyCard/PropertyCard.tsx');
     expect(source).toContain('loading="lazy"');
   });
 

@@ -324,5 +324,6 @@ export function useDealManager({
     handleAdvanceStatus,
     handleSaveDeal,
     handleDecommissionDeal,
+    highlightedDealId: highlightedId,
   };
 }
