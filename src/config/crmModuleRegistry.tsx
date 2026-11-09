@@ -59,6 +59,7 @@ const KairosLuxuryCRM = lazy(() => import('../components/crm/KairosLuxuryCRM'));
 const MavenInvestmentCRM = lazy(() => import('../components/crm/MavenInvestmentCRM'));
 const RERAComplianceModule = lazy(() => import('../components/crm/RERAComplianceModule'));
 const DLDIntegrationModule = lazy(() => import('../components/crm/DLDIntegrationModule'));
+const DldEscrowCalculator = lazy(() => import('../components/crm/DldEscrowCalculator'));
 const LeadScoringModule = lazy(() => import('../components/crm/LeadScoringModule'));
 const PropertyValuationModule = lazy(() => import('../components/crm/PropertyValuationModule'));
 const MarketAnalyticsModule = lazy(() => import('../components/crm/MarketAnalyticsModule'));
