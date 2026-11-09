@@ -264,21 +264,7 @@ export const ModernDashboardPage: FC = () => {
               }}
               data-testid="viewport-main-area"
             >
-              <React.Suspense
-                fallback={
-                  <div style={{ padding: '32px' }}>
-                    <div
-                      style={{
-                        height: '450px',
-                        borderRadius: '16px',
-                        background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
-                        border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
-                      }}
-                    />
-                  </div>
-                }
-              >
-                <DashboardContentRouter
+              <DashboardContentRouter
                   activeTab={activeTab}
                   isRootOverview={isRootOverview}
                   activeItemId={activeItemId}
@@ -291,7 +277,7 @@ export const ModernDashboardPage: FC = () => {
                   navigate={navigate}
                   onOpenRoleModal={() => setIsRoleModalOpen(true)}
                 />
-              </React.Suspense>
+              
             </main>
 
             <ExecutiveAIVSCodeSidebar

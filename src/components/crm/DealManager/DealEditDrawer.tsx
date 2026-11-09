@@ -417,11 +417,12 @@ export const DealEditDrawer: FC<DealEditDrawerProps> = ({ isOpen, deal, onClose,
           <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
             <TaskActionBar
               isDirty={isDirty}
-              onSave={() => handleSaveData(false)}
+              onSave={() => handleSaveData(true)}
               onSaveAndClose={() => handleSaveData(true)}
               onCancel={() => confirmExit(onClose)}
               saveLabel="Save Deal"
               saveAndCloseLabel="Save & Close"
+              saveTestId="save-deal-btn"
             />
           </div>
         </form>

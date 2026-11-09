@@ -43,8 +43,9 @@ export function useExplorerTreeData(activeQuery: string) {
           dept.code?.toLowerCase().includes(activeQuery) ||
           dept.managerAi?.name?.toLowerCase().includes(activeQuery) ||
           dept.managerAi?.title?.toLowerCase().includes(activeQuery);
-        const matchedSupervisors = dept.supervisors.filter(
-          s =>
+        const supervisorsList = dept.supervisors || [];
+        const matchedSupervisors = supervisorsList.filter(
+          (s: any) =>
             s.name?.toLowerCase().includes(activeQuery) ||
             s.code?.toLowerCase().includes(activeQuery) ||
             s.specialty?.toLowerCase().includes(activeQuery) ||
@@ -53,7 +54,7 @@ export function useExplorerTreeData(activeQuery: string) {
         if (deptMatches || matchedSupervisors.length > 0) {
           return {
             ...dept,
-            supervisors: deptMatches ? dept.supervisors : matchedSupervisors,
+            supervisors: deptMatches ? supervisorsList : matchedSupervisors,
           };
         }
         return null;
