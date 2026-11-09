@@ -65,8 +65,6 @@ export const AiAssistantManagerView: React.FC<AiAssistantManagerViewProps> = ({
   useEffect(() => {
     if (selectedSubRoute === 'organogram') {
       setViewMode('organogram');
-    } else if (selectedSubRoute === 'linda') {
-      setViewMode('linda');
     } else if (selectedSubRoute === 'managers') {
       setViewMode('crud');
       setSelectedTier('MANAGERS');
