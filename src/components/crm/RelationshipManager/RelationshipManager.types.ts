@@ -5,6 +5,9 @@
  */
 
 export type EntityType =
+  | 'COMPANY'
+  | 'BANK_ACCOUNT'
+  | 'BRANCH'
   | 'USER'
   | 'EMPLOYEE'
   | 'ROLE'
