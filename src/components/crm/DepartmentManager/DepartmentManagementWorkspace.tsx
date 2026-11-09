@@ -2,11 +2,11 @@
  * DepartmentManagementWorkspace.tsx
  * White Caves Real Estate LLC - Corporate Departments Management Workspace (12-Slot CRUD)
  * Standard: AEGIS Canonical 7-Category Architecture Standard (Workspace Orchestrator)
- * Single Purpose File Law: < 350 lines
+ * Single Purpose File Law: < 350 lines (Modularized under AEG-042)
  */
 
 import React, { FC, useState, useEffect } from 'react';
-import { Search, Plus, AlertCircle, Layers, Building2, GitFork, ArrowLeft, Table2, RotateCcw } from 'lucide-react';
+import { AlertCircle, ArrowLeft, RotateCcw } from 'lucide-react';
 import { useDepartmentManagementWorkspaceLogic } from './DepartmentManagementWorkspace.logic';
 import { DepartmentSubItemsModal } from './DepartmentSubItemsModal';
 import { DepartmentEditDrawer } from './DepartmentEditDrawer';
@@ -17,7 +17,8 @@ import { DepartmentGridDeck } from './DepartmentGridDeck';
 import { DepartmentFinalizerTable } from './DepartmentFinalizerTable';
 import { DepartmentQuickPasteBar } from './DepartmentQuickPasteBar';
 import { DepartmentHierarchyView } from './DepartmentHierarchyView';
-import { WorkspaceContainer, WorkspaceHeader, ActionBar } from './DepartmentManagementWorkspace.styles';
+import { DepartmentWorkspaceActionBar } from './DepartmentWorkspaceActionBar';
+import { WorkspaceContainer, WorkspaceHeader } from './DepartmentManagementWorkspace.styles';
 
 export type DepartmentWorkspaceViewMode = 'grid' | 'finalizer' | 'squads' | 'hierarchy';
 
@@ -28,22 +29,6 @@ export interface DepartmentManagementWorkspaceProps {
   onNavigateBack?: () => void;
   onSelectDept?: (code: string) => void;
 }
-
-const VIEW_TABS: Array<{
-  mode: DepartmentWorkspaceViewMode;
-  label: string;
-  testId: string;
-  activeColor: string;
-  activeBg: string;
-  activeText: string;
-  // Accept any React component (e.g., Lucide icons) that renders an SVG.
-  Icon: React.ComponentType<any>;
-}> = [
-  { mode: 'grid', label: '12 Slots Matrix', testId: 'viewmode-grid-btn', activeColor: '#EF4444', activeBg: 'rgba(239, 68, 68, 0.18)', activeText: '#F87171', Icon: Building2 },
-  { mode: 'finalizer', label: '12-Dept Name Finalizer', testId: 'viewmode-finalizer-btn', activeColor: '#F59E0B', activeBg: 'rgba(245, 158, 11, 0.18)', activeText: '#FBBF24', Icon: Table2 },
-  { mode: 'squads', label: 'Squad Allocations', testId: 'viewmode-squads-btn', activeColor: '#3B82F6', activeBg: 'rgba(59, 130, 246, 0.18)', activeText: '#60A5FA', Icon: Layers },
-  { mode: 'hierarchy', label: '3-Tier Bhakti Hierarchy', testId: 'viewmode-hierarchy-btn', activeColor: '#10B981', activeBg: 'rgba(16, 185, 129, 0.18)', activeText: '#34D399', Icon: GitFork },
-];
 
 export const DepartmentManagementWorkspace: FC<DepartmentManagementWorkspaceProps> = ({
   initialViewMode = 'grid',
@@ -236,54 +221,14 @@ export const DepartmentManagementWorkspace: FC<DepartmentManagementWorkspaceProp
         <>
           <DepartmentStatsDeck metrics={logic.metrics} />
 
-          <ActionBar>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              {VIEW_TABS.map(({ mode, label, testId, activeColor, activeBg, activeText, Icon }) => {
-                const isActive = viewMode === mode;
-                return (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => setViewMode(mode)}
-                    data-testid={testId}
-                    style={{
-                      padding: '6px 12px',
-                      borderRadius: '6px',
-                      border: isActive ? `1px solid ${activeColor}` : '1px solid rgba(255,255,255,0.1)',
-                      background: isActive ? activeBg : 'transparent',
-                      color: isActive ? activeText : '#94A3B8',
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                    }}
-                  >
-                    <Icon size={14} />
-                    <span>{label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="search-wrap">
-              <Search size={16} />
-              <input
-                type="text"
-                placeholder="Search departments by code, title, or scope..."
-                value={logic.searchTerm}
-                onChange={e => logic.setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            {!isReadOnly && (
-              <button className="add-btn" onClick={logic.handleOpenCreate}>
-                <Plus size={16} />
-                Add Corporate Department
-              </button>
-            )}
-          </ActionBar>
+          <DepartmentWorkspaceActionBar
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            searchTerm={logic.searchTerm}
+            setSearchTerm={logic.setSearchTerm}
+            isReadOnly={isReadOnly}
+            onOpenCreate={logic.handleOpenCreate}
+          />
 
           {viewMode === 'hierarchy' ? (
             <DepartmentHierarchyView />
