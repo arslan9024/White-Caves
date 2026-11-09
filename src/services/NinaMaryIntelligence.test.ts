@@ -81,7 +81,7 @@ describe('NinaMaryIntelligence', () => {
       {}
     );
 
-    expect(res.type).toBe('text');
+    expect(res.type).toBe('no_match_suggestions');
     expect(res.text).toContain("couldn't find properties matching exactly");
     expect(res.text).toContain('Palm Jumeirah');
   });
