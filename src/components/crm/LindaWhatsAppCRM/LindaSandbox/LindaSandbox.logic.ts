@@ -62,11 +62,32 @@ export function parseLeadIntent(input: string): {
   const lower = input.toLowerCase();
 
   let bedrooms: number | null = null;
-  if (lower.includes('4br') || lower.includes('4 br') || lower.includes('4 bedroom') || input.includes('٤ غرف') || input.includes('اربع غرف')) {
+  if (
+    lower.includes('4br') ||
+    lower.includes('4 br') ||
+    lower.includes('4 bedroom') ||
+    lower.includes('4 غرف') ||
+    input.includes('٤ غرف') ||
+    input.includes('اربع غرف')
+  ) {
     bedrooms = 4;
-  } else if (lower.includes('5br') || lower.includes('5 br') || lower.includes('5 bedroom') || input.includes('٥ غرف') || input.includes('خمس غرف')) {
+  } else if (
+    lower.includes('5br') ||
+    lower.includes('5 br') ||
+    lower.includes('5 bedroom') ||
+    lower.includes('5 غرف') ||
+    input.includes('٥ غرف') ||
+    input.includes('خمس غرف')
+  ) {
     bedrooms = 5;
-  } else if (lower.includes('3br') || lower.includes('3 br') || lower.includes('3 bedroom') || input.includes('٣ غرف') || input.includes('ثلاث غرف')) {
+  } else if (
+    lower.includes('3br') ||
+    lower.includes('3 br') ||
+    lower.includes('3 bedroom') ||
+    lower.includes('3 غرف') ||
+    input.includes('٣ غرف') ||
+    input.includes('ثلاث غرف')
+  ) {
     bedrooms = 3;
   }
 
