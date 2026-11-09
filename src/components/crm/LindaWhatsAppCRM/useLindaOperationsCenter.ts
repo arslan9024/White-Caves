@@ -1,13 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import QRCode from 'qrcode';
-import { apiClient } from '../../../services/api';
+import { apiClient } from '../../../utils/apiClient';
 import {
-  LindaMetricsState,
-  LindaSessionItem,
-  LindaCampaignItem,
-  LindaFeatureBadge,
-  LindaPlaybookBadge,
-  LindaConversationItem,
+  type LindaMetricsState,
+  type LindaSessionItem,
+  type LindaCampaignItem,
+  type LindaFeatureBadge,
+  type LindaPlaybookBadge,
+  type LindaConversationItem,
 } from './LindaWhatsAppCRM.types';
 import {
   INITIAL_LINDA_SESSIONS,
@@ -47,6 +47,7 @@ export interface UseLindaOperationsCenterReturn {
   activeModalOutput: { title: string; output: string } | null;
   setActiveModalOutput: React.Dispatch<React.SetStateAction<{ title: string; output: string } | null>>;
   terminalLines: string[];
+  setTerminalLines: React.Dispatch<React.SetStateAction<string[]>>;
   liveLogs: string[];
   appendLog: (msg: string) => void;
   refreshLindaStatus: () => Promise<void>;
@@ -381,6 +382,7 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
     activeModalOutput,
     setActiveModalOutput,
     terminalLines,
+    setTerminalLines,
     liveLogs,
     appendLog,
     refreshLindaStatus,
