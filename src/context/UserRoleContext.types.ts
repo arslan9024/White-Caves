@@ -79,6 +79,7 @@ export interface UserRoleContextType {
   confirmRole: (confirmedRole: UserRole, customName?: string) => void;
   clearRole: () => void;
   switchRole: (newRole: UserRole) => void;
+  logout?: () => void;
 }
 
 export interface UserRoleProviderProps {
