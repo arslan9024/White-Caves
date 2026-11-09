@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #11493 Blueprint
-**Generated:** 2026-11-09T20:28:46.943Z
+# AEGIS Perpetual Ouroboros — Cycle #11494 Blueprint
+**Generated:** 2026-11-09T20:29:01.747Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-03 — Mobile Viewport Optimization & Touch Target Fidelity
-- **Lead Researcher:** @Iris (Dept 03)
-- **Core Objective:** 375px Ultra-Responsive Grid & PWA Offline Caching
+- **Domain:** DOM-04 — Curated Architectural Photography & CDN Sharding
+- **Lead Researcher:** @Victoria (Dept 09)
+- **Core Objective:** WebP/AVIF Lossless Compression & Cloudflare Edge Cache
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
