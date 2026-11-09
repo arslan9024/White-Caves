@@ -40,7 +40,6 @@ export const useTopNavbarLogic = (props: TopNavbarProps = {}) => {
   }, []);
 
   const displayName = user?.name || 'Executive Owner';
-  const displayRole = isFounder ? 'Founder (L5)' : `L${accessLevel} · ${role || 'Owner'}`;
   const initial = user?.name ? user.name.charAt(0).toUpperCase() : 'W';
   const photoURL = user?.photoURL;
 
@@ -55,7 +54,6 @@ export const useTopNavbarLogic = (props: TopNavbarProps = {}) => {
     isManagingDirector,
     user,
     displayName,
-    displayRole,
     initial,
     photoURL,
     isProfileOpen,

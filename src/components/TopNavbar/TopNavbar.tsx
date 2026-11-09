@@ -21,7 +21,6 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
     isDark,
     user,
     displayName,
-    displayRole,
     initial,
     photoURL,
     isProfileOpen,
