@@ -42,6 +42,7 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({
   onClose = () => {},
   hideThemeSelector = false,
 }) => {
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const {
     dropdownRef,
     user: activeUser,
@@ -72,20 +73,42 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({
       '&background=EF4444&color=fff';
 
   return (
-    <DropdownContainer ref={dropdownRef} data-testid="user-preferences-dropdown">
-      {/* User Info Header */}
-      <UserHeader>
-        <img src={avatar} alt="User Avatar" />
-        <UserDetails>
-          <h4>{activeUser?.name || PREFERENCE_LABELS.guestName}</h4>
-          <p>{activeUser?.email || activeUser?.role || PREFERENCE_LABELS.guestRole}</p>
-          <RoleBadge $level={accessLevel} data-testid="active-role-badge">
-            {isFounder
-              ? '👑 Founder (L5)'
-              : `L${accessLevel} · ${roleLabels[currentRole] || currentRole}`}
-          </RoleBadge>
-        </UserDetails>
-      </UserHeader>
+    <>
+      <DropdownContainer ref={dropdownRef} data-testid="user-preferences-dropdown">
+        {/* User Info Header: Role badge replaces name; email & inline edit */}
+        <UserHeader>
+          <AvatarWrapper>
+            <img src={avatar} alt="User Avatar" />
+            <AvatarEditBadge
+              type="button"
+              title="Edit Profile Picture"
+              aria-label="Edit Profile Picture"
+              data-testid="edit-avatar-btn"
+              onClick={() => setIsCropModalOpen(true)}
+            >
+              <Pencil size={11} />
+            </AvatarEditBadge>
+          </AvatarWrapper>
+
+          <UserDetails>
+            <RoleBadge $level={accessLevel} data-testid="active-role-badge">
+              {isFounder
+                ? '👑 Founder (L5)'
+                : `L${accessLevel} · ${roleLabels[currentRole] || currentRole}`}
+            </RoleBadge>
+            <p title={activeUser?.email || activeUser?.role || PREFERENCE_LABELS.guestRole}>
+              {activeUser?.email || activeUser?.role || PREFERENCE_LABELS.guestRole}
+            </p>
+            <EditProfileInlineLink
+              type="button"
+              onClick={() => handleNavigate('/profile')}
+              data-testid="inline-edit-profile-btn"
+            >
+              <Pencil size={11} />
+              <span>Edit Profile</span>
+            </EditProfileInlineLink>
+          </UserDetails>
+        </UserHeader>
 
       {/* 1. Theme Triad Selector (omitted when top navbar provides master full-page theme toggle) */}
       {!hideThemeSelector && (
