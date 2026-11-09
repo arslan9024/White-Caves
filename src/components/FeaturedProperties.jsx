@@ -46,7 +46,12 @@ const PropertyCard = ({ property, rank, onViewDetails }) => {
           <MapPin size={14} />
           <span>{area}</span>
         </div>
-        <div className="property-price">{formatPrice(askingPrice)}</div>
+        <div className="property-price-row flex items-center justify-between gap-2 my-1">
+          <div className="property-price">{formatPrice(askingPrice)}</div>
+          {actualArea > 0 && askingPrice > 0 && (
+            <PricePerSqftTooltip priceAed={askingPrice} areaSqft={actualArea} />
+          )}
+        </div>
         <div className="property-specs">
           {rooms && (
             <span className="spec">

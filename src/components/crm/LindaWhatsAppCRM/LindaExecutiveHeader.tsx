@@ -15,7 +15,7 @@ export interface LindaExecutiveHeaderProps {
   isDark: boolean;
   isConnected: boolean;
   lindaStatus: string;
-  loadingAction: 'start' | 'stop' | null;
+  loadingAction: 'start' | 'stop' | 'restart' | null;
   controlError: string;
   activeViewTab: LindaViewTab;
   setActiveViewTab: (tab: LindaViewTab) => void;
