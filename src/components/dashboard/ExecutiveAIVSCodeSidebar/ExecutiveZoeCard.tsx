@@ -55,6 +55,10 @@ export const ExecutiveZoeCard: FC<ExecutiveZoeCardProps> = ({
   directiveInput,
   setDirectiveInput,
   onDispatchRoute,
+  onOpenZoeSuite,
+  isExpanded = true,
+  onToggleExpand,
+  isSelected = false,
 }) => {
   const [lastDirectiveResult, setLastDirectiveResult] = useState<DirectiveResult | null>(null);
 
