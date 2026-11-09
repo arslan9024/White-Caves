@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Home, MapPin, Bed, Bath, Square, Eye, MessageCircle, Star, ChevronLeft, ChevronRight, X, Phone, FileText, Bot } from 'lucide-react';
+import PricePerSqftTooltip from './properties/PricePerSqftTooltip';
 import './FeaturedProperties.css';
 
 const formatPrice = (price) => {
