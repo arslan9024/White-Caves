@@ -50,36 +50,61 @@ export const DropdownContainer = styled.div`
 export const UserHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color, #f1f5f9);
+`;
+
+export const AvatarWrapper = styled.div`
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
 
   img {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #ef4444;
-    flex-shrink: 0;
+    display: block;
+  }
+`;
+
+export const AvatarEditBadge = styled.button`
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #dc2626;
+    transform: scale(1.1);
   }
 `;
 
 export const UserDetails = styled.div`
   overflow: hidden;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 
-  h4 {
-    margin: 0;
-    font-size: 0.92rem;
-    font-weight: 800;
-    color: var(--text-primary, #0f172a);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
   p {
     margin: 2px 0 0;
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     color: var(--text-muted, #64748b);
     white-space: nowrap;
     overflow: hidden;
@@ -87,17 +112,39 @@ export const UserDetails = styled.div`
   }
 `;
 
+export const EditProfileInlineLink = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-top: 2px;
+  color: var(--accent-red, #ef4444);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #dc2626;
+    text-decoration: underline;
+  }
+`;
+
 export const RoleBadge = styled.span<{ $level: number }>`
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  margin-top: 4px;
-  padding: 2px 6px;
+  margin-bottom: 2px;
+  padding: 2px 8px;
   border-radius: 6px;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  width: fit-content;
   background: ${p => (p.$level === 5 ? '#ef4444' : p.$level >= 3 ? '#1e293b' : 'rgba(239, 68, 68, 0.12)')};
   color: ${p => (p.$level >= 3 ? '#ffffff' : '#ef4444')};
 `;
