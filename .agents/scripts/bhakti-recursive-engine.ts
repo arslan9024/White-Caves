@@ -146,3 +146,4 @@ export function computeRecursiveScale(leaderCount: number, depth: number): numbe
   }
   return count;
 }
+
