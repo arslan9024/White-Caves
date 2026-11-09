@@ -6,9 +6,10 @@
  */
 
 import React, { FC, useState } from 'react';
-import { ArrowLeft, Edit3, Trash2, Cpu, Zap, CheckCircle2, Play, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Edit3, Trash2, Cpu, Zap, CheckCircle2, Play, MessageSquare, Database } from 'lucide-react';
 import LindaWhatsAppCRM from '../LindaWhatsAppCRM';
 import LindaSandboxView from '../LindaWhatsAppCRM/LindaSandbox';
+import MaryInventoryCRM from '../MaryInventoryCRM_NEW';
 import type { AiAgentRecord } from './AiAssistantManager.types';
 
 export interface AiAssistantDetailDossierProps {
@@ -108,20 +109,6 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
               <Trash2 size={14} />
               <span>Delete</span>
             </button>
-            {agent.agentId.toLowerCase() === 'linda' && (
-              <div className="pt-3 border-t border-slate-800 space-y-4">
-                <div className="flex items-center gap-2">
-                  <MessageSquare size={14} className="text-emerald-400" />
-                  <span className="text-xs font-bold text-emerald-400 font-mono uppercase">
-                    AI Linda · Live WhatsApp Simulation & Lead Sandbox
-                  </span>
-                </div>
-                <LindaSandboxView />
-                <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50 p-2">
-                  <LindaWhatsAppCRM />
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -142,20 +129,6 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
           <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800/80">
             <span className="text-[10px] text-slate-500 uppercase block">Tasks Executed Today</span>
             <span className="text-sm font-bold text-amber-400">{agent.activeWorkload} Tasks</span>
-            {agent.agentId.toLowerCase() === 'linda' && (
-              <div className="pt-3 border-t border-slate-800 space-y-4">
-                <div className="flex items-center gap-2">
-                  <MessageSquare size={14} className="text-emerald-400" />
-                  <span className="text-xs font-bold text-emerald-400 font-mono uppercase">
-                    AI Linda · Live WhatsApp Simulation & Lead Sandbox
-                  </span>
-                </div>
-                <LindaSandboxView />
-                <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50 p-2">
-                  <LindaWhatsAppCRM />
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
