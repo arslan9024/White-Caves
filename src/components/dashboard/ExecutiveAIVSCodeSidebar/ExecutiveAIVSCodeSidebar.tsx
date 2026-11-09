@@ -81,6 +81,9 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
     } else if (input.includes('luxury') || input.includes('palm') || input.includes('villa')) {
       action = 'Dept 01 • Luxury Matching';
       text = 'Zoe dispatched VIP buyer profile to Dept 01: 3 signature villas matched in Palm Jumeirah.';
+    } else if (input.includes('mary') || input.includes('inventory') || input.includes('damac') || input.includes('cluster') || input.includes('plot')) {
+      action = 'Dept 05 • Mary Inventory Ingestion';
+      text = 'Zoe dispatched inventory directive to AI Mary: 9,378 listings and 28 DH2 clusters synchronized.';
     }
 
     setLastDirectiveResult({
@@ -224,7 +227,7 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
                 }}
                 style={{
                   width: '100%',
-                  marginBottom: '12px',
+                  marginBottom: '8px',
                   padding: '8px 10px',
                   borderRadius: '8px',
                   background:
@@ -241,6 +244,33 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
               >
                 <span>🤖 WhatsApp Bot Operations Center (v2.0)</span>
                 <span style={{ color: '#86EFAC', fontSize: '0.65rem' }}>Launch UI →</span>
+              </button>
+
+              <button
+                type="button"
+                data-testid="open-mary-main-btn"
+                onClick={() => {
+                  handleTileClick('mary', 'AI Mary · 9,378+ Inventory Master Control');
+                }}
+                style={{
+                  width: '100%',
+                  marginBottom: '12px',
+                  padding: '8px 10px',
+                  borderRadius: '8px',
+                  background:
+                    'linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(15, 23, 42, 0.92))',
+                  border: '1px solid rgba(59, 130, 246, 0.5)',
+                  color: '#EFF6FF',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span>📦 9,378+ Master Inventory Studio</span>
+                <span style={{ color: '#93C5FD', fontSize: '0.65rem' }}>Launch Studio →</span>
               </button>
 
               <div
