@@ -81,4 +81,20 @@ describe('UserPreferencesDropdown (4-Way Component)', () => {
 
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('renders avatar pencil button and inline edit profile link, and opens crop modal', () => {
+    renderDropdown();
+    const avatarEditBtn = screen.getByTestId('edit-avatar-btn');
+    const inlineEditBtn = screen.getByTestId('inline-edit-profile-btn');
+    expect(avatarEditBtn).toBeDefined();
+    expect(inlineEditBtn).toBeDefined();
+
+    // Clicking avatar pencil triggers the crop modal
+    fireEvent.click(avatarEditBtn);
+    expect(screen.getByText(/Crop & Adjust Profile Picture/i)).toBeDefined();
+
+    // Clicking inline edit profile navigates to /profile
+    fireEvent.click(inlineEditBtn);
+    expect(mockNavigate).toHaveBeenCalledWith('/profile');
+  });
 });
