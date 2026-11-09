@@ -98,8 +98,8 @@ describe('Route Code Splitting', () => {
 describe('Homepage Code Splitting', () => {
   const homepageSource = readSource('src/pages/HomePage.tsx');
 
-  it('lazy-loads hero section', () => {
-    expect(homepageSource).toMatch(/lazy.*Hero/);
+  it('eagerly loads hero section for LCP optimization', () => {
+    expect(homepageSource).toMatch(/import.*Hero.*LuxuryHeroSection/);
   });
 
   it('lazy-loads features section', () => {

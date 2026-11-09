@@ -248,19 +248,33 @@ export const DealManagerView: FC<UseDealManagerProps> = props => {
 
           {/* ── 4. Deals Grid ─────────────────────────────────────────── */}
           <DealsGrid>
-            {deals.map(deal => (
-              <DealCard
-                key={deal.id}
-                deal={deal}
-                onInspect={target => {
-                  if (props.onSelectDeal) {
-                    props.onSelectDeal(target.id);
-                  } else {
-                    handleOpenDetailModal(target);
-                  }
-                }}
-              />
-            ))}
+            {deals.map(deal => {
+              const isHighlighted = highlightedDealId === deal.id || highlightedDealId === deal._id;
+              return (
+                <div
+                  key={deal.id}
+                  id={`record-${deal.id}`}
+                  data-record-id={deal.id}
+                  style={{
+                    borderRadius: '12px',
+                    transition: 'all 0.3s ease',
+                    boxShadow: isHighlighted ? '0 0 0 2px #EF4444, 0 8px 24px rgba(239, 68, 68, 0.3)' : 'none',
+                    transform: isHighlighted ? 'scale(1.01)' : 'none',
+                  }}
+                >
+                  <DealCard
+                    deal={deal}
+                    onInspect={target => {
+                      if (props.onSelectDeal) {
+                        props.onSelectDeal(target.id);
+                      } else {
+                        handleOpenDetailModal(target);
+                      }
+                    }}
+                  />
+                </div>
+              );
+            })}
           </DealsGrid>
 
           {/* ── 5. Detail Inspection Modal (only if not on deep route) ──── */}
