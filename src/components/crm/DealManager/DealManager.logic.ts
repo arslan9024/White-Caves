@@ -43,6 +43,8 @@ export function useDealManager({
   const [editingDeal, setEditingDeal] = useState<DealItem | null>(null);
   const [runtimeError, setRuntimeError] = useState<string | null>(null);
 
+  const { highlightedId, triggerHighlight } = useRecordHighlight(4000);
+
   // Synchronize drawer state bidirectionally with URL search parameters
   useEffect(() => {
     const drawerParam = searchParams.get('drawer');
@@ -276,7 +278,10 @@ export function useDealManager({
     v1DealsApi.create(dealData).catch(() => {});
     setIsDrawerOpen(false);
     setEditingDeal(null);
-  }, []);
+
+    const savedId = dealData.id || `DEAL-00${deals.length + 1}`;
+    triggerHighlight(savedId, true);
+  }, [deals.length, triggerHighlight]);
 
   const handleDecommissionDeal = useCallback((dealId: string) => {
     setDeals(prev => {
