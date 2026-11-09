@@ -43,6 +43,7 @@ export const DealManagerView: FC<UseDealManagerProps> = props => {
     handleCloseDrawer,
     handleAdvanceStatus,
     handleSaveDeal,
+    highlightedDealId,
   } = useDealManager(props);
 
   if (runtimeError) {
