@@ -221,7 +221,7 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
         }, 15000);
       }
     } else {
-      fallbackIntervalId = setInterval(() => {
+      fallbackIntervalId = window.setInterval(() => {
         void refreshLindaStatus();
       }, 15000);
     }
