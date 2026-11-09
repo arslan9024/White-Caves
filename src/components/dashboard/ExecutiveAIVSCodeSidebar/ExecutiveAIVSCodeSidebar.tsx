@@ -1,7 +1,8 @@
-import React, { FC, useState } from 'react';
-import { Bot, Cpu, FolderTree, Send, PanelRightClose, PanelRight, Zap } from 'lucide-react';
+import React, { FC } from 'react';
+import { Bot, Cpu, FolderTree, PanelRightClose, PanelRight } from 'lucide-react';
 import { useExecutiveAIVSCodeSidebarLogic } from './ExecutiveAIVSCodeSidebar.logic';
 import { SidebarRightExplorerTree } from './SidebarRightExplorerTree';
+import { ExecutiveZoeCard } from './ExecutiveZoeCard';
 import {
   AISidebarLayoutContainer,
   AIActivityBar,
@@ -9,7 +10,6 @@ import {
   AIActivityIconBtn,
   AIDrawer,
   AIDrawerHeader,
-  ZoeExecutiveCard,
   AIScrollArea,
   AgentMeshList,
   AgentTile,
@@ -53,45 +53,9 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
     onToggleCollapse,
   });
 
-  const [lastDirectiveResult, setLastDirectiveResult] = useState<{
-    text: string;
-    action: string;
-    timestamp: string;
-  } | null>(null);
-
   const handleTileClick = (agentId: string, agentName: string) => {
     setSelectedAgentId(agentId);
     if (onSelectAgent) onSelectAgent(agentId, agentName);
-  };
-
-  const handleSendDirective = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!directiveInput.trim()) return;
-
-    const input = directiveInput.trim().toLowerCase();
-    let action = 'Operations Dispatch';
-    let text = `Directive received by AI Zoe: Executing '${directiveInput.trim()}' across 12 departments.`;
-
-    if (input.includes('ejari') || input.includes('expir')) {
-      action = 'Dept 04 • Ejari Audit';
-      text = 'Zoe audited 14 active Ejari contracts: 2 renewals due in 30 days dispatched to Dept 04.';
-    } else if (input.includes('aml') || input.includes('kyc') || input.includes('rera')) {
-      action = 'Dept 10 • Statutory Gate';
-      text = 'Zoe verified AML/KYC registry: All VIP investors cleared via UAE FIU GoAML screening.';
-    } else if (input.includes('luxury') || input.includes('palm') || input.includes('villa')) {
-      action = 'Dept 01 • Luxury Matching';
-      text = 'Zoe dispatched VIP buyer profile to Dept 01: 3 signature villas matched in Palm Jumeirah.';
-    } else if (input.includes('mary') || input.includes('inventory') || input.includes('damac') || input.includes('cluster') || input.includes('plot')) {
-      action = 'Dept 05 • Mary Inventory Ingestion';
-      text = 'Zoe dispatched inventory directive to AI Mary: 9,378 listings and 28 DH2 clusters synchronized.';
-    }
-
-    setLastDirectiveResult({
-      text,
-      action,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    });
-    setDirectiveInput('');
   };
 
   return (
@@ -140,55 +104,12 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
         ) : (
           <>
             {/* 👑 Zoe Executive Chief AI Card */}
-            <ZoeExecutiveCard>
-              <div className="zoe-top">
-                <div className="partner-info">
-                  <div className="zoe-avatar">Z</div>
-                  <div className="name-group">
-                    <span className="name">{zoe.name}</span>
-                    <span className="role">COO Executive AI Partner</span>
-                  </div>
-                </div>
-                <div className="status-badge">
-                  <Zap size={10} />
-                  <span>Optimal</span>
-                </div>
-              </div>
-
-              <form className="directive-box" onSubmit={handleSendDirective}>
-                <input
-                  type="text"
-                  placeholder="Direct Zoe (e.g. 'audit Ejari expiries')..."
-                  value={directiveInput}
-                  onChange={e => setDirectiveInput(e.target.value)}
-                  data-testid="zoe-directive-input"
-                />
-                <button type="submit" title="Send Directive" data-testid="zoe-directive-submit">
-                  <Send size={11} />
-                </button>
-              </form>
-
-              {lastDirectiveResult && (
-                <div
-                  data-testid="zoe-directive-result"
-                  style={{
-                    marginTop: '8px',
-                    padding: '8px 10px',
-                    borderRadius: '6px',
-                    background: 'rgba(239, 68, 68, 0.12)',
-                    border: '1px solid rgba(239, 68, 68, 0.35)',
-                    fontSize: '0.68rem',
-                    color: '#F8FAFC',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-                    <span style={{ fontWeight: 800, color: '#EF4444' }}>{lastDirectiveResult.action}</span>
-                    <span style={{ color: '#94A3B8' }}>{lastDirectiveResult.timestamp}</span>
-                  </div>
-                  <div style={{ lineHeight: 1.35 }}>{lastDirectiveResult.text}</div>
-                </div>
-              )}
-            </ZoeExecutiveCard>
+            <ExecutiveZoeCard
+              zoeName={zoe.name}
+              directiveInput={directiveInput}
+              setDirectiveInput={setDirectiveInput}
+              onDispatchRoute={route => onSelectItem?.(`route-${route}`, route)}
+            />
 
             {/* Scrollable Agent Mesh List */}
             <AIScrollArea>
@@ -227,7 +148,7 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
                 }}
                 style={{
                   width: '100%',
-                  marginBottom: '8px',
+                  marginBottom: '12px',
                   padding: '8px 10px',
                   borderRadius: '8px',
                   background:
@@ -244,33 +165,6 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
               >
                 <span>🤖 WhatsApp Bot Operations Center (v2.0)</span>
                 <span style={{ color: '#86EFAC', fontSize: '0.65rem' }}>Launch UI →</span>
-              </button>
-
-              <button
-                type="button"
-                data-testid="open-mary-main-btn"
-                onClick={() => {
-                  handleTileClick('mary', 'AI Mary · 9,378+ Inventory Master Control');
-                }}
-                style={{
-                  width: '100%',
-                  marginBottom: '12px',
-                  padding: '8px 10px',
-                  borderRadius: '8px',
-                  background:
-                    'linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(15, 23, 42, 0.92))',
-                  border: '1px solid rgba(59, 130, 246, 0.5)',
-                  color: '#EFF6FF',
-                  fontSize: '0.72rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <span>📦 9,378+ Master Inventory Studio</span>
-                <span style={{ color: '#93C5FD', fontSize: '0.65rem' }}>Launch Studio →</span>
               </button>
 
               <div
