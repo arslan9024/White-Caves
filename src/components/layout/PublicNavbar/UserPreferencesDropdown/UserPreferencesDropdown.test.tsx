@@ -91,7 +91,8 @@ describe('UserPreferencesDropdown (4-Way Component)', () => {
 
     // Clicking avatar pencil triggers the crop modal
     fireEvent.click(avatarEditBtn);
-    expect(screen.getByText(/Crop & Adjust Profile Picture/i)).toBeDefined();
+    expect(screen.getByTestId('avatar-upload-crop-modal')).toBeDefined();
+    expect(screen.getByText(/Executive Avatar Photo Upload/i)).toBeDefined();
 
     // Clicking inline edit profile navigates to /profile
     fireEvent.click(inlineEditBtn);
