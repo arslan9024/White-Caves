@@ -23,6 +23,7 @@ export interface DepartmentDef {
     title: string;
     avatar: string;
   };
+  supervisors?: SupervisorDef[];
 }
 
 export interface SupervisorDef {

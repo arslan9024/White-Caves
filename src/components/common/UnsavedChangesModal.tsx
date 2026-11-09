@@ -145,6 +145,9 @@ export interface TaskActionBarProps {
   saveLabel?: string;
   saveAndCloseLabel?: string;
   cancelLabel?: string;
+  saveTestId?: string;
+  saveAndCloseTestId?: string;
+  cancelTestId?: string;
 }
 
 export const TaskActionBar: React.FC<TaskActionBarProps> = ({
@@ -156,6 +159,9 @@ export const TaskActionBar: React.FC<TaskActionBarProps> = ({
   saveLabel = 'Save Changes',
   saveAndCloseLabel = 'Save & Close',
   cancelLabel = 'Cancel',
+  saveTestId = 'task-save-btn',
+  saveAndCloseTestId = 'task-save-and-close-btn',
+  cancelTestId = 'task-cancel-btn',
 }) => {
   const { isDark } = useTheme();
 
@@ -203,6 +209,7 @@ export const TaskActionBar: React.FC<TaskActionBarProps> = ({
           type="button"
           onClick={onCancel}
           disabled={isSaving}
+          data-testid={cancelTestId}
           style={{
             padding: '0.5rem 0.875rem',
             borderRadius: 8,
@@ -222,6 +229,7 @@ export const TaskActionBar: React.FC<TaskActionBarProps> = ({
             type="button"
             onClick={onSaveAndClose}
             disabled={isSaving}
+            data-testid={saveAndCloseTestId}
             style={{
               padding: '0.5rem 0.875rem',
               borderRadius: 8,
@@ -245,6 +253,7 @@ export const TaskActionBar: React.FC<TaskActionBarProps> = ({
           type="button"
           onClick={onSave}
           disabled={isSaving}
+          data-testid={saveTestId}
           style={{
             padding: '0.5rem 1rem',
             borderRadius: 8,
