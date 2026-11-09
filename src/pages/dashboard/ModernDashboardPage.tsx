@@ -25,6 +25,7 @@ import {
   VALID_DASHBOARD_TABS,
   useSidebarToggles,
   resolveSidebarItemRoute,
+  normalizeDashboardRoute,
 } from './ModernDashboardPage.logic';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
