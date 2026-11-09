@@ -1,10 +1,10 @@
 /**
  * FounderDepartmentGrid.tsx
- * 12 Corporate Departments Live Health Matrix, listing managers, AI leads, and supervisor headcount.
+ * 12 Corporate Departments Live Health Matrix with direct 1-click modal expander (Target T-0104).
  */
 
-import React, { FC } from 'react';
-import { motion } from 'framer-motion';
+import React, { FC, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CORPORATE_DEPARTMENTS_DATA, DepartmentStatus } from '../FounderExecutiveDashboard.data';
 
 export interface FounderDepartmentGridProps {
@@ -12,6 +12,8 @@ export interface FounderDepartmentGridProps {
 }
 
 export const FounderDepartmentGrid: FC<FounderDepartmentGridProps> = ({ onNavigateToModule }) => {
+  const [expandedDept, setExpandedDept] = useState<DepartmentStatus | null>(null);
+
   return (
     <div
       style={{
@@ -56,8 +58,12 @@ export const FounderDepartmentGrid: FC<FounderDepartmentGridProps> = ({ onNaviga
         {CORPORATE_DEPARTMENTS_DATA.map((dept: DepartmentStatus) => (
           <motion.div
             key={dept.id}
+            role="button"
+            tabIndex={0}
+            data-testid={`dept-card-${dept.id}`}
             whileHover={{ y: -2, boxShadow: '0 6px 18px rgba(0,0,0,0.06)' }}
-            onClick={() => onNavigateToModule(dept.moduleId)}
+            onClick={() => setExpandedDept(dept)}
+            onKeyDown={e => e.key === 'Enter' && setExpandedDept(dept)}
             style={{
               background: '#F8FAFC',
               border: '1px solid #E2E8F0',
@@ -96,15 +102,138 @@ export const FounderDepartmentGrid: FC<FounderDepartmentGridProps> = ({ onNaviga
                 👥 <strong>{dept.supervisors}</strong> Supervisors
               </span>
               <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#EF4444' }}>
-                {dept.metric} ➔
+                {dept.metric} 🔍
               </span>
             </div>
           </motion.div>
         ))}
       </div>
+
+      {/* Target T-0104: 1-Click Department Detail Expander Modal */}
+      <AnimatePresence>
+        {expandedDept && (
+          <div
+            role="dialog"
+            aria-labelledby="expanded-dept-title"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              zIndex: 9999,
+              background: 'rgba(15, 23, 42, 0.75)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
+            }}
+            onClick={() => setExpandedDept(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              onClick={e => e.stopPropagation()}
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '20px',
+                width: '100%',
+                maxWidth: '520px',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+                  padding: '1.25rem 1.5rem',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.5rem' }}>{expandedDept.icon}</span>
+                  <div>
+                    <h3 id="expanded-dept-title" style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>
+                      {expandedDept.name}
+                    </h3>
+                    <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
+                      Module ID: {expandedDept.moduleId}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Close modal"
+                  onClick={() => setExpandedDept(null)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: 'none',
+                    color: '#FFFFFF',
+                    borderRadius: '50%',
+                    width: '32px',
+                    height: '32px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#64748B' }}>Director / Lead:</span>
+                  <strong style={{ fontSize: '0.85rem', color: '#0F172A' }}>👤 {expandedDept.manager}</strong>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#64748B' }}>AI Autonomous Copilot:</span>
+                  <strong style={{ fontSize: '0.85rem', color: '#059669' }}>🤖 {expandedDept.aiLead}</strong>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#64748B' }}>Specialized AI Supervisors:</span>
+                  <strong style={{ fontSize: '0.85rem', color: '#0F172A' }}>{expandedDept.supervisors} Active Nodes</strong>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#64748B' }}>Key Operational Metric:</span>
+                  <strong style={{ fontSize: '0.85rem', color: '#EF4444' }}>{expandedDept.metric}</strong>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const mod = expandedDept.moduleId;
+                    setExpandedDept(null);
+                    onNavigateToModule(mod);
+                  }}
+                  style={{
+                    marginTop: '8px',
+                    padding: '12px',
+                    background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '12px',
+                    fontWeight: 800,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)',
+                  }}
+                >
+                  Open Dedicated Department Console ➔
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
 export default FounderDepartmentGrid;
-

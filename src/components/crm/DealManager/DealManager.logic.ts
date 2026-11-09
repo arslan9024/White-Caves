@@ -34,11 +34,38 @@ export function useDealManager({
   const [typeFilter, setTypeFilter] = useState<'ALL' | DealType>('ALL');
   const [statusFilter, setStatusFilter] = useState<'ALL' | DealStatus>('ALL');
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   // Modal / Drawer / Error State
   const [selectedDealForModal, setSelectedDealForModal] = useState<DealItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingDeal, setEditingDeal] = useState<DealItem | null>(null);
   const [runtimeError, setRuntimeError] = useState<string | null>(null);
+
+  // Synchronize drawer state bidirectionally with URL search parameters
+  useEffect(() => {
+    const drawerParam = searchParams.get('drawer');
+    const dealIdParam = searchParams.get('id');
+
+    if (drawerParam === 'create') {
+      setEditingDeal(null);
+      setIsDrawerOpen(true);
+    } else if (drawerParam === 'edit' && dealIdParam) {
+      const match = deals.find(
+        d =>
+          d.id.toLowerCase() === dealIdParam.toLowerCase() ||
+          d._id.toLowerCase() === dealIdParam.toLowerCase() ||
+          d.dealNumber.toLowerCase() === dealIdParam.toLowerCase()
+      );
+      if (match) {
+        setEditingDeal(match);
+        setIsDrawerOpen(true);
+      }
+    } else if (!drawerParam && isDrawerOpen) {
+      setIsDrawerOpen(false);
+      setEditingDeal(null);
+    }
+  }, [searchParams, deals]);
 
   // Localization bundle
   const t = useMemo(() => getDealI18n(lang), [lang]);
