@@ -1,15 +1,17 @@
 import React, { memo, useState } from 'react';
+import InternalModuleMount from './shared/InternalModuleMount';
 import { useTheme } from '../../context/ThemeContext';
-import InternalModuleMount from '../InternalModuleMount';
-import LindaExecutiveHeader from './LindaWhatsAppCRM/LindaExecutiveHeader';
-import LindaTelemetryGrid from './LindaWhatsAppCRM/LindaTelemetryGrid';
+import { LindaExecutiveHeader } from './LindaWhatsAppCRM/LindaExecutiveHeader';
+import { LindaTelemetryGrid } from './LindaWhatsAppCRM/LindaTelemetryGrid';
 import {
   LindaQuickActionsAndTerminal,
   LindaSessionsPanel,
-  LindaConversationsAndPillarsPanel,
 } from './LindaWhatsAppCRM/LindaOperationsCenterPanels';
-import { LindaCampaignsAndOutreachPanel } from './LindaWhatsAppCRM/LindaCampaignsAndOutreachPanels';
-import { LindaViewTab } from './LindaWhatsAppCRM/LindaWhatsAppCRM.types';
+import {
+  LindaCampaignsAndOutreachPanel,
+  LindaConversationsAndPillarsPanel,
+} from './LindaWhatsAppCRM/LindaCampaignsAndOutreachPanels';
+import { type LindaViewTab } from './LindaWhatsAppCRM/LindaWhatsAppCRM.types';
 import {
   INITIAL_OUTREACH_OWNERS,
   INITIAL_LINDA_CONVERSATIONS,
