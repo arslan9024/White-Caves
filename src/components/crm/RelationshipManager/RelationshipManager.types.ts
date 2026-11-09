@@ -35,6 +35,7 @@ export type EntityType =
   | 'TITLE_DEED'
   | 'TENANCY_CONTRACT'
   | 'LEASE_ADDENDUM'
+  | 'DEAL'
   | 'DEAL_PIPELINE'
   | 'TAX_INVOICE'
   | 'CHEQUE'
@@ -48,6 +49,7 @@ export type EntityType =
   | 'MAINTENANCE_ORDER'
   | 'DOCUMENT'
   | 'AUDIT_LOG'
+  | 'TASK'
   | 'REVENUE';
 
 export type RelationshipTab = 'entities' | 'relationships' | 'erd';
@@ -84,7 +86,7 @@ export interface EntityNode {
   id: string; // e.g. 'user-001', 'emp-001', 'deal-001'
   name: string;
   type: EntityType;
-  category: EntityCategory; // 'ACTOR' vs 'OBJECT' (Strict Turing Law 010)
+  category?: EntityCategory; // 'ACTOR' vs 'OBJECT' (Strict Turing Law 010)
   badge: string;
   description: string;
   color: string;
