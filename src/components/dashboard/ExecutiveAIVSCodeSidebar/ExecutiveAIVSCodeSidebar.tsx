@@ -128,6 +128,8 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
         {activeTab === 'explorer' ? (
           <SidebarRightExplorerTree
             filterQuery={searchQuery}
+            activeDomain={activeDomain}
+            activeEntityId={activeEntityId}
             onSelectItem={(key, label) => {
               if (onSelectItem) onSelectItem(key, label);
             }}
