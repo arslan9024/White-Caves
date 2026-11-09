@@ -36,59 +36,39 @@ export const ModernDashboardPage: FC = () => {
   const roleContext = useUserRole();
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
 
+  // Canonical Hierarchical Route Resolution
+  const parsedRoute = normalizeDashboardRoute(location.pathname);
   const pathParts = location.pathname
     .replace(/^\/dashboard\/?/, '')
     .split('/')
     .filter(Boolean);
 
-  // Normalize /dashboard/explorer/* to direct dashboard entity routes
-  let rawTab = pathParts[0] as ActivityTab | undefined;
-  let activeItemId = pathParts[1] || null;
-
-  if (rawTab === ('explorer' as ActivityTab) && pathParts.length > 1) {
-    const explorerSub = pathParts[1];
-    const explorerId = pathParts[2] || null;
-    if (explorerSub === 'departments') {
-      rawTab = 'departments';
-      activeItemId = explorerId;
-    } else if (explorerSub === 'tasks') {
-      rawTab = 'tasks';
-      activeItemId = explorerId;
-    } else if (explorerSub === 'properties' || explorerSub === 'REproperties') {
-      rawTab = 'REproperties';
-      activeItemId = explorerId;
-    } else if (explorerSub === 'deals') {
-      rawTab = 'deals';
-      activeItemId = explorerId;
-    } else if (explorerSub === 'employees') {
-      rawTab = 'employees';
-      activeItemId = explorerId;
-    }
-  }
-
+  const activeTab: ActivityTab = parsedRoute.activeTab;
+  const activeItemId = parsedRoute.activeItemId;
   const isRootOverview = !activeItemId;
 
   const queryParams = new URLSearchParams(location.search);
   const isReadOnly = queryParams.get('mode') === 'view' || queryParams.get('mode') === 'execution';
-  const activeTab: ActivityTab = rawTab && VALID_DASHBOARD_TABS.includes(rawTab) ? rawTab : 'departments';
 
   let ermsSubTab: 'entities' | 'relationships' | 'graph' | 'matrix' = 'entities';
   let ermsEntityId: string | null = null;
   let ermsRelationshipId: string | null = null;
   const isErmsRootOverview =
     (activeTab === 'erms' || activeTab === 'relationships') &&
-    (pathParts.length === 1 || !pathParts[1]);
+    (pathParts.length === 1 || !pathParts[1] || (parsedRoute.subsystem === 'erms' && !pathParts[2]));
 
   if (activeTab === 'erms' || activeTab === 'relationships') {
-    if (pathParts[1] === 'entities') {
+    const subIdentifier = parsedRoute.subsystem === 'erms' ? pathParts[1] : pathParts[1];
+    const recId = parsedRoute.subsystem === 'erms' ? pathParts[2] : pathParts[2];
+    if (subIdentifier === 'entities') {
       ermsSubTab = 'entities';
-      ermsEntityId = pathParts[2] || null;
-    } else if (pathParts[1] === 'relationships') {
+      ermsEntityId = recId || null;
+    } else if (subIdentifier === 'relationships') {
       ermsSubTab = 'relationships';
-      ermsRelationshipId = pathParts[2] || null;
-    } else if (pathParts[1] === 'graph') {
+      ermsRelationshipId = recId || null;
+    } else if (subIdentifier === 'graph') {
       ermsSubTab = 'graph';
-    } else if (pathParts[1] === 'matrix') {
+    } else if (subIdentifier === 'matrix') {
       ermsSubTab = 'matrix';
     }
   }
