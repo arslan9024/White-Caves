@@ -308,7 +308,5 @@ export const CANONICAL_RELATIONSHIPS: RelationshipChain[] = [
       { id: 'e24', sourceId: 'deal-002', targetId: 'revenue-002', label: 'Settles Commission' },
       { id: 'e25_org_rev', sourceId: 'revenue-002', targetId: 'org-001', label: 'Treasury Inflow' },
     ],
-      { id: 'e24', sourceId: 'deal-002', targetId: 'revenue-002', label: 'Books 2% Commission' },
-    ],
   },
 ];
