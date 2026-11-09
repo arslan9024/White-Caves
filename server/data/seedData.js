@@ -1,143 +1,387 @@
 export const DEPARTMENTS_SEED = [
   {
-    name: 'Executive',
-    code: 'EXEC',
-    description: 'Strategic leadership and company-wide decision making',
-    color: '#10B981',
-    icon: 'Briefcase',
-    head: { name: 'Arslan Malik', email: 'arslan@whitecaves.ae', title: 'CEO & Founder' },
-    kpis: [
-      { name: 'Revenue Target', target: 600000000, current: 425000000, unit: 'AED' },
-      { name: 'AI Assistants Online', target: 32, current: 28, unit: 'count' }
+    "name": "Customer Experience, Concierge & Hospitality",
+    "code": "DEPT-01",
+    "description": "VIP client welcoming, 5-star concierge, multi-lingual reception, and frontline luxury hospitality.",
+    "color": "#EF4444",
+    "icon": "MessageSquare",
+    "head": {
+      "name": "AI Corinne",
+      "email": "customer_experience@whitecaves.ae",
+      "title": "Director of Customer Experience & Hospitality"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 5000000, spent: 3200000, currency: 'AED' },
-    order: 1
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 1
   },
   {
-    name: 'Operations',
-    code: 'OPS',
-    description: 'Inventory management, maintenance, and facility coordination',
-    color: '#3B82F6',
-    icon: 'Building2',
-    head: { name: 'Omar Siddiqui', email: 'omar@whitecaves.ae', title: 'Director of Operations' },
-    kpis: [
-      { name: 'Properties Managed', target: 10000, current: 9378, unit: 'count' },
-      { name: 'Occupancy Rate', target: 90, current: 87, unit: 'percent' }
+    "name": "Marketing, Branding & Digital Acquisition",
+    "code": "DEPT-02",
+    "description": "Omnichannel lead acquisition, luxury brand identity, portal syndication (Bayut/PropertyFinder), and paid campaigns.",
+    "color": "#EC4899",
+    "icon": "Megaphone",
+    "head": {
+      "name": "AI Olivia",
+      "email": "marketing_branding@whitecaves.ae",
+      "title": "Director of Marketing & Brand Acquisition"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 2500000, spent: 1850000, currency: 'AED' },
-    order: 2
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 2
   },
   {
-    name: 'Sales',
-    code: 'SALES',
-    description: 'Property sales, lead management, and deal pipeline',
-    color: '#8B5CF6',
-    icon: 'TrendingUp',
-    head: { name: 'Rashid Al Futtaim', email: 'rashid@whitecaves.ae', title: 'Director of Sales' },
-    kpis: [
-      { name: 'Monthly Deals', target: 50, current: 42, unit: 'count' },
-      { name: 'Pipeline Value', target: 100000000, current: 79800000, unit: 'AED' }
+    "name": "Human Resources, Performance & Recruiting",
+    "code": "DEPT-03",
+    "description": "Talent acquisition, broker performance KPIs, RERA broker licensing onboarding, and organizational culture.",
+    "color": "#8B5CF6",
+    "icon": "Users",
+    "head": {
+      "name": "AI Selena",
+      "email": "human_resources@whitecaves.ae",
+      "title": "Director of Human Resources & Performance"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 3500000, spent: 2800000, currency: 'AED' },
-    order: 3
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 3
   },
   {
-    name: 'Finance',
-    code: 'FIN',
-    description: 'Payment processing, invoicing, and investment advisory',
-    color: '#F59E0B',
-    icon: 'Wallet',
-    head: { name: 'Hana Al Zaabi', email: 'hana@whitecaves.ae', title: 'Director of Finance' },
-    kpis: [
-      { name: 'Monthly Revenue', target: 50000000, current: 35000000, unit: 'AED' },
-      { name: 'Collections Rate', target: 98, current: 94, unit: 'percent' }
+    "name": "Technology, Systems & Digital Infrastructure",
+    "code": "DEPT-04",
+    "description": "Core CRM software engineering, cloud infrastructure, AI automation pipelines, and API gateway security.",
+    "color": "#0EA5E9",
+    "icon": "Cpu",
+    "head": {
+      "name": "AI Aurora",
+      "email": "technology_systems@whitecaves.ae",
+      "title": "Chief Technology & Digital Infrastructure Director"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 1500000, spent: 1100000, currency: 'AED' },
-    order: 4
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 4
   },
   {
-    name: 'Marketing',
-    code: 'MKT',
-    description: 'Property marketing, campaigns, and portal publishing',
-    color: '#EC4899',
-    icon: 'Megaphone',
-    head: { name: 'Layla Al Suwaidi', email: 'layla@whitecaves.ae', title: 'Director of Marketing' },
-    kpis: [
-      { name: 'Leads Generated', target: 500, current: 450, unit: 'count' },
-      { name: 'Portal Views', target: 150000, current: 125000, unit: 'count' }
+    "name": "Sales, Services & Operations",
+    "code": "DEPT-05",
+    "description": "Primary and secondary luxury real estate sales, client advisory services, and active deal closing operations.",
+    "color": "#F97316",
+    "icon": "TrendingUp",
+    "head": {
+      "name": "AI Clara",
+      "email": "sales_operations@whitecaves.ae",
+      "title": "Director of Sales & Deal Operations"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 2000000, spent: 1600000, currency: 'AED' },
-    order: 5
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 5
   },
   {
-    name: 'Communications',
-    code: 'COMM',
-    description: 'Customer messaging, WhatsApp operations, and chatbot management',
-    color: '#25D366',
-    icon: 'MessageSquare',
-    head: { name: 'Khalid Al Mansoori', email: 'khalid@whitecaves.ae', title: 'Director of Communications' },
-    kpis: [
-      { name: 'Response Time', target: 2, current: 2.3, unit: 'minutes' },
-      { name: 'Satisfaction Score', target: 95, current: 94, unit: 'percent' }
+    "name": "Inventory, Portfolio & Asset Management",
+    "code": "DEPT-06",
+    "description": "Master property inventory catalog, landlord portfolio custody, developer unit allocation, and asset preservation.",
+    "color": "#10B981",
+    "icon": "Building",
+    "head": {
+      "name": "AI Sentinel",
+      "email": "inventory_portfolio@whitecaves.ae",
+      "title": "Director of Inventory & Asset Management"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 1200000, spent: 900000, currency: 'AED' },
-    order: 6
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 6
   },
   {
-    name: 'Compliance',
-    code: 'COMP',
-    description: 'KYC verification, AML monitoring, and RERA compliance',
-    color: '#6366F1',
-    icon: 'Shield',
-    head: { name: 'Nadia Ibrahim', email: 'nadia@whitecaves.ae', title: 'Director of Compliance' },
-    kpis: [
-      { name: 'Compliance Score', target: 100, current: 98, unit: 'percent' },
-      { name: 'KYC Profiles', target: 100, current: 89, unit: 'count' }
+    "name": "Partnerships, Alliances & Capital Growth",
+    "code": "DEPT-07",
+    "description": "Tier-1 master developer alliances (Emaar, Nakheel, Sobha), family office relations, institutional JV capital, and global investor corridors.",
+    "color": "#14B8A6",
+    "icon": "Briefcase",
+    "head": {
+      "name": "AI Maktoum",
+      "email": "partnerships_growth@whitecaves.ae",
+      "title": "Director of Strategic Alliances & Capital Growth"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 800000, spent: 550000, currency: 'AED' },
-    order: 7
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 7
   },
   {
-    name: 'Technology',
-    code: 'TECH',
-    description: 'Platform development, AI systems, and infrastructure',
-    color: '#0EA5E9',
-    icon: 'Server',
-    head: { name: 'Tariq Al Qasimi', email: 'tariq@whitecaves.ae', title: 'Director of Technology' },
-    kpis: [
-      { name: 'System Uptime', target: 99.99, current: 99.97, unit: 'percent' },
-      { name: 'API Requests', target: 150000, current: 125000, unit: 'daily' }
+    "name": "Media, Public Relations & Communications",
+    "code": "DEPT-08",
+    "description": "Executive press releases, luxury architectural media studio, public relations broadcasts, and corporate reputation management.",
+    "color": "#25D366",
+    "icon": "Radio",
+    "head": {
+      "name": "AI Maya",
+      "email": "media_public_relations@whitecaves.ae",
+      "title": "Director of Media & Public Relations"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 3000000, spent: 2400000, currency: 'AED' },
-    order: 8
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 8
   },
   {
-    name: 'Intelligence',
-    code: 'INTEL',
-    description: 'Market research, analytics, and off-plan tracking',
-    color: '#0D9488',
-    icon: 'Brain',
-    head: { name: 'Yusuf Al Ghurair', email: 'yusuf@whitecaves.ae', title: 'Director of Intelligence' },
-    kpis: [
-      { name: 'Forecast Accuracy', target: 90, current: 87, unit: 'percent' },
-      { name: 'Off-Plan Projects', target: 50, current: 42, unit: 'count' }
+    "name": "Research, Analytics & Market Intelligence",
+    "code": "DEPT-09",
+    "description": "Dubai Land Department macroeconomic transaction indexing, price appreciation forecasting, and real estate data science.",
+    "color": "#64748B",
+    "icon": "BarChart3",
+    "head": {
+      "name": "AI Elena",
+      "email": "research_analytics@whitecaves.ae",
+      "title": "Chief Research & Intelligence Director"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 1000000, spent: 750000, currency: 'AED' },
-    order: 9
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 9
   },
   {
-    name: 'Legal',
-    code: 'LEGAL',
-    description: 'Contract management, legal reviews, and dispute resolution',
-    color: '#EF4444',
-    icon: 'Scale',
-    head: { name: 'Aisha Al Ketbi', email: 'aisha@whitecaves.ae', title: 'Director of Legal' },
-    kpis: [
-      { name: 'Contracts Reviewed', target: 200, current: 156, unit: 'count' },
-      { name: 'Avg Review Time', target: 2, current: 2.5, unit: 'days' }
+    "name": "Accounting, Finance & Tax",
+    "code": "DEPT-10",
+    "description": "UAE FTA VAT 5%, Corporate Tax 9%, broker commission ledger, escrow account reconciliations, and P&L financial audits.",
+    "color": "#F59E0B",
+    "icon": "DollarSign",
+    "head": {
+      "name": "AI Theodora",
+      "email": "accounting_finance@whitecaves.ae",
+      "title": "Chief Financial Director"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
     ],
-    budget: { allocated: 900000, spent: 680000, currency: 'AED' },
-    order: 10
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 10
+  },
+  {
+    "name": "Legal, Compliance & Audit",
+    "code": "DEPT-11",
+    "description": "DLD/RERA statutory compliance, Trakheesi permits, Anti-Money Laundering (goAML/KYC), and corporate contract governance.",
+    "color": "#6366F1",
+    "icon": "FileCheck",
+    "head": {
+      "name": "AI Sofia",
+      "email": "legal_compliance@whitecaves.ae",
+      "title": "Chief Legal & Compliance Officer"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
+    ],
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 11
+  },
+  {
+    "name": "Executive, Governance & Strategy",
+    "code": "DEPT-12",
+    "description": "Board of Directors governance, strategic enterprise roadmap execution, M&A operations, and sovereign company policy.",
+    "color": "#1E293B",
+    "icon": "Shield",
+    "head": {
+      "name": "AI Zayed",
+      "email": "executive_governance@whitecaves.ae",
+      "title": "Director of Strategic Governance & Enterprise Operations"
+    },
+    "kpis": [
+      {
+        "name": "SLA Performance",
+        "target": 99.5,
+        "current": 99.8,
+        "unit": "percent"
+      },
+      {
+        "name": "Operational Squads",
+        "target": 9,
+        "current": 9,
+        "unit": "count"
+      }
+    ],
+    "budget": {
+      "allocated": 3000000,
+      "spent": 1500000,
+      "currency": "AED"
+    },
+    "order": 12
   }
 ];
 
