@@ -4,9 +4,11 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useMemo } from 'react';
 import { X, Handshake, Save } from 'lucide-react';
 import { DealItem, DealType, DealStatus } from './DealManager.types';
+import { useDirtyStateGuard } from '../../../hooks/useDirtyStateGuard';
+import { UnsavedChangesModal, TaskActionBar } from '../../common/UnsavedChangesModal';
 
 interface DealEditDrawerProps {
   isOpen: boolean;
@@ -24,6 +26,7 @@ export const DealEditDrawer: FC<DealEditDrawerProps> = ({ isOpen, deal, onClose,
   const [clientName, setClientName] = useState('');
   const [clientRole, setClientRole] = useState<'tenant' | 'buyer'>('tenant');
   const [agentName, setAgentName] = useState('Arslan Malik');
+  const [initialSnapshot, setInitialSnapshot] = useState<string>('');
 
   useEffect(() => {
     if (deal) {
@@ -35,6 +38,18 @@ export const DealEditDrawer: FC<DealEditDrawerProps> = ({ isOpen, deal, onClose,
       setClientName(deal.clientName);
       setClientRole(deal.clientRole as any);
       setAgentName(deal.agentName);
+      setInitialSnapshot(
+        JSON.stringify({
+          title: deal.title,
+          dealType: deal.dealType,
+          status: deal.status,
+          valueAED: deal.valueAED,
+          propertyId: deal.propertyId,
+          clientName: deal.clientName,
+          clientRole: deal.clientRole,
+          agentName: deal.agentName,
+        })
+      );
     } else {
       setTitle('');
       setDealType('LEASING');
@@ -44,13 +59,44 @@ export const DealEditDrawer: FC<DealEditDrawerProps> = ({ isOpen, deal, onClose,
       setClientName('');
       setClientRole('tenant');
       setAgentName('Arslan Malik');
+      setInitialSnapshot(
+        JSON.stringify({
+          title: '',
+          dealType: 'LEASING',
+          status: 'INQUIRY',
+          valueAED: 180000,
+          propertyId: 'REP-001',
+          clientName: '',
+          clientRole: 'tenant',
+          agentName: 'Arslan Malik',
+        })
+      );
     }
   }, [deal, isOpen]);
 
+  const isDirty = useMemo(() => {
+    if (!isOpen) return false;
+    const current = JSON.stringify({
+      title,
+      dealType,
+      status,
+      valueAED: Number(valueAED),
+      propertyId,
+      clientName,
+      clientRole,
+      agentName,
+    });
+    return Boolean(initialSnapshot && current !== initialSnapshot);
+  }, [isOpen, title, dealType, status, valueAED, propertyId, clientName, clientRole, agentName, initialSnapshot]);
+
+  const { showPrompt, proceed, cancel, confirmExit } = useDirtyStateGuard({
+    isDirty,
+    onConfirmDiscard: onClose,
+  });
+
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveData = (shouldClose: boolean) => {
     onSave({
       id: deal?.id,
       _id: deal?._id,
@@ -63,6 +109,14 @@ export const DealEditDrawer: FC<DealEditDrawerProps> = ({ isOpen, deal, onClose,
       clientRole,
       agentName,
     });
+    if (shouldClose) {
+      onClose();
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSaveData(true);
   };
 
   return (
