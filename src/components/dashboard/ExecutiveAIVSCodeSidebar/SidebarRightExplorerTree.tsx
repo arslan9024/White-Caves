@@ -43,10 +43,19 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
   activeDomain: propDomain,
   activeEntityId: propEntityId,
 }) => {
-  const location = useLocation();
+  let locationPath = '';
+  try {
+    const loc = useLocation();
+    locationPath = loc?.pathname || '';
+  } catch {
+    if (typeof window !== 'undefined') {
+      locationPath = window.location.pathname;
+    }
+  }
+
   const [localSearch, setLocalSearch] = useState('');
 
-  const pathParts = location.pathname.replace(/^\/dashboard\/?/, '').split('/').filter(Boolean);
+  const pathParts = locationPath.replace(/^\/dashboard\/?/, '').split('/').filter(Boolean);
   const currentDomain = propDomain || pathParts[0] || 'departments';
   const currentEntityId = propEntityId || pathParts[1] || '';
 
