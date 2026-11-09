@@ -2409,7 +2409,7 @@ model RoleAssignment {
   staffProfile      StaffProfile @relation(fields: [staffProfileId], references: [id], onDelete: Cascade)
   departmentCode    String // e.g. WC-EXE, WC-LMS, WC-FIN, WC-CRM, WC-OPS
   roleName          String // Assigned operational role
-  operationalLevel  Int          @default(1) // 1..5 RBAC level
+  operationalLevel  Int          @default(1) // 1..6 RBAC level (Level 1 Employee -> Level 6 Managing Director)
   floorNumber       Int          @default(1) // 1..13 floor allocation
   shiftDate         DateTime
   shiftStart        String       @default("09:00")
