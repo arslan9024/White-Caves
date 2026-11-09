@@ -546,6 +546,11 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     description: 'DLD workflow and integration operations',
     color: '#0EA5E9', zone: 'finance_compliance', Component: DLDIntegrationModule,
   },
+  'dld-escrow': {
+    id: 'dld-escrow', label: 'DLD Escrow Underwriting', icon: '⚖️',
+    description: 'Law 50/2022 statutory 4% DLD, trustee split, and escrow closing calculator',
+    color: '#EF4444', zone: 'finance_compliance', Component: DldEscrowCalculator,
+  },
   leads: {
     id: 'leads', label: 'Lead Scoring', icon: '📍',
     description: 'AI lead scoring and qualification signals',
