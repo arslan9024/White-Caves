@@ -253,6 +253,20 @@ function createDemoRoleProfile(
   };
 }
 
+export const DEFAULT_GUEST_USER: UserProfile = {
+  id: 'guest_user',
+  name: 'Executive Guest',
+  email: 'guest@whitecaves.ae',
+  phone: '+971500000000',
+  role: 'guest',
+  accessLevel: 1,
+  assignedDepartment: 'VIP Client Hospitality',
+  isManagingDirector: false,
+  isFounder: false,
+  isRoleConfirmed: false,
+  permissions: ['can_view_properties', 'can_use_calculators'],
+};
+
 export const DEMO_ROLE_PROFILES: Record<UserRole, UserProfile> = {
   managing_director: createDemoRoleProfile('managing_director', 'EMP-001', 'Arslan Malik', 'arslanmalikgoraha@gmail.com', '+971505760056', true),
   director: createDemoRoleProfile('director', 'EMP-002', 'Layla Al-Maktoum', 'layla.dir@whitecaves.ae', '+971501112233', false),
@@ -276,7 +290,7 @@ export const DEMO_ROLE_PROFILES: Record<UserRole, UserProfile> = {
   developer: createDemoRoleProfile('developer', 'PART-CO-001', 'Emaar Properties PJSC', 'institutional.relations@emaar.ae', '+971506543210', false),
   conveyancer: createDemoRoleProfile('conveyancer', 'PART-CV-001', 'Al Tamimi & Company', 'conveyancing@tamimi.ae', '+971501119999', false),
   contractor: createDemoRoleProfile('contractor', 'VND-001', 'Emirates Facilities Management', 'dispatch@efm-uae.ae', '+971504448888', false),
-  guest: createDemoRoleProfile('guest', 'GST-001', 'Executive Guest', 'guest@whitecaves.ae', '+971500000000', false),
+  guest: DEFAULT_GUEST_USER,
 };
 
 export function normalizeSovereignRole(rawRole?: string | null, isFounder = false): UserRole {
