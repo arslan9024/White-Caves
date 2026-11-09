@@ -53,6 +53,7 @@ const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscr
 const CompanyProfile = lazy(() => import('../components/CompanyProfile'));
 const BlogSection = lazy(() => import('../components/BlogSection'));
 const OnboardingGateway = lazy(() => import('../components/OnboardingGateway'));
+const DubaiSunsetGallery = lazy(() => import('../components/homepage/DubaiSunsetGallery'));
 
 const SectionLoader: FC = () => (
   <div className="home-page-section-loader" aria-hidden="true">
