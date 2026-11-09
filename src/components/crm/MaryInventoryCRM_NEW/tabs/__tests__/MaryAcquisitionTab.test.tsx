@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import MaryAcquisitionTab from '../MaryAcquisitionTab';
-import * as authFetchModule from '../../../../utils/authFetch';
+import * as authFetchModule from '../../../../../utils/authFetch';
 
-vi.mock('../../../../utils/authFetch', () => ({
+vi.mock('../../../../../utils/authFetch', () => ({
   authFetch: vi.fn(),
 }));
 
