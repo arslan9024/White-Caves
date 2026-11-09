@@ -84,23 +84,42 @@ const MOCK_VIEWINGS: Viewing[] = [
 export const ViewingsPage: React.FC = () => {
   const [viewings, setViewings] = useState<Viewing[]>(MOCK_VIEWINGS);
   const [filter, setFilter] = useState<string>('all');
+  const [reschedulingViewingId, setReschedulingViewingId] = useState<string | null>(null);
+  const [selectedDateTime, setSelectedDateTime] = useState<string>('');
 
   const handleConfirm = (id: string) => {
     setViewings(prev => prev.map(v => (v.id === id ? { ...v, status: 'Confirmed' } : v)));
   };
 
   const handleReschedule = (id: string) => {
-    const newDate = prompt('Enter new date/time (YYYY-MM-DD HH:MM):');
-    if (newDate) {
-      setViewings(prev =>
-        prev.map(v =>
-          v.id === id
-            ? { ...v, scheduledAt: new Date(newDate).toISOString(), status: 'Pending' }
-            : v
-        )
-      );
+    const target = viewings.find(v => v.id === id);
+    if (target) {
+      setReschedulingViewingId(id);
+      const d = new Date(target.scheduledAt);
+      const isoLocal = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      setSelectedDateTime(isoLocal);
     }
   };
+
+  const handleSaveReschedule = () => {
+    if (!reschedulingViewingId || !selectedDateTime) return;
+    setViewings(prev =>
+      prev.map(v =>
+        v.id === reschedulingViewingId
+          ? { ...v, scheduledAt: new Date(selectedDateTime).toISOString(), status: 'Pending' }
+          : v
+      )
+    );
+    setReschedulingViewingId(null);
+    setSelectedDateTime('');
+  };
+
+  const handleCancelReschedule = () => {
+    setReschedulingViewingId(null);
+    setSelectedDateTime('');
+  };
+
+  const activeViewing = viewings.find(v => v.id === reschedulingViewingId);
 
   const filteredViewings = viewings.filter(v => {
     if (filter === 'all') return true;
