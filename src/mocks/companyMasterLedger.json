@@ -17,12 +17,15 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "FL-13-MD",
+    "departmentName": "Managing Director & Founder Sovereign Suite"
   },
   {
     "id": "MGR-1",
-    "name": "Manager 1",
-    "role": "Department Manager",
+    "name": "AI Corinne (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -36,12 +39,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Director of Customer Experience & Hospitality",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "DEPT-01",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "MGR-2",
-    "name": "Manager 2",
-    "role": "Department Manager",
+    "name": "AI Olivia (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -55,12 +62,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Director of Marketing & Brand Acquisition",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "DEPT-02",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "MGR-3",
-    "name": "Manager 3",
-    "role": "Department Manager",
+    "name": "AI Selena (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -74,12 +85,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Director of Human Resources & Performance",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "DEPT-03",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "MGR-4",
-    "name": "Manager 4",
-    "role": "Department Manager",
+    "name": "AI Aurora (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -93,12 +108,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Chief Technology & Digital Infrastructure Director",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "DEPT-04",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "MGR-5",
-    "name": "Manager 5",
-    "role": "Department Manager",
+    "name": "AI Clara (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -112,12 +131,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Director of Sales & Deal Operations",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "DEPT-05",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "MGR-6",
-    "name": "Manager 6",
-    "role": "Department Manager",
+    "name": "AI Sentinel (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -131,12 +154,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Director of Inventory & Asset Management",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "DEPT-06",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "MGR-7",
-    "name": "Manager 7",
-    "role": "Department Manager",
+    "name": "AI Maktoum (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -150,12 +177,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Director of Strategic Alliances & Capital Growth",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "DEPT-07",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "MGR-8",
-    "name": "Manager 8",
-    "role": "Department Manager",
+    "name": "AI Maya (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -169,12 +200,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Director of Media & Public Relations",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "DEPT-08",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "MGR-9",
-    "name": "Manager 9",
-    "role": "Department Manager",
+    "name": "AI Elena (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -188,12 +223,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Chief Research & Intelligence Director",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "DEPT-09",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "MGR-10",
-    "name": "Manager 10",
-    "role": "Department Manager",
+    "name": "AI Theodora (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -207,12 +246,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Chief Financial Director",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "DEPT-10",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "MGR-11",
-    "name": "Manager 11",
-    "role": "Department Manager",
+    "name": "AI Sofia (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -226,12 +269,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Chief Legal & Compliance Officer",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "DEPT-11",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "MGR-12",
-    "name": "Manager 12",
-    "role": "Department Manager",
+    "name": "AI Zayed (Director)",
+    "role": "Department Director",
     "level": 4,
     "merit_xp_count": 4500,
     "reward_tier_split": 0.65,
@@ -245,12 +292,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Director of Strategic Governance & Enterprise Operations",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "DEPT-12",
+    "departmentName": "Executive, Governance & Strategy"
   },
   {
     "id": "SUP-1",
-    "name": "Supervisor 1",
-    "role": "Supervisor",
+    "name": "AI Corinne VIP Desk",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -264,12 +315,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "5-Star Concierge & Welcome Supervisor",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "SUP-DEPT-01-1",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "SUP-2",
-    "name": "Supervisor 2",
-    "role": "Supervisor",
+    "name": "AI ClientCare",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -283,12 +338,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Client Onboarding & Relations Supervisor",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "SUP-DEPT-01-2",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "SUP-3",
-    "name": "Supervisor 3",
-    "role": "Supervisor",
+    "name": "AI PrivateShowing",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -302,12 +361,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Private Villa & Yacht Showing Supervisor",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "SUP-DEPT-01-3",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "SUP-4",
-    "name": "Supervisor 4",
-    "role": "Supervisor",
+    "name": "AI MultilingualDesk",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -321,12 +384,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "International Multi-Lingual Desk Supervisor",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "SUP-DEPT-01-4",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "SUP-5",
-    "name": "Supervisor 5",
-    "role": "Supervisor",
+    "name": "AI FeedbackSentinel",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -340,12 +407,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Client NPS & Satisfaction Supervisor",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "SUP-DEPT-01-5",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "SUP-6",
-    "name": "Supervisor 6",
-    "role": "Supervisor",
+    "name": "AI ChauffeurLogistics",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -359,12 +430,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "VIP Mobility & Chauffeur Logistics Supervisor",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "SUP-DEPT-01-6",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "SUP-7",
-    "name": "Supervisor 7",
-    "role": "Supervisor",
+    "name": "AI EventHostess",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -378,12 +453,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Private Showcase Event Hostess Supervisor",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "SUP-DEPT-01-7",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "SUP-8",
-    "name": "Supervisor 8",
-    "role": "Supervisor",
+    "name": "AI RetentionCare",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -397,12 +476,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "High-Net-Worth Retention & Loyalty Supervisor",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "SUP-DEPT-01-8",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "SUP-9",
-    "name": "Supervisor 9",
-    "role": "Supervisor",
+    "name": "AI EmergencyRelief",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -416,12 +499,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Urgent Client Concierge & Support Supervisor",
+    "assignedDepartment": "customer_experience",
+    "departmentCode": "SUP-DEPT-01-9",
+    "departmentName": "Customer Experience, Concierge & Hospitality"
   },
   {
     "id": "SUP-10",
-    "name": "Supervisor 10",
-    "role": "Supervisor",
+    "name": "AI Olivia Campaigns",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -435,12 +522,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Omnichannel Lead Acquisition Supervisor",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "SUP-DEPT-02-1",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "SUP-11",
-    "name": "Supervisor 11",
-    "role": "Supervisor",
+    "name": "AI PortalSyndicator",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -454,12 +545,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Bayut & PropertyFinder Syndication Supervisor",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "SUP-DEPT-02-2",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "SUP-12",
-    "name": "Supervisor 12",
-    "role": "Supervisor",
+    "name": "AI BrandGuardian",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -473,12 +568,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Luxury Brand Identity & Aesthetic Supervisor",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "SUP-DEPT-02-3",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "SUP-13",
-    "name": "Supervisor 13",
-    "role": "Supervisor",
+    "name": "AI SocialPulse",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -492,12 +591,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Instagram, LinkedIn & YouTube Studio Supervisor",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "SUP-DEPT-02-4",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "SUP-14",
-    "name": "Supervisor 14",
-    "role": "Supervisor",
+    "name": "AI SeoDominance",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -511,12 +614,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Dubai Luxury Real Estate SEO Supervisor",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "SUP-DEPT-02-5",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "SUP-15",
-    "name": "Supervisor 15",
-    "role": "Supervisor",
+    "name": "AI EmailNurture",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -530,12 +637,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Investor Newsletter & Automation Supervisor",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "SUP-DEPT-02-6",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "SUP-16",
-    "name": "Supervisor 16",
-    "role": "Supervisor",
+    "name": "AI EventPromoter",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -549,12 +660,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Off-Plan Launch Promotion Supervisor",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "SUP-DEPT-02-7",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "SUP-17",
-    "name": "Supervisor 17",
-    "role": "Supervisor",
+    "name": "AI PerformanceAudit",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -568,12 +683,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Marketing ROAS & Multi-Touch Attribution Supervisor",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "SUP-DEPT-02-8",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "SUP-18",
-    "name": "Supervisor 18",
-    "role": "Supervisor",
+    "name": "AI CreativeStudio",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -587,12 +706,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "3D Matterport & Architectural Render Supervisor",
+    "assignedDepartment": "marketing_branding",
+    "departmentCode": "SUP-DEPT-02-9",
+    "departmentName": "Marketing, Branding & Digital Acquisition"
   },
   {
     "id": "SUP-19",
-    "name": "Supervisor 19",
-    "role": "Supervisor",
+    "name": "AI Selena Talent",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -606,12 +729,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Broker Recruitment & Talent Acquisition Supervisor",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "SUP-DEPT-03-1",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "SUP-20",
-    "name": "Supervisor 20",
-    "role": "Supervisor",
+    "name": "AI BrokerLicensing",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -625,12 +752,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "RERA Broker Card & DLD Accreditation Supervisor",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "SUP-DEPT-03-2",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "SUP-21",
-    "name": "Supervisor 21",
-    "role": "Supervisor",
+    "name": "AI PerformanceKpi",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -644,12 +775,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Agent Quota & Merit XP Scoring Supervisor",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "SUP-DEPT-03-3",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "SUP-22",
-    "name": "Supervisor 22",
-    "role": "Supervisor",
+    "name": "AI VisaRelocation",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -663,12 +798,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Employment Visa & Emirates ID Supervisor",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "SUP-DEPT-03-4",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "SUP-23",
-    "name": "Supervisor 23",
-    "role": "Supervisor",
+    "name": "AI MohrePayroll",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -682,12 +821,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "WPS Salary & MoHRE Compliance Supervisor",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "SUP-DEPT-03-5",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "SUP-24",
-    "name": "Supervisor 24",
-    "role": "Supervisor",
+    "name": "AI BrokerAcademy",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -701,12 +844,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "White Caves Broker Training Academy Supervisor",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "SUP-DEPT-03-6",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "SUP-25",
-    "name": "Supervisor 25",
-    "role": "Supervisor",
+    "name": "AI AttendanceLeaves",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 2800,
     "reward_tier_split": 0.6,
@@ -720,12 +867,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Attendance, Leaves & Roster Management Supervisor",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "SUP-DEPT-03-7",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "SUP-26",
-    "name": "Supervisor 26",
-    "role": "Supervisor",
+    "name": "AI EmiratisationDesk",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -739,12 +890,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Nafis & UAE National Employment Supervisor",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "SUP-DEPT-03-8",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "SUP-27",
-    "name": "Supervisor 27",
-    "role": "Supervisor",
+    "name": "AI CultureEthics",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -758,12 +913,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Corporate Ethics & Disciplinary Conduct Supervisor",
+    "assignedDepartment": "human_resources",
+    "departmentCode": "SUP-DEPT-03-9",
+    "departmentName": "Human Resources, Performance & Recruiting"
   },
   {
     "id": "SUP-28",
-    "name": "Supervisor 28",
-    "role": "Supervisor",
+    "name": "AI Aurora Core",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -777,12 +936,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Next.js & Frontend Architecture Supervisor",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "SUP-DEPT-04-1",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "SUP-29",
-    "name": "Supervisor 29",
-    "role": "Supervisor",
+    "name": "AI BackendGate",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -796,12 +959,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Express API Gateway & Microservices Supervisor",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "SUP-DEPT-04-2",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "SUP-30",
-    "name": "Supervisor 30",
-    "role": "Supervisor",
+    "name": "AI DatabasePrisma",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -815,12 +982,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Prisma ORM & PostgreSQL Cluster Supervisor",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "SUP-DEPT-04-3",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "SUP-31",
-    "name": "Supervisor 31",
-    "role": "Supervisor",
+    "name": "AI DevopsCloud",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -834,12 +1005,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Docker, CI/CD & Kubernetes Cloud Supervisor",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "SUP-DEPT-04-4",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "SUP-32",
-    "name": "Supervisor 32",
-    "role": "Supervisor",
+    "name": "AI AgentMeshEngine",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -853,12 +1028,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "121-Agent Autonomous Coordination Supervisor",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "SUP-DEPT-04-5",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "SUP-33",
-    "name": "Supervisor 33",
-    "role": "Supervisor",
+    "name": "AI SecuritySentinel",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -872,12 +1051,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "App Defense & Cryptographic Integrity Supervisor",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "SUP-DEPT-04-6",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "SUP-34",
-    "name": "Supervisor 34",
-    "role": "Supervisor",
+    "name": "AI MobileBridge",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -891,12 +1074,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Cross-Platform React Native Bridge Supervisor",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "SUP-DEPT-04-7",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "SUP-35",
-    "name": "Supervisor 35",
-    "role": "Supervisor",
+    "name": "AI VisionOcrCore",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -910,12 +1097,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Emirates ID & Passport Vision OCR Supervisor",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "SUP-DEPT-04-8",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "SUP-36",
-    "name": "Supervisor 36",
-    "role": "Supervisor",
+    "name": "AI SystemBackup",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -929,12 +1120,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Disaster Recovery & Encrypted Storage Supervisor",
+    "assignedDepartment": "technology_systems",
+    "departmentCode": "SUP-DEPT-04-9",
+    "departmentName": "Technology, Systems & Digital Infrastructure"
   },
   {
     "id": "SUP-37",
-    "name": "Supervisor 37",
-    "role": "Supervisor",
+    "name": "AI Clara Sales",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -948,12 +1143,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Secondary Resale & Villa Portfolio Supervisor",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "SUP-DEPT-05-1",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "SUP-38",
-    "name": "Supervisor 38",
-    "role": "Supervisor",
+    "name": "AI OffPlanAllocation",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -967,12 +1166,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Emaar, DAMAC & Nakheel Launch Allocation Supervisor",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "SUP-DEPT-05-2",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "SUP-39",
-    "name": "Supervisor 39",
-    "role": "Supervisor",
+    "name": "AI DealCloser",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -986,12 +1189,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Luxury Closing & Transaction Settlement Supervisor",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "SUP-DEPT-05-3",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "SUP-40",
-    "name": "Supervisor 40",
-    "role": "Supervisor",
+    "name": "AI CommercialBroker",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1005,12 +1212,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Commercial Office & Retail Space Supervisor",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "SUP-DEPT-05-4",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "SUP-41",
-    "name": "Supervisor 41",
-    "role": "Supervisor",
+    "name": "AI BuyerMatcher",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1024,12 +1235,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "High-Net-Worth Buyer Matching Supervisor",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "SUP-DEPT-05-5",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "SUP-42",
-    "name": "Supervisor 42",
-    "role": "Supervisor",
+    "name": "AI ViewingScheduler",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1043,12 +1258,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Client Viewing & Open House Coordinator",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "SUP-DEPT-05-6",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "SUP-43",
-    "name": "Supervisor 43",
-    "role": "Supervisor",
+    "name": "AI PipelineVelocity",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1062,12 +1281,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Sales Pipeline Velocity & Stage Gate Supervisor",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "SUP-DEPT-05-7",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "SUP-44",
-    "name": "Supervisor 44",
-    "role": "Supervisor",
+    "name": "AI CommissionSplitter",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1081,12 +1304,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Internal Broker Commission & Split Supervisor",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "SUP-DEPT-05-8",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "SUP-45",
-    "name": "Supervisor 45",
-    "role": "Supervisor",
+    "name": "AI LeadDistributor",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1100,12 +1327,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Fair Lead Distribution & Round-Robin Supervisor",
+    "assignedDepartment": "sales_operations",
+    "departmentCode": "SUP-DEPT-05-9",
+    "departmentName": "Sales, Services & Operations"
   },
   {
     "id": "SUP-46",
-    "name": "Supervisor 46",
-    "role": "Supervisor",
+    "name": "AI Sentinel Inventory",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1119,12 +1350,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Master Real Estate Inventory Catalog Supervisor",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "SUP-DEPT-06-1",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "SUP-47",
-    "name": "Supervisor 47",
-    "role": "Supervisor",
+    "name": "AI LandlordLiaison",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1138,12 +1373,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Landlord Onboarding & Mandate Custody Supervisor",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "SUP-DEPT-06-2",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "SUP-48",
-    "name": "Supervisor 48",
-    "role": "Supervisor",
+    "name": "AI ClusterValuation",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1157,12 +1396,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "DAMAC Hills 2 & Master Community Portfolio Supervisor",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "SUP-DEPT-06-3",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "SUP-49",
-    "name": "Supervisor 49",
-    "role": "Supervisor",
+    "name": "AI AssetInspection",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1176,12 +1419,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Property Snagging & Condition Audit Supervisor",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "SUP-DEPT-06-4",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "SUP-50",
-    "name": "Supervisor 50",
-    "role": "Supervisor",
+    "name": "AI OffPlanTracker",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 1400,
     "reward_tier_split": 0.55,
@@ -1195,12 +1442,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Developer Construction Milestone & Handover Supervisor",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "SUP-DEPT-06-5",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "SUP-51",
-    "name": "Supervisor 51",
-    "role": "Supervisor",
+    "name": "AI KeyManagement",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1214,12 +1465,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Smart Lockbox & Access Token Custody Supervisor",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "SUP-DEPT-06-6",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "SUP-52",
-    "name": "Supervisor 52",
-    "role": "Supervisor",
+    "name": "AI ListingStaging",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1233,12 +1488,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Inventory Virtual Tour & Floor Plan Supervisor",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "SUP-DEPT-06-7",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "SUP-53",
-    "name": "Supervisor 53",
-    "role": "Supervisor",
+    "name": "AI InventoryArchive",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1252,12 +1511,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Sold & Expired Listing Archival Supervisor",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "SUP-DEPT-06-8",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "SUP-54",
-    "name": "Supervisor 54",
-    "role": "Supervisor",
+    "name": "AI BulkInvestorPacks",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1271,12 +1534,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Bulk Portfolio Packaging & Institutional Deck Supervisor",
+    "assignedDepartment": "inventory_portfolio",
+    "departmentCode": "SUP-DEPT-06-9",
+    "departmentName": "Inventory, Portfolio & Asset Management"
   },
   {
     "id": "SUP-55",
-    "name": "Supervisor 55",
-    "role": "Supervisor",
+    "name": "AI Maktoum Alliances",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1290,12 +1557,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Master Developer Institutional Partnership Supervisor",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "SUP-DEPT-07-1",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "SUP-56",
-    "name": "Supervisor 56",
-    "role": "Supervisor",
+    "name": "AI FamilyOffice",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1309,12 +1580,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Global Family Office & Sovereign Wealth Supervisor",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "SUP-DEPT-07-2",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "SUP-57",
-    "name": "Supervisor 57",
-    "role": "Supervisor",
+    "name": "AI BankMortgages",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1328,12 +1603,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Mortgage Brokerage & Banking Alliance Supervisor",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "SUP-DEPT-07-3",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "SUP-58",
-    "name": "Supervisor 58",
-    "role": "Supervisor",
+    "name": "AI RelocationPartners",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1347,12 +1626,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Corporate Relocation & Expat Concierge Supervisor",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "SUP-DEPT-07-4",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "SUP-59",
-    "name": "Supervisor 59",
-    "role": "Supervisor",
+    "name": "AI GlobalCorridors",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1366,12 +1649,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "European, Asian & GCC Investor Desk Supervisor",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "SUP-DEPT-07-5",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "SUP-60",
-    "name": "Supervisor 60",
-    "role": "Supervisor",
+    "name": "AI LuxuryBrands",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1385,12 +1672,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Branded Residences (Armani/Cavalli) Alliance Supervisor",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "SUP-DEPT-07-6",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "SUP-61",
-    "name": "Supervisor 61",
-    "role": "Supervisor",
+    "name": "AI GoldenVisaNetwork",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1404,12 +1695,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Government PRO & Golden Visa Strategic Desk",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "SUP-DEPT-07-7",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "SUP-62",
-    "name": "Supervisor 62",
-    "role": "Supervisor",
+    "name": "AI VentureExpansion",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1423,12 +1718,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Franchise, M&A & Strategic Growth Supervisor",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "SUP-DEPT-07-8",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "SUP-63",
-    "name": "Supervisor 63",
-    "role": "Supervisor",
+    "name": "AI SponsorshipAlliance",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1442,12 +1741,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Luxury Golf & Yacht Event Sponsorship Supervisor",
+    "assignedDepartment": "partnerships_growth",
+    "departmentCode": "SUP-DEPT-07-9",
+    "departmentName": "Partnerships, Alliances & Capital Growth"
   },
   {
     "id": "SUP-64",
-    "name": "Supervisor 64",
-    "role": "Supervisor",
+    "name": "AI Maya PR",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1461,12 +1764,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Executive Communications & Press Bureau Supervisor",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "SUP-DEPT-08-1",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "SUP-65",
-    "name": "Supervisor 65",
-    "role": "Supervisor",
+    "name": "AI MediaStudio",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1480,12 +1787,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "White Caves Media & High-End Production Supervisor",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "SUP-DEPT-08-2",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "SUP-66",
-    "name": "Supervisor 66",
-    "role": "Supervisor",
+    "name": "AI EditorialPublish",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1499,12 +1810,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "White Caves Luxury Magazine & Journal Supervisor",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "SUP-DEPT-08-3",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "SUP-67",
-    "name": "Supervisor 67",
-    "role": "Supervisor",
+    "name": "AI InfluencerDesk",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1518,12 +1833,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Luxury Lifestyle & Real Estate Influencer Desk",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "SUP-DEPT-08-4",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "SUP-68",
-    "name": "Supervisor 68",
-    "role": "Supervisor",
+    "name": "AI AwardSubmissions",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1537,12 +1856,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "International Property Awards & Accolades Supervisor",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "SUP-DEPT-08-5",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "SUP-69",
-    "name": "Supervisor 69",
-    "role": "Supervisor",
+    "name": "AI PodcasterCore",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1556,12 +1879,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Dubai Real Estate Podcast & Livestream Supervisor",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "SUP-DEPT-08-6",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "SUP-70",
-    "name": "Supervisor 70",
-    "role": "Supervisor",
+    "name": "AI CorporateIdentity",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1575,12 +1902,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Public Brand Reputation & Sentiment Supervisor",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "SUP-DEPT-08-7",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "SUP-71",
-    "name": "Supervisor 71",
-    "role": "Supervisor",
+    "name": "AI EventPressOffice",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1594,12 +1925,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Press Conference & Launch Event Media Supervisor",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "SUP-DEPT-08-8",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "SUP-72",
-    "name": "Supervisor 72",
-    "role": "Supervisor",
+    "name": "AI DigitalBroadcasting",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1613,12 +1948,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Telegram, WhatsApp VIP Channel Broadcast Supervisor",
+    "assignedDepartment": "media_public_relations",
+    "departmentCode": "SUP-DEPT-08-9",
+    "departmentName": "Media, Public Relations & Communications"
   },
   {
     "id": "SUP-73",
-    "name": "Supervisor 73",
-    "role": "Supervisor",
+    "name": "AI Elena Research",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1632,12 +1971,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Macroeconomic Indexing & Transaction Science Supervisor",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "SUP-DEPT-09-1",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "SUP-74",
-    "name": "Supervisor 74",
-    "role": "Supervisor",
+    "name": "AI PredictiveMl",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1651,12 +1994,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Sub-Cluster Capital Appreciation ML Supervisor",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "SUP-DEPT-09-2",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "SUP-75",
-    "name": "Supervisor 75",
-    "role": "Supervisor",
+    "name": "AI RentalYieldEngine",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1670,12 +2017,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Gross vs Net Rental Yield Optimization Supervisor",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "SUP-DEPT-09-3",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "SUP-76",
-    "name": "Supervisor 76",
-    "role": "Supervisor",
+    "name": "AI HeatmapGeospatial",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1689,12 +2040,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Dubai Real Estate Demand Heatmap Supervisor",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "SUP-DEPT-09-4",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "SUP-77",
-    "name": "Supervisor 77",
-    "role": "Supervisor",
+    "name": "AI CompetitorRadar",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1708,12 +2063,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Market Competitor Pricing & Days-on-Market Supervisor",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "SUP-DEPT-09-5",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "SUP-78",
-    "name": "Supervisor 78",
-    "role": "Supervisor",
+    "name": "AI DemographicsProfiler",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1727,12 +2086,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Buyer Origin & Demographic Capital Flow Supervisor",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "SUP-DEPT-09-6",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "SUP-79",
-    "name": "Supervisor 79",
-    "role": "Supervisor",
+    "name": "AI MacroPulseGcc",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1746,12 +2109,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Interest Rates, EIBOR & Currency Impact Supervisor",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "SUP-DEPT-09-7",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "SUP-80",
-    "name": "Supervisor 80",
-    "role": "Supervisor",
+    "name": "AI MasterPlanTracker",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1765,12 +2132,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Dubai 2040 Urban Master Plan Supervisor",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "SUP-DEPT-09-8",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "SUP-81",
-    "name": "Supervisor 81",
-    "role": "Supervisor",
+    "name": "AI WhitePaperStudio",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1784,12 +2155,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Quarterly Dubai Market Intelligence Report Supervisor",
+    "assignedDepartment": "research_analytics",
+    "departmentCode": "SUP-DEPT-09-9",
+    "departmentName": "Research, Analytics & Market Intelligence"
   },
   {
     "id": "SUP-82",
-    "name": "Supervisor 82",
-    "role": "Supervisor",
+    "name": "AI Theodora Finance",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1803,12 +2178,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Chief Accounting Officer & Statutory Audit Supervisor",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "SUP-DEPT-10-1",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "SUP-83",
-    "name": "Supervisor 83",
-    "role": "Supervisor",
+    "name": "AI UaeTaxEngine",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1822,12 +2201,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "UAE Corporate Tax 9% & Federal Tax Authority Supervisor",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "SUP-DEPT-10-2",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "SUP-84",
-    "name": "Supervisor 84",
-    "role": "Supervisor",
+    "name": "AI UaeVatCompliance",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1841,12 +2224,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "UAE FTA VAT 5% Invoicing & Filing Supervisor",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "SUP-DEPT-10-3",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "SUP-85",
-    "name": "Supervisor 85",
-    "role": "Supervisor",
+    "name": "AI EscrowAccountSync",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1860,12 +2247,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "RERA Trust Account & Escrow Reconciliation Supervisor",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "SUP-DEPT-10-4",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "SUP-86",
-    "name": "Supervisor 86",
-    "role": "Supervisor",
+    "name": "AI BrokerPayrollComm",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1879,12 +2270,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Broker Commission Payout & Split Ledger Supervisor",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "SUP-DEPT-10-5",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "SUP-87",
-    "name": "Supervisor 87",
-    "role": "Supervisor",
+    "name": "AI AccountsPayable",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1898,12 +2293,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Vendor Payments & Office Operating Expenses Supervisor",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "SUP-DEPT-10-6",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "SUP-88",
-    "name": "Supervisor 88",
-    "role": "Supervisor",
+    "name": "AI TreasuryForex",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1917,12 +2316,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Multi-Currency Escrow & FX Hedging Supervisor",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "SUP-DEPT-10-7",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "SUP-89",
-    "name": "Supervisor 89",
-    "role": "Supervisor",
+    "name": "AI ZohoBooksSync",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1936,12 +2339,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Zoho Books Enterprise Two-Way Sync Supervisor",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "SUP-DEPT-10-8",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "SUP-90",
-    "name": "Supervisor 90",
-    "role": "Supervisor",
+    "name": "AI FinancialAuditor",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1955,12 +2362,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "External Audit Defense & Financial Governance Supervisor",
+    "assignedDepartment": "accounting_finance",
+    "departmentCode": "SUP-DEPT-10-9",
+    "departmentName": "Accounting, Finance & Tax"
   },
   {
     "id": "SUP-91",
-    "name": "Supervisor 91",
-    "role": "Supervisor",
+    "name": "AI Sofia Legal",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1974,12 +2385,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "DLD & RERA Statutory Compliance Officer",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "SUP-DEPT-11-1",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "SUP-92",
-    "name": "Supervisor 92",
-    "role": "Supervisor",
+    "name": "AI GoAmlScreening",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -1993,12 +2408,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Anti-Money Laundering (AML/goAML) & PEP Supervisor",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "SUP-DEPT-11-2",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "SUP-93",
-    "name": "Supervisor 93",
-    "role": "Supervisor",
+    "name": "AI TrakheesiEngine",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2012,12 +2431,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "DLD Trakheesi Advertising Permit Supervisor",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "SUP-DEPT-11-3",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "SUP-94",
-    "name": "Supervisor 94",
-    "role": "Supervisor",
+    "name": "AI FormAContract",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2031,12 +2454,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "RERA Form A (Seller Mandate) Compliance Supervisor",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "SUP-DEPT-11-4",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "SUP-95",
-    "name": "Supervisor 95",
-    "role": "Supervisor",
+    "name": "AI FormBContract",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2050,12 +2477,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "RERA Form B (Buyer Representation) Supervisor",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "SUP-DEPT-11-5",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "SUP-96",
-    "name": "Supervisor 96",
-    "role": "Supervisor",
+    "name": "AI FormFContract",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2069,12 +2500,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "RERA Form F (MOU / Unified Sale Contract) Supervisor",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "SUP-DEPT-11-6",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "SUP-97",
-    "name": "Supervisor 97",
-    "role": "Supervisor",
+    "name": "AI PoaVerification",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2088,12 +2523,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Power of Attorney & Dubai Courts Notary Supervisor",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "SUP-DEPT-11-7",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "SUP-98",
-    "name": "Supervisor 98",
-    "role": "Supervisor",
+    "name": "AI DataPrivacyLaw",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2107,12 +2546,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "UAE Personal Data Protection Law (PDPL) Supervisor",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "SUP-DEPT-11-8",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "SUP-99",
-    "name": "Supervisor 99",
-    "role": "Supervisor",
+    "name": "AI LegalArbitration",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2126,12 +2569,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "DLD Rental Dispute Center (RDC) & Legal Counsel",
+    "assignedDepartment": "legal_compliance",
+    "departmentCode": "SUP-DEPT-11-9",
+    "departmentName": "Legal, Compliance & Audit"
   },
   {
     "id": "SUP-100",
-    "name": "Supervisor 100",
-    "role": "Supervisor",
+    "name": "AI Zayed Governance",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2145,12 +2592,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Board Secretariat & Sovereign Policy Supervisor",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "SUP-DEPT-12-1",
+    "departmentName": "Executive, Governance & Strategy"
   },
   {
     "id": "SUP-101",
-    "name": "Supervisor 101",
-    "role": "Supervisor",
+    "name": "AI StrategicRoadmap",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2164,12 +2615,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Long-Range Enterprise OKRs & Growth Supervisor",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "SUP-DEPT-12-2",
+    "departmentName": "Executive, Governance & Strategy"
   },
   {
     "id": "SUP-102",
-    "name": "Supervisor 102",
-    "role": "Supervisor",
+    "name": "AI RiskManagement",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2183,12 +2638,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Enterprise Risk & Catastrophe Shield Supervisor",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "SUP-DEPT-12-3",
+    "departmentName": "Executive, Governance & Strategy"
   },
   {
     "id": "SUP-103",
-    "name": "Supervisor 103",
-    "role": "Supervisor",
+    "name": "AI ZoeCooLiaison",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2202,12 +2661,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Executive Chief AI Assistant Zoe Operations Desk",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "SUP-DEPT-12-4",
+    "departmentName": "Executive, Governance & Strategy"
   },
   {
     "id": "SUP-104",
-    "name": "Supervisor 104",
-    "role": "Supervisor",
+    "name": "AI MeritXpMaster",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2221,12 +2684,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Company-Wide Merit Leaderboard & XP Master Supervisor",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "SUP-DEPT-12-5",
+    "departmentName": "Executive, Governance & Strategy"
   },
   {
     "id": "SUP-105",
-    "name": "Supervisor 105",
-    "role": "Supervisor",
+    "name": "AI ComplianceOversight",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2240,12 +2707,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Cross-Department Statutory Policy Audit Supervisor",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "SUP-DEPT-12-6",
+    "departmentName": "Executive, Governance & Strategy"
   },
   {
     "id": "SUP-106",
-    "name": "Supervisor 106",
-    "role": "Supervisor",
+    "name": "AI CapitalAllocation",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2259,12 +2730,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Capital Re-Investment & Sovereign Reserve Supervisor",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "SUP-DEPT-12-7",
+    "departmentName": "Executive, Governance & Strategy"
   },
   {
     "id": "SUP-107",
-    "name": "Supervisor 107",
-    "role": "Supervisor",
+    "name": "AI CorporateRestructure",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2278,12 +2753,16 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Department Slot & Organizational Topology Supervisor",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "SUP-DEPT-12-8",
+    "departmentName": "Executive, Governance & Strategy"
   },
   {
     "id": "SUP-108",
-    "name": "Supervisor 108",
-    "role": "Supervisor",
+    "name": "AI SovereignSignOff",
+    "role": "Division Manager / Supervisor",
     "level": 3,
     "merit_xp_count": 750,
     "reward_tier_split": 0.5,
@@ -2297,6 +2776,10 @@
         "qualifyingDealNumber": "WC-D-2026-001",
         "description": "10% Cashback on Agency Service Fee - 3rd Renewal Milestone"
       }
-    ]
+    ],
+    "roleTitle": "Founder & Managing Director Digital Seal Supervisor",
+    "assignedDepartment": "executive_governance",
+    "departmentCode": "SUP-DEPT-12-9",
+    "departmentName": "Executive, Governance & Strategy"
   }
 ]
