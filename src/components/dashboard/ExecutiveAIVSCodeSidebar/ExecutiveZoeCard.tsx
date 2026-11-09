@@ -6,7 +6,7 @@
  */
 
 import React, { FC, useState } from 'react';
-import { Send, Zap, Sparkles } from 'lucide-react';
+import { Send, Zap, Sparkles, ChevronDown, ChevronRight, LayoutDashboard } from 'lucide-react';
 import { ZoeExecutiveCard } from './ExecutiveAIVSCodeSidebar.styles';
 
 export interface DirectiveResult {
