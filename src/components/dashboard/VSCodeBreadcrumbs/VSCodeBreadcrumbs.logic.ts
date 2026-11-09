@@ -8,99 +8,136 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { BreadcrumbSegment, VSCodeBreadcrumbsProps } from './VSCodeBreadcrumbs.types';
+import {
+  SUBSYSTEM_TAXONOMY,
+  normalizeDashboardRoute,
+} from '../../../pages/dashboard/ModernDashboardPage.logic';
 
-const SYSTEM_MAP: Record<
-  string,
-  { label: string; root: string; categories: Array<{ id: string; label: string; route: string }> }
-> = {
-  departments: {
-    label: 'DMS: Corporate Departments',
-    root: '/dashboard/departments',
-    categories: [
-      { id: 'slots', label: '12 Corporate Slots', route: '/dashboard/departments/slots' },
-      { id: 'pillars', label: '7 Operational Pillars', route: '/dashboard/departments/pillars' },
+interface SubsystemMetadata {
+  label: string;
+  icon: string;
+  root: string;
+  collections: Array<{ id: string; label: string; route: string }>;
+}
+
+const CANONICAL_SUBSYSTEM_MAP: Record<string, SubsystemMetadata> = {
+  pms: {
+    label: 'PMS: Property Portfolio',
+    icon: '🏢',
+    root: '/dashboard/pms/properties',
+    collections: [
+      { id: 'properties', label: 'Units Inventory', route: '/dashboard/pms/properties' },
+      { id: 'clusters', label: 'Dubai Clusters', route: '/dashboard/pms/properties/clusters' },
     ],
   },
-  employees: {
+  dms: {
+    label: 'DMS: Corporate Departments',
+    icon: '🏛️',
+    root: '/dashboard/dms/departments',
+    collections: [
+      { id: 'departments', label: '12 Corporate Slots', route: '/dashboard/dms/departments/slots' },
+      { id: 'pillars', label: '7 Operational Pillars', route: '/dashboard/dms/departments/pillars' },
+    ],
+  },
+  ems: {
     label: 'EMS: Staff & Specialists',
-    root: '/dashboard/employees',
-    categories: [
-      { id: 'roster', label: '121 Staff Roster', route: '/dashboard/employees/roster' },
-      { id: 'supervisors', label: 'Supervisors Pool', route: '/dashboard/employees/supervisors' },
-      {
-        id: 'directors',
-        label: '12 Department Directors',
-        route: '/dashboard/employees/directors',
-      },
+    icon: '👥',
+    root: '/dashboard/ems/employees',
+    collections: [
+      { id: 'employees', label: '121 Staff Roster', route: '/dashboard/ems/employees/roster' },
+      { id: 'supervisors', label: 'Supervisors Pool', route: '/dashboard/ems/employees/supervisors' },
+      { id: 'directors', label: '12 Dept Directors', route: '/dashboard/ems/employees/directors' },
     ],
   },
   aiams: {
-    label: 'AIAMS: AI Assistants Management',
-    root: '/dashboard/aiams',
-    categories: [
-      { id: 'agents', label: '121+ AI Agents CRUD', route: '/dashboard/aiams/agents' },
-      { id: 'managers', label: '12 Dept AI Directors', route: '/dashboard/aiams/managers' },
-      { id: 'supervisors', label: '108 AI Supervisors', route: '/dashboard/aiams/supervisors' },
-      { id: 'organogram', label: '1-12-108 Organogram', route: '/dashboard/aiams/organogram' },
+    label: 'AIAMS: AI Assistants Hub',
+    icon: '🤖',
+    root: '/dashboard/aiams/assistants',
+    collections: [
+      { id: 'assistants', label: '121+ AI Agents CRUD', route: '/dashboard/aiams/assistants' },
+      { id: 'directors', label: '12 Dept AI Directors', route: '/dashboard/aiams/assistants/directors' },
+      { id: 'supervisors', label: '108 AI Supervisors', route: '/dashboard/aiams/assistants/supervisors' },
     ],
   },
-  tasks: {
-    label: 'TMS: Tasks & Statutory Catalog',
-    root: '/dashboard/tasks',
-    categories: [
-      { id: 'catalog', label: '200+ Statutory Tasks', route: '/dashboard/tasks/catalog' },
-      { id: 'categories', label: 'Pillars & Categories', route: '/dashboard/tasks/categories' },
+  tms: {
+    label: 'TMS: Statutory Tasks',
+    icon: '📋',
+    root: '/dashboard/tms/tasks',
+    collections: [
+      { id: 'tasks', label: '200+ Statutory Tasks', route: '/dashboard/tms/tasks/catalog' },
+      { id: 'categories', label: 'Pillars & Categories', route: '/dashboard/tms/tasks/categories' },
     ],
   },
-  REproperties: {
-    label: 'PMS: Property Portfolio',
-    root: '/dashboard/REproperties',
-    categories: [
-      { id: 'inventory', label: 'Units Inventory', route: '/dashboard/REproperties/inventory' },
-      { id: 'clusters', label: 'Dubai Clusters', route: '/dashboard/REproperties/clusters' },
+  fms: {
+    label: 'FMS: Deals & Escrow',
+    icon: '💼',
+    root: '/dashboard/fms/deals',
+    collections: [
+      { id: 'deals', label: 'Active Pipeline', route: '/dashboard/fms/deals/pipeline' },
+      { id: 'escrow', label: 'Escrow Accounts', route: '/dashboard/fms/deals/escrow' },
     ],
   },
-  deals: {
-    label: 'Deals & Escrow Pipeline',
-    root: '/dashboard/deals',
-    categories: [
-      { id: 'pipeline', label: 'Active Pipeline', route: '/dashboard/deals/pipeline' },
-      { id: 'escrow', label: 'Escrow Accounts', route: '/dashboard/deals/escrow' },
-    ],
-  },
-  customers: {
+  cms: {
     label: 'CMS: Client & Lead Directory',
-    root: '/dashboard/customers',
-    categories: [
-      { id: 'leads', label: 'Client Leads', route: '/dashboard/customers/leads' },
-      { id: 'investors', label: 'VIP Investors', route: '/dashboard/customers/investors' },
+    icon: '🎯',
+    root: '/dashboard/cms/customers',
+    collections: [
+      { id: 'customers', label: 'Client Leads', route: '/dashboard/cms/customers/leads' },
+      { id: 'investors', label: 'VIP Investors', route: '/dashboard/cms/customers/investors' },
     ],
   },
-  documents: {
+  dvs: {
     label: 'DVS: Document Vault & OCR',
-    root: '/dashboard/documents',
-    categories: [
-      { id: 'vault', label: 'Vault Documents', route: '/dashboard/documents/vault' },
-      { id: 'compliance', label: 'RERA Compliance', route: '/dashboard/documents/compliance' },
+    icon: '🔒',
+    root: '/dashboard/dvs/documents',
+    collections: [
+      { id: 'documents', label: 'Vault Documents', route: '/dashboard/dvs/documents/vault' },
+      { id: 'compliance', label: 'RERA Compliance', route: '/dashboard/dvs/documents/compliance' },
     ],
   },
-  leaderboard: {
+  lms: {
     label: 'LMS: Merit XP Leaderboard',
-    root: '/dashboard/leaderboard',
-    categories: [
-      { id: 'rankings', label: 'Merit Rankings', route: '/dashboard/leaderboard/rankings' },
-      { id: 'tiers', label: 'Tiers L0-L5', route: '/dashboard/leaderboard/tiers' },
+    icon: '🏆',
+    root: '/dashboard/lms/leaderboard',
+    collections: [
+      { id: 'leaderboard', label: 'Merit Rankings', route: '/dashboard/lms/leaderboard/rankings' },
+      { id: 'tiers', label: 'Tiers L0-L5', route: '/dashboard/lms/leaderboard/tiers' },
     ],
   },
   erms: {
-    label: 'ERMS: Entities & Relational Hub',
-    root: '/dashboard/erms',
-    categories: [
-      { id: 'entities', label: 'Entities CRUD Hub', route: '/dashboard/erms/entities' },
+    label: 'ERMS: Relational Mesh',
+    icon: '🕸️',
+    root: '/dashboard/erms/relationships',
+    collections: [
       { id: 'relationships', label: 'Relational Matrix', route: '/dashboard/erms/relationships' },
+      { id: 'entities', label: 'Entities CRUD Hub', route: '/dashboard/erms/entities' },
       { id: 'erd', label: 'UML ERD Visualizer', route: '/dashboard/erms/erd' },
     ],
   },
+  rms: {
+    label: 'RMS: Roles & Privileges',
+    icon: '🛡️',
+    root: '/dashboard/rms/roles',
+    collections: [
+      { id: 'roles', label: 'Role Catalog', route: '/dashboard/rms/roles' },
+    ],
+  },
+};
+
+// Aliases for legacy flat routes in breadcrumbs
+const LEGACY_FALLBACK_ALIASES: Record<string, string> = {
+  departments: 'dms',
+  employees: 'ems',
+  aiams: 'aiams',
+  tasks: 'tms',
+  REproperties: 'pms',
+  properties: 'pms',
+  deals: 'fms',
+  customers: 'cms',
+  documents: 'dvs',
+  leaderboard: 'lms',
+  relationships: 'erms',
+  roles: 'rms',
 };
 
 export function useVSCodeBreadcrumbsLogic(props: VSCodeBreadcrumbsProps) {
@@ -111,7 +148,6 @@ export function useVSCodeBreadcrumbsLogic(props: VSCodeBreadcrumbsProps) {
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  // Close popover when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
@@ -123,14 +159,15 @@ export function useVSCodeBreadcrumbsLogic(props: VSCodeBreadcrumbsProps) {
   }, []);
 
   const segments: BreadcrumbSegment[] = useMemo(() => {
+    // 1. Root Tier: White Caves HQ
     const segs: BreadcrumbSegment[] = [
       {
         id: 'HQ',
         label: 'White Caves HQ',
         icon: '🏢',
-        route: '/dashboard/departments',
+        route: '/dashboard/dms/departments',
         level: 'ROOT',
-        siblings: Object.entries(SYSTEM_MAP).map(([key, sys]) => ({
+        siblings: Object.entries(CANONICAL_SUBSYSTEM_MAP).map(([key, sys]) => ({
           id: key.toUpperCase(),
           label: sys.label,
           route: sys.root,
@@ -140,69 +177,73 @@ export function useVSCodeBreadcrumbsLogic(props: VSCodeBreadcrumbsProps) {
 
     const cleanPath = activePath.replace(/^\/dashboard\/?/, '');
     const rawParts = cleanPath.split('/').filter(Boolean);
+    if (rawParts.length === 0) return segs;
 
-    // Normalize /dashboard/explorer/* sub-routes to canonical hierarchy
-    let parts = [...rawParts];
-    if (parts[0] === 'explorer' && parts.length > 1) {
-      const expDomain = parts[1];
-      const expId = parts[2];
-      const normDomain = expDomain === 'properties' ? 'REproperties' : expDomain;
-      parts = expId ? [normDomain, expId] : [normDomain];
+    // Resolve subsystem key
+    let sysKey = rawParts[0];
+    if (sysKey === 'explorer' && rawParts.length > 1) {
+      sysKey = LEGACY_FALLBACK_ALIASES[rawParts[1]] || rawParts[1];
+    } else if (LEGACY_FALLBACK_ALIASES[sysKey]) {
+      sysKey = LEGACY_FALLBACK_ALIASES[sysKey];
     }
 
-    if (parts.length === 0) return segs;
-
-    const sysKey = parts[0];
-    const system = SYSTEM_MAP[sysKey];
-
-    if (system) {
-      segs.push({
-        id: sysKey.toUpperCase(),
-        label: system.label,
-        route: system.root,
-        level: 'SYSTEM',
-        siblings: Object.entries(SYSTEM_MAP).map(([k, s]) => ({
-          id: k.toUpperCase(),
-          label: s.label,
-          route: s.root,
-        })),
-      });
-
-      if (parts[1]) {
-        const catKey = parts[1];
-        const categoryMatch = system.categories.find(c => c.id === catKey);
-
-        segs.push({
-          id: catKey.toUpperCase(),
-          label: categoryMatch ? categoryMatch.label : catKey,
-          route: categoryMatch ? categoryMatch.route : `/dashboard/${sysKey}/${catKey}`,
-          level: 'CATEGORY',
-          siblings: system.categories.map(c => ({
-            id: c.id.toUpperCase(),
-            label: c.label,
-            route: c.route,
-          })),
-        });
-
-        if (parts[2]) {
-          const itemKey = parts[2];
-          segs.push({
-            id: itemKey.toUpperCase(),
-            label: `Item ${itemKey}`,
-            route: `/dashboard/${sysKey}/${catKey}/${itemKey}`,
-            level: 'ENTITY',
-          });
-        }
-      }
-    } else {
-      parts.forEach((p, idx) => {
+    const subsystem = CANONICAL_SUBSYSTEM_MAP[sysKey];
+    if (!subsystem) {
+      // Unmapped or standalone portal
+      rawParts.forEach((p, idx) => {
         segs.push({
           id: p.toUpperCase(),
           label: p,
-          route: `/dashboard/${parts.slice(0, idx + 1).join('/')}`,
+          route: `/dashboard/${rawParts.slice(0, idx + 1).join('/')}`,
           level: idx === 0 ? 'SYSTEM' : 'CATEGORY',
         });
       });
+      return segs;
+    }
+
+    // 2. Subsystem Tier: e.g. PMS: Property Portfolio
+    segs.push({
+      id: sysKey.toUpperCase(),
+      label: subsystem.label,
+      icon: subsystem.icon,
+      route: subsystem.root,
+      level: 'SYSTEM',
+      siblings: Object.entries(CANONICAL_SUBSYSTEM_MAP).map(([k, s]) => ({
+        id: k.toUpperCase(),
+        label: s.label,
+        route: s.root,
+      })),
+    });
+
+    // 3. Collection Tier: e.g. Units Inventory / Properties
+    const collectionId = rawParts[1] || subsystem.collections[0]?.id;
+    if (collectionId) {
+      const match = subsystem.collections.find(c => c.id === collectionId);
+      const collectionLabel = match ? match.label : collectionId.charAt(0).toUpperCase() + collectionId.slice(1);
+      const collectionRoute = match ? match.route : `/dashboard/${sysKey}/${collectionId}`;
+
+      segs.push({
+        id: collectionId.toUpperCase(),
+        label: collectionLabel,
+        route: collectionRoute,
+        level: 'CATEGORY',
+        siblings: subsystem.collections.map(c => ({
+          id: c.id.toUpperCase(),
+          label: c.label,
+          route: c.route,
+        })),
+      });
+
+      // 4. Entity / Item Record Tier: e.g. Villa 420 / PROP-108
+      const recordId = rawParts[2];
+      if (recordId) {
+        segs.push({
+          id: recordId.toUpperCase(),
+          label: `Record ${recordId}`,
+          route: `/dashboard/${sysKey}/${collectionId}/${recordId}`,
+          level: 'ENTITY',
+        });
+      }
     }
 
     return segs;
