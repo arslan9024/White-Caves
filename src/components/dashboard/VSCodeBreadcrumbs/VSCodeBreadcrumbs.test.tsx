@@ -85,4 +85,12 @@ describe('VSCodeBreadcrumbs Component Suite', () => {
     backSpy.mockRestore();
     forwardSpy.mockRestore();
   });
+
+  it('normalizes /dashboard/explorer sub-routes into canonical hierarchy', () => {
+    renderBreadcrumbs('/dashboard/explorer/departments/slots');
+
+    expect(screen.getByTestId('breadcrumb-segment-hq')).toBeInTheDocument();
+    expect(screen.getByTestId('breadcrumb-segment-departments')).toBeInTheDocument();
+    expect(screen.getByTestId('breadcrumb-segment-slots')).toBeInTheDocument();
+  });
 });
