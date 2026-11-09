@@ -9,19 +9,19 @@ describe('FounderDepartmentGrid (DOM-02 / Target T-0104)', () => {
     render(<FounderDepartmentGrid onNavigateToModule={handleNavigate} />);
 
     expect(screen.getByText('🏛️ 12 Corporate Departments Operational Status')).toBeInTheDocument();
-    expect(screen.getByText('Off-Plan & Strategic Launches')).toBeInTheDocument();
+    expect(screen.getByText('Off-Plan & Primary Sales')).toBeInTheDocument();
 
     const offPlanCard = screen.getByTestId('dept-card-dept-02');
     fireEvent.click(offPlanCard);
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText('Off-Plan & Strategic Launches', { selector: 'h3' })).toBeInTheDocument();
-    expect(screen.getByText(/👤 Salma Al-Nuaimi/i)).toBeInTheDocument();
+    expect(screen.getByText('Off-Plan & Primary Sales', { selector: 'h3' })).toBeInTheDocument();
+    expect(screen.getByText(/👤 Tariq Al-Mansoor/i)).toBeInTheDocument();
 
     const consoleBtn = screen.getByRole('button', { name: /Open Dedicated Department Console/i });
     fireEvent.click(consoleBtn);
 
-    expect(handleNavigate).toHaveBeenCalledWith('offplan-launches');
+    expect(handleNavigate).toHaveBeenCalledWith('off-plan-tracker');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
