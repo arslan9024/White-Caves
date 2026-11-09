@@ -180,7 +180,8 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
     let eventSource: EventSource | null = null;
     let fallbackIntervalId: ReturnType<typeof setInterval> | null = null;
 
-    if (typeof window !== 'undefined' && 'EventSource' in window) {
+    const isBrowser = typeof window !== 'undefined';
+    if (isBrowser && 'EventSource' in window) {
       try {
         const streamUrl = '/api/linda/metrics/stream';
         eventSource = new EventSource(streamUrl);
@@ -209,18 +210,20 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
             eventSource.close();
             eventSource = null;
           }
-          if (!fallbackIntervalId) {
-            fallbackIntervalId = setInterval(() => {
+          if (!fallbackIntervalId && isBrowser) {
+            fallbackIntervalId = window.setInterval(() => {
               void refreshLindaStatus();
             }, 15000);
           }
         };
       } catch {
-        fallbackIntervalId = setInterval(() => {
-          void refreshLindaStatus();
-        }, 15000);
+        if (isBrowser) {
+          fallbackIntervalId = window.setInterval(() => {
+            void refreshLindaStatus();
+          }, 15000);
+        }
       }
-    } else {
+    } else if (isBrowser) {
       fallbackIntervalId = window.setInterval(() => {
         void refreshLindaStatus();
       }, 15000);
