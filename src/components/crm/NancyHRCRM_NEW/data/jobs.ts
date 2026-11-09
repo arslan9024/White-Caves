@@ -5,7 +5,7 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import { CORPORATE_DEPARTMENTS_12, SUPERVISORS_108 } from '../../../../data/assistants108Registry.data';
+import { CORPORATE_DEPARTMENTS_12, SUPERVISORS_108 } from '../../../../data/assistants108Registry.data.ts';
 
 export interface Job {
   id: string;
