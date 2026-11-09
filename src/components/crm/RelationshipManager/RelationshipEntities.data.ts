@@ -25,6 +25,10 @@ export const CANONICAL_ALL_ENTITIES: EntityNode[] = [
       goAmlId: 'FIU-AE-ORG-9182',
       registeredAddress: 'Level 24, Boulevard Plaza Tower 1, Downtown Dubai, UAE',
       isRootEntity: true,
+      tradeLicenseActivities: [
+        'Real Estate Buying & Selling Brokerage (Code: 7010.01)',
+        'Leasing Property Brokerage Agents (Code: 7020.01)',
+      ].join(' | '),
     },
   },
   {
