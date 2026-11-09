@@ -214,10 +214,6 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({
           <span>🏡 Secondary Market Portal</span>
           <span>→</span>
         </MenuLinkBtn>
-        <MenuLinkBtn onClick={() => handleNavigate('/profile')}>
-          <span>👤 {PREFERENCE_LABELS.profileLink}</span>
-          <span>→</span>
-        </MenuLinkBtn>
         <MenuLinkBtn className="logout-btn" onClick={handleLogout}>
           <span>🚪 {PREFERENCE_LABELS.logoutBtn}</span>
         </MenuLinkBtn>
@@ -240,6 +236,12 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({
           <span className="val" style={{ color: '#10B981' }}>121</span>
         </DropdownTelemetryPill>
       </TelemetryPillsRow>
+
+      {/* Avatar Upload & Crop Modal */}
+      <AvatarUploadCropModal
+        isOpen={isCropModalOpen}
+        onClose={() => setIsCropModalOpen(false)}
+      />
     </DropdownContainer>
   );
 };
