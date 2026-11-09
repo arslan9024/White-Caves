@@ -1379,15 +1379,16 @@ export function buildTaskFromDef(
   };
 
   const deptNum = (index % 12) + 1;
+  const canonicalDept = CORPORATE_DEPARTMENTS_12[deptNum - 1];
   const subDeptNum = (index % 9) + 1;
   const squadNum = (index % 12) + 1;
   const supNum = (index % 12) + 1;
 
   const lineage: TaskHierarchyLineage = {
-    deptId: `DEPT-${String(deptNum).padStart(2, '0')}`,
-    deptName: `Department ${deptNum}`,
+    deptId: canonicalDept?.code || `DEPT-${String(deptNum).padStart(2, '0')}`,
+    deptName: canonicalDept?.name || `Department ${deptNum}`,
     directorId: `DIR-${String(deptNum).padStart(2, '0')}`,
-    directorName: dir,
+    directorName: canonicalDept?.managerAi?.name || dir,
     subDeptId: `SUB-${String(subDeptNum).padStart(2, '0')}`,
     subDeptName: `Sub-Department ${subDeptNum}`,
     managerId: `MGR-${String(subDeptNum).padStart(2, '0')}`,
