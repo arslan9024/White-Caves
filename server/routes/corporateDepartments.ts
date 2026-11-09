@@ -26,7 +26,7 @@ const CACHE_TTL_CORPORATE_DEPTS = 60; // 60 seconds
 
 export const invalidateCorporateDepartmentsCache = async () => {
   try {
-    await cacheService.delete(CACHE_KEY_CORPORATE_DEPTS);
+    await cacheService.del(CACHE_KEY_CORPORATE_DEPTS);
   } catch {
     // ignore
   }
