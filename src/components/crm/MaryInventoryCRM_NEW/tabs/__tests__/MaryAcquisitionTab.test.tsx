@@ -13,23 +13,23 @@ describe('MaryAcquisitionTab', () => {
     vi.clearAllMocks();
   });
 
-  it('renders property intake form fields cleanly', () => {
+  it('renders property acquisition form sections cleanly', () => {
     render(<MaryAcquisitionTab />);
-    expect(screen.getByText(/Direct Property Onboarding/i)).toBeInTheDocument();
+    expect(screen.getByText(/Property Acquisition Form/i)).toBeInTheDocument();
     expect(screen.getByText(/Property Details/i)).toBeInTheDocument();
     expect(screen.getByText(/Pricing & Availability/i)).toBeInTheDocument();
     expect(screen.getByText(/Landlord Information/i)).toBeInTheDocument();
-    expect(screen.getByText(/Required Compliance Documents/i)).toBeInTheDocument();
+    expect(screen.getByText(/Document Checklist/i)).toBeInTheDocument();
   });
 
-  it('allows filling property details and pricing', () => {
+  it('allows filling property title, unit number, and landlord info', () => {
     render(<MaryAcquisitionTab />);
 
-    const titleInput = screen.getByPlaceholderText(/e\.g\. Luxury 2BR Apartment in Downtown/i);
+    const titleInput = screen.getByPlaceholderText(/e\.g\. 2BR Apartment in Downtown Dubai/i);
     fireEvent.change(titleInput, { target: { value: 'Luxury 3BR Villa DAMAC Hills' } });
     expect(titleInput).toHaveValue('Luxury 3BR Villa DAMAC Hills');
 
-    const unitInput = screen.getByPlaceholderText(/e\.g\. 1402, Villa 7B/i);
+    const unitInput = screen.getByPlaceholderText(/e\.g\. 402, Villa 12/i);
     fireEvent.change(unitInput, { target: { value: 'Villa 101' } });
     expect(unitInput).toHaveValue('Villa 101');
 
@@ -47,17 +47,17 @@ describe('MaryAcquisitionTab', () => {
 
     render(<MaryAcquisitionTab />);
 
-    fireEvent.change(screen.getByPlaceholderText(/e\.g\. Luxury 2BR Apartment in Downtown/i), {
+    fireEvent.change(screen.getByPlaceholderText(/e\.g\. 2BR Apartment in Downtown Dubai/i), {
       target: { value: 'Akoya Oxygen 3BR' },
     });
     fireEvent.change(screen.getByPlaceholderText(/Full legal name/i), {
       target: { value: 'Hamdan Al Nahyan' },
     });
-    fireEvent.change(screen.getByPlaceholderText(/e\.g\. 180000/i), {
+    fireEvent.change(screen.getByPlaceholderText(/e\.g\. 120000/i), {
       target: { value: '250000' },
     });
 
-    const submitBtn = screen.getByRole('button', { name: /Submit Property for Onboarding/i });
+    const submitBtn = screen.getByRole('button', { name: /\+ Add to Inventory/i });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
@@ -65,13 +65,13 @@ describe('MaryAcquisitionTab', () => {
         '/api/properties',
         expect.objectContaining({
           method: 'POST',
-          headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+          body: expect.any(String),
         })
       );
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/Property successfully onboarded/i)).toBeInTheDocument();
+      expect(screen.getByText(/Property Acquired!/i)).toBeInTheDocument();
     });
   });
 
@@ -84,11 +84,11 @@ describe('MaryAcquisitionTab', () => {
 
     render(<MaryAcquisitionTab />);
 
-    fireEvent.change(screen.getByPlaceholderText(/e\.g\. Luxury 2BR Apartment in Downtown/i), {
+    fireEvent.change(screen.getByPlaceholderText(/e\.g\. 2BR Apartment in Downtown Dubai/i), {
       target: { value: 'Unverified Unit' },
     });
 
-    const submitBtn = screen.getByRole('button', { name: /Submit Property for Onboarding/i });
+    const submitBtn = screen.getByRole('button', { name: /\+ Add to Inventory/i });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
