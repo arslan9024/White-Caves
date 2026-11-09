@@ -33,7 +33,7 @@ export interface SidebarDepartmentCardProps {
   onSelect: () => void;
   onDragStart: (e: React.DragEvent) => void;
   onDragOver: (e: React.DragEvent) => void;
-  onDragLeave: () => void;
+  onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onDragEnd: () => void;
   onDemote: (e: React.MouseEvent) => void;
