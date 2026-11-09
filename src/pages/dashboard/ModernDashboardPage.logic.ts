@@ -9,6 +9,7 @@ import { useState, useCallback } from 'react';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
 export const VALID_DASHBOARD_TABS: ActivityTab[] = [
+  'zoe',
   'departments',
   'employees',
   'aiams',
