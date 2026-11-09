@@ -139,7 +139,16 @@ export function useVSCodeBreadcrumbsLogic(props: VSCodeBreadcrumbsProps) {
     ];
 
     const cleanPath = activePath.replace(/^\/dashboard\/?/, '');
-    const parts = cleanPath.split('/').filter(Boolean);
+    const rawParts = cleanPath.split('/').filter(Boolean);
+
+    // Normalize /dashboard/explorer/* sub-routes to canonical hierarchy
+    let parts = [...rawParts];
+    if (parts[0] === 'explorer' && parts.length > 1) {
+      const expDomain = parts[1];
+      const expId = parts[2];
+      const normDomain = expDomain === 'properties' ? 'REproperties' : expDomain;
+      parts = expId ? [normDomain, expId] : [normDomain];
+    }
 
     if (parts.length === 0) return segs;
 
