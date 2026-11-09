@@ -5,6 +5,7 @@ interface PhoneAuthFormProps {
   onPhoneChange: (value: string) => void;
   loading: boolean;
   error: string | null;
+  onRequestOtp?: () => void;
 }
 
 export const PhoneAuthForm = memo(function PhoneAuthForm({
@@ -12,19 +13,33 @@ export const PhoneAuthForm = memo(function PhoneAuthForm({
   onPhoneChange,
   loading,
   error,
+  onRequestOtp,
 }: PhoneAuthFormProps) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onRequestOtp) {
+      onRequestOtp();
+    }
+  };
+
   return (
-    <form className="auth-form">
+    <form className="auth-form" onSubmit={handleSubmit}>
       <div className="form-group">
-        <input
-          id="signin-phone"
-          aria-label="Phone number"
-          type="tel"
-          placeholder="+971 50 123 4567"
-          value={phone}
-          onChange={e => onPhoneChange(e.target.value)}
-          className="form-input"
-        />
+        <label htmlFor="signin-phone" className="auth-field-label">
+          UAE Mobile Number
+        </label>
+        <div className="auth-phone-input-wrapper">
+          <span className="auth-phone-prefix">🇦🇪 +971</span>
+          <input
+            id="signin-phone"
+            aria-label="Phone number"
+            type="tel"
+            placeholder="50 123 4567"
+            value={phone.replace(/^\+971\s*/, '')}
+            onChange={e => onPhoneChange(`+971${e.target.value.replace(/[^\d]/g, '')}`)}
+            className="form-input auth-phone-field"
+          />
+        </div>
       </div>
 
       {error && (
