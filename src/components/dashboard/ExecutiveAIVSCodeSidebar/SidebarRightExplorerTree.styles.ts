@@ -60,28 +60,34 @@ export const SearchBoxContainer = styled.div`
   }
 `;
 
-export const SectionCard = styled.div`
-  border: 1px solid rgba(255, 255, 255, 0.08);
+export const SectionCard = styled.div<{ $isCardSelected?: boolean }>`
+  border: 1px solid ${props => (props.$isCardSelected ? 'rgba(239, 68, 68, 0.45)' : 'rgba(255, 255, 255, 0.08)')};
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.6);
+  background: ${props => (props.$isCardSelected ? 'rgba(239, 68, 68, 0.04)' : 'rgba(15, 23, 42, 0.6)')};
   overflow: hidden;
+  transition: all 0.15s ease;
 
   [data-theme='light'] & {
-    background: #ffffff;
-    border-color: #e2e8f0;
+    background: ${props => (props.$isCardSelected ? 'rgba(239, 68, 68, 0.03)' : '#ffffff')};
+    border-color: ${props => (props.$isCardSelected ? '#EF4444' : '#e2e8f0')};
   }
 `;
 
-export const SectionHeader = styled.button<{ $isExpanded: boolean }>`
+export const SectionHeader = styled.button<{ $isExpanded: boolean; $isCurrentRoute?: boolean }>`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  background: ${props => (props.$isExpanded ? 'rgba(239, 68, 68, 0.08)' : 'transparent')};
+  background: ${props =>
+    props.$isCurrentRoute
+      ? 'rgba(239, 68, 68, 0.14)'
+      : props.$isExpanded
+        ? 'rgba(239, 68, 68, 0.08)'
+        : 'transparent'};
   border: none;
   cursor: pointer;
-  color: #f1f5f9;
+  color: ${props => (props.$isCurrentRoute ? '#EF4444' : '#f1f5f9')};
   font-size: 0.76rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -89,8 +95,13 @@ export const SectionHeader = styled.button<{ $isExpanded: boolean }>`
   transition: all 0.15s ease;
 
   [data-theme='light'] & {
-    color: #0f172a;
-    background: ${props => (props.$isExpanded ? 'rgba(239, 68, 68, 0.05)' : 'transparent')};
+    color: ${props => (props.$isCurrentRoute ? '#EF4444' : '#0f172a')};
+    background: ${props =>
+      props.$isCurrentRoute
+        ? 'rgba(239, 68, 68, 0.08)'
+        : props.$isExpanded
+          ? 'rgba(239, 68, 68, 0.05)'
+          : 'transparent'};
   }
 
   &:hover {
@@ -132,7 +143,7 @@ export const SectionBody = styled.div`
   }
 `;
 
-export const SubgroupHeader = styled.div`
+export const SubgroupHeader = styled.div<{ $isSubActive?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -141,11 +152,12 @@ export const SubgroupHeader = styled.div`
   cursor: pointer;
   font-size: 0.72rem;
   font-weight: 600;
-  color: #cbd5e1;
+  color: ${props => (props.$isSubActive ? '#EF4444' : '#cbd5e1')};
+  background: ${props => (props.$isSubActive ? 'rgba(239, 68, 68, 0.08)' : 'transparent')};
   transition: all 0.12s ease;
 
   [data-theme='light'] & {
-    color: #334155;
+    color: ${props => (props.$isSubActive ? '#EF4444' : '#334155')};
   }
 
   &:hover {
@@ -166,7 +178,9 @@ export const TreeItemRow = styled.div<{ $isActive?: boolean }>`
   border-radius: 4px;
   font-size: 0.7rem;
   color: ${props => (props.$isActive ? '#ef4444' : '#94a3b8')};
-  background: ${props => (props.$isActive ? 'rgba(239, 68, 68, 0.1)' : 'transparent')};
+  background: ${props => (props.$isActive ? 'rgba(239, 68, 68, 0.12)' : 'transparent')};
+  font-weight: ${props => (props.$isActive ? 700 : 500)};
+  border-left: 2px solid ${props => (props.$isActive ? '#ef4444' : 'transparent')};
   cursor: pointer;
   transition: background 0.12s ease;
 
@@ -195,7 +209,7 @@ export const TreeItemRow = styled.div<{ $isActive?: boolean }>`
     padding: 1px 5px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.06);
-    color: #64748b;
+    color: ${props => (props.$isActive ? '#ef4444' : '#64748b')};
 
     [data-theme='light'] & {
       background: #e2e8f0;
