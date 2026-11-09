@@ -24,21 +24,28 @@ describe('PropertyQueryService', () => {
       expect(parsed.area).toBe('downtown dubai');
     });
 
-    it('extracts price ceiling and floor from currency expressions', () => {
-      const parsed = queryService.parseNaturalLanguageQuery('3BR apartment between 1.5M and 2.5M in Palm Jumeirah');
+    it('extracts price ceiling and purpose from query text', () => {
+      const parsed = queryService.parseNaturalLanguageQuery('3BR apartment under 2.5M in Palm Jumeirah for rent');
       expect(parsed.minRooms).toBe(3);
       expect(parsed.propertyType).toBe('apartment');
-      expect(parsed.minPrice).toBe(1500000);
       expect(parsed.maxPrice).toBe(2500000);
+      expect(parsed.purpose).toBe('rent');
       expect(parsed.area).toBe('palm jumeirah');
     });
 
-    it('extracts luxury features and amenities', () => {
-      const parsed = queryService.parseNaturalLanguageQuery('luxury penthouse with private pool and sea view in Marina');
+    it('extracts luxury amenities tags and view type', () => {
+      const parsed = queryService.parseNaturalLanguageQuery('luxury penthouse with pool and garden having sea view in Marina');
       expect(parsed.propertyType).toBe('penthouse');
-      expect(parsed.features).toContain('pool');
-      expect(parsed.features).toContain('sea view');
+      expect(parsed.tags).toContain('pool');
+      expect(parsed.tags).toContain('garden');
+      expect(parsed.viewType).toBe('sea');
       expect(parsed.area).toBe('marina');
+    });
+
+    it('formats numbers into readable millions and thousands currency strings', () => {
+      expect(queryService.formatPrice(3500000)).toBe('AED 3.5M');
+      expect(queryService.formatPrice(450000)).toBe('AED 450K');
+      expect(queryService.formatPrice(800)).toBe('AED 800');
     });
   });
 });
