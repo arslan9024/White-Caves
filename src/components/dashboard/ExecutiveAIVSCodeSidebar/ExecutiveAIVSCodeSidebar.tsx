@@ -58,6 +58,14 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
     if (onSelectAgent) onSelectAgent(agentId, agentName);
   };
 
+  const [isZoeSubNodesExpanded, setIsZoeSubNodesExpanded] = useState(true);
+  const [isManagersExpanded, setIsManagersExpanded] = useState(true);
+
+  const handleOpenZoeRoot = () => {
+    setSelectedAgentId('zoe');
+    if (onSelectAgent) onSelectAgent('zoe', 'AI Zoe · Chief Operations Officer');
+  };
+
   return (
     <AISidebarLayoutContainer
       $isCollapsed={isCollapsed}
