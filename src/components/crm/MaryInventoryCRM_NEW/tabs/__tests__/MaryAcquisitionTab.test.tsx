@@ -15,11 +15,11 @@ describe('MaryAcquisitionTab', () => {
 
   it('renders property acquisition form sections cleanly', () => {
     render(<MaryAcquisitionTab />);
-    expect(screen.getByText(/Property Acquisition Form/i)).toBeInTheDocument();
-    expect(screen.getByText(/Property Details/i)).toBeInTheDocument();
-    expect(screen.getByText(/Pricing & Availability/i)).toBeInTheDocument();
-    expect(screen.getByText(/Landlord Information/i)).toBeInTheDocument();
-    expect(screen.getByText(/Document Checklist/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: /Property Acquisition Form/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 4, name: /Property Details/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 4, name: /Pricing & Availability/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 4, name: /Landlord Contact/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 4, name: /Document Checklist/i })).toBeInTheDocument();
   });
 
   it('allows filling property title, unit number, and landlord info', () => {
@@ -33,7 +33,7 @@ describe('MaryAcquisitionTab', () => {
     fireEvent.change(unitInput, { target: { value: 'Villa 101' } });
     expect(unitInput).toHaveValue('Villa 101');
 
-    const landlordNameInput = screen.getByPlaceholderText(/Full legal name/i);
+    const landlordNameInput = screen.getByPlaceholderText(/Full Name/i);
     fireEvent.change(landlordNameInput, { target: { value: 'Rashid Al Maktoum' } });
     expect(landlordNameInput).toHaveValue('Rashid Al Maktoum');
   });
@@ -50,7 +50,7 @@ describe('MaryAcquisitionTab', () => {
     fireEvent.change(screen.getByPlaceholderText(/e\.g\. 2BR Apartment in Downtown Dubai/i), {
       target: { value: 'Akoya Oxygen 3BR' },
     });
-    fireEvent.change(screen.getByPlaceholderText(/Full legal name/i), {
+    fireEvent.change(screen.getByPlaceholderText(/Full Name/i), {
       target: { value: 'Hamdan Al Nahyan' },
     });
     fireEvent.change(screen.getByPlaceholderText(/e\.g\. 120000/i), {
@@ -79,6 +79,7 @@ describe('MaryAcquisitionTab', () => {
     const mockAuthFetch = vi.mocked(authFetchModule.authFetch);
     mockAuthFetch.mockResolvedValueOnce({
       ok: false,
+      status: 400,
       json: async () => ({ success: false, message: 'DLD Title Deed verification required' }),
     } as any);
 
