@@ -13,8 +13,11 @@ import { RUP_OPERATIONAL_TASKS } from './TaskManager.rup.data';
 
 export const ALL_RAW_OPERATIONAL_TASKS = [...BASE_OPERATIONAL_TASKS, ...RUP_OPERATIONAL_TASKS];
 
+import { CORPORATE_DEPARTMENTS_12 } from '../../../../data/assistants108Registry.data.ts';
+
 export const OPERATIONAL_TOOL_TASKS: TaskNode[] = ALL_RAW_OPERATIONAL_TASKS.map((t, idx) => {
   const deptNum = (idx % 12) + 1;
+  const canonicalDept = CORPORATE_DEPARTMENTS_12[deptNum - 1];
   const subDeptNum = (idx % 9) + 1;
   const squadNum = (idx % 12) + 1;
   const supNum = (idx % 12) + 1;
@@ -25,10 +28,10 @@ export const OPERATIONAL_TOOL_TASKS: TaskNode[] = ALL_RAW_OPERATIONAL_TASKS.map(
     action: `Execute automated tool pipeline: ${t.title}`,
     results: `Verified output artifact and telemetry log generated for ${t.taskCode}`,
     lineage: {
-      deptId: `DEPT-${String(deptNum).padStart(2, '0')}`,
-      deptName: `Department ${deptNum}`,
+      deptId: canonicalDept?.code || `DEPT-${String(deptNum).padStart(2, '0')}`,
+      deptName: canonicalDept?.name || `Department ${deptNum}`,
       directorId: `DIR-${String(deptNum).padStart(2, '0')}`,
-      directorName: t.reportingChain.directorName,
+      directorName: canonicalDept?.managerAi?.name || t.reportingChain.directorName,
       subDeptId: `SUB-${String(subDeptNum).padStart(2, '0')}`,
       subDeptName: `Sub-Department ${subDeptNum}`,
       managerId: `MGR-${String(subDeptNum).padStart(2, '0')}`,
