@@ -168,6 +168,96 @@ export const ViewingsPage: React.FC = () => {
           ))}
         </Grid>
       )}
+
+      {reschedulingViewingId && activeViewing && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="reschedule-viewing-title"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: 480,
+              backgroundColor: '#0F172A',
+              borderRadius: 16,
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              padding: '1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.25rem',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                <Calendar size={20} color="#EF4444" />
+                <h3 id="reschedule-viewing-title" style={{ margin: 0, color: '#FFFFFF', fontSize: '1.125rem' }}>
+                  Reschedule Viewing
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={handleCancelReschedule}
+                style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div>
+              <p style={{ margin: 0, color: '#94A3B8', fontSize: '0.875rem' }}>
+                Client: <strong style={{ color: '#FFFFFF' }}>{activeViewing.leadName}</strong>
+              </p>
+              <p style={{ margin: '0.25rem 0 0', color: '#94A3B8', fontSize: '0.875rem' }}>
+                Property: <strong style={{ color: '#FFFFFF' }}>{activeViewing.propertyName}</strong>
+              </p>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', color: '#CBD5E1', fontSize: '0.8125rem', marginBottom: '0.5rem', fontWeight: 600 }}>
+                Select New Date & Time
+              </label>
+              <input
+                type="datetime-local"
+                data-testid="reschedule-datetime-input"
+                value={selectedDateTime}
+                onChange={e => setSelectedDateTime(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  background: '#1E293B',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: 8,
+                  color: '#FFFFFF',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            <TaskActionBar
+              isDirty={Boolean(selectedDateTime)}
+              onSave={handleSaveReschedule}
+              onCancel={handleCancelReschedule}
+              saveLabel="Confirm Reschedule"
+              cancelLabel="Cancel"
+              saveTestId="confirm-reschedule-btn"
+            />
+          </div>
+        </div>
+      )}
     </PageContainer>
   );
 };
