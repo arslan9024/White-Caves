@@ -6,85 +6,37 @@
  * Protocol: Turing Protocol Law T11 (Level 5 RBAC Boundary & Sovereign Privacy Vault)
  */
 
-import React, { FC, Suspense, lazy } from 'react';
-import SkeletonLoader from '../../components/common/SkeletonLoader';
+import React, { FC } from 'react';
+import { DepartmentManagementWorkspace } from '../../components/crm/DepartmentManager';
+import { DepartmentOverviewView } from '../../components/crm/DepartmentManager/DepartmentOverviewView';
+import { EmployeeManagerView } from '../../components/crm/EmployeeManager';
+import { EmployeeOverviewView } from '../../components/crm/EmployeeManager/EmployeeOverviewView';
+import { AiAssistantManagerView } from '../../components/crm/AiAssistantManager';
+import { TaskManagerView } from '../../components/crm/TaskManager';
+import { TaskOverviewView } from '../../components/crm/TaskManager/TaskOverviewView';
+import { LeaderboardView } from '../../components/crm/Leaderboard';
+import { LeaderboardOverviewView } from '../../components/crm/Leaderboard/LeaderboardOverviewView';
+import { REPropertyManagerView } from '../../components/crm/REPropertyManager';
+import { REPropertyOverviewView } from '../../components/crm/REPropertyManager/REPropertyOverviewView';
+import { DealManagerView } from '../../components/crm/DealManager';
+import { DealOverviewView } from '../../components/crm/DealManager/DealOverviewView';
+import { DocumentManagerView } from '../../components/crm/DocumentManager';
+import { DocumentOverviewView } from '../../components/crm/DocumentManager/DocumentOverviewView';
+import { CustomerManagerView } from '../../components/crm/CustomerManager';
+import { CustomerOverviewView } from '../../components/crm/CustomerManager/CustomerOverviewView';
+import { RelationshipManagerView } from '../../components/crm/RelationshipManager';
+import { ErmsOverviewView } from '../../components/crm/RelationshipManager/ErmsOverviewView';
+import { RoleManagerView } from '../../components/crm/RoleManager';
+import { LandlordManagerView } from '../../components/crm/LandlordManager';
+import { TenantManagerView } from '../../components/crm/TenantManager';
+import { BrokerManagerView } from '../../components/crm/BrokerManager';
+import LindaWhatsAppCRM from '../../components/crm/LindaWhatsAppCRM';
+import { AICommandCenter } from '../../components/crm/AICommandCenter/AICommandCenter';
 import { ProfileDashboardView } from './ProfileDashboardView';
-import { LegacyDomainRouter } from './LegacyDomainRouter';
-import { checkDashboardRoleGuard } from './DashboardRoleGuards';
+import { GuestDashboardGatewayView } from './GuestDashboardGatewayView';
+import { AccessDeniedView } from './AccessDeniedView';
 import { UserRoleContext } from '../../context/UserRoleContext';
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
-
-// Lazy-loaded CRM modules for optimized initial dashboard bundle
-const DepartmentManagementWorkspace = lazy(() =>
-  import('../../components/crm/DepartmentManager').then(m => ({ default: m.DepartmentManagementWorkspace }))
-);
-const DepartmentOverviewView = lazy(() =>
-  import('../../components/crm/DepartmentManager/DepartmentOverviewView').then(m => ({ default: m.DepartmentOverviewView }))
-);
-const EmployeeManagerView = lazy(() =>
-  import('../../components/crm/EmployeeManager').then(m => ({ default: m.EmployeeManagerView }))
-);
-const EmployeeOverviewView = lazy(() =>
-  import('../../components/crm/EmployeeManager/EmployeeOverviewView').then(m => ({ default: m.EmployeeOverviewView }))
-);
-const AiAssistantManagerView = lazy(() =>
-  import('../../components/crm/AiAssistantManager').then(m => ({ default: m.AiAssistantManagerView }))
-);
-const TaskManagerView = lazy(() =>
-  import('../../components/crm/TaskManager').then(m => ({ default: m.TaskManagerView }))
-);
-const TaskOverviewView = lazy(() =>
-  import('../../components/crm/TaskManager/TaskOverviewView').then(m => ({ default: m.TaskOverviewView }))
-);
-const LeaderboardView = lazy(() =>
-  import('../../components/crm/Leaderboard').then(m => ({ default: m.LeaderboardView }))
-);
-const LeaderboardOverviewView = lazy(() =>
-  import('../../components/crm/Leaderboard/LeaderboardOverviewView').then(m => ({ default: m.LeaderboardOverviewView }))
-);
-const REPropertyManagerView = lazy(() =>
-  import('../../components/crm/REPropertyManager').then(m => ({ default: m.REPropertyManagerView }))
-);
-const REPropertyOverviewView = lazy(() =>
-  import('../../components/crm/REPropertyManager/REPropertyOverviewView').then(m => ({ default: m.REPropertyOverviewView }))
-);
-const DealManagerView = lazy(() =>
-  import('../../components/crm/DealManager').then(m => ({ default: m.DealManagerView }))
-);
-const DealOverviewView = lazy(() =>
-  import('../../components/crm/DealManager/DealOverviewView').then(m => ({ default: m.DealOverviewView }))
-);
-const DocumentManagerView = lazy(() =>
-  import('../../components/crm/DocumentManager').then(m => ({ default: m.DocumentManagerView }))
-);
-const DocumentOverviewView = lazy(() =>
-  import('../../components/crm/DocumentManager/DocumentOverviewView').then(m => ({ default: m.DocumentOverviewView }))
-);
-const CustomerManagerView = lazy(() =>
-  import('../../components/crm/CustomerManager').then(m => ({ default: m.CustomerManagerView }))
-);
-const CustomerOverviewView = lazy(() =>
-  import('../../components/crm/CustomerManager/CustomerOverviewView').then(m => ({ default: m.CustomerOverviewView }))
-);
-const RelationshipManagerView = lazy(() =>
-  import('../../components/crm/RelationshipManager').then(m => ({ default: m.RelationshipManagerView }))
-);
-const ErmsOverviewView = lazy(() =>
-  import('../../components/crm/RelationshipManager/ErmsOverviewView').then(m => ({ default: m.ErmsOverviewView }))
-);
-const RoleManagerView = lazy(() =>
-  import('../../components/crm/RoleManager').then(m => ({ default: m.RoleManagerView }))
-);
-const LandlordManagerView = lazy(() =>
-  import('../../components/crm/LandlordManager').then(m => ({ default: m.LandlordManagerView }))
-);
-const TenantManagerView = lazy(() =>
-  import('../../components/crm/TenantManager').then(m => ({ default: m.TenantManagerView }))
-);
-const BrokerManagerView = lazy(() =>
-  import('../../components/crm/BrokerManager').then(m => ({ default: m.BrokerManagerView }))
-);
-const LindaWhatsAppCRM = lazy(() => import('../../components/crm/LindaWhatsAppCRM'));
 
 export interface DashboardContentRouterProps {
   activeTab: ActivityTab;
@@ -120,19 +72,99 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   );
   const isConfirmed = isMdOrFounder || Boolean(roleContext?.isRoleConfirmed && role !== 'guest');
 
-  // Check portal / role isolation guards
-  const guardedView = checkDashboardRoleGuard({
-    role,
-    isConfirmed,
-    isMdOrFounder,
-    activeTab,
-    isRootOverview,
-    navigate,
-    onOpenRoleModal,
-  });
-  if (guardedView) return guardedView;
+  // Guard 1: Unconfirmed or Guest users are restricted from internal corporate machinery
+  if (!isMdOrFounder && (!isConfirmed || role === 'guest')) {
+    if (activeTab === 'landlord') return <LandlordManagerView />;
+    if (activeTab === 'tenant') return <TenantManagerView />;
+    if (activeTab === 'broker') return <BrokerManagerView />;
+    if (activeTab === 'profile') return <ProfileDashboardView />;
+    return <GuestDashboardGatewayView onOpenRoleModal={onOpenRoleModal} onNavigate={navigate} />;
+  }
 
-  // Direct Linda / AI Command Center selection
+  // Guard 2: Sovereign Landlord portal isolation
+  if (role === 'landlord') {
+    if (activeTab === 'departments' || activeTab === 'landlord') return <LandlordManagerView />;
+    if (activeTab === 'documents') {
+      return isRootOverview ? (
+        <DocumentOverviewView onNavigate={navigate} />
+      ) : (
+        <DocumentManagerView onNavigateBack={() => navigate('/dashboard/documents/vault')} />
+      );
+    }
+    if (activeTab === 'profile') return <ProfileDashboardView />;
+    return (
+      <AccessDeniedView
+        requiredRole="Corporate Directorate (L3+)"
+        onNavigateBack={() => navigate('/dashboard/landlord')}
+        onNavigateHome={() => navigate('/dashboard/landlord')}
+      />
+    );
+  }
+
+  // Guard 3: Sovereign Tenant portal isolation
+  if (role === 'tenant') {
+    if (activeTab === 'departments' || activeTab === 'tenant') return <TenantManagerView />;
+    if (activeTab === 'documents') {
+      return isRootOverview ? (
+        <DocumentOverviewView onNavigate={navigate} />
+      ) : (
+        <DocumentManagerView onNavigateBack={() => navigate('/dashboard/documents/vault')} />
+      );
+    }
+    if (activeTab === 'profile') return <ProfileDashboardView />;
+    return (
+      <AccessDeniedView
+        requiredRole="Corporate Directorate (L3+)"
+        onNavigateBack={() => navigate('/dashboard/tenant')}
+        onNavigateHome={() => navigate('/dashboard/tenant')}
+      />
+    );
+  }
+
+  // Guard 4: Sovereign Broker hub isolation
+  if (role === 'agent' || (role as string) === 'broker') {
+    if (activeTab === 'departments' || activeTab === 'broker') return <BrokerManagerView />;
+    if (activeTab === 'REproperties') {
+      return isRootOverview ? (
+        <REPropertyOverviewView onNavigate={navigate} />
+      ) : (
+        <REPropertyManagerView
+          onNavigateBack={() => navigate('/dashboard/REproperties/inventory')}
+        />
+      );
+    }
+    if (activeTab === 'deals') {
+      return isRootOverview ? (
+        <DealOverviewView onNavigate={navigate} />
+      ) : (
+        <DealManagerView onNavigateBack={() => navigate('/dashboard/deals/pipeline')} />
+      );
+    }
+    if (activeTab === 'customers') {
+      return isRootOverview ? (
+        <CustomerOverviewView onNavigate={navigate} />
+      ) : (
+        <CustomerManagerView onNavigateBack={() => navigate('/dashboard/customers/leads')} />
+      );
+    }
+    if (activeTab === 'documents') {
+      return isRootOverview ? (
+        <DocumentOverviewView onNavigate={navigate} />
+      ) : (
+        <DocumentManagerView onNavigateBack={() => navigate('/dashboard/documents/vault')} />
+      );
+    }
+    if (activeTab === 'profile') return <ProfileDashboardView />;
+    return (
+      <AccessDeniedView
+        requiredRole="Corporate Directorate (L3+)"
+        onNavigateBack={() => navigate('/dashboard/broker')}
+        onNavigateHome={() => navigate('/dashboard/broker')}
+      />
+    );
+  }
+
+  // Direct Linda / AI Command Center selection from Right Sidebar or URL
   if (
     activeTab === 'linda' ||
     activeAgent?.id === 'linda' ||
@@ -145,13 +177,25 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
     );
   }
 
-  if (activeTab === 'aiams' || activeTab === 'ai-command' || activeAgent?.id === 'ai-command') {
+  if (activeTab === 'aiams') {
     return (
       <AiAssistantManagerView
         selectedSubRoute={activeItemId}
         isReadOnly={isReadOnly}
         onNavigate={navigate}
       />
+    );
+  }
+
+  if (activeTab === 'ai-command' || activeAgent?.id === 'ai-command') {
+    return (
+      <div style={{ padding: '16px', flex: 1 }}>
+        <AICommandCenter
+          onSelectAgent={id =>
+            navigate(id === 'linda' ? '/dashboard/linda' : `/dashboard/aiams/${id}`)
+          }
+        />
+      </div>
     );
   }
 
@@ -293,26 +337,6 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
 
     case 'profile':
       return <ProfileDashboardView />;
-
-    // Migrated Legacy & Enterprise Domain Suite
-    case 'finance' as ActivityTab:
-    case 'audit' as ActivityTab:
-    case 'governance' as ActivityTab:
-    case 'commissions' as ActivityTab:
-    case 'performance' as ActivityTab:
-    case 'viewings' as ActivityTab:
-    case 'analytics' as ActivityTab:
-    case 'module' as ActivityTab:
-    case 'dept-view' as ActivityTab:
-      return (
-        <LegacyDomainRouter
-          tab={activeTab}
-          subItemId={activeItemId}
-          user={roleContext?.user || null}
-          onNavigate={navigate}
-        />
-      );
-
     case 'landlord' as ActivityTab:
       return <LandlordManagerView />;
     case 'tenant' as ActivityTab:
