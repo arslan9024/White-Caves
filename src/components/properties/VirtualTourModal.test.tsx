@@ -31,7 +31,7 @@ describe('VirtualTourModal (DOM-05 / 3D Matterport & VR Viewer)', () => {
     // Twilight toggle
     const twilightBtn = screen.getByText(/Daylight Mode/i);
     fireEvent.click(twilightBtn);
-    expect(screen.getByText(/Twilight Sunset/i)).toBeInTheDocument();
+    expect(screen.getByText(/Twilight Mode/i)).toBeInTheDocument();
 
     // Room hotspots
     const masterSuiteBtn = screen.getByRole('button', { name: /Master Royal Suite/i });
