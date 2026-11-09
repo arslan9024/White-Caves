@@ -13,7 +13,7 @@ import { RUP_OPERATIONAL_TASKS } from './TaskManager.rup.data';
 
 export const ALL_RAW_OPERATIONAL_TASKS = [...BASE_OPERATIONAL_TASKS, ...RUP_OPERATIONAL_TASKS];
 
-import { CORPORATE_DEPARTMENTS_12 } from '../../../../data/assistants108Registry.data.ts';
+import { CORPORATE_DEPARTMENTS_12 } from '../../../data/assistants108Registry.data';
 
 export const OPERATIONAL_TOOL_TASKS: TaskNode[] = ALL_RAW_OPERATIONAL_TASKS.map((t, idx) => {
   const deptNum = (idx % 12) + 1;
