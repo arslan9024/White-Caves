@@ -30,9 +30,8 @@ export const AiAssistantManagerView: React.FC<AiAssistantManagerViewProps> = ({
         ? 'SUPERVISOR'
         : 'all';
 
-  const [viewMode, setViewMode] = useState<'crud' | 'organogram' | 'linda'>(() => {
+  const [viewMode, setViewMode] = useState<'crud' | 'organogram'>(() => {
     if (selectedSubRoute === 'organogram') return 'organogram';
-    if (selectedSubRoute === 'linda') return 'linda';
     return 'crud';
   });
 
