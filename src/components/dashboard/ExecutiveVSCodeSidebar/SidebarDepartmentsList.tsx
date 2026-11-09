@@ -231,7 +231,7 @@ export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
             }}
             onDragStart={e => !isEmpty && handleSlotDragStart(e, slot.slotIndex)}
             onDragOver={e => handleSlotDragOver(e, slot.slotIndex)}
-            onDragLeave={() => handleSlotDragLeave(slot.slotIndex)}
+            onDragLeave={e => handleSlotDragLeave(e, slot.slotIndex)}
             onDrop={e => handleSlotDrop(e, slot.slotIndex)}
             onDragEnd={handleSlotDragEnd}
             onDemote={e => {
