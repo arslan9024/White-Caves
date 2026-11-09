@@ -20,6 +20,22 @@ export const CANONICAL_RELATIONSHIPS: RelationshipChain[] = [
     meritXPAwarded: 500,
     nodes: [
       {
+        id: 'org-001',
+        name: 'White Caves Real Estate LLC',
+        type: 'COMPANY',
+        badge: 'Apex Corporate Umbrella',
+        description: 'Licensed DLD Brokerage (ORN: 28491) holding commercial activities 7010.01 & 7020.01.',
+        color: '#EF4444',
+        deepRoute: '/dashboard/overview',
+        details: {
+          dedLicense: 'CN-1094821',
+          ornNumber: 'ORN-28491',
+          taxId: 'TRN-100458920100003',
+          activities: 'Buying & Selling Brokerage (7010.01) | Leasing Property Brokerage (7020.01)',
+          isApexRoot: true,
+        },
+      },
+      {
         id: 'user-001',
         name: 'Arslan Malik',
         type: 'USER',
