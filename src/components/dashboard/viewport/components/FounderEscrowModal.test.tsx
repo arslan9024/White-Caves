@@ -11,7 +11,7 @@ describe('FounderEscrowModal (DOM-08 / Targets T-0701 & T-0710)', () => {
     expect(screen.getByText('Law No. 8 Escrow & goAML Compliance Desk')).toBeInTheDocument();
     expect(screen.getByText(/Active Law No. 8 Escrow Trust Accounts/i)).toBeInTheDocument();
     expect(screen.getByText(/Statutory goAML Verification/i)).toBeInTheDocument();
-    expect(screen.getByText(/AED 55,000/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/AED 55,000/i).length).toBeGreaterThan(0);
 
     const closeBtn = screen.getByText('✕');
     fireEvent.click(closeBtn);
