@@ -300,9 +300,9 @@ describe('DepartmentManagementWorkspace Component (7-Category Co-Location Spec)'
 
     await waitFor(
       () => {
-        expect(screen.getByText(/Luxury Sales & Brokerage/i)).toBeInTheDocument();
-        expect(screen.getByText(/Strategic Off-Plan Developments/i)).toBeInTheDocument();
-        expect(screen.getByText(/Commercial Real Estate & Investment/i)).toBeInTheDocument();
+        expect(screen.getByText(/Customer Experience, Concierge & Hospitality/i)).toBeInTheDocument();
+        expect(screen.getByText(/Marketing, Branding & Digital Acquisition/i)).toBeInTheDocument();
+        expect(screen.getByText(/Human Resources, Performance & Recruiting/i)).toBeInTheDocument();
       },
       { timeout: 8000 }
     );
