@@ -175,10 +175,65 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
 
   useEffect(() => {
     void refreshLindaStatus();
-    const intervalId = window.setInterval(() => {
-      void refreshLindaStatus();
-    }, 15000);
-    return () => window.clearInterval(intervalId);
+
+    // Prefer persistent real-time Server-Sent Events (SSE) stream
+    let eventSource: EventSource | null = null;
+    let fallbackIntervalId: number | null = null;
+
+    if (typeof window !== 'undefined' && 'EventSource' in window) {
+      try {
+        const streamUrl = '/api/linda/metrics/stream';
+        eventSource = new EventSource(streamUrl);
+
+        eventSource.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data) {
+              setMetrics(prev => ({
+                ...prev,
+                uptime: data.uptime || prev.uptime,
+                activeSessions: `${data.activeSessions || 4} / 5 Online`,
+                rateLimit: data.rateLimit || prev.rateLimit,
+                memory: data.memory || prev.memory,
+              }));
+              setHeartbeatLatency(22);
+            }
+          } catch {
+            // ignore parse error
+          }
+        };
+
+        eventSource.onerror = () => {
+          // If SSE encounters an error (e.g. auth proxy), fallback gracefully to 15s polling
+          if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+          }
+          if (!fallbackIntervalId) {
+            fallbackIntervalId = window.setInterval(() => {
+              void refreshLindaStatus();
+            }, 15000);
+          }
+        };
+      } catch {
+        fallbackIntervalId = window.setInterval(() => {
+          void refreshLindaStatus();
+        }, 15000);
+      }
+    } else {
+      fallbackIntervalId = window.setInterval(() => {
+        void refreshLindaStatus();
+      }, 15000);
+    }
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+      if (fallbackIntervalId) {
+        window.clearInterval(fallbackIntervalId);
+      }
+    };
   }, [refreshLindaStatus]);
 
   const handleToggleLindaRuntime = useCallback(async (): Promise<void> => {

@@ -305,6 +305,13 @@ const HomePage: FC = () => {
           />
         </Suspense>
 
+        {/* Curated Dubai Marina & Palm Jumeirah Sunset Photography Gallery (Target T-0010) */}
+        <Suspense fallback={<SectionLoader />}>
+          <div className="max-w-7xl mx-auto px-4">
+            <DubaiSunsetGallery />
+          </div>
+        </Suspense>
+
         {/* Gamified ROI & Mortgage Tools Dashboard */}
         <ToolsDashboard />
 
