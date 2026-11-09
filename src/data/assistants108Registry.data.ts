@@ -228,18 +228,18 @@ function build108Supervisors(): SupervisorDef[] {
     const deptSupervisors = SUPERVISOR_TAXONOMY_108[dept.id] || [];
     deptSupervisors.forEach((sup, localIdx) => {
       supervisors.push({
-        id: sup__\,
+        id: `sup_${dept.id}_${localIdx + 1}`,
         name: sup.name,
-        code: SUP--\,
+        code: `SUP-${dept.code}-${localIdx + 1}`,
         title: sup.title,
         departmentId: dept.id,
         departmentName: dept.name,
         supervisorIndex: localIdx + 1,
         icon: dept.icon,
         color: dept.color,
-        avatar: https://ui-avatars.com/api/?name=&background=&color=fff,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(sup.name)}&background=${dept.color.replace('#', '')}&color=fff`,
         status: 'optimal',
-        description: Autonomous supervisor assigned to , executing 3 core tasks with 15-minute SLA.,
+        description: `Autonomous supervisor assigned to ${dept.name}, executing 3 core tasks with 15-minute SLA.`,
         specialty: sup.specialty,
         assignedTasks: sup.tasks,
         capabilities: [sup.specialty, ...sup.tasks],
