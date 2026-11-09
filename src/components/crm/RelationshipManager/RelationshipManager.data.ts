@@ -202,7 +202,7 @@ export const CANONICAL_RELATIONSHIPS: RelationshipChain[] = [
         description: 'Executive Sales Director',
         color: '#EF4444',
         deepRoute: '/dashboard/employees/EMP-002',
-        details: { employeeCode: 'EMP-002', departmentId: 'D01' },
+        details: { employeeCode: 'EMP-002', departmentId: 'DEPT-11', departmentName: 'Legal, Compliance & Audit' },
       },
       {
         id: 'reproperty-002',
