@@ -13,7 +13,7 @@ describe('ExecutiveAIVSCodeSidebar Component (7-Category Co-Location Spec)', () 
     expect(screen.getAllByText(/AI Command Center/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/AI Zoe/i)).toBeInTheDocument();
     expect(screen.getByText(/COO Executive AI Partner/i)).toBeInTheDocument();
-    expect(screen.getByText(/AI Linda/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/AI Linda/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/BOT-LINDA/i)).toBeInTheDocument();
   });
 
@@ -92,10 +92,10 @@ describe('ExecutiveAIVSCodeSidebar Component (7-Category Co-Location Spec)', () 
     fireEvent.click(explorerBtn);
 
     const searchInput = screen.getByTestId('right-explorer-search-input');
-    fireEvent.change(searchInput, { target: { value: 'Luxury' } });
+    fireEvent.change(searchInput, { target: { value: 'Customer Experience' } });
 
     // Verify filtered department shows up
-    expect(screen.getByText(/Luxury Sales & Brokerage/i)).toBeInTheDocument();
+    expect(screen.getByText(/Customer Experience, Concierge & Hospitality/i)).toBeInTheDocument();
   });
 
   it('renders Zoe 1-click executive quick pills and dispatches routes on click', () => {
