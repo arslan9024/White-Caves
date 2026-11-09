@@ -22,6 +22,12 @@
    - **Level 3 (Primary Drawer / Tree Root):** Clicking an activity icon expands its collapsible drawer panel containing category groups and main functional domains.
    - **Level 4 (Sub-Items & Drill-down Leaves):** Nested accordion/tree items down to arbitrary depth (Category → Department → Group → Object/Entity → Leaf Task File).
    - **Breadcrumb Level Reflection & Leaf Return:** The TopBar/Workspace breadcrumb path must dynamically reflect this exact root-to-leaf lineage (`Floor 3 > WC-SALES > Offplan > Unit 402 > NOC Request`). Every deepest leaf component executes a single focused task; upon completion or save, the runtime automatically returns to the immediate parent container or previous breadcrumb level without re-rendering unrelated global state.
+10. **Strict Entity-Action-Structure Separation (`TURING-SEPARATION-010`):** Always cleanly decouple Actors, Actions, and Structure across all systems without exception:
+    - **Where they belong (DMS):** Organizational structure (12 Fixed Corporate Departments, sub-departments, operational squads).
+    - **Who & What exists (ERMS):** Pure Entities separated into Actors (Users, Clients, Landlords, Tenants, Brokers) and Objects (Properties, Units, Accounts, Permits). Zero tasks or action steps live here.
+    - **What they do (TMS):** Actions and tasks (Verbs: `VERIFY_KYC`, `GENERATE_EJARI`, `COLLECT_RENT`). Every task connects an Actor (ERMS) within a Department (DMS).
+    - **Relationship Invariance:** In ERMS, relationships between entities are established and updated strictly on the basis of completed actions in TMS.
+
 
 ---
 
