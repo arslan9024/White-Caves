@@ -53,13 +53,15 @@ export const ModernDashboardPage: FC = () => {
   let ermsSubTab: 'entities' | 'relationships' | 'graph' | 'matrix' = 'entities';
   let ermsEntityId: string | null = null;
   let ermsRelationshipId: string | null = null;
+  const isLegacyRelationships = pathParts[0] === 'relationships';
   const isErmsRootOverview =
+    !isLegacyRelationships &&
     (activeTab === 'erms' || activeTab === 'relationships') &&
-    (pathParts.length === 1 || !pathParts[1] || (parsedRoute.subsystem === 'erms' && !pathParts[2]));
+    (pathParts.length === 1 || !pathParts[1] || (pathParts[0] === 'erms' && !pathParts[1]));
 
   if (activeTab === 'erms' || activeTab === 'relationships') {
-    const subIdentifier = parsedRoute.subsystem === 'erms' ? pathParts[1] : pathParts[1];
-    const recId = parsedRoute.subsystem === 'erms' ? pathParts[2] : pathParts[2];
+    const subIdentifier = pathParts[1];
+    const recId = pathParts[2];
     if (subIdentifier === 'entities') {
       ermsSubTab = 'entities';
       ermsEntityId = recId || null;
