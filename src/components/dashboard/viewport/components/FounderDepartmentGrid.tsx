@@ -110,32 +110,31 @@ export const FounderDepartmentGrid: FC<FounderDepartmentGridProps> = ({ onNaviga
       </div>
 
       {/* Target T-0104: 1-Click Department Detail Expander Modal */}
-      <AnimatePresence>
-        {expandedDept && (
-          <div
-            role="dialog"
-            aria-labelledby="expanded-dept-title"
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              zIndex: 9999,
-              background: 'rgba(15, 23, 42, 0.75)',
-              backdropFilter: 'blur(8px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '1rem',
-            }}
-            onClick={() => setExpandedDept(null)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              onClick={e => e.stopPropagation()}
+      {expandedDept && (
+        <div
+          role="dialog"
+          aria-labelledby="expanded-dept-title"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 9999,
+            background: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+          onClick={() => setExpandedDept(null)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            onClick={e => e.stopPropagation()}
               style={{
                 background: '#FFFFFF',
                 borderRadius: '20px',
