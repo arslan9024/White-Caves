@@ -4,13 +4,31 @@
  * Law No. 8 DLD Escrow Trust, and goAML / VAT compliance clean status.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 
 export interface FounderTelemetryDeckProps {
   onOpenEscrowDrawer: () => void;
 }
 
 export const FounderTelemetryDeck: FC<FounderTelemetryDeckProps> = ({ onOpenEscrowDrawer }) => {
+  const [aumValuation, setAumValuation] = useState<number>(42.0);
+
+  // Target T-0103: Smooth counter animation to target AED 45.4B AUM
+  useEffect(() => {
+    let current = 42.0;
+    const target = 45.4;
+    const interval = setInterval(() => {
+      current += 0.2;
+      if (current >= target) {
+        setAumValuation(target);
+        clearInterval(interval);
+      } else {
+        setAumValuation(Number(current.toFixed(1)));
+      }
+    }, 40);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div
       style={{
@@ -20,7 +38,7 @@ export const FounderTelemetryDeck: FC<FounderTelemetryDeckProps> = ({ onOpenEscr
         marginBottom: '1.75rem',
       }}
     >
-      {/* Metric 1: Total Portfolio Assets */}
+      {/* Metric 1: Total Portfolio Assets (Target T-0103) */}
       <div
         style={{
           background: '#FFFFFF',
@@ -38,7 +56,13 @@ export const FounderTelemetryDeck: FC<FounderTelemetryDeckProps> = ({ onOpenEscr
             <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#64748B' }}>Total Managed Portfolio</span>
             <span style={{ fontSize: '1.3rem' }}>💎</span>
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0F172A' }}>AED 45.4B</div>
+          <div
+            role="status"
+            aria-label="Total Managed Portfolio Valuation"
+            style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0F172A' }}
+          >
+            AED {aumValuation.toFixed(1)}B
+          </div>
         </div>
         <div style={{ marginTop: '10px', fontSize: '0.75rem', color: '#10B981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
           <span>▲ +14.2%</span> <span style={{ color: '#64748B', fontWeight: 500 }}>across 9,378 DH2 & Luxury Assets</span>
