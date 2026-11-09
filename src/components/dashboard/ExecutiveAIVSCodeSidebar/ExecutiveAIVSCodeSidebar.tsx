@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import { Bot, Cpu, FolderTree, PanelRightClose, PanelRight } from 'lucide-react';
+import React, { FC, useState } from 'react';
+import { Bot, Cpu, FolderTree, PanelRightClose, PanelRight, ChevronDown, ChevronRight, Layers } from 'lucide-react';
 import { useExecutiveAIVSCodeSidebarLogic } from './ExecutiveAIVSCodeSidebar.logic';
 import { SidebarRightExplorerTree } from './SidebarRightExplorerTree';
 import { ExecutiveZoeCard } from './ExecutiveZoeCard';
