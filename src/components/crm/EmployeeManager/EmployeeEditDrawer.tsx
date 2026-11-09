@@ -258,23 +258,24 @@ export const EmployeeEditDrawer: React.FC<EmployeeEditDrawerProps> = ({
           </form>
         </div>
 
-        <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-all"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            form="employee-edit-form"
-            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-all shadow-md shadow-blue-600/20"
-          >
-            {employee ? 'Save Profile' : 'Complete Onboarding'}
-          </button>
+        <div className="pt-4 border-t border-slate-800">
+          <TaskActionBar
+            isDirty={isDirty}
+            onSave={() => handleSaveData(false)}
+            onSaveAndClose={() => handleSaveData(true)}
+            onCancel={() => confirmExit(onClose)}
+            saveLabel={employee ? 'Save Profile' : 'Complete Onboarding'}
+            saveAndCloseLabel="Save & Close"
+            saveTestId="save-employee-btn"
+          />
         </div>
       </div>
+
+      <UnsavedChangesModal
+        isOpen={showPrompt}
+        onProceed={proceed}
+        onCancel={cancel}
+      />
     </div>
   );
 };
