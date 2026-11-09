@@ -1,7 +1,7 @@
 // FILE: src/context/UserRoleContext.data.ts
 /**
  * White Caves Real Estate LLC - Sovereign Role Profiles, Permissions & Defaults
- * Standard: AEGIS Canonical 12-Way Architecture Standard & Single Purpose File Law
+ * Standard: Dual-Track 6x6 RBAC (6 Levels Internal Staff + 6 Categories External Clients)
  * Single Purpose File Law: < 350 lines
  */
 
@@ -9,117 +9,156 @@ import { safeStorage } from '../utils/safeStorage';
 import type { UserRole, AccessLevel, RoleTier, UserProfile } from './UserRoleContext.types';
 
 export const ROLE_DEFAULT_LEVELS: Record<UserRole, AccessLevel> = {
-  managing_director: 5,
-  admin: 5,
+  // Track A: Internal Staff (6 Levels)
+  managing_director: 6,
+  director: 5,
   manager: 4,
   supervisor: 3,
-  agent: 2,
+  team_leader: 2,
+  employee: 1,
+
+  // Track B: External Clients & Partners (Scoped to Level 1-2 equivalents)
   landlord: 2,
+  external_company: 2,
+  external_agent: 2,
+  seller: 2,
+  buyer: 1,
+  tenant: 1,
+
+  // Legacy mappings
+  admin: 6,
+  agent: 1,
+  intern: 1,
   developer: 2,
   conveyancer: 2,
   contractor: 2,
-  intern: 1,
-  tenant: 1,
-  buyer: 1,
-  seller: 1,
   offplan_buyer: 1,
   guest: 1,
 };
 
 export const ROLE_TIERS: Record<UserRole, RoleTier> = {
-  managing_director: 'Tier 1: Internal Corporate',
-  admin: 'Tier 1: Internal Corporate',
-  manager: 'Tier 1: Internal Corporate',
-  supervisor: 'Tier 1: Internal Corporate',
-  agent: 'Tier 1: Internal Corporate',
-  intern: 'Tier 1: Internal Corporate',
-  tenant: 'Tier 2: Client Portals',
-  landlord: 'Tier 2: Client Portals',
-  buyer: 'Tier 2: Client Portals',
-  seller: 'Tier 2: Client Portals',
-  offplan_buyer: 'Tier 2: Client Portals',
-  developer: 'Tier 2: Client Portals',
-  conveyancer: 'Tier 3: Strategic Partners',
-  contractor: 'Tier 3: Strategic Partners',
-  guest: 'Tier 3: Strategic Partners',
+  // Track A: Internal Staff
+  managing_director: 'Tier 1: Internal Corporate Staff',
+  director: 'Tier 1: Internal Corporate Staff',
+  manager: 'Tier 1: Internal Corporate Staff',
+  supervisor: 'Tier 1: Internal Corporate Staff',
+  team_leader: 'Tier 1: Internal Corporate Staff',
+  employee: 'Tier 1: Internal Corporate Staff',
+
+  // Track B: External Clients & Partners
+  landlord: 'Tier 2: External Client Portals',
+  tenant: 'Tier 2: External Client Portals',
+  buyer: 'Tier 2: External Client Portals',
+  seller: 'Tier 2: External Client Portals',
+  external_agent: 'Tier 3: Strategic Partners & Unconfirmed',
+  external_company: 'Tier 3: Strategic Partners & Unconfirmed',
+
+  // Legacy mappings
+  admin: 'Tier 1: Internal Corporate Staff',
+  agent: 'Tier 1: Internal Corporate Staff',
+  intern: 'Tier 1: Internal Corporate Staff',
+  developer: 'Tier 3: Strategic Partners & Unconfirmed',
+  conveyancer: 'Tier 3: Strategic Partners & Unconfirmed',
+  contractor: 'Tier 3: Strategic Partners & Unconfirmed',
+  offplan_buyer: 'Tier 2: External Client Portals',
+  guest: 'Tier 3: Strategic Partners & Unconfirmed',
 };
 
 export const ROLE_LABELS: Record<UserRole, string> = {
-  managing_director: 'Managing Director (L5 Sovereign)',
-  admin: 'System Administrator (L5)',
-  manager: 'Department Manager (L4)',
-  supervisor: 'Team Supervisor (L3)',
-  agent: 'Licensed Broker (L2)',
-  intern: 'Corporate Intern (L1)',
-  tenant: 'Leasing Tenant (Client)',
-  landlord: 'Property Landlord (Asset Owner)',
-  buyer: 'Secondary Buyer (Client)',
-  seller: 'Property Seller (Mandate)',
+  // Track A: Internal Staff
+  managing_director: 'Managing Director (Level 6 Sovereign)',
+  director: 'Department Director (Level 5)',
+  manager: 'Division Manager (Level 4)',
+  supervisor: 'Task Supervisor (Level 3)',
+  team_leader: 'Squad Team Leader (Level 2)',
+  employee: 'Corporate Employee / Broker (Level 1)',
+
+  // Track B: External Clients & Partners
+  landlord: 'Landlord (Property Owner)',
+  tenant: 'Tenant (Lease Signatory)',
+  buyer: 'Buyer (Luxury Investor)',
+  seller: 'Seller (Property Mandate)',
+  external_agent: 'External Agent (RERA Co-Broker)',
+  external_company: 'External Company (Developer / Bank / Partner)',
+
+  // Legacy
+  admin: 'System Administrator (Level 6)',
+  agent: 'Licensed Broker (Level 1)',
+  intern: 'Corporate Intern (Level 1)',
   offplan_buyer: 'Off-Plan Purchaser (HNWI)',
-  developer: 'Primary Developer Partner',
+  developer: 'Master Developer Partner',
   conveyancer: 'DLD Conveyancer / Trustee',
-  contractor: 'Maintenance Contractor',
+  contractor: 'Facility Maintenance Contractor',
   guest: 'Executive Guest (Unconfirmed)',
 };
 
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
-  managing_director:
-    'Full unrestricted governance across all 12 departments, 35 AI hubs, and ghost session simulator.',
-  admin: 'System administration, access provisioning, and platform security oversight.',
-  manager:
-    'Department P&L management, deal approvals, broker commission split review, and compliance gates.',
-  supervisor:
-    'Lead distribution, 15-minute portal response SLA oversight, and junior broker co-signing.',
-  agent:
-    'Active deal pipeline, personal assigned leads, verified Bayut/PropertyFinder webhooks, and contracts.',
-  intern:
-    'Trainee onboarding workspace. Read-only leads requiring supervisor sign-off on deal operations.',
-  tenant:
-    'Active Ejari contract repository, Form 7 rent matrices, and Henry AI 24/7 maintenance portal.',
-  landlord:
-    'Net rental yield analytics, multi-currency statements, and real-time maintenance invoice payouts.',
-  buyer:
-    'Curated luxury property pools, scheduled viewing calendars, and Form B digital signing sheets.',
-  seller:
-    'Marketing performance dashboard, Trakheesi advertising permit tracker, and Form A mandate logs.',
-  offplan_buyer:
-    'Construction milestone timeline, developer payment schedule reminders, and appreciation curves.',
-  developer:
-    'Bulk inventory management, developer NOC approval processing, and agency rebate tracking.',
-  conveyancer:
-    'DLD title deed registrations, transfer appointment verification, and corporate conveyancing.',
-  contractor:
-    'Villa service ticket dispatch (DAMAC Hills 2), on-site repair photo uploads, and invoice submissions.',
-  guest:
-    'Public cinematic showcase, interactive luxury map, and floating search & WhatsApp concierge.',
+  managing_director: 'Full sovereign governance across all corporate departments, financial ledgers, and executive decisions.',
+  director: 'Strategic governance of corporate departments, P&L allocations, and departmental approvals.',
+  manager: 'Division tactical management, deal verification, commission authorization, and operational workflows.',
+  supervisor: 'Supervises operational squads, lead distribution SLAs, and squad execution metrics.',
+  team_leader: 'Direct squad leadership, day-to-day task dispatch, and mentoring frontline employees.',
+  employee: 'Frontline operations, client consultations, listing creation, and daily task execution.',
+
+  landlord: 'Property asset owner portal. Net rental yields, tenancy agreements, and maintenance approvals.',
+  tenant: 'Active tenant portal. Ejari documents, rental payment schedule, and maintenance requests.',
+  buyer: 'Verified buyer portal. Luxury catalog viewing, Form B agreements, and private viewings.',
+  seller: 'Mandated seller portal. Listing traction, marketing campaign stats, and Form A digital agreements.',
+  external_agent: 'External RERA co-broker portal. Co-brokerage deal submissions, Form I agreements, and commission claims.',
+  external_company: 'Corporate alliance portal. Master developer allocations, escrow bank updates, and legal conveyancing.',
+
+  admin: 'Platform infrastructure administration, access provisioning, and system configuration.',
+  agent: 'Frontline real estate broker operations.',
+  intern: 'Trainee associate learning real estate operations.',
+  offplan_buyer: 'Off-plan construction milestone tracker and payment reminders.',
+  developer: 'Bulk property allocation and developer NOC issuance.',
+  conveyancer: 'DLD title deed registrations and trustee transfers.',
+  contractor: 'Maintenance work order dispatch and invoice uploads.',
+  guest: 'Public visitor access to public showcase listings.',
 };
 
 export const ROLE_DEFAULT_DEPARTMENTS: Record<UserRole, string> = {
-  managing_director: 'Executive Directorate',
-  admin: 'Technology, Systems & Digital Infrastructure',
-  manager: 'Sales, Services & Operations',
-  supervisor: 'Inventory, Portfolio & Asset Management',
-  agent: 'Sales, Services & Operations',
-  intern: 'Customer Experience, Concierge & Hospitality',
-  tenant: 'Customer Experience, Concierge & Hospitality',
-  landlord: 'Inventory, Portfolio & Asset Management',
-  buyer: 'Sales, Services & Operations',
-  seller: 'Inventory, Portfolio & Asset Management',
-  offplan_buyer: 'Partnerships, Alliances & Capital Growth',
-  developer: 'Partnerships, Alliances & Capital Growth',
-  conveyancer: 'Legal, Compliance & Audit',
-  contractor: 'Inventory, Portfolio & Asset Management',
-  guest: 'Customer Experience, Concierge & Hospitality',
+  managing_director: 'Corporate Executive Governance',
+  director: 'Corporate Executive Governance',
+  manager: 'Luxury Sales Operations',
+  supervisor: 'Master Inventory Portfolio',
+  team_leader: 'Luxury Sales Operations',
+  employee: 'Luxury Sales Operations',
+
+  landlord: 'Master Inventory Portfolio',
+  tenant: 'VIP Client Hospitality',
+  buyer: 'Luxury Sales Operations',
+  seller: 'Master Inventory Portfolio',
+  external_agent: 'Strategic Capital Alliances',
+  external_company: 'Strategic Capital Alliances',
+
+  admin: 'Cloud Systems Engineering',
+  agent: 'Luxury Sales Operations',
+  intern: 'VIP Client Hospitality',
+  offplan_buyer: 'Strategic Capital Alliances',
+  developer: 'Strategic Capital Alliances',
+  conveyancer: 'Legal Statutory Compliance',
+  contractor: 'Master Inventory Portfolio',
+  guest: 'VIP Client Hospitality',
 };
 
 export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, string[]> = {
   managing_director: ['*'],
   admin: ['*'],
+  director: [
+    'can_approve_deals',
+    'can_view_department_ledger',
+    'can_manage_team',
+    'can_create_contracts',
+    'can_override_sla',
+    'can_manage_budgets',
+  ],
   manager: [
     'can_approve_deals',
     'can_view_department_ledger',
     'can_manage_team',
     'can_create_contracts',
+    'can_override_sla',
   ],
   supervisor: [
     'can_assign_leads',
@@ -127,17 +166,28 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, string[]> = {
     'can_approve_intern_deals',
     'can_create_contracts',
   ],
-  agent: [
+  team_leader: [
+    'can_read_assigned_leads',
+    'can_create_contracts',
+    'can_view_properties',
+    'can_assign_leads',
+  ],
+  employee: [
     'can_read_assigned_leads',
     'can_create_contracts',
     'can_view_properties',
     'can_use_calculators',
   ],
-  intern: ['can_read_assigned_leads', 'can_view_properties', 'can_use_calculators'],
-  tenant: ['can_view_my_ejari', 'can_create_maintenance_ticket', 'can_view_properties'],
+
   landlord: ['can_view_my_yields', 'can_view_my_statements', 'can_approve_maintenance_quotes'],
+  tenant: ['can_view_my_ejari', 'can_create_maintenance_ticket', 'can_view_properties'],
   buyer: ['can_view_properties', 'can_schedule_viewings', 'can_sign_form_b', 'can_use_calculators'],
   seller: ['can_view_marketing_metrics', 'can_sign_form_a', 'can_view_offers'],
+  external_agent: ['can_view_co_broker_listings', 'can_submit_offers', 'can_sign_form_i'],
+  external_company: ['can_manage_bulk_allocations', 'can_issue_developer_noc', 'can_view_escrow_records'],
+
+  agent: ['can_read_assigned_leads', 'can_create_contracts', 'can_view_properties', 'can_use_calculators'],
+  intern: ['can_read_assigned_leads', 'can_view_properties', 'can_use_calculators'],
   offplan_buyer: ['can_track_construction', 'can_view_payment_schedule', 'can_view_properties'],
   developer: ['can_manage_inventory', 'can_issue_developer_noc', 'can_view_rebate_claims'],
   conveyancer: ['can_upload_title_deeds', 'can_verify_trustee_cheques', 'can_execute_transfers'],
@@ -152,15 +202,26 @@ export const SOVEREIGN_FOUNDER_EMAILS: string[] = [
 ];
 
 export const ALL_SOVEREIGN_ROLES: UserRole[] = [
+  // Track A: Internal Staff
   'managing_director',
+  'director',
   'manager',
   'supervisor',
-  'agent',
-  'intern',
-  'tenant',
+  'team_leader',
+  'employee',
+
+  // Track B: External Clients & Partners
   'landlord',
+  'tenant',
   'buyer',
   'seller',
+  'external_agent',
+  'external_company',
+
+  // Legacy mappings for backward compatibility
+  'admin',
+  'agent',
+  'intern',
   'offplan_buyer',
   'developer',
   'conveyancer',
@@ -174,104 +235,77 @@ function createDemoRoleProfile(
   name: string,
   email: string,
   phone: string,
-  isFounder = false
+  isFounder: boolean
 ): UserProfile {
+  const isMd = isFounder || role === 'managing_director' || role === 'admin';
   return {
     id,
     name,
     email,
     phone,
     role,
-    accessLevel: ROLE_DEFAULT_LEVELS[role],
-    assignedDepartment: ROLE_DEFAULT_DEPARTMENTS[role],
-    isManagingDirector: isFounder || role === 'managing_director' || role === 'admin',
+    accessLevel: isMd ? 6 : ROLE_DEFAULT_LEVELS[role] || 1,
+    assignedDepartment: ROLE_DEFAULT_DEPARTMENTS[role] || 'Corporate Executive Governance',
+    isManagingDirector: isMd,
     isFounder,
     isRoleConfirmed: role !== 'guest',
-    permissions: ROLE_DEFAULT_PERMISSIONS[role],
+    permissions: isMd ? ['*'] : ROLE_DEFAULT_PERMISSIONS[role] || ['can_view_properties'],
   };
 }
 
-const DEMO_SEED_SPEC: string[] = [
-  'managing_director|md_arslan_malik|Arslan Malik Bashir Ahmad|arslanmalikgoraha@gmail.com|+971505110636|1',
-  'admin|admin_sys_1|Elena Vance (System Admin)|admin@whitecaves.com|+971501234560',
-  'manager|mgr_victoria|Victoria Sterling (Sales Director)|victoria@whitecaves.com|+971501234561',
-  'supervisor|sup_nadia|Nadia Al-Mansoor (Team Lead)|nadia@whitecaves.com|+971501234562',
-  'agent|agent_sarah|Sarah Broker (Licensed Agent)|sarah.broker@whitecaves.com|+971501234563',
-  'intern|intern_tariq|Tariq Mansour (Trainee)|tariq.intern@whitecaves.com|+971501234564',
-  'tenant|client_tenant_omar|Omar Farooq (DAMAC Hills 2 Tenant)|omar.tenant@gmail.com|+971509988771',
-  'landlord|client_landlord_khalid|Sheikh Khalid (Portfolio Landlord)|khalid.landlord@gmail.com|+971509988772',
-  'buyer|client_buyer_alex|Alexander Volkov (Luxury Buyer)|alex.buyer@investor.com|+971509988773',
-  'seller|client_seller_fatima|Fatima Al Mansoori (Villa Seller)|fatima.seller@gmail.com|+971509988774',
-  'offplan_buyer|client_offplan_pierre|Pierre Dubois (Off-Plan Investor)|pierre.offplan@pariswealth.fr|+33612345678',
-  'developer|dev_emaar_focal|Emaar Properties Representative|partners@emaar.ae|+97143673333',
-  'conveyancer|convey_dld_trustee|Al Twar Registration Trustee Office|trustee@al-twar-dld.ae|+97142630000',
-  'contractor|cont_apex_maint|Apex Engineering & Facilities (DH2)|support@apex-maint.ae|+97148899000',
-  'guest|guest_user|Executive Guest|guest@whitecaves.com|+971505110636',
-];
+export const DEMO_ROLE_PROFILES: Record<UserRole, UserProfile> = {
+  managing_director: createDemoRoleProfile('managing_director', 'EMP-001', 'Arslan Malik', 'arslanmalikgoraha@gmail.com', '+971505760056', true),
+  director: createDemoRoleProfile('director', 'EMP-002', 'Layla Al-Maktoum', 'layla.dir@whitecaves.ae', '+971501112233', false),
+  manager: createDemoRoleProfile('manager', 'EMP-003', 'Rashid Al-Nuaimi', 'rashid.mgr@whitecaves.ae', '+971502223344', false),
+  supervisor: createDemoRoleProfile('supervisor', 'EMP-004', 'Mariam Al-Hashemi', 'mariam.sup@whitecaves.ae', '+971503334455', false),
+  team_leader: createDemoRoleProfile('team_leader', 'EMP-005', 'Tariq Mansoor', 'tariq.lead@whitecaves.ae', '+971504445566', false),
+  employee: createDemoRoleProfile('employee', 'EMP-006', 'Kareem Zaid', 'kareem.emp@whitecaves.ae', '+971505556677', false),
 
-export const DEMO_ROLE_PROFILES = Object.fromEntries(
-  DEMO_SEED_SPEC.map(spec => {
-    const [role, id, name, email, phone, founderFlag] = spec.split('|');
-    return [
-      role,
-      createDemoRoleProfile(role as UserRole, id, name, email, phone, founderFlag === '1'),
-    ];
-  })
-) as Record<UserRole, UserProfile>;
+  landlord: createDemoRoleProfile('landlord', 'CLI-LL-001', 'Sheikh Mansoor Al-Nahyan', 'mansoor@alnahyan-holdings.ae', '+971507778899', false),
+  tenant: createDemoRoleProfile('tenant', 'CLI-TN-001', 'Alexander Wright', 'alex.wright@techventures.ae', '+971508889900', false),
+  buyer: createDemoRoleProfile('buyer', 'CLI-BY-001', 'Vikramaditya Singhania', 'vikram@singhaniacapital.ae', '+971509990011', false),
+  seller: createDemoRoleProfile('seller', 'CLI-SL-001', 'Elena Rostova', 'elena.rostova@monacotrust.ch', '+971501234567', false),
+  external_agent: createDemoRoleProfile('external_agent', 'PART-AG-001', 'David Gold (BetterHomes RERA #4912)', 'david.gold@partneragency.ae', '+971509876543', false),
+  external_company: createDemoRoleProfile('external_company', 'PART-CO-001', 'Emaar Properties PJSC (Institutional)', 'institutional.relations@emaar.ae', '+971506543210', false),
 
-export const DEFAULT_GUEST_USER: UserProfile = DEMO_ROLE_PROFILES.guest;
-
-const MD_ROLE_ALIASES = new Set([
-  'managing_director',
-  'lion',
-  'owner',
-  'md',
-  'super_admin',
-  'super_user',
-  'superuser',
-]);
+  // Legacy mappings
+  admin: createDemoRoleProfile('admin', 'SYS-001', 'System Administrator', 'admin@whitecaves.ae', '+971500000001', true),
+  agent: createDemoRoleProfile('agent', 'EMP-006', 'Kareem Zaid', 'kareem.emp@whitecaves.ae', '+971505556677', false),
+  intern: createDemoRoleProfile('intern', 'INT-001', 'Zayd Al-Nuaimi', 'zayd.intern@whitecaves.ae', '+971501231234', false),
+  offplan_buyer: createDemoRoleProfile('offplan_buyer', 'CLI-BY-001', 'Vikramaditya Singhania', 'vikram@singhaniacapital.ae', '+971509990011', false),
+  developer: createDemoRoleProfile('developer', 'PART-CO-001', 'Emaar Properties PJSC', 'institutional.relations@emaar.ae', '+971506543210', false),
+  conveyancer: createDemoRoleProfile('conveyancer', 'PART-CV-001', 'Al Tamimi & Company', 'conveyancing@tamimi.ae', '+971501119999', false),
+  contractor: createDemoRoleProfile('contractor', 'VND-001', 'Emirates Facilities Management', 'dispatch@efm-uae.ae', '+971504448888', false),
+  guest: createDemoRoleProfile('guest', 'GST-001', 'Executive Guest', 'guest@whitecaves.ae', '+971500000000', false),
+};
 
 export function normalizeSovereignRole(rawRole?: string | null, isFounder = false): UserRole {
   if (isFounder) return 'managing_director';
-  const r = String(rawRole || '')
-    .toLowerCase()
-    .trim();
-  if (!r) return 'guest';
-  if (MD_ROLE_ALIASES.has(r)) return 'managing_director';
-  if (r === 'property-owner' || r === 'property_owner') return 'landlord';
-  if (r === 'leasing-agent' || r === 'secondary-sales-agent' || r === 'broker') return 'agent';
-  return r in ROLE_DEFAULT_LEVELS ? (r as UserRole) : 'guest';
+  const r = String(rawRole || '').toLowerCase().trim();
+  if (r === 'owner') return 'managing_director';
+  if (r === 'lead' || r === 'squad_leader') return 'team_leader';
+  if (r === 'staff') return 'employee';
+  return (r in ROLE_DEFAULT_LEVELS) ? (r as UserRole) : 'guest';
 }
 
-export function buildSovereignProfile(data: Partial<UserProfile> & { email: string }): UserProfile {
-  const isFounderUser =
-    data.id === 'user-001' ||
-    SOVEREIGN_FOUNDER_EMAILS.some(e => e.toLowerCase() === (data.email || '').toLowerCase());
+export function loadStoredRoleProfile(isFounderUser = false): UserProfile {
+  const data = safeStorage.getJSON<Partial<UserProfile>>('userRole', {});
   const effectiveRole: UserRole = normalizeSovereignRole(data.role, isFounderUser);
-  const isMdRole = isFounderUser || effectiveRole === 'managing_director';
+  const isMdRole = isFounderUser || effectiveRole === 'managing_director' || effectiveRole === 'admin';
   const effectiveLevel: AccessLevel = isMdRole
-    ? 5
-    : data.accessLevel || ROLE_DEFAULT_LEVELS[effectiveRole] || 1;
+    ? 6
+    : (data.accessLevel as AccessLevel) || ROLE_DEFAULT_LEVELS[effectiveRole] || 1;
   const isConfirmed = isMdRole ? true : (data.isRoleConfirmed ?? effectiveRole !== 'guest');
 
   return {
-    id: isFounderUser
-      ? data.id && data.id !== 'guest_user'
-        ? data.id
-        : 'user-001'
-      : data.id || `user_${Date.now()}`,
-    name: data.name || (isFounderUser ? 'Arslan Malik Bashir Ahmad' : 'White Caves User'),
-    email: data.email,
-    photoURL:
-      data.photoURL ||
-      `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        data.name || 'User'
-      )}&background=EF4444&color=fff`,
-    phone: data.phone || '+971505110636',
+    id: data.id || (isMdRole ? 'EMP-001' : 'GST-001'),
+    name: data.name || (isMdRole ? 'Arslan Malik' : 'Executive Guest'),
+    email: data.email || (isMdRole ? 'arslanmalikgoraha@gmail.com' : 'guest@whitecaves.ae'),
+    phone: data.phone || '+971505760056',
     role: effectiveRole,
     accessLevel: effectiveLevel,
     assignedDepartment: data.assignedDepartment || ROLE_DEFAULT_DEPARTMENTS[effectiveRole],
-    isManagingDirector: isMdRole || effectiveRole === 'admin',
+    isManagingDirector: isMdRole,
     isFounder: isFounderUser,
     isRoleConfirmed: isConfirmed,
     permissions: isMdRole
@@ -280,34 +314,6 @@ export function buildSovereignProfile(data: Partial<UserProfile> & { email: stri
   };
 }
 
-export function syncUserToSafeStorage(user: UserProfile | null): void {
-  if (typeof window === 'undefined') return;
-  if (user) {
-    safeStorage.setJSON('whitecaves_user', user);
-    safeStorage.set('whitecaves_role', user.role);
-    safeStorage.set('whitecaves_access_level', String(user.accessLevel));
-    safeStorage.setJSON('userRole', {
-      category: ROLE_TIERS[user.role],
-      role: user.role,
-      status: 'active',
-      locked: true,
-    });
-    try {
-      localStorage.setItem('white-caves-user', JSON.stringify(user));
-      localStorage.setItem('whitecaves_user', JSON.stringify(user));
-    } catch {
-      // ignore storage quota errors
-    }
-  } else {
-    safeStorage.remove('whitecaves_user');
-    safeStorage.remove('whitecaves_role');
-    safeStorage.remove('whitecaves_access_level');
-    safeStorage.remove('userRole');
-    try {
-      localStorage.removeItem('white-caves-user');
-      localStorage.removeItem('whitecaves_user');
-    } catch {
-      // ignore
-    }
-  }
+export function persistRoleProfile(user: UserProfile): void {
+  safeStorage.setJSON('userRole', user);
 }
