@@ -29,7 +29,7 @@ describe('MaryAcquisitionTab', () => {
     fireEvent.change(titleInput, { target: { value: 'Luxury 3BR Villa DAMAC Hills' } });
     expect(titleInput).toHaveValue('Luxury 3BR Villa DAMAC Hills');
 
-    const unitInput = screen.getByPlaceholderText(/e\.g\. 402, Villa 12/i);
+    const unitInput = screen.getByPlaceholderText(/e\.g\. A-1204/i);
     fireEvent.change(unitInput, { target: { value: 'Villa 101' } });
     expect(unitInput).toHaveValue('Villa 101');
 
@@ -50,11 +50,11 @@ describe('MaryAcquisitionTab', () => {
     fireEvent.change(screen.getByPlaceholderText(/e\.g\. 2BR Apartment in Downtown Dubai/i), {
       target: { value: 'Akoya Oxygen 3BR' },
     });
+    fireEvent.change(screen.getByPlaceholderText(/e\.g\. Marina Gate Tower 1, Dubai Marina/i), {
+      target: { value: 'DAMAC Hills 2, Dubai' },
+    });
     fireEvent.change(screen.getByPlaceholderText(/Full Name/i), {
       target: { value: 'Hamdan Al Nahyan' },
-    });
-    fireEvent.change(screen.getByPlaceholderText(/e\.g\. 120000/i), {
-      target: { value: '250000' },
     });
 
     const submitBtn = screen.getByRole('button', { name: /\+ Add to Inventory/i });
@@ -87,6 +87,9 @@ describe('MaryAcquisitionTab', () => {
 
     fireEvent.change(screen.getByPlaceholderText(/e\.g\. 2BR Apartment in Downtown Dubai/i), {
       target: { value: 'Unverified Unit' },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/e\.g\. Marina Gate Tower 1, Dubai Marina/i), {
+      target: { value: 'Downtown Dubai' },
     });
 
     const submitBtn = screen.getByRole('button', { name: /\+ Add to Inventory/i });
