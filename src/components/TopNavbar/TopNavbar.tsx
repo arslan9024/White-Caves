@@ -100,7 +100,6 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
             </div>
             <div className="user-meta">
               <span className="name">{displayName}</span>
-              <span className="role">{displayRole}</span>
             </div>
             <ChevronDown size={14} color="#EF4444" />
           </ProfileTrigger>
