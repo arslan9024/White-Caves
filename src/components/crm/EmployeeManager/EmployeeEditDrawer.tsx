@@ -4,9 +4,11 @@
  * Full CRUD Drawer form for hiring or updating employee profiles
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { EmployeeNode, RoleTier, EmployeeStatus } from './EmployeeManager.types';
 import { PILLARS_7 } from './EmployeeManager.data';
+import { useDirtyStateGuard } from '../../../hooks/useDirtyStateGuard';
+import { UnsavedChangesModal, TaskActionBar } from '../../common/UnsavedChangesModal';
 
 interface EmployeeEditDrawerProps {
   isOpen: boolean;
@@ -22,12 +24,15 @@ export const EmployeeEditDrawer: React.FC<EmployeeEditDrawerProps> = ({
   onSave,
 }) => {
   const [formData, setFormData] = useState<Partial<EmployeeNode>>({});
+  const [initialSnapshot, setInitialSnapshot] = useState<string>('');
 
   useEffect(() => {
     if (employee) {
-      setFormData({ ...employee });
+      const snap = { ...employee };
+      setFormData(snap);
+      setInitialSnapshot(JSON.stringify(snap));
     } else {
-      setFormData({
+      const defaultState: Partial<EmployeeNode> = {
         fullName: '',
         email: '',
         phone: '+971 ',
@@ -42,11 +47,30 @@ export const EmployeeEditDrawer: React.FC<EmployeeEditDrawerProps> = ({
         baseSalaryAED: 15000,
         commissionRatePct: 20,
         skills: ['Dubai Real Estate'],
-      });
+      };
+      setFormData(defaultState);
+      setInitialSnapshot(JSON.stringify(defaultState));
     }
-  }, [employee]);
+  }, [employee, isOpen]);
+
+  const isDirty = useMemo(() => {
+    if (!isOpen) return false;
+    return Boolean(initialSnapshot && JSON.stringify(formData) !== initialSnapshot);
+  }, [isOpen, formData, initialSnapshot]);
+
+  const { showPrompt, proceed, cancel, confirmExit } = useDirtyStateGuard({
+    isDirty,
+    onConfirmDiscard: onClose,
+  });
 
   if (!isOpen) return null;
+
+  const handleSaveData = (shouldClose: boolean) => {
+    onSave(formData);
+    if (shouldClose) {
+      onClose();
+    }
+  };
 
   const handleChange = (field: keyof EmployeeNode, val: any) => {
     if (field === 'pillarId') {
@@ -63,7 +87,7 @@ export const EmployeeEditDrawer: React.FC<EmployeeEditDrawerProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    handleSaveData(true);
   };
 
   return (
