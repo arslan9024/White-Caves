@@ -8,3 +8,13 @@ export interface LindaMetricsState {
   conversionVelocity: string;
   antiBanSafetyScore: string;
 }
+
+export type {
+  LindaSessionItem,
+  LindaCampaignItem,
+  LindaFeatureBadge,
+  LindaPlaybookBadge,
+  LindaOutreachOwnerRow,
+  LindaConversationItem,
+  LindaPillarItem,
+} from './LindaWhatsAppCRM.data';
