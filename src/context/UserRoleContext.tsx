@@ -58,7 +58,11 @@ export const UserRoleContext = createContext<UserRoleContextType | undefined>(un
 
 export const UserRoleProvider: FC<UserRoleProviderProps> = ({ children, initialUser }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
-    if (initialUser !== undefined) return initialUser ? buildSovereignProfile(initialUser) : null;
+    if (initialUser !== undefined) {
+      if (!initialUser) return null;
+      const email = initialUser.email || 'guest@whitecaves.ae';
+      return buildSovereignProfile({ ...initialUser, email });
+    }
 
     if (typeof window !== 'undefined') {
       const stored = safeStorage.getJSON<UserProfile>('whitecaves_user');
