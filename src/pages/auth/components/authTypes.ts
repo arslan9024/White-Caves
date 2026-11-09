@@ -7,6 +7,7 @@ export type AuthMode = 'signin' | 'signup';
 export type AuthTab = 'email' | 'phone';
 export type SignupStep = 1 | 2 | 3; // 1=credentials, 2=category, 3=role
 export type SocialProvider = 'google' | 'facebook' | 'apple';
+export type VerificationMethod = 'email-link' | 'sms-otp' | 'whatsapp';
 
 export interface FirebaseUserPayload {
   uid: string;
