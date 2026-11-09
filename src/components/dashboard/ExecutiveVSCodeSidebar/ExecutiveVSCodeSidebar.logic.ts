@@ -152,6 +152,7 @@ export function useExecutiveVSCodeSidebarLogic(props?: UseExecutiveVSCodeSidebar
     toggleFolder,
     toggleCollapse,
     handleSelectTab,
+    handleToggleDrawerForTab,
     handleMouseDown,
     departments: filteredDepartments,
   };
