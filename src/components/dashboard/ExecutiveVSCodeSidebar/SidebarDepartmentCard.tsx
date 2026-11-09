@@ -16,10 +16,10 @@ import {
   X,
 } from 'lucide-react';
 import { SidebarCardItem } from './SidebarDepartmentsList.styles';
-import type { FixedSlot } from '../../../components/crm/DepartmentManager/DepartmentManager.types';
+import type { DepartmentSlotDef } from '../../../components/crm/DepartmentManager/DepartmentManager.data';
 
 export interface SidebarDepartmentCardProps {
-  slot: FixedSlot;
+  slot: DepartmentSlotDef;
   isSelected: boolean;
   isEmpty: boolean;
   isDragging: boolean;
