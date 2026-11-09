@@ -4,6 +4,8 @@ import { colors, spacing, borderRadius, typography, media } from '@/design-token
 import { MobileViewingCard, Viewing } from '../../components/owner/tabs/MobileViewingCard';
 import { FilterSelect } from '../../components/owner/tabs/TabStylesComponents';
 import PageMeta from '../../components/seo/PageMeta';
+import { TaskActionBar } from '../../components/common/UnsavedChangesModal';
+import { Calendar, Clock, X } from 'lucide-react';
 
 const PageContainer = styled.div`
   max-width: 1200px;
