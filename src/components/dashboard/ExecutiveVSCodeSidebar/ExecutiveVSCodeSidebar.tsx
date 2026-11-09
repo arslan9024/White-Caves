@@ -58,6 +58,7 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
     setActiveItemKey,
     toggleCollapse,
     handleSelectTab,
+    handleToggleDrawerForTab,
     handleMouseDown,
   } = useExecutiveVSCodeSidebarLogic({
     activeTab: controlledTab,
