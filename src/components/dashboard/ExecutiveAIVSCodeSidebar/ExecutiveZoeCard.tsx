@@ -113,20 +113,82 @@ export const ExecutiveZoeCard: FC<ExecutiveZoeCardProps> = ({
   };
 
   return (
-    <ZoeExecutiveCard data-testid="zoe-executive-card">
-      <div className="zoe-top">
+    <ZoeExecutiveCard
+      data-testid="zoe-executive-card"
+      style={{
+        border: isSelected ? '1px solid #EF4444' : undefined,
+        boxShadow: isSelected ? '0 0 12px rgba(239, 68, 68, 0.25)' : undefined,
+      }}
+    >
+      <div
+        className="zoe-top"
+        style={{ cursor: 'pointer' }}
+        onClick={onOpenZoeSuite}
+        title="Click to view Zoe Executive Suite in Main Viewport"
+      >
         <div className="partner-info">
           <div className="zoe-avatar">Z</div>
           <div className="name-group">
             <span className="name">{zoeName}</span>
-            <span className="role">COO Executive AI Partner</span>
+            <span className="role">COO Executive AI Partner · Root</span>
           </div>
         </div>
-        <div className="status-badge">
-          <Zap size={10} />
-          <span>Optimal</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div className="status-badge">
+            <Zap size={10} />
+            <span>Optimal</span>
+          </div>
+          {onToggleExpand && (
+            <button
+              type="button"
+              onClick={e => {
+                e.stopPropagation();
+                onToggleExpand();
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#94A3B8',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '2px',
+              }}
+              title={isExpanded ? 'Collapse sub-nodes' : 'Expand sub-nodes'}
+              data-testid="zoe-toggle-subnodes-btn"
+            >
+              {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            </button>
+          )}
         </div>
       </div>
+
+      <button
+        type="button"
+        data-testid="open-zoe-main-view-btn"
+        onClick={onOpenZoeSuite}
+        style={{
+          width: '100%',
+          padding: '6px 8px',
+          borderRadius: '6px',
+          background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(15, 23, 42, 0.85))',
+          border: '1px solid rgba(239, 68, 68, 0.45)',
+          color: '#FFFFFF',
+          fontSize: '0.7rem',
+          fontWeight: 800,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginTop: '2px',
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <LayoutDashboard size={12} color="#EF4444" />
+          <span>Launch Zoe Executive Workspace</span>
+        </span>
+        <span style={{ color: '#FCA5A5', fontSize: '0.62rem' }}>Main View ↗</span>
+      </button>
 
       <form className="directive-box" onSubmit={handleSendDirective}>
         <input
