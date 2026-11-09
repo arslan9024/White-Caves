@@ -26,6 +26,7 @@ import {
   Activity,
   UserCircle,
   Settings,
+  ChevronRight,
 } from 'lucide-react';
 import { ActivityBar, ActivityGroup, ActivityIconBtn } from './ExecutiveVSCodeSidebar.styles';
 import type { ActivityTab } from './ExecutiveVSCodeSidebar.logic';
@@ -34,6 +35,7 @@ import type { UserRole } from '../../../context/UserRoleContext';
 export interface SidebarActivityBarProps {
   activeTab: ActivityTab;
   onSelectTab: (tab: ActivityTab) => void;
+  onToggleDrawerForTab?: (tab: ActivityTab) => void;
   role: UserRole;
   isDirectorate: boolean;
 }
@@ -41,6 +43,7 @@ export interface SidebarActivityBarProps {
 export const SidebarActivityBar: FC<SidebarActivityBarProps> = ({
   activeTab,
   onSelectTab,
+  onToggleDrawerForTab,
   role,
   isDirectorate,
 }) => {
@@ -49,14 +52,47 @@ export const SidebarActivityBar: FC<SidebarActivityBarProps> = ({
       <ActivityGroup>
         {isDirectorate ? (
           <>
-            <ActivityIconBtn
-              $isActive={activeTab === 'departments'}
-              onClick={() => onSelectTab('departments')}
-              title="Corporate Departments Hub (12 Slots / 7 Pillars)"
-              data-testid="activity-btn-departments"
-            >
-              <Building2 size={18} />
-            </ActivityIconBtn>
+            <div style={{ position: 'relative', width: '36px', height: '36px' }}>
+              <ActivityIconBtn
+                $isActive={activeTab === 'departments'}
+                onClick={() => onSelectTab('departments')}
+                title="DMS: Corporate Department Management System (/dashboard/dms)"
+                data-testid="activity-btn-departments"
+                style={{ width: '100%', height: '100%' }}
+              >
+                <Building2 size={18} />
+              </ActivityIconBtn>
+              {onToggleDrawerForTab && (
+                <button
+                  type="button"
+                  onClick={e => {
+                    e.stopPropagation();
+                    onToggleDrawerForTab('departments');
+                  }}
+                  title="Toggle Departments Drawer"
+                  data-testid="activity-caret-departments"
+                  style={{
+                    position: 'absolute',
+                    right: '-4px',
+                    bottom: '-2px',
+                    width: '14px',
+                    height: '14px',
+                    background: '#1E293B',
+                    border: '1px solid rgba(239, 68, 68, 0.4)',
+                    borderRadius: '50%',
+                    color: '#EF4444',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    padding: 0,
+                    zIndex: 2,
+                  }}
+                >
+                  <ChevronRight size={10} />
+                </button>
+              )}
+            </div>
 
             <ActivityIconBtn
               $isActive={activeTab === 'employees'}
