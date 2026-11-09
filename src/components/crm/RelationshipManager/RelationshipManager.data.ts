@@ -161,6 +161,8 @@ export const CANONICAL_RELATIONSHIPS: RelationshipChain[] = [
       },
     ],
     edges: [
+      { id: 'e0_org_user', sourceId: 'org-001', targetId: 'user-001', label: 'Governs & Authorizes' },
+      { id: 'e0_org_rev', sourceId: 'revenue-001', targetId: 'org-001', label: 'Settles into Treasury' },
       { id: 'e1', sourceId: 'user-001', targetId: 'emp-001', label: 'Employed As' },
       { id: 'e2', sourceId: 'emp-001', targetId: 'role-md', label: 'Assigned Role' },
       { id: 'e3', sourceId: 'emp-001', targetId: 'reproperty-001', label: 'Sourced Listing' },
