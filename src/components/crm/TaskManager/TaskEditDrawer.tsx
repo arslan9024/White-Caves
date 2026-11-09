@@ -4,9 +4,11 @@
  * Full CRUD Drawer form for creating or configuring statutory & operational tasks
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { TaskNode, TaskPriority, TaskStatus } from './TaskManager.types';
 import { TASK_PILLARS, TASK_CATEGORIES } from './TaskManager.data';
+import { useDirtyStateGuard } from '../../../hooks/useDirtyStateGuard';
+import { UnsavedChangesModal, TaskActionBar } from '../../common/UnsavedChangesModal';
 
 interface TaskEditDrawerProps {
   isOpen: boolean;
@@ -22,12 +24,15 @@ export const TaskEditDrawer: React.FC<TaskEditDrawerProps> = ({
   onSave,
 }) => {
   const [formData, setFormData] = useState<Partial<TaskNode>>({});
+  const [initialSnapshot, setInitialSnapshot] = useState<string>('');
 
   useEffect(() => {
     if (task) {
-      setFormData({ ...task });
+      const snap = { ...task };
+      setFormData(snap);
+      setInitialSnapshot(JSON.stringify(snap));
     } else {
-      setFormData({
+      const defaultState: Partial<TaskNode> = {
         title: '',
         pillarId: 'pillar-1',
         pillarName: 'Pillar I: Legal & Regulatory',
@@ -49,11 +54,30 @@ export const TaskEditDrawer: React.FC<TaskEditDrawerProps> = ({
           directorCode: 'DIR-01',
           executiveReviewer: 'Sophia Al-Hashemi (Managing Director)',
         },
-      });
+      };
+      setFormData(defaultState);
+      setInitialSnapshot(JSON.stringify(defaultState));
     }
-  }, [task]);
+  }, [task, isOpen]);
+
+  const isDirty = useMemo(() => {
+    if (!isOpen) return false;
+    return Boolean(initialSnapshot && JSON.stringify(formData) !== initialSnapshot);
+  }, [isOpen, formData, initialSnapshot]);
+
+  const { showPrompt, proceed, cancel, confirmExit } = useDirtyStateGuard({
+    isDirty,
+    onConfirmDiscard: onClose,
+  });
 
   if (!isOpen) return null;
+
+  const handleSaveData = (shouldClose: boolean) => {
+    onSave(formData);
+    if (shouldClose) {
+      onClose();
+    }
+  };
 
   const handleChange = (field: keyof TaskNode, val: any) => {
     if (field === 'pillarId') {
