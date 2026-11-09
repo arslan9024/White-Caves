@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { PropertyStatusEventService } from '../PropertyStatusEventService';
+import PropertyStatusEventService from './PropertyStatusEventService';
 
 describe('PropertyStatusEventService', () => {
   let eventService: any;
@@ -50,5 +50,17 @@ describe('PropertyStatusEventService', () => {
     expect(succeedingSubscriber).toHaveBeenCalled();
     expect(event.errors.length).toBe(1);
     expect(event.errors[0].error).toBe('Database connection dropped');
+  });
+
+  it('computes event stats aggregated by type and source', async () => {
+    await eventService.publishEvent('property_created', { id: 1 }, 'mary');
+    await eventService.publishEvent('property_created', { id: 2 }, 'mary');
+    await eventService.publishEvent('lease_signed', { id: 3 }, 'daisy');
+
+    const stats = eventService.getEventStats();
+    expect(stats.eventsByType['property_created']).toBe(2);
+    expect(stats.eventsByType['lease_signed']).toBe(1);
+    expect(stats.eventsBySource['mary']).toBe(2);
+    expect(stats.eventsBySource['daisy']).toBe(1);
   });
 });
