@@ -8,6 +8,55 @@
 import type { EntityNode } from './RelationshipManager.types';
 
 export const CANONICAL_ALL_ENTITIES: EntityNode[] = [
+  // 0. White Caves Parent Organization & Corporate Foundation
+  {
+    id: 'org-001',
+    name: 'White Caves Real Estate LLC',
+    type: 'COMPANY',
+    badge: 'Parent Corporate Entity',
+    description: 'Licensed Real Estate Brokerage licensed by Dubai Land Department (DLD) and DET.',
+    color: '#EF4444',
+    status: 'ACTIVE',
+    deepRoute: '/dashboard/overview',
+    details: {
+      dedLicense: 'CN-1094821',
+      ornNumber: 'ORN-28491',
+      taxRegistrationNumber: 'TRN-100458920100003',
+      goAmlId: 'FIU-AE-ORG-9182',
+      registeredAddress: 'Level 24, Boulevard Plaza Tower 1, Downtown Dubai, UAE',
+      isRootEntity: true,
+    },
+  },
+  {
+    id: 'bank-001',
+    name: 'ADCB Escrow Trust Account',
+    type: 'BANK_ACCOUNT',
+    badge: 'DLD Approved Escrow',
+    description: 'Statutory project and rental escrow deposit vault with Abu Dhabi Commercial Bank.',
+    color: '#059669',
+    status: 'ACTIVE',
+    details: {
+      bankName: 'Abu Dhabi Commercial Bank (ADCB)',
+      iban: 'AE070331234567890123456',
+      currency: 'AED',
+      accountType: 'ESCROW_TRUST',
+    },
+  },
+  {
+    id: 'branch-001',
+    name: 'Downtown Dubai HQ Branch',
+    type: 'BRANCH',
+    badge: 'Flagship Corporate Office',
+    description: 'Executive headquarters and luxury client presentation lounge.',
+    color: '#6366F1',
+    status: 'ACTIVE',
+    details: {
+      location: 'Downtown Dubai',
+      capacityDesks: 48,
+      status: 'OPERATIONAL',
+    },
+  },
+
   // 1. Users & Staff
   {
     id: 'user-001',
