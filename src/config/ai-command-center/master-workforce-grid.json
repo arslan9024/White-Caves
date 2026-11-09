@@ -48,7 +48,8 @@
             "VIP Arrival Briefings",
             "Multi-Lingual Protocol",
             "Chauffeur Coordination"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-clientcare",
@@ -59,7 +60,8 @@
             "Welcome Gift Pack Dispatch",
             "Client Verification Gate",
             "Hospitality Experience Logging"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-privateshowing",
@@ -70,7 +72,8 @@
             "Viewing Itinerary Scheduling",
             "Access Key Clearance",
             "Hostess Protocol Sync"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-multilingualdesk",
@@ -81,7 +84,8 @@
             "Russian / Mandarin / Arabic Desks",
             "Cultural Etiquette Guidance",
             "Timezone Concierge Response"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-feedbacksentinel",
@@ -92,7 +96,8 @@
             "Post-Viewing Surveys",
             "Complaint SLA Tracking",
             "Service Escalation Routing"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-chauffeurlogistics",
@@ -103,7 +108,8 @@
             "Fleet Dispatch Coordination",
             "Airport Transfer Booking",
             "Helipad Access Coordination"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-eventhostess",
@@ -114,7 +120,8 @@
             "Guest List Accreditation",
             "Catering & Hospitality QC",
             "RSVP Badge Authentication"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-retentioncare",
@@ -125,7 +132,8 @@
             "Anniversary & Milestone Gifting",
             "VIP Club Privilege Management",
             "Dormant Client Warming"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-emergencyrelief",
@@ -136,7 +144,8 @@
             "Late-Night Booking Support",
             "Emergency Property Access",
             "15-Minute Hospitality Response"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -166,7 +175,8 @@
             "Google Ads Budget Pacing",
             "Meta Real Estate Funnels",
             "Cost Per Lead Calibration"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-portalsyndicator",
@@ -177,7 +187,8 @@
             "TruCheck Listing Verification",
             "Featured Tier Allocation",
             "Duplicate Listing Interception"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-brandguardian",
@@ -188,7 +199,8 @@
             "Typography & Color Palette Audit",
             "Brochure Style Compliance",
             "Logo Usage Integrity"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-socialpulse",
@@ -199,7 +211,8 @@
             "Reels & Drone Walkthrough QC",
             "Influencer Collaboration Tracking",
             "Editorial Content Calendar"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-seodominance",
@@ -210,7 +223,8 @@
             "Keyword Opportunity Mapping",
             "Backlink Velocity Tracking",
             "Developer Cluster SEO Pages"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-emailnurture",
@@ -221,7 +235,8 @@
             "Weekly Market Pulse Dispatch",
             "Segmented Drip Automations",
             "Open Rate & Click Attribution"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-eventpromoter",
@@ -232,7 +247,8 @@
             "Webinar Registration Funnels",
             "City Roadshow Digital Collateral",
             "Early-Bird Token Promotion"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-performanceaudit",
@@ -243,7 +259,8 @@
             "UTM Pipeline Mapping",
             "ROAS Calculations",
             "Marketing Spend Escrow Tracking"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-creativestudio",
@@ -254,7 +271,8 @@
             "Virtual Staging Review",
             "Twilight Photography Verification",
             "3D Floor Plan Approval"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -284,7 +302,8 @@
             "Top-Producer Headhunting",
             "Candidate Screening Interviews",
             "Compensation Offer Letters"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-brokerlicensing",
@@ -295,7 +314,8 @@
             "DLD Broker Card Renewal",
             "RERA Exam Verification",
             "Unaccredited Interception"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-performancekpi",
@@ -306,7 +326,8 @@
             "Daily Dial & Meeting Audits",
             "Monthly Closing Quotas",
             "Merit XP Calculation Engine"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-visarelocation",
@@ -317,7 +338,8 @@
             "ICP Visa Application Tracking",
             "Medical Fitness Booking",
             "Emirates ID Biometrics Scheduling"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-mohrepayroll",
@@ -328,7 +350,8 @@
             "SIF File Generation",
             "WPS Salary Payout Verification",
             "EOSG Gratuity Provisioning"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-brokeracademy",
@@ -339,7 +362,8 @@
             "Objection Handling Modules",
             "Off-Plan Masterclasses",
             "Contracts & Form F Workshops"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-attendanceleaves",
@@ -350,7 +374,8 @@
             "Duty Roster Scheduling",
             "Annual Leave Approval Flow",
             "Office Presence Monitoring"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-emiratisationdesk",
@@ -361,7 +386,8 @@
             "Nafis Portal Submissions",
             "MoHRE Target Verification",
             "National Trainee Mentorship"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-cultureethics",
@@ -372,7 +398,8 @@
             "Commission Dispute Arbitrations",
             "Anti-Harassment Protocols",
             "Quarterly Employee NPS"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -402,7 +429,8 @@
             "React 19 Zero-Latency Renders",
             "Design System Token Audits",
             "Core Web Vitals Tuning"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-backendgate",
@@ -413,7 +441,8 @@
             "Sub-10ms Route Dispatch",
             "JWT RBAC Security Gates",
             "API Rate-Limiting Protocols"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-databaseprisma",
@@ -424,7 +453,8 @@
             "Index Performance Tuning",
             "Zero-Downtime Schema Migrations",
             "Connection Pool Health"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-devopscloud",
@@ -435,7 +465,8 @@
             "Automated Vitest Pipeline Gates",
             "Zero-Downtime Rolling Deploys",
             "Server Latency Telemetry"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-agentmeshengine",
@@ -446,7 +477,8 @@
             "15-Minute SLA Watchdog",
             "Agent Inter-Communication Bus",
             "Prompt Token Optimizer"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-securitysentinel",
@@ -457,7 +489,8 @@
             "Statutory Secret Rotation",
             "DDoS Mitigation Shield",
             "Vulnerability Code Audits"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-mobilebridge",
@@ -468,7 +501,8 @@
             "Push Notification Gateway",
             "Offline SQLite Sync Engine",
             "Biometric Auth Verification"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-visionocrcore",
@@ -479,7 +513,8 @@
             "MRZ Passport Decoding",
             "Emirates ID Front/Back Extraction",
             "Title Deed Tamper Detection"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-systembackup",
@@ -490,7 +525,8 @@
             "Daily Snapshot Verification",
             "Encrypted Vault Redundancy",
             "Failover Readiness Drills"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -520,7 +556,8 @@
             "Listing Presentation Mandates",
             "Seller Negotiation Strategy",
             "Form F Contract Finalization"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-offplanallocation",
@@ -531,7 +568,8 @@
             "VIP Token Queue Reservation",
             "Payment Plan Comparisons",
             "Handover Progress Auditing"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-dealcloser",
@@ -542,7 +580,8 @@
             "Offer-to-Agreement Acceleration",
             "Escrow Down Payment Proof",
             "Commission Milestone Tracking"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-commercialbroker",
@@ -553,7 +592,8 @@
             "DIFC & Business Bay Offices",
             "Yield & Cap Rate Valuations",
             "Commercial Tenancy Contracts"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-buyermatcher",
@@ -564,7 +604,8 @@
             "Investor Requirement Matching",
             "Exclusive Pocket Listing Dispatch",
             "Proof of Funds Verification"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-viewingscheduler",
@@ -575,7 +616,8 @@
             "Smart Lock Access Codes",
             "Viewing Feedback Capture",
             "Agent Calendar Optimization"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-pipelinevelocity",
@@ -586,7 +628,8 @@
             "Stalled Deal Diagnostics",
             "Stage Transition SLAs",
             "Weekly Sales Forecast Modeling"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-commissionsplitter",
@@ -597,7 +640,8 @@
             "Tiered Commission Split Calcs",
             "Referral Fee Deductions",
             "Director Sign-off Routing"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-leaddistributor",
@@ -608,7 +652,8 @@
             "Performance-Based Routing",
             "Instant 5-Minute Lead Alert",
             "SLA Miss Re-allocation"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -638,7 +683,8 @@
             "10,000+ Listing Deduplication",
             "Available / Reserved Status Sync",
             "Property Media Quality Audit"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-landlordliaison",
@@ -649,7 +695,8 @@
             "Form A Mandate Verification",
             "Owner Identity Verification",
             "Exclusive Agency Renewals"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-clustervaluation",
@@ -660,7 +707,8 @@
             "Cluster Price/Sqft Tracking",
             "Historical Resale Comps",
             "Rental Return Benchmarks"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-assetinspection",
@@ -671,7 +719,8 @@
             "Digital Snagging Checklists",
             "Handover Key Custody Log",
             "Defect Rectification Tracking"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-offplantracker",
@@ -682,7 +731,8 @@
             "DLD Milestone Progress Photos",
             "Anticipated Handover Dates",
             "Payment Notice Reconciliations"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-keymanagement",
@@ -693,7 +743,8 @@
             "Access Log Monitoring",
             "Broker Fob Sign-Out Engine",
             "Emergency Access Protocol"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-listingstaging",
@@ -704,7 +755,8 @@
             "Matterport 3D Link Verifications",
             "Architectural Floor Plan CAD",
             "Drone Footage Integration"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-inventoryarchive",
@@ -715,7 +767,8 @@
             "Automatic Delisting on Sale",
             "Expired Mandate Notifications",
             "Historical Price Trend Archival"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-bulkinvestorpacks",
@@ -726,7 +779,8 @@
             "Full-Building Portfolio Packets",
             "Tenancy Schedule Audits",
             "Consolidated NOI Calculations"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -756,7 +810,8 @@
             "Emaar / Nakheel Agreement Terms",
             "Top Agency Tier Qualification",
             "Exclusive Allocation Quotas"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-familyoffice",
@@ -767,7 +822,8 @@
             "Confidential Mandate Negotiation",
             "Private Placement Decks",
             "Cross-Border Fund Structuring"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-bankmortgages",
@@ -778,7 +834,8 @@
             "Preferred Bank Interest Rates",
             "Pre-Approval Pipeline Tracking",
             "Mortgage Referral Commissions"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-relocationpartners",
@@ -789,7 +846,8 @@
             "Corporate Housing Contracts",
             "Executive Relocation Packs",
             "Long-Term Corporate Leases"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-globalcorridors",
@@ -800,7 +858,8 @@
             "Foreign Investor Roadshows",
             "Overseas Affiliate Broker JVs",
             "Multi-Currency Settlement Rules"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-luxurybrands",
@@ -811,7 +870,8 @@
             "Brand License Compliance",
             "Exclusive VIP Launch Previews",
             "Co-Branded Marketing Approvals"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-goldenvisanetwork",
@@ -822,7 +882,8 @@
             "2M+ AED Property Valuation Fast-Path",
             "Immigration Filing Direct Desk",
             "Investor Family Residency Tracking"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-ventureexpansion",
@@ -833,7 +894,8 @@
             "Boutique Brokerage Acquisitions",
             "Branch License Applications",
             "Enterprise Valuation Modeling"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-sponsorshipalliance",
@@ -844,7 +906,8 @@
             "Polo & Yacht Club Sponsorships",
             "VIP Investor Dinners",
             "Sponsorship ROAS Verification"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -874,7 +937,8 @@
             "Bloomberg / Forbes Dubai Pitches",
             "CEO Thought-Leadership Op-Eds",
             "Crisis PR Protocol Monitoring"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-mediastudio",
@@ -885,7 +949,8 @@
             "4K Cinema Video Post-Production",
             "Sound Design & Voiceovers",
             "Celebrity Agent Interviews"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-editorialpublish",
@@ -896,7 +961,8 @@
             "Quarterly Print & Digital Journal",
             "Architectural Feature Stories",
             "Editorial Copywriting Review"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-influencerdesk",
@@ -907,7 +973,8 @@
             "Content Partnership Contracts",
             "Filming Permissions at Landmarks",
             "Attribution Code Tracking"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-awardsubmissions",
@@ -918,7 +985,8 @@
             "Arabian Property Awards Entry",
             "Best Luxury Brokerage Dossier",
             "Trophy & Credential Marketing"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-podcastercore",
@@ -929,7 +997,8 @@
             "Weekly Industry Podcast Prep",
             "Guest Booking & Screening",
             "Omnichannel Audio Syndication"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-corporateidentity",
@@ -940,7 +1009,8 @@
             "Google Reviews Sentiment Scan",
             "Social Mentions Radar",
             "Proactive Issue Rectification"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-eventpressoffice",
@@ -951,7 +1021,8 @@
             "Journalist Accreditation",
             "Press Kit Distribution",
             "Live Broadcast Feeds"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-digitalbroadcasting",
@@ -962,7 +1033,8 @@
             "VIP Off-Market Deal Bulletins",
             "Broadcast List Engagement",
             "Instant Deal Notification Alerts"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -992,7 +1064,8 @@
             "Daily Official Sales Feed Processing",
             "Off-Plan vs Ready Volume Split",
             "Price-Per-Sqft Inflation Index"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-predictiveml",
@@ -1003,7 +1076,8 @@
             "3-Year Price Prediction Models",
             "Supply Pipeline Oversupply Alerts",
             "Demand Wave Forecasting"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-rentalyieldengine",
@@ -1014,7 +1088,8 @@
             "Service Charge Drag Deductions",
             "Short-Term vs Long-Term ROI",
             "Optimal Rent Pricing Recommendations"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-heatmapgeospatial",
@@ -1025,7 +1100,8 @@
             "Search Volume Geographic Maps",
             "Metro Extension ROI Projections",
             "Infrastructure Proximity Index"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-competitorradar",
@@ -1036,7 +1112,8 @@
             "Competitor Inventory Deviation",
             "Average Days on Market Tracking",
             "Cluster Market Share Analysis"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-demographicsprofiler",
@@ -1047,7 +1124,8 @@
             "Foreign Capital Inflow by Country",
             "Family vs Single Living Trends",
             "Wealth Corridor Mapping"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-macropulsegcc",
@@ -1058,7 +1136,8 @@
             "CBUAE EIBOR Rate Trends",
             "USD/AED Peg Stability Tracking",
             "Global Flight-to-Safety Inflow"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-masterplantracker",
@@ -1069,7 +1148,8 @@
             "New Infrastructure Green Zones",
             "Airport Relocation Impact Study",
             "Zoning Law Amendment Monitoring"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-whitepaperstudio",
@@ -1080,7 +1160,8 @@
             "Quarterly Real Estate White Paper",
             "Executive Summary Infographics",
             "Investor Webinar Data Slides"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -1110,7 +1191,8 @@
             "Monthly P&L Financial Close",
             "Balance Sheet Reconciliations",
             "Statutory Financial Statement Prep"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-uaetaxengine",
@@ -1121,7 +1203,8 @@
             "375k AED Statutory Threshold Tracking",
             "9% Corporate Tax Reserve Auto-Transfer",
             "Annual Corporate Tax Return Filing"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-uaevatcompliance",
@@ -1132,7 +1215,8 @@
             "Sequential Tax Invoice Generation",
             "5% VAT Output/Input Reconciliation",
             "Quarterly VAT 201 Return Submissions"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-escrowaccountsync",
@@ -1143,7 +1227,8 @@
             "Escrow Deposit Account Verification",
             "Developer Milestone Drawdowns",
             "Trustee Fee Allocation Verification"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-brokerpayrollcomm",
@@ -1154,7 +1239,8 @@
             "Net Commission Split Calculation",
             "Withholding Tax Reconciliations",
             "Direct Bank Transfer Batches"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-accountspayable",
@@ -1165,7 +1251,8 @@
             "Vendor Invoice Verification",
             "Office Rent & Utility Settlements",
             "Expense Approval Hierarchies"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-treasuryforex",
@@ -1176,7 +1263,8 @@
             "USD/EUR/GBP Currency Conversion",
             "Crypto-to-Fiat Escrow Compliance",
             "Bank Account Liquidity Buffers"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-zohobookssync",
@@ -1187,7 +1275,8 @@
             "Automated Journal Entry Posting",
             "Bank Feed Reconciliation Rule",
             "ERP Ledger Consistency Audits"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-financialauditor",
@@ -1198,7 +1287,8 @@
             "Big Four Audit Dossier Preparation",
             "Anti-Fraud Transaction Sampling",
             "Budget vs Actual Variance Analysis"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -1228,7 +1318,8 @@
             "Trakheesi Permit Verification",
             "Law No. 8 Escrow Compliance",
             "Brokerage Legal Dispute Resolution"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-goamlscreening",
@@ -1239,7 +1330,8 @@
             "goAML Suspicious Transaction Reports (STR)",
             "PEP & Sanctions List Screening",
             "Source of Funds Verification"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-trakheesiengine",
@@ -1250,7 +1342,8 @@
             "Instant Trakheesi QR Code Generation",
             "Portal Permit Matching (Bayut/PF)",
             "Unlicensed Ad Penalty Interception"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-formacontract",
@@ -1261,7 +1354,8 @@
             "Owner Title Deed Match",
             "Listing Price Statutory Verification",
             "Exclusivity Period Enforcement"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-formbcontract",
@@ -1272,7 +1366,8 @@
             "Buyer Identity KYC Check",
             "Retainer Fee Escrow Verification",
             "Dual Agency Disclosure Enforcement"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-formfcontract",
@@ -1283,7 +1378,8 @@
             "10% Security Deposit Custody",
             "Mortgage Approval Contingency Clause",
             "DLD Transfer Date Penalty Clause"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-poaverification",
@@ -1294,7 +1390,8 @@
             "Dubai Courts Notary Stamp Verification",
             "POA Powers Scope Audit (Sale/Accept Funds)",
             "Expiry Date & Revocation Check"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-dataprivacylaw",
@@ -1305,7 +1402,8 @@
             "Client Document Encryption Verification",
             "Data Access Audit Logging",
             "Consent Withdrawal Handlers"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-legalarbitration",
@@ -1316,7 +1414,8 @@
             "RDC Eviction Notice Compliance",
             "Deposit Refund Disputes Settlement",
             "Court Memo Drafting & Case Law Prep"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     },
@@ -1346,7 +1445,8 @@
             "Board of Directors Resolutions",
             "Level 5 Sovereign Authority Gates",
             "Statutory Corporate Minutes"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-strategicroadmap",
@@ -1357,7 +1457,8 @@
             "Quarterly Company Milestone Tracking",
             "Department Capability Audits",
             "Resource Allocation Modeling"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-riskmanagement",
@@ -1368,7 +1469,8 @@
             "Market Downturn Stress-Testing",
             "Insurance Policy Coverage Reviews",
             "Counterparty Default Safeguards"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-zoecooliaison",
@@ -1379,7 +1481,8 @@
             "12 Department Inter-Communication",
             "High-Priority Alert Filtering for MD",
             "15-Minute SLA Dashboard Sync"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-meritxpmaster",
@@ -1390,7 +1493,8 @@
             "Staff Merit Score Verification",
             "Level 1-5 Authority Level Upgrades",
             "Annual Merit Award Allocations"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-complianceoversight",
@@ -1401,7 +1505,8 @@
             "Random Department Process Audits",
             "Codebase Architecture Law Enforcement",
             "Zero-Downtime Governance Check"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-capitalallocation",
@@ -1412,7 +1517,8 @@
             "Retained Earnings Reserve Allocation",
             "Tech Stack R&D Reinvestment",
             "Contingency Liquidity Maintenance"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-corporaterestructure",
@@ -1423,7 +1529,8 @@
             "1-12-108 Topology Integrity Check",
             "Department Slot Swap Verification",
             "Sub-Department Capacity Planning"
-          ]
+          ],
+          "gender": "Female"
         },
         {
           "id": "ai-sovereignsignoff",
@@ -1434,7 +1541,8 @@
             "Executive Seal Digital Timestamping",
             "High-Value Contract Final Pass Gate",
             "Sovereign Veto Logging Engine"
-          ]
+          ],
+          "gender": "Female"
         }
       ]
     }
