@@ -71,16 +71,10 @@ export function useExecutiveVSCodeSidebarLogic(props?: UseExecutiveVSCodeSidebar
   }, [props]);
 
   const handleSelectTab = useCallback(
-    (tab: ActivityTab) => {
-      if (activeTab === tab && !isCollapsed) {
-        if (props?.onToggleCollapse) {
-          props.onToggleCollapse();
-        } else {
-          setInternalCollapsed(true);
-        }
-      } else {
-        setInternalTab(tab);
-        props?.onSelectTab?.(tab);
+    (tab: ActivityTab, openDrawer = false) => {
+      setInternalTab(tab);
+      props?.onSelectTab?.(tab);
+      if (openDrawer) {
         if (props?.onToggleCollapse && isCollapsed) {
           props.onToggleCollapse();
         } else {
@@ -88,7 +82,20 @@ export function useExecutiveVSCodeSidebarLogic(props?: UseExecutiveVSCodeSidebar
         }
       }
     },
-    [activeTab, isCollapsed, props]
+    [isCollapsed, props]
+  );
+
+  const handleToggleDrawerForTab = useCallback(
+    (tab: ActivityTab) => {
+      setInternalTab(tab);
+      props?.onSelectTab?.(tab);
+      if (props?.onToggleCollapse) {
+        props.onToggleCollapse();
+      } else {
+        setInternalCollapsed(prev => !prev);
+      }
+    },
+    [props]
   );
 
   // Resize handler
