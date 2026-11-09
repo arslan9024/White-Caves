@@ -178,7 +178,7 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
 
     // Prefer persistent real-time Server-Sent Events (SSE) stream
     let eventSource: EventSource | null = null;
-    let fallbackIntervalId: ReturnType<typeof setInterval> | null = null;
+    let fallbackIntervalId: number | null = null;
 
     const isBrowser = typeof window !== 'undefined';
     if (isBrowser && 'EventSource' in window) {
@@ -234,7 +234,7 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
         eventSource.close();
       }
       if (fallbackIntervalId) {
-        clearInterval(fallbackIntervalId);
+        window.clearInterval(fallbackIntervalId);
       }
     };
   }, [refreshLindaStatus]);
