@@ -14,6 +14,7 @@ import { loadDealsCache, saveDealsCache } from './DealManager.cache';
 import { DealTelemetry } from './DealManager.telemetry';
 import { getDealI18n, SupportedLanguage } from './DealManager.i18n';
 import { calculateDealFinancialsOffThread } from './DealManager.workers';
+import { useRecordHighlight } from '../../../hooks/useRecordHighlight';
 
 export interface UseDealManagerProps {
   initialDeals?: DealItem[];
