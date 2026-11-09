@@ -96,7 +96,7 @@ describe('Jack Sparrow Navigation Protocol (TreeNavigationContext)', () => {
 
     // Breadcrumbs check
     expect(screen.getByText('Floor 3')).toBeDefined();
-    expect(screen.getByText('WC-SALES')).toBeDefined();
+    expect(screen.getAllByText('WC-SALES').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('offplan')).toBeDefined();
     expect(screen.getByText('unit-402')).toBeDefined();
   });

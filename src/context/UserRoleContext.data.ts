@@ -17,7 +17,7 @@ export const ROLE_DEFAULT_LEVELS: Record<UserRole, AccessLevel> = {
   team_leader: 2,
   employee: 1,
 
-  // Track B: External Clients & Partners (Scoped to Level 1-2 equivalents)
+  // Track B: External Clients & Partners
   landlord: 2,
   external_company: 2,
   external_agent: 2,
@@ -288,8 +288,10 @@ export function normalizeSovereignRole(rawRole?: string | null, isFounder = fals
   return (r in ROLE_DEFAULT_LEVELS) ? (r as UserRole) : 'guest';
 }
 
-export function loadStoredRoleProfile(isFounderUser = false): UserProfile {
-  const data = safeStorage.getJSON<Partial<UserProfile>>('userRole', {});
+export function buildSovereignProfile(data: Partial<UserProfile> & { email: string }): UserProfile {
+  const isFounderUser =
+    data.id === 'user-001' ||
+    SOVEREIGN_FOUNDER_EMAILS.some(e => e.toLowerCase() === (data.email || '').toLowerCase());
   const effectiveRole: UserRole = normalizeSovereignRole(data.role, isFounderUser);
   const isMdRole = isFounderUser || effectiveRole === 'managing_director' || effectiveRole === 'admin';
   const effectiveLevel: AccessLevel = isMdRole
@@ -298,10 +300,19 @@ export function loadStoredRoleProfile(isFounderUser = false): UserProfile {
   const isConfirmed = isMdRole ? true : (data.isRoleConfirmed ?? effectiveRole !== 'guest');
 
   return {
-    id: data.id || (isMdRole ? 'EMP-001' : 'GST-001'),
-    name: data.name || (isMdRole ? 'Arslan Malik' : 'Executive Guest'),
-    email: data.email || (isMdRole ? 'arslanmalikgoraha@gmail.com' : 'guest@whitecaves.ae'),
-    phone: data.phone || '+971505760056',
+    id: isFounderUser
+      ? data.id && data.id !== 'guest_user'
+        ? data.id
+        : 'user-001'
+      : data.id || `user_${Date.now()}`,
+    name: data.name || (isFounderUser ? 'Arslan Malik Bashir Ahmad' : 'White Caves User'),
+    email: data.email,
+    photoURL:
+      data.photoURL ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        data.name || 'User'
+      )}&background=EF4444&color=fff`,
+    phone: data.phone || '+971505110636',
     role: effectiveRole,
     accessLevel: effectiveLevel,
     assignedDepartment: data.assignedDepartment || ROLE_DEFAULT_DEPARTMENTS[effectiveRole],
@@ -314,6 +325,25 @@ export function loadStoredRoleProfile(isFounderUser = false): UserProfile {
   };
 }
 
-export function persistRoleProfile(user: UserProfile): void {
-  safeStorage.setJSON('userRole', user);
+export function syncUserToSafeStorage(user: UserProfile | null): void {
+  if (typeof window === 'undefined') return;
+  if (user) {
+    safeStorage.setJSON('whitecaves_user', user);
+    safeStorage.setJSON('userRole', {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      accessLevel: user.accessLevel,
+      assignedDepartment: user.assignedDepartment,
+      isManagingDirector: user.isManagingDirector,
+      isFounder: user.isFounder,
+      isRoleConfirmed: user.isRoleConfirmed,
+      permissions: user.permissions,
+    });
+  } else {
+    safeStorage.remove('whitecaves_user');
+    safeStorage.remove('userRole');
+  }
 }
