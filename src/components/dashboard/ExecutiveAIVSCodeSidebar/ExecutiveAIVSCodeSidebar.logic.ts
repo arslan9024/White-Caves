@@ -15,10 +15,11 @@ export type AIActivityTab =
 export interface UseExecutiveAIVSCodeSidebarProps {
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  initialTab?: AIActivityTab;
 }
 
 export function useExecutiveAIVSCodeSidebarLogic(props?: UseExecutiveAIVSCodeSidebarProps) {
-  const [activeTab, setActiveTab] = useState<AIActivityTab>('ai-command');
+  const [activeTab, setActiveTab] = useState<AIActivityTab>(props?.initialTab || 'ai-command');
   const [internalCollapsed, setInternalCollapsed] = useState(true);
   const isCollapsed = props?.isCollapsed !== undefined ? props.isCollapsed : internalCollapsed;
   const [width, setWidth] = useState(320);
