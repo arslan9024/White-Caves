@@ -246,4 +246,46 @@ describe('ModernDashboardPage Viewport Rendering & 9-System Routing', () => {
     expect(screen.getByTestId('deal-manager-view')).toBeInTheDocument();
     cleanup();
   }, 30000);
+
+  it('renders enterprise canonical hierarchical routes for PMS, DMS, EMS, TMS, FMS, CMS', () => {
+    // 1. PMS Canonical Collection Route
+    renderDashboardWithProviders('/dashboard/pms/properties');
+    expect(screen.getByTestId('reproperty-overview-view')).toBeInTheDocument();
+    cleanup();
+
+    // 2. PMS Canonical Item Route
+    renderDashboardWithProviders('/dashboard/pms/properties/inventory');
+    expect(screen.getByTestId('re-property-manager-view')).toBeInTheDocument();
+    cleanup();
+
+    // 3. DMS Canonical Slots Route
+    renderDashboardWithProviders('/dashboard/dms/departments/slots');
+    expect(screen.getByTestId('department-management-workspace')).toBeInTheDocument();
+    cleanup();
+
+    // 4. EMS Canonical Roster Route
+    renderDashboardWithProviders('/dashboard/ems/employees/roster');
+    expect(screen.getByTestId('employee-manager-view')).toBeInTheDocument();
+    cleanup();
+
+    // 5. TMS Canonical Catalog Route
+    renderDashboardWithProviders('/dashboard/tms/tasks/catalog');
+    expect(screen.getByTestId('task-manager-view')).toBeInTheDocument();
+    cleanup();
+
+    // 6. FMS Canonical Pipeline Route
+    renderDashboardWithProviders('/dashboard/fms/deals/pipeline');
+    expect(screen.getByTestId('deal-manager-view')).toBeInTheDocument();
+    cleanup();
+
+    // 7. CMS Canonical Leads Route
+    renderDashboardWithProviders('/dashboard/cms/customers/leads');
+    expect(screen.getByTestId('customer-manager-view')).toBeInTheDocument();
+    cleanup();
+
+    // 8. AIAMS Canonical Assistants Route
+    renderDashboardWithProviders('/dashboard/aiams/assistants');
+    expect(screen.getByTestId('aiams-manager-view')).toBeInTheDocument();
+    cleanup();
+  }, 30000);
 });
