@@ -38,6 +38,15 @@ export type { UserRole, AccessLevel, RoleTier, UserProfile, UserRoleContextType 
 export { ToastContext, ToastProvider } from './ToastContext';
 export type { Toast, ToastContextType, ToastType, ToastPosition } from './ToastContext';
 
+// 5. Jack Sparrow Navigation Protocol (JSP-NAV-001 / TURING-NAV-TREE-009)
+export { TreeNavigationContext, TreeNavigationProvider, useTreeNavigation } from './TreeNavigationContext';
+export type {
+  TreeNavigationContextType,
+  TreeNavState,
+  TreeBreadcrumb,
+  NavLevel
+} from './TreeNavigationContext';
+
 export {
   useToast,
   useSuccessToast,
