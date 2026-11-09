@@ -96,6 +96,7 @@ export const ExecutiveVSCodeSidebar: FC<ExecutiveVSCodeSidebarProps> = ({
       <SidebarActivityBar
         activeTab={activeTab}
         onSelectTab={handleSelectTab}
+        onToggleDrawerForTab={handleToggleDrawerForTab}
         role={role}
         isDirectorate={isDirectorate}
       />
