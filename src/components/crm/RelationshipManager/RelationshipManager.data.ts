@@ -59,7 +59,8 @@ export const CANONICAL_RELATIONSHIPS: RelationshipChain[] = [
         deepRoute: '/dashboard/employees/EMP-001',
         details: {
           employeeCode: 'EMP-001',
-          departmentId: 'D01',
+          departmentId: 'DEPT-12',
+          departmentName: 'Executive, Governance & Strategy',
           rankLevel: 'L5 Sovereign Founder',
         },
       },
