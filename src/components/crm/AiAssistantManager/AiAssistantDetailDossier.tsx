@@ -109,13 +109,14 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
               <span>Delete</span>
             </button>
             {agent.agentId.toLowerCase() === 'linda' && (
-              <div className="pt-3 border-t border-slate-800">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="pt-3 border-t border-slate-800 space-y-4">
+                <div className="flex items-center gap-2">
                   <MessageSquare size={14} className="text-emerald-400" />
                   <span className="text-xs font-bold text-emerald-400 font-mono uppercase">
-                    Live Operational WhatsApp Console
+                    AI Linda · Live WhatsApp Simulation & Lead Sandbox
                   </span>
                 </div>
+                <LindaSandboxView />
                 <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50 p-2">
                   <LindaWhatsAppCRM />
                 </div>
@@ -142,13 +143,14 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
             <span className="text-[10px] text-slate-500 uppercase block">Tasks Executed Today</span>
             <span className="text-sm font-bold text-amber-400">{agent.activeWorkload} Tasks</span>
             {agent.agentId.toLowerCase() === 'linda' && (
-              <div className="pt-3 border-t border-slate-800">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="pt-3 border-t border-slate-800 space-y-4">
+                <div className="flex items-center gap-2">
                   <MessageSquare size={14} className="text-emerald-400" />
                   <span className="text-xs font-bold text-emerald-400 font-mono uppercase">
-                    Live Operational WhatsApp Console
+                    AI Linda · Live WhatsApp Simulation & Lead Sandbox
                   </span>
                 </div>
+                <LindaSandboxView />
                 <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50 p-2">
                   <LindaWhatsAppCRM />
                 </div>
@@ -225,13 +227,14 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
               </div>
             )}
             {agent.agentId.toLowerCase() === 'linda' && (
-              <div className="pt-3 border-t border-slate-800">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="pt-3 border-t border-slate-800 space-y-4">
+                <div className="flex items-center gap-2">
                   <MessageSquare size={14} className="text-emerald-400" />
                   <span className="text-xs font-bold text-emerald-400 font-mono uppercase">
-                    Live Operational WhatsApp Console
+                    AI Linda · Live WhatsApp Simulation & Lead Sandbox
                   </span>
                 </div>
+                <LindaSandboxView />
                 <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50 p-2">
                   <LindaWhatsAppCRM />
                 </div>
