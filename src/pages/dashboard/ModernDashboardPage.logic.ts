@@ -158,7 +158,20 @@ export function normalizeDashboardRoute(pathname: string): ParsedHierarchicalRou
   const first = parts[0];
   if (SUBSYSTEM_TAXONOMY[first]) {
     const sys = SUBSYSTEM_TAXONOMY[first];
-    // If the path is /dashboard/aiams/zoe, "zoe" is the assistant ID, not the collection name!
+
+    // Direct Subsystem Hub (e.g. /dashboard/dms without collection)
+    if (parts.length === 1) {
+      return {
+        subsystem: first,
+        collection: sys.collection,
+        activeTab: sys.activityTab,
+        activeItemId: null,
+        canonicalPath: `/dashboard/${first}`,
+        isCanonical: true,
+      };
+    }
+
+    // Direct /dashboard/dms/:deptId or /dashboard/dms/departments/:deptId
     const isCollection = parts[1] === sys.collection || (parts[1] && parts[1].length > 15);
     const col = isCollection ? parts[1] : sys.collection;
     const itemId = isCollection ? parts[2] || null : parts[1] || null;
