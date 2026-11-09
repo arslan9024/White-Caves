@@ -21,6 +21,11 @@ export type EntityType =
   | 'AI_ASSISTANT'
   | 'CONTRACTOR'
   | 'CANDIDATE'
+  | 'DEVELOPER'
+  | 'REGISTRATION_TRUSTEE'
+  | 'MORTGAGE_LENDER'
+  | 'CORPORATE_SPV'
+  | 'MOLLAK_ASSOCIATION'
   // ── OBJECTS (What exists / Assets, Accounts, Contracts, Receipts) ────────────
   | 'COMPANY'
   | 'BRANCH'
