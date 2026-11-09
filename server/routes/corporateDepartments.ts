@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { requirePermission } from '../middleware/rbac.js';
+import { cacheService } from '../services/CacheService.js';
 import { DepartmentNode } from '../../src/models/DepartmentNode.js';
 import { Personnel } from '../../src/models/Personnel.js';
 import { TeamSquad } from '../../src/models/TeamSquad.js';
@@ -20,6 +21,16 @@ import {
 } from '../../src/app/(dashboard)/departments/actions.js';
 
 const router = Router();
+const CACHE_KEY_CORPORATE_DEPTS = 'corporate_departments:overview';
+const CACHE_TTL_CORPORATE_DEPTS = 60; // 60 seconds
+
+export const invalidateCorporateDepartmentsCache = async () => {
+  try {
+    await cacheService.delete(CACHE_KEY_CORPORATE_DEPTS);
+  } catch {
+    // ignore
+  }
+};
 type CorporateRouteRequest = Request<Record<string, string>>;
 type AuthCorporateRouteRequest = CorporateRouteRequest & Pick<AuthRequest, 'user'>;
 
@@ -28,6 +39,11 @@ router.get(
   '/',
   requirePermission('manage_hr', 'manage_agents'),
   asyncHandler(async (_req: Request, res: Response) => {
+    const cached = await cacheService.get<any[]>(CACHE_KEY_CORPORATE_DEPTS);
+    if (cached) {
+      return res.json({ success: true, data: cached, fromCache: true });
+    }
+
     const departments = await DepartmentNode.find({ level: 'DEPARTMENT' })
       .sort({ order: 1 })
       .populate({ path: 'directorOrManagerId', select: 'fullName role' });
@@ -49,6 +65,8 @@ router.get(
         };
       })
     );
+
+    await cacheService.set(CACHE_KEY_CORPORATE_DEPTS, result, CACHE_TTL_CORPORATE_DEPTS);
     res.json({ success: true, data: result });
   })
 );
