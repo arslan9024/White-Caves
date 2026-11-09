@@ -13,7 +13,7 @@ import { VSCodeBreadcrumbs } from './VSCodeBreadcrumbs.view';
 import { ThemeProvider } from '../../../context/ThemeContext';
 
 function renderBreadcrumbs(
-  initialPath: string = '/dashboard/departments/slots',
+  initialPath: string = '/dashboard/dms/departments/slots',
   onNavigate = vi.fn()
 ) {
   return render(
@@ -26,29 +26,29 @@ function renderBreadcrumbs(
 }
 
 describe('VSCodeBreadcrumbs Component Suite', () => {
-  it('renders breadcrumb bar with root HQ and system segments', () => {
-    renderBreadcrumbs('/dashboard/departments/slots');
+  it('renders breadcrumb bar with root HQ, subsystem and collection segments', () => {
+    renderBreadcrumbs('/dashboard/dms/departments/slots');
 
     expect(screen.getByTestId('vscode-breadcrumbs-bar')).toBeInTheDocument();
     expect(screen.getByTestId('breadcrumb-segment-hq')).toBeInTheDocument();
+    expect(screen.getByTestId('breadcrumb-segment-dms')).toBeInTheDocument();
     expect(screen.getByTestId('breadcrumb-segment-departments')).toBeInTheDocument();
-    expect(screen.getByTestId('breadcrumb-segment-slots')).toBeInTheDocument();
   });
 
-  it('triggers navigation when breadcrumb segment is clicked', () => {
+  it('triggers navigation when breadcrumb subsystem segment is clicked', () => {
     const onNavigate = vi.fn();
-    renderBreadcrumbs('/dashboard/departments/slots', onNavigate);
+    renderBreadcrumbs('/dashboard/dms/departments/slots', onNavigate);
 
-    const deptBtn = screen.getByTestId('breadcrumb-segment-departments');
-    fireEvent.click(deptBtn);
+    const dmsBtn = screen.getByTestId('breadcrumb-segment-dms');
+    fireEvent.click(dmsBtn);
 
-    expect(onNavigate).toHaveBeenCalledWith('/dashboard/departments');
+    expect(onNavigate).toHaveBeenCalledWith('/dashboard/dms/departments');
   });
 
   it('opens sibling dropdown popover on chevron click', () => {
-    renderBreadcrumbs('/dashboard/departments/slots');
+    renderBreadcrumbs('/dashboard/dms/departments/slots');
 
-    const chevron = screen.getByTestId('breadcrumb-segment-slots').querySelector('svg');
+    const chevron = screen.getByTestId('breadcrumb-segment-departments').querySelector('svg');
     expect(chevron).toBeInTheDocument();
     if (chevron?.parentElement) {
       fireEvent.click(chevron.parentElement);
@@ -59,14 +59,14 @@ describe('VSCodeBreadcrumbs Component Suite', () => {
 
   it('navigates to sibling when option is clicked', () => {
     const onNavigate = vi.fn();
-    renderBreadcrumbs('/dashboard/departments/slots', onNavigate);
+    renderBreadcrumbs('/dashboard/dms/departments/slots', onNavigate);
 
-    const chevron = screen.getByTestId('breadcrumb-segment-slots').querySelector('svg');
+    const chevron = screen.getByTestId('breadcrumb-segment-departments').querySelector('svg');
     if (chevron?.parentElement) {
       fireEvent.click(chevron.parentElement);
       const option = screen.getByTestId('breadcrumb-sibling-option-pillars');
       fireEvent.click(option);
-      expect(onNavigate).toHaveBeenCalledWith('/dashboard/departments/pillars');
+      expect(onNavigate).toHaveBeenCalledWith('/dashboard/dms/departments/pillars');
     }
   });
 
@@ -86,11 +86,12 @@ describe('VSCodeBreadcrumbs Component Suite', () => {
     forwardSpy.mockRestore();
   });
 
-  it('normalizes /dashboard/explorer sub-routes into canonical hierarchy', () => {
-    renderBreadcrumbs('/dashboard/explorer/departments/slots');
+  it('renders 4-tier breadcrumbs on canonical property deep path', () => {
+    renderBreadcrumbs('/dashboard/pms/properties/PROP-001');
 
     expect(screen.getByTestId('breadcrumb-segment-hq')).toBeInTheDocument();
-    expect(screen.getByTestId('breadcrumb-segment-departments')).toBeInTheDocument();
-    expect(screen.getByTestId('breadcrumb-segment-slots')).toBeInTheDocument();
+    expect(screen.getByTestId('breadcrumb-segment-pms')).toBeInTheDocument();
+    expect(screen.getByTestId('breadcrumb-segment-properties')).toBeInTheDocument();
+    expect(screen.getByTestId('breadcrumb-segment-prop-001')).toBeInTheDocument();
   });
 });
