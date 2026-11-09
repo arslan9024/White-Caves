@@ -230,7 +230,6 @@ export const FounderDepartmentGrid: FC<FounderDepartmentGridProps> = ({ onNaviga
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
     </div>
   );
 };
