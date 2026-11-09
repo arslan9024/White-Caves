@@ -46,7 +46,6 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
   const location = useLocation();
   const [localSearch, setLocalSearch] = useState('');
 
-  // Deduce active domain & item from props or live URL route: /dashboard/:domain/:id
   const pathParts = location.pathname.replace(/^\/dashboard\/?/, '').split('/').filter(Boolean);
   const currentDomain = propDomain || pathParts[0] || 'departments';
   const currentEntityId = propEntityId || pathParts[1] || '';
@@ -89,7 +88,6 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
 
   return (
     <TreeContainer data-testid="right-sidebar-explorer-tree">
-      {/* ── Real-Time Tree Filter Input ── */}
       <SearchBoxContainer>
         <Search size={12} color="#94A3B8" />
         <input
@@ -102,10 +100,7 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
       </SearchBoxContainer>
 
       {/* ── Level 1 Major Tile: Departments & Squads ── */}
-      <SectionCard
-        data-testid="explorer-section-depts"
-        $isCardSelected={currentDomain === 'departments'}
-      >
+      <SectionCard data-testid="explorer-section-depts" $isCardSelected={currentDomain === 'departments'}>
         <SectionHeader
           $isExpanded={expandedSections.depts || Boolean(activeQuery)}
           $isCurrentRoute={currentDomain === 'departments' && !currentEntityId}
@@ -123,12 +118,8 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
           <SectionBody>
             {filteredDepartments.map((dept, idx) => {
               const subKey = `sub-dept-${idx}`;
-              const isDeptActive =
-                currentDomain === 'departments' &&
-                (currentEntityId === dept.code || currentEntityId === dept.id);
-              const isSubExpanded = Boolean(
-                expandedSubgroups[subKey] || activeQuery || isDeptActive
-              );
+              const isDeptActive = currentDomain === 'departments' && (currentEntityId === dept.code || currentEntityId === dept.id);
+              const isSubExpanded = Boolean(expandedSubgroups[subKey] || activeQuery || isDeptActive);
               return (
                 <div key={dept.id}>
                   <SubgroupHeader
@@ -149,29 +140,20 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
                         {dept.name}
                       </span>
                     </div>
-                    <span style={{ fontSize: '0.62rem', color: '#64748B' }}>
-                      {dept.supervisors.length}
-                    </span>
+                    <span style={{ fontSize: '0.62rem', color: '#64748B' }}>{dept.supervisors.length}</span>
                   </SubgroupHeader>
                   {isSubExpanded &&
-                    dept.supervisors.map(sup => {
-                      const isSupActive =
-                        (currentDomain === 'employees' || currentDomain === 'departments') &&
-                        (currentEntityId === sup.id || currentEntityId === sup.code);
-                      return (
-                        <TreeItemRow
-                          key={sup.id}
-                          $isActive={isSupActive}
-                          data-testid={`explorer-supervisor-item-${sup.id}`}
-                          onClick={() =>
-                            onSelectItem?.(`emp-${sup.id}`, `${dept.name} · ${sup.name}`)
-                          }
-                        >
-                          <span className="item-title">🤖 {sup.name}</span>
-                          <span className="item-pill">{sup.code}</span>
-                        </TreeItemRow>
-                      );
-                    })}
+                    dept.supervisors.map(sup => (
+                      <TreeItemRow
+                        key={sup.id}
+                        $isActive={(currentDomain === 'employees' || currentDomain === 'departments') && (currentEntityId === sup.id || currentEntityId === sup.code)}
+                        data-testid={`explorer-supervisor-item-${sup.id}`}
+                        onClick={() => onSelectItem?.(`emp-${sup.id}`, `${dept.name} · ${sup.name}`)}
+                      >
+                        <span className="item-title">🤖 {sup.name}</span>
+                        <span className="item-pill">{sup.code}</span>
+                      </TreeItemRow>
+                    ))}
                 </div>
               );
             })}
@@ -180,10 +162,7 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
       </SectionCard>
 
       {/* ── Level 1 Major Tile: Tasks & Statutory Workflows ── */}
-      <SectionCard
-        data-testid="explorer-section-tasks"
-        $isCardSelected={currentDomain === 'tasks'}
-      >
+      <SectionCard data-testid="explorer-section-tasks" $isCardSelected={currentDomain === 'tasks'}>
         <SectionHeader
           $isExpanded={expandedSections.tasks || Boolean(activeQuery)}
           $isCurrentRoute={currentDomain === 'tasks' && !currentEntityId}
@@ -199,22 +178,17 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
 
         {(expandedSections.tasks || Boolean(activeQuery)) && (
           <SectionBody>
-            {filteredTasks.map(task => {
-              const isTaskActive =
-                currentDomain === 'tasks' &&
-                (currentEntityId === task.taskCode || currentEntityId === task._id);
-              return (
-                <TreeItemRow
-                  key={task._id}
-                  $isActive={isTaskActive}
-                  data-testid={`explorer-task-item-${task.taskCode}`}
-                  onClick={() => onSelectItem?.(`task-${task.taskCode}`, task.title)}
-                >
-                  <span className="item-title">{task.title}</span>
-                  <span className="item-pill">{task.priority}</span>
-                </TreeItemRow>
-              );
-            })}
+            {filteredTasks.map(task => (
+              <TreeItemRow
+                key={task._id}
+                $isActive={currentDomain === 'tasks' && (currentEntityId === task.taskCode || currentEntityId === task._id)}
+                data-testid={`explorer-task-item-${task.taskCode}`}
+                onClick={() => onSelectItem?.(`task-${task.taskCode}`, task.title)}
+              >
+                <span className="item-title">{task.title}</span>
+                <span className="item-pill">{task.priority}</span>
+              </TreeItemRow>
+            ))}
           </SectionBody>
         )}
       </SectionCard>
@@ -226,10 +200,7 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
       >
         <SectionHeader
           $isExpanded={expandedSections.properties || Boolean(activeQuery)}
-          $isCurrentRoute={
-            (currentDomain === 'properties' || currentDomain === 'REproperties') &&
-            !currentEntityId
-          }
+          $isCurrentRoute={(currentDomain === 'properties' || currentDomain === 'REproperties') && !currentEntityId}
           onClick={() => toggleSection('properties', '/dashboard/REproperties')}
           data-testid="explorer-header-properties"
         >
@@ -257,22 +228,17 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
                     <span style={{ fontSize: '0.62rem', color: '#64748B' }}>{props.length}</span>
                   </SubgroupHeader>
                   {isSubExpanded &&
-                    props.map(p => {
-                      const isPropActive =
-                        (currentDomain === 'properties' || currentDomain === 'REproperties') &&
-                        (currentEntityId === p.repropertyId || currentEntityId === p._id);
-                      return (
-                        <TreeItemRow
-                          key={p._id}
-                          $isActive={isPropActive}
-                          data-testid={`explorer-property-item-${p.repropertyId}`}
-                          onClick={() => onSelectItem?.(`prop-${p.repropertyId}`, p.title)}
-                        >
-                          <span className="item-title">{p.title}</span>
-                          <span className="item-pill">{p.propertyType}</span>
-                        </TreeItemRow>
-                      );
-                    })}
+                    props.map(p => (
+                      <TreeItemRow
+                        key={p._id}
+                        $isActive={(currentDomain === 'properties' || currentDomain === 'REproperties') && (currentEntityId === p.repropertyId || currentEntityId === p._id)}
+                        data-testid={`explorer-property-item-${p.repropertyId}`}
+                        onClick={() => onSelectItem?.(`prop-${p.repropertyId}`, p.title)}
+                      >
+                        <span className="item-title">{p.title}</span>
+                        <span className="item-pill">{p.propertyType}</span>
+                      </TreeItemRow>
+                    ))}
                 </div>
               );
             })}
@@ -281,10 +247,7 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
       </SectionCard>
 
       {/* ── Level 1 Major Tile: Deals & Revenue Milestones ── */}
-      <SectionCard
-        data-testid="explorer-section-deals"
-        $isCardSelected={currentDomain === 'deals'}
-      >
+      <SectionCard data-testid="explorer-section-deals" $isCardSelected={currentDomain === 'deals'}>
         <SectionHeader
           $isExpanded={expandedSections.deals || Boolean(activeQuery)}
           $isCurrentRoute={currentDomain === 'deals' && !currentEntityId}
@@ -300,31 +263,23 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
 
         {(expandedSections.deals || Boolean(activeQuery)) && (
           <SectionBody>
-            {filteredDeals.map(deal => {
-              const isDealActive =
-                currentDomain === 'deals' &&
-                (currentEntityId === deal.dealNumber || currentEntityId === deal._id);
-              return (
-                <TreeItemRow
-                  key={deal._id}
-                  $isActive={isDealActive}
-                  data-testid={`explorer-deal-item-${deal.dealNumber}`}
-                  onClick={() => onSelectItem?.(`deal-${deal.dealNumber}`, deal.title)}
-                >
-                  <span className="item-title">{deal.title}</span>
-                  <span className="item-pill">{deal.status}</span>
-                </TreeItemRow>
-              );
-            })}
+            {filteredDeals.map(deal => (
+              <TreeItemRow
+                key={deal._id}
+                $isActive={currentDomain === 'deals' && (currentEntityId === deal.dealNumber || currentEntityId === deal._id)}
+                data-testid={`explorer-deal-item-${deal.dealNumber}`}
+                onClick={() => onSelectItem?.(`deal-${deal.dealNumber}`, deal.title)}
+              >
+                <span className="item-title">{deal.title}</span>
+                <span className="item-pill">{deal.status}</span>
+              </TreeItemRow>
+            ))}
           </SectionBody>
         )}
       </SectionCard>
 
       {/* ── Level 1 Major Tile: Corporate Employees Roster ── */}
-      <SectionCard
-        data-testid="explorer-section-employees"
-        $isCardSelected={currentDomain === 'employees'}
-      >
+      <SectionCard data-testid="explorer-section-employees" $isCardSelected={currentDomain === 'employees'}>
         <SectionHeader
           $isExpanded={expandedSections.employees || Boolean(activeQuery)}
           $isCurrentRoute={currentDomain === 'employees' && !currentEntityId}
@@ -340,22 +295,17 @@ export const SidebarRightExplorerTree: FC<SidebarRightExplorerTreeProps> = ({
 
         {(expandedSections.employees || Boolean(activeQuery)) && (
           <SectionBody>
-            {filteredEmployees.map(emp => {
-              const isEmpActive =
-                currentDomain === 'employees' &&
-                (currentEntityId === emp.employeeCode || currentEntityId === emp._id);
-              return (
-                <TreeItemRow
-                  key={emp._id}
-                  $isActive={isEmpActive}
-                  data-testid={`explorer-employee-item-${emp.employeeCode}`}
-                  onClick={() => onSelectItem?.(`emp-${emp.employeeCode}`, emp.fullName)}
-                >
-                  <span className="item-title">{emp.fullName}</span>
-                  <span className="item-pill">{emp.designation}</span>
-                </TreeItemRow>
-              );
-            })}
+            {filteredEmployees.map(emp => (
+              <TreeItemRow
+                key={emp._id}
+                $isActive={currentDomain === 'employees' && (currentEntityId === emp.employeeCode || currentEntityId === emp._id)}
+                data-testid={`explorer-employee-item-${emp.employeeCode}`}
+                onClick={() => onSelectItem?.(`emp-${emp.employeeCode}`, emp.fullName)}
+              >
+                <span className="item-title">{emp.fullName}</span>
+                <span className="item-pill">{emp.designation}</span>
+              </TreeItemRow>
+            ))}
           </SectionBody>
         )}
       </SectionCard>
