@@ -29,14 +29,14 @@ export const PhoneAuthForm = memo(function PhoneAuthForm({
           UAE Mobile Number
         </label>
         <div className="auth-phone-input-wrapper">
-          <span className="auth-phone-prefix">🇦🇪 +971</span>
+          <span className="auth-phone-prefix">🇦🇪</span>
           <input
             id="signin-phone"
             aria-label="Phone number"
             type="tel"
-            placeholder="50 123 4567"
-            value={phone.replace(/^\+971\s*/, '')}
-            onChange={e => onPhoneChange(`+971${e.target.value.replace(/[^\d]/g, '')}`)}
+            placeholder="+971 50 123 4567"
+            value={phone}
+            onChange={e => onPhoneChange(e.target.value)}
             className="form-input auth-phone-field"
           />
         </div>
