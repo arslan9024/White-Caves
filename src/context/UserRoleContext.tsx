@@ -58,7 +58,7 @@ export const UserRoleContext = createContext<UserRoleContextType | undefined>(un
 
 export const UserRoleProvider: FC<UserRoleProviderProps> = ({ children, initialUser }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
-    if (initialUser !== undefined) return initialUser;
+    if (initialUser !== undefined) return initialUser ? buildSovereignProfile(initialUser) : null;
 
     if (typeof window !== 'undefined') {
       const stored = safeStorage.getJSON<UserProfile>('whitecaves_user');
@@ -265,12 +265,15 @@ export const UserRoleProvider: FC<UserRoleProviderProps> = ({ children, initialU
       isFounder,
       isRoleConfirmed,
       assignedDepartment,
+      permissions: user?.permissions || [],
       allRoles: ALL_SOVEREIGN_ROLES,
       hasPermission,
+      hasAccessLevel: hasMinAccessLevel,
       hasMinAccessLevel,
       login,
       loginAsRole,
       confirmRole,
+      clearRole: logout,
       logout,
       switchRole,
       setAccessLevel,
