@@ -158,8 +158,11 @@ export function normalizeDashboardRoute(pathname: string): ParsedHierarchicalRou
   const first = parts[0];
   if (SUBSYSTEM_TAXONOMY[first]) {
     const sys = SUBSYSTEM_TAXONOMY[first];
-    const col = parts[1] || sys.collection;
-    const itemId = parts[2] || null;
+    // If the path is /dashboard/aiams/zoe, "zoe" is the assistant ID, not the collection name!
+    const isCollection = parts[1] === sys.collection || (parts[1] && parts[1].length > 15);
+    const col = isCollection ? parts[1] : sys.collection;
+    const itemId = isCollection ? parts[2] || null : parts[1] || null;
+
     return {
       subsystem: first,
       collection: col,
