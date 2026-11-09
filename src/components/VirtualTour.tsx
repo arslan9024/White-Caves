@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useReducer } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useReducer } from 'react';
 
 // Consolidated interaction state to avoid excessive re-renders during drag
 interface TourInteractionState {
