@@ -178,7 +178,7 @@ describe('UserRoleContext & 14-Role Sovereign Registry', () => {
 
     expect(screen.getByTestId('user-name').textContent).toBe('Arslan Malik Bashir Ahmad');
     expect(screen.getByTestId('user-role').textContent).toBe('managing_director');
-    expect(screen.getByTestId('access-level').textContent).toBe('5');
+    expect(screen.getByTestId('access-level').textContent).toBe('6');
     expect(screen.getByTestId('is-authenticated').textContent).toBe('true');
     expect(screen.getByTestId('is-md').textContent).toBe('true');
     expect(screen.getByTestId('is-founder').textContent).toBe('true');
