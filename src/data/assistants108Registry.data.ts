@@ -218,7 +218,7 @@ export const CORPORATE_DEPARTMENTS_12: DepartmentDef[] = [
   },
 ];
 
-import { SUPERVISOR_TAXONOMY_108 } from './assistants108Taxonomy.data';
+import { SUPERVISOR_TAXONOMY_108 } from './assistants108Taxonomy.data.ts';
 
 // Helper to generate 9 dedicated supervisors for each department (12 * 9 = 108)
 function build108Supervisors(): SupervisorDef[] {
