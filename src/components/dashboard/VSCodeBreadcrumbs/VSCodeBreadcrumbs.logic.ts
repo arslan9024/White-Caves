@@ -234,14 +234,20 @@ export function useVSCodeBreadcrumbsLogic(props: VSCodeBreadcrumbsProps) {
         })),
       });
 
-      // 4. Entity / Item Record Tier: e.g. Villa 420 / PROP-108
-      const recordId = rawParts[2];
-      if (recordId) {
+      // Multi-Tier Drilldown: Support arbitrary depth beyond Tier 4
+      // e.g., /dashboard/pms/properties/PROP-108/units/UNIT-402/leases/LEAS-99
+      for (let i = 2; i < rawParts.length; i++) {
+        const segVal = rawParts[i];
+        const isActionOrSubEntity = i % 2 === 1; // alternating sub-collection and record ID
+        const subRoute = `/dashboard/${rawParts.slice(0, i + 1).join('/')}`;
+
         segs.push({
-          id: recordId.toUpperCase(),
-          label: `Record ${recordId}`,
-          route: `/dashboard/${sysKey}/${collectionId}/${recordId}`,
-          level: 'ENTITY',
+          id: segVal.toUpperCase(),
+          label: isActionOrSubEntity
+            ? segVal.charAt(0).toUpperCase() + segVal.slice(1)
+            : `Record ${segVal}`,
+          route: subRoute,
+          level: (i === 2 ? 'ENTITY' : 'LEAF') as any,
         });
       }
     }
