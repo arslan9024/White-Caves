@@ -21,6 +21,20 @@ export const DropdownContainer = styled.div`
   animation: dropdownSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: 'Inter', sans-serif;
 
+  @media (max-width: 480px) {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    max-height: 80vh;
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+    padding: 18px 16px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35);
+  }
+
   @keyframes dropdownSlideIn {
     from {
       opacity: 0;

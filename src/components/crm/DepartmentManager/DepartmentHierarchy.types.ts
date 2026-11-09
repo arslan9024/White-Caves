@@ -64,6 +64,9 @@ export interface Hierarchy3TierState {
   unassignedPool: SupervisorDef[];
 }
 
+export type UnassignedPoolItem = SupervisorDef;
+export type DepartmentTeam = SupervisorTeamNode;
+
 export type HierarchyCrudAction =
   | { type: 'CREATE_DIRECTOR'; payload: Partial<DepartmentDirectorNode>; targetSlot: number }
   | { type: 'UPDATE_DIRECTOR'; id: string; payload: Partial<DepartmentDirectorNode> }

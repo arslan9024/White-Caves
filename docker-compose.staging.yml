@@ -1,0 +1,66 @@
+# White Caves Real Estate LLC — Staging Environment Architecture
+# Purpose: Zero-Mock Local Testing with Real Redis, Real PostgreSQL/MongoDB, and Mock Meta WhatsApp Webhooks
+
+version: '3.8'
+
+services:
+  # 1. Distributed Cache & Rate Limiting Engine
+  redis-staging:
+    image: redis:7-alpine
+    container_name: white-caves-staging-redis
+    ports:
+      - "6380:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_staging_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - white-caves-staging-net
+
+  # 2. Mock Meta WhatsApp Cloud API Webhook Gateway
+  mock-whatsapp:
+    image: node:20-alpine
+    container_name: white-caves-staging-mock-wa
+    working_dir: /app
+    volumes:
+      - ./server/services/staging/mockWhatsAppWebhookServer.ts:/app/mockWhatsAppWebhookServer.ts
+      - ./package.json:/app/package.json
+    ports:
+      - "8085:8085"
+    environment:
+      - MOCK_WHATSAPP_PORT=8085
+      - TARGET_API_URL=http://api-staging:5001/api/whatsapp/webhook
+      - WHATSAPP_VERIFY_TOKEN=white_caves_staging_token
+    command: npx tsx mockWhatsAppWebhookServer.ts
+    networks:
+      - white-caves-staging-net
+
+  # 3. Dedicated MongoDB Document Store for Staging
+  mongodb-staging:
+    image: mongo:7-jammy
+    container_name: white-caves-staging-mongo
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: white_caves_staging
+    volumes:
+      - mongo_staging_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - white-caves-staging-net
+
+networks:
+  white-caves-staging-net:
+    driver: bridge
+
+volumes:
+  redis_staging_data:
+  mongo_staging_data:

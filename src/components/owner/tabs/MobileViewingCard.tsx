@@ -191,7 +191,28 @@ export const MobileViewingCard: React.FC<MobileViewingCardProps> = ({
       >
         <CardHeader>
           <LeadName>{viewing.leadName}</LeadName>
-          <StatusBadge $status={currentStatus}>{currentStatus}</StatusBadge>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              type="button"
+              data-testid={`reschedule-btn-${viewing.id}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onReschedule(viewing.id);
+              }}
+              style={{
+                background: 'transparent',
+                border: '1px solid #CBD5E1',
+                borderRadius: '6px',
+                padding: '2px 8px',
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                color: '#64748B',
+              }}
+            >
+              Reschedule
+            </button>
+            <StatusBadge $status={currentStatus}>{currentStatus}</StatusBadge>
+          </div>
         </CardHeader>
 
         <PropertyName>{viewing.propertyName}</PropertyName>
