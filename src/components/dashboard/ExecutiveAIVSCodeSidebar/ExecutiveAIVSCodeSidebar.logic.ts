@@ -85,6 +85,17 @@ export function useExecutiveAIVSCodeSidebarLogic(props?: UseExecutiveAIVSCodeSid
       description:
         'Upgraded WhatsApp Bot Operations Center: 4-Panel Terminal, F1-F35 Catalog, Playbooks P1-P10, and Area Owner Outreach Planner.',
     };
+    const maryAgent = {
+      id: 'mary',
+      name: 'AI Mary',
+      title: 'Listing Ingestion & Data Hygiene Specialist (Inventory Master)',
+      avatar: 'https://ui-avatars.com/api/?name=Mary+AI&background=3B82F6&color=fff',
+      deptName: 'Asset Management & Facilities (DH2 Hub)',
+      deptCode: 'AI_MARY',
+      color: '#3B82F6',
+      description:
+        'Master 9,378+ Inventory Grid, DAMAC Hills 2 Cluster Explorer, Landlord Deduplication & Title Deed Harmonizer.',
+    };
     const deptManagers = CORPORATE_DEPARTMENTS_12.map(dept => ({
       ...dept.managerAi,
       deptName: dept.name,
@@ -92,7 +103,7 @@ export function useExecutiveAIVSCodeSidebarLogic(props?: UseExecutiveAIVSCodeSid
       color: dept.color,
       description: dept.description,
     }));
-    return [lindaAgent, ...deptManagers];
+    return [lindaAgent, maryAgent, ...deptManagers];
   }, []);
 
   const filteredManagers = useMemo(() => {
