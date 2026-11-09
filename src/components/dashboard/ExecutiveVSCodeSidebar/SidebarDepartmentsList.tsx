@@ -1,31 +1,30 @@
 /**
  * SidebarDepartmentsList.tsx
- * White Caves Real Estate LLC - Department Left Sidebar Drawer (12-Department CRUD & Quick Rename)
+ * White Caves Real Estate LLC - Department Left Sidebar Drawer (12-Department CRUD & Hierarchical Sections)
  * Standard: AEGIS Canonical 7-Category Architecture Standard (Drawer Sub-View)
  * Single Purpose File Law: < 350 lines
  */
 
 import React, { FC, useState } from 'react';
 import {
-  GripVertical,
-  Building2,
-  Layers,
-  Edit2,
-  Trash2,
-  PlusCircle,
-  ArrowRight,
-  Check,
-  X,
   RotateCcw,
+  Building,
+  ArrowRight,
 } from 'lucide-react';
 import { useCorporateDepartments } from '../../../context/CorporateDepartmentsContext';
-import { SidebarListWrapper, SidebarCardItem } from './SidebarDepartmentsList.styles';
+import { SidebarListWrapper } from './SidebarDepartmentsList.styles';
+import { SidebarDepartmentCard } from './SidebarDepartmentCard';
+import {
+  getSectionForSlotNumber,
+} from '../../../data/departmentSections.data';
 
 export interface SidebarDepartmentsListProps {
   filterQuery?: string;
   onOpenCreate?: () => void;
   onNavigateToView?: (route: string) => void;
 }
+
+type SectionKey = 'ALL' | 'SECTION_A' | 'SECTION_B' | 'SECTION_C';
 
 export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
   filterQuery = '',
@@ -49,6 +48,7 @@ export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
     handleDemoteDepartment,
   } = useCorporateDepartments();
 
+  const [activeSection, setActiveSection] = useState<SectionKey>('ALL');
   const [renamingSlotIdx, setRenamingSlotIdx] = useState<number | null>(null);
   const [renameText, setRenameText] = useState<string>('');
 
@@ -66,6 +66,10 @@ export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
 
   const query = filterQuery.trim().toLowerCase();
   const visibleSlots = slots.filter(slot => {
+    if (activeSection !== 'ALL') {
+      const sec = getSectionForSlotNumber(slot.slotNumber);
+      if (sec.key !== activeSection) return false;
+    }
     if (!query) return true;
     if (slot.fixedCode.toLowerCase().includes(query)) return true;
     if (slot.dept) {
@@ -80,13 +84,14 @@ export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
 
   return (
     <SidebarListWrapper data-testid="sidebar-departments-list">
-      <div style={{ marginBottom: '8px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+      {/* ── Header Controls ─────────────────────────────────────────────────── */}
+      <div style={{ marginBottom: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '4px 6px',
+            padding: '2px 4px',
             fontSize: '0.66rem',
             color: '#94A3B8',
             fontWeight: 700,
@@ -114,8 +119,9 @@ export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
           </button>
         </div>
 
+        {/* ── Subsystem Hub Quick Navigation ──────────────────────────────── */}
         <div
-          onClick={() => onNavigateToView?.('/dashboard/departments/slots')}
+          onClick={() => onNavigateToView?.('/dashboard/dms')}
           style={{
             fontSize: '0.68rem',
             color: '#F87171',
@@ -129,34 +135,72 @@ export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
             border: '1px solid rgba(239, 68, 68, 0.25)',
             borderRadius: '6px',
           }}
-          data-testid="link-all-dept-slots"
+          data-testid="link-dms-root-overview"
         >
-          <span>📑 Open 12 Slots Workspace (CRUD)</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <Building size={12} /> DMS Headquarters Hub (1-12-108)
+          </span>
           <ArrowRight size={11} />
         </div>
 
+        {/* ── Section Hierarchy Selector Filter Tabs ─────────────────────────── */}
         <div
-          onClick={() => onNavigateToView?.('/dashboard/departments/pillars')}
           style={{
-            fontSize: '0.68rem',
-            color: '#60A5FA',
-            padding: '5px 8px',
-            cursor: 'pointer',
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            background: 'rgba(59, 130, 246, 0.08)',
-            border: '1px solid rgba(59, 130, 246, 0.2)',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '3px',
+            background: '#0B0F17',
+            padding: '2px',
             borderRadius: '6px',
+            border: '1px solid rgba(255,255,255,0.06)',
           }}
-          data-testid="link-dept-pillars"
+          data-testid="sidebar-section-tabs"
         >
-          <span>🏛️ Inspect 7 Governance Pillars</span>
-          <ArrowRight size={11} />
+          {(['ALL', 'SECTION_A', 'SECTION_B', 'SECTION_C'] as const).map(sec => {
+            const isActive = activeSection === sec;
+            const label =
+              sec === 'ALL'
+                ? 'All'
+                : sec === 'SECTION_A'
+                ? 'Sec A'
+                : sec === 'SECTION_B'
+                ? 'Sec B'
+                : 'Sec C';
+            const color =
+              sec === 'SECTION_A'
+                ? '#8B5CF6'
+                : sec === 'SECTION_B'
+                ? '#10B981'
+                : sec === 'SECTION_C'
+                ? '#3B82F6'
+                : '#EF4444';
+
+            return (
+              <button
+                key={sec}
+                type="button"
+                onClick={() => setActiveSection(sec)}
+                data-testid={`sidebar-section-tab-${sec}`}
+                style={{
+                  background: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+                  border: isActive ? `1px solid ${color}` : '1px solid transparent',
+                  color: isActive ? '#FFFFFF' : '#94A3B8',
+                  padding: '3px 0',
+                  borderRadius: '4px',
+                  fontSize: '0.62rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
+      {/* ── Render Grouped / Filtered Department Cards ─────────────────────── */}
       {visibleSlots.map(slot => {
         const isSelected = selectedSlotIndex === slot.slotIndex;
         const isEmpty = !slot.dept;
@@ -164,171 +208,41 @@ export const SidebarDepartmentsList: FC<SidebarDepartmentsListProps> = ({
         const dept = slot.dept;
 
         return (
-          <SidebarCardItem
+          <SidebarDepartmentCard
             key={`slot-${slot.slotIndex}`}
-            $isSelected={isSelected}
-            $isEmpty={isEmpty}
-            $isDragging={draggedSlotIndex === slot.slotIndex}
-            $isDragOver={dragOverSlotIndex === slot.slotIndex}
-            $accentColor={dept?.color || '#EF4444'}
-            draggable={!isEmpty && !isRenaming}
-            onDragStart={e => !isEmpty && handleSlotDragStart(e, slot.slotIndex)}
-            onDragOver={e => handleSlotDragOver(e, slot.slotIndex)}
-            onDragLeave={e => handleSlotDragLeave(e, slot.slotIndex)}
-            onDrop={e => handleSlotDrop(e, slot.slotIndex)}
-            onDragEnd={handleSlotDragEnd}
-            onClick={() => {
+            slot={slot}
+            isSelected={isSelected}
+            isEmpty={isEmpty}
+            isDragging={draggedSlotIndex === slot.slotIndex}
+            isDragOver={dragOverSlotIndex === slot.slotIndex}
+            isRenaming={isRenaming}
+            renameText={renameText}
+            onRenameTextChange={setRenameText}
+            onCommitRename={commitRename}
+            onCancelRename={() => setRenamingSlotIdx(null)}
+            onStartRename={startRename}
+            onSelect={() => {
               if (isRenaming) return;
               selectSlot(slot.slotIndex);
-              onNavigateToView?.(
-                dept?.code ? `/dashboard/departments/${dept.code}` : `/dashboard/departments/slots`
-              );
+              const targetRoute = dept?.code
+                ? `/dashboard/dms/${dept.code}`
+                : `/dashboard/departments/slots`;
+              onNavigateToView?.(targetRoute);
             }}
-            data-testid={`sidebar-dept-card-${slot.slotIndex}`}
-          >
-            <div className="card-top-row">
-              <div className="slot-meta">
-                <span className="slot-pill">#{slot.slotNumber}</span>
-                <span className="slot-code">{dept?.code || slot.fixedCode}</span>
-              </div>
-              {!isEmpty && (
-                <div
-                  className="drag-handle"
-                  title="Drag to swap department positions"
-                  data-testid={`sidebar-dept-drag-${slot.slotIndex}`}
-                >
-                  <GripVertical size={13} />
-                </div>
-              )}
-            </div>
-
-            <div className="card-title-row">
-              <div className="icon-box">
-                <Building2 size={14} />
-              </div>
-              {isRenaming && dept ? (
-                <div
-                  onClick={e => e.stopPropagation()}
-                  style={{ display: 'flex', alignItems: 'center', gap: '3px', flex: 1 }}
-                >
-                  <input
-                    type="text"
-                    value={renameText}
-                    onChange={e => setRenameText(e.target.value)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') commitRename(e, dept._id);
-                      if (e.key === 'Escape') setRenamingSlotIdx(null);
-                    }}
-                    autoFocus
-                    data-testid={`sidebar-rename-input-${slot.slotIndex}`}
-                    style={{
-                      width: '100%',
-                      background: '#0F172A',
-                      border: '1px solid #EF4444',
-                      borderRadius: '4px',
-                      padding: '2px 6px',
-                      color: '#FFFFFF',
-                      fontSize: '0.73rem',
-                      fontWeight: 700,
-                      outline: 'none',
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={e => commitRename(e, dept._id)}
-                    title="Save Name"
-                    data-testid={`sidebar-rename-save-${slot.slotIndex}`}
-                    style={{
-                      background: '#10B981',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: '3px',
-                      padding: '2px 4px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <Check size={11} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={e => {
-                      e.stopPropagation();
-                      setRenamingSlotIdx(null);
-                    }}
-                    title="Cancel"
-                    style={{
-                      background: 'rgba(255,255,255,0.1)',
-                      color: '#94A3B8',
-                      border: 'none',
-                      borderRadius: '3px',
-                      padding: '2px 4px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <X size={11} />
-                  </button>
-                </div>
-              ) : (
-                <h4
-                  onDoubleClick={e => dept && startRename(e, slot.slotIndex, dept.title)}
-                  title="Double-click or click Edit icon to rename"
-                >
-                  {isEmpty ? `Empty Slot #${slot.slotNumber}` : dept?.title}
-                </h4>
-              )}
-            </div>
-
-            <div className="card-bottom-row">
-              {isEmpty ? (
-                <span style={{ fontStyle: 'italic', color: '#64748B' }}>
-                  Click + to assign department
-                </span>
-              ) : (
-                <span className="squad-count">
-                  <Layers size={11} color="#3B82F6" />
-                  <span>{dept?.directorOrManagerId?.fullName || '9 Squads'}</span>
-                </span>
-              )}
-
-              <div className="card-actions">
-                {isEmpty ? (
-                  <button
-                    type="button"
-                    onClick={e => {
-                      e.stopPropagation();
-                      if (onOpenCreate) onOpenCreate();
-                      else onNavigateToView?.('/dashboard/departments/slots');
-                    }}
-                    title="Create Department for this slot"
-                  >
-                    <PlusCircle size={12} />
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={e => dept && startRename(e, slot.slotIndex, dept.title)}
-                      title="Quick Rename Department"
-                      data-testid={`sidebar-edit-dept-${slot.slotIndex}`}
-                    >
-                      <Edit2 size={12} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleDemoteDepartment(slot.slotIndex);
-                      }}
-                      title="Demote to Unassigned Pool"
-                      data-testid={`sidebar-demote-dept-${slot.slotIndex}`}
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          </SidebarCardItem>
+            onDragStart={e => !isEmpty && handleSlotDragStart(e, slot.slotIndex)}
+            onDragOver={e => handleSlotDragOver(e, slot.slotIndex)}
+            onDragLeave={() => handleSlotDragLeave(slot.slotIndex)}
+            onDrop={e => handleSlotDrop(e, slot.slotIndex)}
+            onDragEnd={handleSlotDragEnd}
+            onDemote={e => {
+              e.stopPropagation();
+              handleDemoteDepartment(slot.slotIndex);
+            }}
+            onOpenCreate={() => {
+              if (onOpenCreate) onOpenCreate();
+              else onNavigateToView?.('/dashboard/departments/slots');
+            }}
+          />
         );
       })}
     </SidebarListWrapper>
