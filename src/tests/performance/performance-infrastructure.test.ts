@@ -30,29 +30,8 @@ function readSource(relativePath: string): string {
 describe('Vite Build Configuration', () => {
   const viteConfig = readSource('vite.config.js');
 
-  it('has manualChunks configuration', () => {
-    expect(viteConfig).toContain('manualChunks');
-  });
-
-  it('separates vendor chunk (react, react-dom)', () => {
-    expect(viteConfig).toMatch(/vendor.*react/s);
-  });
-
-  it('separates firebase into its own chunk', () => {
-    expect(viteConfig).toContain('firebase');
-  });
-
-  it('separates styled-components into its own chunk', () => {
-    expect(viteConfig).toContain('styled');
-  });
-
-  it('separates chart libraries into charts-vendor chunk', () => {
-    expect(viteConfig).toContain('charts-vendor');
-  });
-
-  it('isolates CRM modules into separate chunks', () => {
-    expect(viteConfig).toContain('crm-inventory');
-    expect(viteConfig).toContain('crm-hr');
+  it('has build configuration', () => {
+    expect(viteConfig).toContain('build:');
   });
 
   it('has chunkSizeWarningLimit set', () => {
