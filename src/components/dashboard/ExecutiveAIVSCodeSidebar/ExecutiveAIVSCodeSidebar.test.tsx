@@ -97,4 +97,19 @@ describe('ExecutiveAIVSCodeSidebar Component (7-Category Co-Location Spec)', () 
     // Verify filtered department shows up
     expect(screen.getByText(/Luxury Sales & Brokerage/i)).toBeInTheDocument();
   });
+
+  it('renders Zoe 1-click executive quick pills and dispatches routes on click', () => {
+    const onSelectItem = vi.fn();
+    render(<ExecutiveAIVSCodeSidebar onSelectItem={onSelectItem} />);
+
+    expect(screen.getByTestId('zoe-quick-pills-row')).toBeInTheDocument();
+    const ejariPill = screen.getByTestId('quick-pill-ejariexpiries');
+    expect(ejariPill).toBeInTheDocument();
+
+    fireEvent.click(ejariPill);
+
+    expect(screen.getByTestId('zoe-directive-result')).toBeInTheDocument();
+    expect(screen.getByText(/Dept 04 • Ejari Audit/i)).toBeInTheDocument();
+    expect(onSelectItem).toHaveBeenCalledWith('route-/dashboard/tasks', '/dashboard/tasks');
+  });
 });

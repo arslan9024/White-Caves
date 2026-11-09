@@ -42,7 +42,7 @@ export const DepartmentHierarchyTeamsView: React.FC<DepartmentHierarchyTeamsView
             </div>
 
             <div className={s.capabilitiesTags}>
-              {team.capabilities.map((cap, i) => (
+              {(team.capabilities || []).map((cap: string, i: number) => (
                 <span key={i} className={s.capabilityTag}>
                   {cap}
                 </span>
