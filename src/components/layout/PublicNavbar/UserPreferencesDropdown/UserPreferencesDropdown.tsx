@@ -243,6 +243,7 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({
         onClose={() => setIsCropModalOpen(false)}
       />
     </DropdownContainer>
+  </>
   );
 };
 
