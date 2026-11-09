@@ -21,6 +21,10 @@ export interface ExecutiveZoeCardProps {
   directiveInput: string;
   setDirectiveInput: (val: string) => void;
   onDispatchRoute?: (route: string) => void;
+  onOpenZoeSuite?: () => void;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
+  isSelected?: boolean;
 }
 
 const QUICK_DIRECTIVES = [
