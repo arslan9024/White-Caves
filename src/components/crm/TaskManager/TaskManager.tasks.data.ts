@@ -12,7 +12,7 @@ import type {
   TaskHierarchyLineage,
   RUPUseCaseDossier,
 } from './TaskManager.types';
-import { CORPORATE_DEPARTMENTS_12 } from '../../../../data/assistants108Registry.data.ts';
+import { CORPORATE_DEPARTMENTS_12 } from '../../../data/assistants108Registry.data';
 
 interface RawTaskDef {
   code: string;
