@@ -140,8 +140,8 @@ export class MobileOfflineVaultService {
   }
 
   public clearVault(): void {
-    safeStorage.removeItem(VAULT_LISTINGS_KEY);
-    safeStorage.removeItem(VAULT_DEALS_KEY);
+    safeStorage.remove(VAULT_LISTINGS_KEY);
+    safeStorage.remove(VAULT_DEALS_KEY);
     this.lockVault();
   }
 }
