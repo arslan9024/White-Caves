@@ -355,6 +355,17 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
       {!selectedEntityId && (
         <EntityInspectModal node={activeViewNode} onClose={() => setActiveViewNode(null)} />
       )}
+
+      {/* ── Atomic Quick-Create Drawer (Pillars 1 & 4) ────────────────────── */}
+      <ErmsEntityDrawer
+        isOpen={isQuickDrawerOpen}
+        onClose={() => setIsQuickDrawerOpen(false)}
+        onSave={newEntity => {
+          const next = [newEntity, ...entities];
+          setEntities(next);
+          saveStoredEntities(next);
+        }}
+      />
     </div>
   );
 };
