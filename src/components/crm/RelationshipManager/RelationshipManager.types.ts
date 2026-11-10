@@ -80,6 +80,9 @@ export interface ERDRelation {
   multiplicity: string; // e.g. "1 to 0..*"
   type: 'COMPOSITION' | 'AGGREGATION' | 'ASSOCIATION';
   foreignKey: string;
+  actionVerb?: string; // Specific TMS Action Verb that established this link (TURING-SEPARATION-010)
+  actionTaskId?: string; // Linked TMS Task Code (e.g. 'TSK-001', 'TSK-002')
+  departmentCode?: string; // Governing Canonical Department Code ('DEPT-01' to 'DEPT-12')
 }
 
 export interface EntityNode {
