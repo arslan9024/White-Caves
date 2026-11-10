@@ -26,6 +26,9 @@ export { default as Pagination } from './Pagination';
 export { default as ProgressBar } from './ProgressBar';
 export { ToastContainer } from './ToastContainer';
 
+// Canonical Shared Layout & Visual Primitives
+export * from './sharedStyles';
+
 // Types - Core Components
 export type {
   NotificationType,
