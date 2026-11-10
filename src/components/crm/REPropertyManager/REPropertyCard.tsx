@@ -21,10 +21,6 @@ export const REPropertyCard: FC<REPropertyCardProps> = ({
   onInspect,
   onAdvanceStatus,
 }) => {
-  const formatPrice = (price: number) => {
-    return `AED ${price.toLocaleString()}`;
-  };
-
   return (
     <div className={s.card} data-testid={`property-card-${property.repropertyId}`}>
       {/* Property Hero Image */}
