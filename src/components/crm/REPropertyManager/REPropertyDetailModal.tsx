@@ -24,6 +24,7 @@ export const REPropertyDetailModal: FC<REPropertyDetailModalProps> = ({
   onOpenEdit,
   isInline = false,
 }) => {
+  const [isPitchBookOpen, setIsPitchBookOpen] = useState(false);
   if (!property) return null;
 
   const formatPrice = (price: number) => `AED ${price.toLocaleString()}`;
