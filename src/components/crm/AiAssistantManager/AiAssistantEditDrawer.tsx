@@ -341,24 +341,24 @@ export const AiAssistantEditDrawer: React.FC<AiAssistantEditDrawerProps> = ({
           </form>
         </div>
 
-        <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-all cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            form="aiams-agent-form"
-            data-testid="aiams-submit-btn"
-            className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition-all shadow-md shadow-red-600/20 cursor-pointer"
-          >
-            {agent ? 'Save Agent Changes' : 'Register AI Agent'}
-          </button>
+        <div className="pt-4 border-t border-slate-800">
+          <TaskActionBar
+            isDirty={isDirty}
+            onSave={() => handleSaveData(false)}
+            onSaveAndClose={() => handleSaveData(true)}
+            onCancel={() => confirmExit(onClose)}
+            saveLabel={agent ? 'Save Agent Changes' : 'Register AI Agent'}
+            saveAndCloseLabel="Save & Close"
+            saveTestId="aiams-submit-btn"
+          />
         </div>
       </div>
+
+      <UnsavedChangesModal
+        isOpen={showPrompt}
+        onProceed={proceed}
+        onCancel={cancel}
+      />
     </div>
   );
 };
