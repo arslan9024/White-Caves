@@ -1,8 +1,9 @@
 import React, { FC, useState } from 'react';
-import { Bot, Cpu, FolderTree, PanelRightClose, PanelRight, ChevronDown, ChevronRight, Layers } from 'lucide-react';
+import { Bot, Cpu, FolderTree, PanelRightClose, PanelRight, ChevronDown, ChevronRight, Layers, Mic } from 'lucide-react';
 import { useExecutiveAIVSCodeSidebarLogic } from './ExecutiveAIVSCodeSidebar.logic';
 import { SidebarRightExplorerTree } from './SidebarRightExplorerTree';
 import { ExecutiveZoeCard } from './ExecutiveZoeCard';
+import { LiveVoiceDispatchDrawer } from './LiveVoiceDispatch';
 import {
   AISidebarLayoutContainer,
   AIActivityBar,
