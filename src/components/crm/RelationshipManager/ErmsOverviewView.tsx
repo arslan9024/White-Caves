@@ -101,6 +101,8 @@ export const ErmsOverviewView: FC<ErmsOverviewViewProps> = ({ onNavigate }) => {
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto" data-testid="erms-overview-view">
       {/* ── 1. Top Sovereign Header ────────────────────────────────────── */}
+      <ErmsCorporateUmbrellaBanner onNavigate={onNavigate} />
+
       <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-emerald-950/30 border border-slate-800 shadow-xl">
         <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider mb-2">
           <Network size={15} /> System #9 · Entities & Relationships Management System (ERMS)
