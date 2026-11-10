@@ -6,7 +6,7 @@
  * Protocol: RUP Interactive UML ERD Visualization
  */
 
-import React, { FC, useRef, useState, useMemo } from 'react';
+import React, { FC, useRef, useState, useMemo, memo } from 'react';
 import { ZoomIn, ZoomOut, RotateCcw, Maximize2, Key, GitFork } from 'lucide-react';
 import type { ERDClassModel, ERDRelation } from './RelationshipManager.types';
 
@@ -17,7 +17,7 @@ interface RelationshipErdCanvasProps {
   onSelectModel: (model: ERDClassModel) => void;
 }
 
-export const RelationshipErdCanvas: FC<RelationshipErdCanvasProps> = ({
+export const RelationshipErdCanvas: FC<RelationshipErdCanvasProps> = memo(({
   models,
   relations,
   selectedModel,
