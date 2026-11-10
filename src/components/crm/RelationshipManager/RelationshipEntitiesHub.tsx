@@ -75,25 +75,13 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
 
   const handleOpenCreate = () => {
     setEditingId(null);
-    setFormData({
-      name: '',
-      type: 'PROPERTY',
-      badge: 'Active Item',
-      description: '',
-      status: 'ACTIVE',
-    });
+    setFormData({ name: '', type: 'PROPERTY', badge: 'Active Item', description: '', status: 'ACTIVE' });
     setIsFormOpen(true);
   };
 
   const handleOpenEdit = (node: EntityNode) => {
     setEditingId(node.id);
-    setFormData({
-      name: node.name,
-      type: node.type,
-      badge: node.badge,
-      description: node.description,
-      status: node.status || 'ACTIVE',
-    });
+    setFormData({ name: node.name, type: node.type, badge: node.badge, description: node.description, status: node.status || 'ACTIVE' });
     setIsFormOpen(true);
   };
 
@@ -102,9 +90,7 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
     const next = entities.filter(e => e.id !== id);
     setEntities(next);
     saveStoredEntities(next);
-    if (activeViewNode?.id === id) {
-      setActiveViewNode(null);
-    }
+    if (activeViewNode?.id === id) setActiveViewNode(null);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -113,16 +99,7 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
 
     if (editingId) {
       const next = entities.map(item =>
-        item.id === editingId
-          ? {
-              ...item,
-              name: formData.name,
-              type: formData.type,
-              badge: formData.badge,
-              description: formData.description,
-              status: formData.status,
-            }
-          : item
+        item.id === editingId ? { ...item, ...formData } : item
       );
       setEntities(next);
       saveStoredEntities(next);
