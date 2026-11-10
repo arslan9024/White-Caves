@@ -27,6 +27,29 @@ export const formatDate = (
 };
 
 /**
+ * Format time for display (e.g. "Mar 15, 10:30 AM")
+ */
+export const formatTime = (
+  date: Date | string | null | undefined,
+  options?: Intl.DateTimeFormatOptions,
+  locale: string = 'en-AE'
+): string => {
+  if (!date) return '—';
+  try {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleString(locale, options ?? {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return '—';
+  }
+};
+
+/**
  * Format currency — handles null/undefined, configurable locale & fractions
  */
 export const formatCurrency = (
