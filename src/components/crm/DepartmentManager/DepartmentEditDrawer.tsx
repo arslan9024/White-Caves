@@ -1,7 +1,9 @@
-import React, { FC } from 'react';
+import React, { FC, useState, useEffect, useMemo } from 'react';
 import { X, Save } from 'lucide-react';
 import type { DepartmentFormData } from './DepartmentManager.types';
 import { EditDrawerCard } from './DepartmentManagementWorkspace.styles';
+import { useDirtyStateGuard } from '../../../hooks/useDirtyStateGuard';
+import { UnsavedChangesModal, TaskActionBar } from '../../common/UnsavedChangesModal';
 
 export interface DepartmentEditDrawerProps {
   isOpen: boolean;
@@ -22,7 +24,30 @@ export const DepartmentEditDrawer: FC<DepartmentEditDrawerProps> = ({
   onFormChange,
   onSubmit,
 }) => {
+  const [initialSnapshot, setInitialSnapshot] = useState<string>('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setInitialSnapshot(JSON.stringify(formData));
+    }
+  }, [isOpen, editingNodeId]);
+
+  const isDirty = useMemo(() => {
+    if (!isOpen) return false;
+    return Boolean(initialSnapshot && JSON.stringify(formData) !== initialSnapshot);
+  }, [isOpen, formData, initialSnapshot]);
+
+  const { showPrompt, proceed, cancel, confirmExit } = useDirtyStateGuard({
+    isDirty,
+    onConfirmDiscard: onClose,
+  });
+
   if (!isOpen) return null;
+
+  const handleSaveData = () => {
+    const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+    onSubmit(fakeEvent);
+  };
 
   return (
     <EditDrawerCard data-testid="department-edit-drawer">

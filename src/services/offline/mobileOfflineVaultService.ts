@@ -4,7 +4,7 @@
  * Standards: Cache-First Strategy, Offline Resilience, Local Biometric Guard
  */
 
-import { safeStorage } from '../utils/safeStorage';
+import { safeStorage } from '../../utils/safeStorage';
 
 export interface OfflineVaultListing {
   id: string;
