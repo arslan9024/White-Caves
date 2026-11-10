@@ -97,15 +97,6 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
     }
   };
 
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return '—';
-    try {
-      return new Date(dateStr).toLocaleDateString('en-AE', { day: '2-digit', month: 'short', year: 'numeric' });
-    } catch {
-      return dateStr;
-    }
-  };
-
   return (
     <div className="commissions-view">
       {/* Summary Cards */}
