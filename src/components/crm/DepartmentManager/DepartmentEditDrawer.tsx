@@ -164,16 +164,25 @@ export const DepartmentEditDrawer: FC<DepartmentEditDrawerProps> = ({
           />
         </div>
 
-        <div className="form-actions">
-          <button type="button" className="cancel-btn" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="submit" className="save-btn" disabled={isSubmitting}>
-            <Save size={14} style={{ marginRight: '6px' }} />
-            {isSubmitting ? 'Saving...' : editingNodeId ? 'Update Department' : 'Create Department'}
-          </button>
+        <div className="form-actions" style={{ padding: 0, border: 'none', background: 'transparent' }}>
+          <TaskActionBar
+            isDirty={isDirty}
+            isSaving={isSubmitting}
+            onSave={handleSaveData}
+            onSaveAndClose={handleSaveData}
+            onCancel={() => confirmExit(onClose)}
+            saveLabel={editingNodeId ? 'Update Department' : 'Create Department'}
+            saveAndCloseLabel="Save & Close"
+            saveTestId="dept-save-btn"
+          />
         </div>
       </form>
+
+      <UnsavedChangesModal
+        isOpen={showPrompt}
+        onProceed={proceed}
+        onCancel={cancel}
+      />
     </EditDrawerCard>
   );
 };
