@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { authFetch } from '../../../../utils/authFetch';
+import { formatCurrency } from '../../../../utils';
 import {
   Container,
   Header,
@@ -198,14 +199,6 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
       default:
         return '#6B7280';
     }
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'AED',
-      minimumFractionDigits: 0,
-    }).format(value);
   };
 
   if (loading) {
