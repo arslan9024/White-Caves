@@ -7,6 +7,7 @@ import {
   AlertCircle,
   ArrowUp,
   Search,
+  Terminal,
 } from 'lucide-react';
 import { ReactReduxContext } from 'react-redux';
 import { selectSearchLeadCount } from '../../../store/slices/searchLeadsSlice';
@@ -17,6 +18,7 @@ import CalendarTab from './tabs/CalendarTab';
 import TasksTab from './tabs/TasksTab';
 import ExecutivesTab from './tabs/ExecutivesTab';
 import ReportsTab from './tabs/ReportsTab';
+import ZoeConsole from '../ZoeConsole';
 import '../AssistantDashboard.css';
 import './ZoeExecutiveCRM.css';
 

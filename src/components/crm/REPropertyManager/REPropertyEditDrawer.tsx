@@ -336,16 +336,25 @@ export const REPropertyEditDrawer: FC<REPropertyEditDrawerProps> = ({
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full mt-4 py-2.5 px-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black rounded-lg shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all"
-            data-testid="submit-property-btn"
-          >
-            <Save size={14} />
-            <span>{property ? 'Save Property Changes' : 'Confirm & Register Property'}</span>
-          </button>
+          <div className="mt-4 pt-3 border-t border-slate-800">
+            <TaskActionBar
+              isDirty={isDirty}
+              onSave={() => handleSaveData(false)}
+              onSaveAndClose={() => handleSaveData(true)}
+              onCancel={() => confirmExit(onClose)}
+              saveLabel={property ? 'Save Property Changes' : 'Confirm & Register'}
+              saveAndCloseLabel="Save & Close"
+              saveTestId="submit-property-btn"
+            />
+          </div>
         </form>
       </div>
+
+      <UnsavedChangesModal
+        isOpen={showPrompt}
+        onProceed={proceed}
+        onCancel={cancel}
+      />
     </div>
   );
 };
