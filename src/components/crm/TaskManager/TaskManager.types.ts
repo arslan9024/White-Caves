@@ -83,6 +83,10 @@ export interface TaskNode {
   actor: string; // Designated executor / agent / system actor
   action: string; // Specific operational or statutory action executed
   results: string; // Measurable outcome, verified artifact, or state change
+  actionVerb?: string; // e.g. 'VERIFY_RERA_CARD', 'EXECUTE_FORM_A', 'FILE_EJARI', 'AUDIT_VAT' (TURING-SEPARATION-010)
+  sourceActorId?: string; // ERMS Actor Entity Foreign Key (e.g. 'user-001', 'emp-003', 'broker-001')
+  targetObjectId?: string; // ERMS Object Entity Foreign Key (e.g. 'prop-001', 'contract-001', 'permit-001')
+  departmentCode?: string; // DMS Canonical Department Foreign Key ('DEPT-01' to 'DEPT-12')
   lineage?: TaskHierarchyLineage; // Bhakti 5-Tier Lineage tags
   useCase?: RUPUseCaseDossier; // RUP Specification
   dueDate?: string;
