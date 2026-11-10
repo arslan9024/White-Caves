@@ -47,5 +47,7 @@ describe('ReportsTab', () => {
     expect(screen.getByText('12')).toBeInTheDocument();
     expect(screen.getByText('Financial Summary')).toBeInTheDocument();
     expect(screen.getByText('Team Overview')).toBeInTheDocument();
+    expect(screen.getByText('UAE Statutory & Regulatory Gate')).toBeInTheDocument();
+    expect(screen.getByText('AED 125,000 (100% Escrowed)')).toBeInTheDocument();
   });
 });
