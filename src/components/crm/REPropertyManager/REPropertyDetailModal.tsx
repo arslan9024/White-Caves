@@ -28,7 +28,6 @@ export const REPropertyDetailModal: FC<REPropertyDetailModalProps> = ({
   const [isPitchBookOpen, setIsPitchBookOpen] = useState(false);
   if (!property) return null;
 
-  const formatPrice = (price: number) => `AED ${price.toLocaleString()}`;
   const pricePerSqft = Math.round(property.priceAED / property.areaSqft);
 
   const cardContent = (
