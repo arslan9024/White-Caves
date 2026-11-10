@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LandlordPaymentsTab — Phase 29: Live API integration
  *
  * Payment schedule derived from active leases.
@@ -12,6 +12,7 @@ import React, { FC, useMemo, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import { authFetch } from '../../../utils/authFetch';
+import { formatCurrency } from '../../../utils';
 import '../../../pages/RolePages.css';
 
 // ── API shapes ────────────────────────────────────────────────────────────────
@@ -344,8 +345,6 @@ const LandlordPaymentsTab: FC = () => {
     () => payments.find(p => p.id === selectedLeaseId) ?? null,
     [payments, selectedLeaseId]
   );
-
-  const formatCurrency = (amount: number) => `AED ${amount.toLocaleString()}`;
 
   if (!currentUser) {
     return (
