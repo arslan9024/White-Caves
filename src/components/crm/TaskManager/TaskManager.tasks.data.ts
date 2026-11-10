@@ -1458,6 +1458,15 @@ export function buildTaskFromDef(
   const action = `Execute operational workflow: ${title} under ${authority || 'White Caves SOP'} standards`;
   const results = `Verified ${code} compliance dossier, authenticated telemetry logs, and ledger updated`;
 
+  // Deterministic Action Verb extraction (TURING-SEPARATION-010)
+  const firstWord = title.split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '');
+  const secondWord = title.split(' ')[1] ? title.split(' ')[1].toUpperCase().replace(/[^A-Z]/g, '') : 'TASK';
+  const actionVerb = `${firstWord}_${secondWord}`;
+
+  const deptCode = canonicalDept?.code || `DEPT-${String(deptNum).padStart(2, '0')}`;
+  const sourceActorId = 'user-001'; // Sovereign Managing Director / Operator default
+  const targetObjectId = category === 'REGULATORY' ? 'permit-001' : category === 'FINANCE' ? 'invoice-001' : 'prop-001';
+
   return {
     _id: `task-${code.toLowerCase()}`,
     taskCode: code,
@@ -1474,6 +1483,10 @@ export function buildTaskFromDef(
     actor,
     action,
     results,
+    actionVerb,
+    sourceActorId,
+    targetObjectId,
+    departmentCode: deptCode,
     lineage,
     useCase,
     dueDate: '2026-11-30',

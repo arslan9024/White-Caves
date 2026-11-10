@@ -41,6 +41,12 @@ export const RelationshipManagerView: FC<UseRelationshipManagerProps> = props =>
 
   return (
     <RelationshipContainer data-testid="relationship-manager-view">
+      {/* ── 0. Corporate Apex Umbrella Banner & Triad Bar ─────────── */}
+      <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <ErmsCorporateUmbrellaBanner onNavigate={props.onNavigateToDeepRoute} />
+        <ErmsContextTriadBar />
+      </div>
+
       {/* ── 1. Top Executive Header ─────────────────────────────────── */}
       <RelationshipHeader>
         <div className="title-group">
