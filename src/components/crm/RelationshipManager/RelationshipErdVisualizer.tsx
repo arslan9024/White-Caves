@@ -131,6 +131,17 @@ export const RelationshipErdVisualizer: FC = () => {
         </div>
       </div>
 
+      {/* Live DDL & Prisma Exporter (Pillar 3 Upgrades 24 & 27) */}
+      <ErmsErdDdlExporter
+        models={filteredModels}
+        relations={filteredRelations}
+        selectedModelName={selectedModel?.name}
+        onSelectModel={name => {
+          const match = CANONICAL_ERD_MODELS.find(m => m.name === name);
+          if (match) setSelectedModel(match);
+        }}
+      />
+
       {/* Main View Area: Interactive Canvas OR Matrix Table */}
       {viewMode === 'canvas' ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
