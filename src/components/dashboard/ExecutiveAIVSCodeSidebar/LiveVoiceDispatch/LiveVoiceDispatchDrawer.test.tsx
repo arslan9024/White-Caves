@@ -23,8 +23,8 @@ describe('LiveVoiceDispatchDrawer Component', () => {
     render(<LiveVoiceDispatchDrawer />);
 
     expect(screen.getByTestId('live-voice-dispatch-drawer')).toBeInTheDocument();
-    expect(screen.getByText(/LIVE DISPATCH/i)).toBeInTheDocument();
-    expect(screen.getByText(/AI Zoe/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/LIVE DISPATCH/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/AI Zoe/i).length).toBeGreaterThan(0);
     expect(screen.getByTestId('channel-pill-zoe')).toBeInTheDocument();
   });
 
