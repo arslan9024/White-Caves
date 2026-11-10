@@ -11,6 +11,8 @@ import { RelationshipEntitiesHub } from './RelationshipEntitiesHub';
 import { RelationshipErdVisualizer } from './RelationshipErdVisualizer';
 import { RelationshipMatrixFlow } from './RelationshipMatrixFlow';
 import { RelationshipSingleLinkView } from './RelationshipSingleLinkView';
+import { ErmsCorporateUmbrellaBanner } from './ErmsCorporateUmbrellaBanner';
+import { ErmsContextTriadBar } from './ErmsContextTriadBar';
 import type { RelationshipTab } from './RelationshipManager.types';
 import { RelationshipContainer, RelationshipHeader } from './RelationshipManager.styles';
 
