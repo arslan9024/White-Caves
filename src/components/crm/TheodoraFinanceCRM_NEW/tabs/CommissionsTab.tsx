@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { DollarSign, CheckCircle, Clock, X, CreditCard, Filter, Plus, ChevronDown, Users } from 'lucide-react';
+import { formatDate } from '../../../../utils';
 
 export interface Commission {
   id: string;
