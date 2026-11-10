@@ -12,6 +12,7 @@ import { CANONICAL_ERD_MODELS, CANONICAL_ERD_RELATIONS } from './RelationshipErd
 import type { ERDClassModel } from './RelationshipManager.types';
 import { RelationshipErdCanvas } from './RelationshipErdCanvas';
 import { RelationshipErdInspector } from './RelationshipErdInspector';
+import { ErmsErdDdlExporter } from './ErmsErdDdlExporter';
 
 export const RelationshipErdVisualizer: FC = () => {
   const [selectedDomain, setSelectedDomain] = useState<string>('ALL');
