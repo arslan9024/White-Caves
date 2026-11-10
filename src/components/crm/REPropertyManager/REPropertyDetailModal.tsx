@@ -4,9 +4,10 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import React, { FC } from 'react';
-import { X, MapPin, ShieldCheck, CheckCircle2, FileText, UserCheck, ArrowLeft } from 'lucide-react';
+import React, { FC, useState } from 'react';
+import { X, MapPin, ShieldCheck, CheckCircle2, FileText, UserCheck, ArrowLeft, Sparkles } from 'lucide-react';
 import type { REPropertyNode, REPropertyStatus } from './REPropertyManager.types';
+import VipPitchBookModalView from '../VipPitchBookModal';
 
 export interface REPropertyDetailModalProps {
   property: REPropertyNode | null;
