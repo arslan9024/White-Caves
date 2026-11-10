@@ -165,13 +165,7 @@ const RentalManagementPage: FC = () => {
     return true;
   });
 
-  const formatDate = (iso: string): string =>
-    new Date(iso).toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' });
-
   const formatRent = (monthly: number): string => `AED ${(monthly * 12).toLocaleString()}/yr`;
-
-  const formatCurrency = (amount: number, currency: string): string =>
-    `${currency} ${amount.toLocaleString()}`;
 
   const handleSendCollectionReminder = async (item: OverdueQueueItem): Promise<void> => {
     setSendingReminders(prev => ({ ...prev, [item.id]: true }));
