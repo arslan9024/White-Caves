@@ -6,6 +6,7 @@ import {
 
 export type AIActivityTab =
   | 'ai-command'
+  | 'voice-dispatch'
   | 'explorer'
   | 'agent-mesh'
   | 'zoe-chat'
