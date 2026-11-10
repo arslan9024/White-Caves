@@ -109,7 +109,7 @@ export const REPropertyDetailModal: FC<REPropertyDetailModalProps> = ({
                 Listing Valuation
               </span>
               <p className="text-2xl font-black text-amber-400 font-mono mt-0.5">
-                {formatPrice(property.priceAED)}
+                {formatCurrency(property.priceAED)}
                 {property.purpose === 'RENT' && (
                   <span className="text-xs font-normal text-slate-400"> / year</span>
                 )}
