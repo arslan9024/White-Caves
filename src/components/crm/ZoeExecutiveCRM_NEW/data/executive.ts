@@ -107,10 +107,18 @@ export const TASKS: Task[] = [
 ];
 
 export const EXECUTIVES: Executive[] = [
-  { id: 1, name: 'Arslan Malik', role: 'CEO & Founder', avatar: '👨‍💼', status: 'available' },
-  { id: 2, name: 'Fatima Hassan', role: 'COO', avatar: '👩‍💼', status: 'in_meeting' },
-  { id: 3, name: 'Ahmed Al Rashid', role: 'CFO', avatar: '👨‍💻', status: 'available' },
-  { id: 4, name: 'Sarah Al Maktoum', role: 'CMO', avatar: '👩‍💻', status: 'busy' },
+  { id: 1, name: 'AI Zayed', role: 'Floor 12 · Executive, Governance & Strategy Director', avatar: '🏛️', status: 'available' },
+  { id: 2, name: 'AI Sofia', role: 'Floor 11 · Legal, Compliance & Audit Director (RERA/AML)', avatar: '⚖️', status: 'available' },
+  { id: 3, name: 'AI Theodora', role: 'Floor 10 · Accounting, Finance & Tax Director (FTA/VAT)', avatar: '💰', status: 'available' },
+  { id: 4, name: 'AI Elena', role: 'Floor 09 · Research, Analytics & Market Intelligence Director', avatar: '📊', status: 'available' },
+  { id: 5, name: 'AI Maya', role: 'Floor 08 · Media, Public Relations & Communications Director', avatar: '🎙️', status: 'available' },
+  { id: 6, name: 'AI Maktoum', role: 'Floor 07 · Partnerships, Alliances & Capital Growth Director', avatar: '🤝', status: 'available' },
+  { id: 7, name: 'AI Sentinel', role: 'Floor 06 · Inventory, Portfolio & Asset Management Director', avatar: '📦', status: 'available' },
+  { id: 8, name: 'AI Clara', role: 'Floor 05 · Sales, Services & Operations Director', avatar: '💎', status: 'available' },
+  { id: 9, name: 'AI Aurora', role: 'Floor 04 · Technology, Systems & Digital Infrastructure Director', avatar: '💻', status: 'available' },
+  { id: 10, name: 'AI Selena', role: 'Floor 03 · Human Resources, Performance & Recruiting Director', avatar: '👥', status: 'available' },
+  { id: 11, name: 'AI Olivia', role: 'Floor 02 · Marketing, Branding & Digital Acquisition Director', avatar: '📢', status: 'available' },
+  { id: 12, name: 'AI Corinne', role: 'Floor 01 · Customer Experience, Concierge & Hospitality Director', avatar: '🛎️', status: 'available' },
 ];
 
 export const ASSISTANT_COLORS: Record<string, string> = {

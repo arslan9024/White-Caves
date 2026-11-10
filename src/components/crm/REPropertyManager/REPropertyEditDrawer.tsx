@@ -4,7 +4,7 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useMemo } from 'react';
 import { X, Save, Plus } from 'lucide-react';
 import type {
   REPropertyNode,
@@ -13,6 +13,8 @@ import type {
   REPropertyStatus,
 } from './REPropertyManager.types';
 import { PROPERTY_TYPES, PROPERTY_LOCATIONS } from './REPropertyManager.data';
+import { useDirtyStateGuard } from '../../../hooks/useDirtyStateGuard';
+import { UnsavedChangesModal, TaskActionBar } from '../../common/UnsavedChangesModal';
 
 interface REPropertyEditDrawerProps {
   isOpen: boolean;
@@ -29,6 +31,7 @@ export const REPropertyEditDrawer: FC<REPropertyEditDrawerProps> = ({
   onSave,
   onUpdate,
 }) => {
+  const [initialSnapshot, setInitialSnapshot] = useState<string>('');
   const [formData, setFormData] = useState({
     title: '',
     propertyType: 'VILLA' as REPropertyType,
@@ -56,7 +59,7 @@ export const REPropertyEditDrawer: FC<REPropertyEditDrawerProps> = ({
 
   useEffect(() => {
     if (property) {
-      setFormData({
+      const snap = {
         title: property.title,
         propertyType: property.propertyType,
         purpose: property.purpose,
@@ -77,13 +80,15 @@ export const REPropertyEditDrawer: FC<REPropertyEditDrawerProps> = ({
         images: property.images,
         description: property.description,
         features: property.features,
-      });
+      };
+      setFormData(snap);
+      setInitialSnapshot(JSON.stringify(snap));
     } else {
-      setFormData({
+      const defaultState = {
         title: '',
-        propertyType: 'VILLA',
-        purpose: 'BUY',
-        status: 'AVAILABLE',
+        propertyType: 'VILLA' as REPropertyType,
+        purpose: 'BUY' as REPropertyPurpose,
+        status: 'AVAILABLE' as REPropertyStatus,
         location: 'Palm Jumeirah',
         subLocation: 'Beachfront Frond',
         priceAED: 25000000,
@@ -91,7 +96,7 @@ export const REPropertyEditDrawer: FC<REPropertyEditDrawerProps> = ({
         bedrooms: 5,
         bathrooms: 6,
         developer: 'Emaar Properties',
-        completionStatus: 'READY',
+        completionStatus: 'READY' as 'READY' | 'OFF_PLAN',
         trakheesiPermit: `TRAK-${Date.now().toString().slice(-7)}-A`,
         dldTitleDeedNumber: `TD-${Date.now().toString().slice(-6)}`,
         assignedBroker: 'Layla Mansoori',
@@ -102,14 +107,25 @@ export const REPropertyEditDrawer: FC<REPropertyEditDrawerProps> = ({
         ],
         description: 'Luxury turnkey Dubai residence with premium architectural finishes.',
         features: ['Private Pool', 'Smart Home', 'Balcony', 'Covered Parking'],
-      });
+      };
+      setFormData(defaultState);
+      setInitialSnapshot(JSON.stringify(defaultState));
     }
-  }, [property]);
+  }, [property, isOpen]);
+
+  const isDirty = useMemo(() => {
+    if (!isOpen) return false;
+    return Boolean(initialSnapshot && JSON.stringify(formData) !== initialSnapshot);
+  }, [isOpen, formData, initialSnapshot]);
+
+  const { showPrompt, proceed, cancel, confirmExit } = useDirtyStateGuard({
+    isDirty,
+    onConfirmDiscard: onClose,
+  });
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveData = (shouldClose: boolean) => {
     if (!formData.title.trim()) return;
 
     if (property && onUpdate) {
@@ -117,7 +133,14 @@ export const REPropertyEditDrawer: FC<REPropertyEditDrawerProps> = ({
     } else {
       onSave(formData);
     }
-    onClose();
+    if (shouldClose) {
+      onClose();
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSaveData(true);
   };
 
   return (
