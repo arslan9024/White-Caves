@@ -230,7 +230,16 @@ export const REPropertyDetailModal: FC<REPropertyDetailModalProps> = ({
         <div className="text-xs text-slate-500 font-mono">
           Created: {property.createdAt} • White Caves Sovereign Inventory
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsPitchBookOpen(true)}
+            data-testid="btn-open-pitch-book"
+            className="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
+          >
+            <Sparkles size={13} />
+            <span>VIP Pitch Book</span>
+          </button>
           {onOpenEdit && (
             <button
               onClick={() => onOpenEdit(property)}
