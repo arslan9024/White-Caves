@@ -6,7 +6,7 @@
  * Protocol: RUP «Entity» / «Boundary» / «Control» Inspector
  */
 
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { X, Key, GitFork, ShieldCheck, Database, Layers } from 'lucide-react';
 import type { ERDClassModel, ERDRelation } from './RelationshipManager.types';
 
@@ -17,7 +17,7 @@ interface RelationshipErdInspectorProps {
   onSelectRelatedModel?: (modelName: string) => void;
 }
 
-export const RelationshipErdInspector: FC<RelationshipErdInspectorProps> = ({
+export const RelationshipErdInspector: FC<RelationshipErdInspectorProps> = memo(({
   model,
   relations,
   onClose,

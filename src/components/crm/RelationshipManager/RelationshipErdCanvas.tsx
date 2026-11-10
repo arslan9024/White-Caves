@@ -286,6 +286,6 @@ export const RelationshipErdCanvas: FC<RelationshipErdCanvasProps> = memo(({
       </div>
     </div>
   );
-};
+});
 
 export default RelationshipErdCanvas;
