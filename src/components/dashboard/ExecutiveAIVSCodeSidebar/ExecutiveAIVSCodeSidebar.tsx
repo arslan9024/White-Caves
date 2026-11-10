@@ -86,6 +86,11 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
                 <FolderTree size={14} color="#EF4444" />
                 <span>White Caves Explorer</span>
               </>
+            ) : activeTab === 'voice-dispatch' ? (
+              <>
+                <Mic size={14} color="#EF4444" />
+                <span>Voice & Live Dispatch</span>
+              </>
             ) : (
               <>
                 <Cpu size={14} color="#EF4444" />
@@ -108,6 +113,13 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
             activeEntityId={activeEntityId}
             onSelectItem={(key, label) => {
               if (onSelectItem) onSelectItem(key, label);
+            }}
+          />
+        ) : activeTab === 'voice-dispatch' ? (
+          <LiveVoiceDispatchDrawer
+            selectedAgentId={selectedAgentId}
+            onDispatchTask={(agentId, instruction) => {
+              if (onSelectItem) onSelectItem(`dispatch-${agentId}`, instruction);
             }}
           />
         ) : (
@@ -306,6 +318,15 @@ export const ExecutiveAIVSCodeSidebar: FC<ExecutiveAIVSCodeSidebarProps> = ({
             data-testid="activity-btn-ai-command"
           >
             <Bot size={18} />
+          </AIActivityIconBtn>
+
+          <AIActivityIconBtn
+            $isActive={activeTab === 'voice-dispatch'}
+            onClick={() => handleSelectTab('voice-dispatch')}
+            title="Voice & Live Dispatch (WebRTC / Voice Notes)"
+            data-testid="activity-btn-voice-dispatch"
+          >
+            <Mic size={18} />
           </AIActivityIconBtn>
 
           <AIActivityIconBtn
