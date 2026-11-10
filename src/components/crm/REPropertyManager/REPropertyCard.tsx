@@ -54,7 +54,7 @@ export const REPropertyCard: FC<REPropertyCardProps> = ({
         <div>
           <div className="flex items-baseline justify-between gap-2">
             <span className={s.cardPrice}>
-              {formatPrice(property.priceAED)}
+              {formatCurrency(property.priceAED)}
               {property.purpose === 'RENT' && (
                 <span className="text-xs font-normal text-slate-400"> / yr</span>
               )}
