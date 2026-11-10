@@ -8,6 +8,8 @@
 import React, { FC } from 'react';
 import { Search } from 'lucide-react';
 import { EntityNodeModal } from './EntityNodeModal';
+import { ErmsRelationalAnalyticsDeck } from './ErmsRelationalAnalyticsDeck';
+import { ErmsZoeCopilot } from './ErmsZoeCopilot';
 import type { RelationshipChain, EntityNode } from './RelationshipManager.types';
 import { MetricsGrid, MetricCard, NodesFlowContainer } from './RelationshipManager.styles';
 
@@ -42,6 +44,20 @@ export const RelationshipMatrixFlow: FC<RelationshipMatrixFlowProps> = ({
   return (
     <div data-testid="relationship-matrix-flow">
       {/* ── 1. Real-Time Relationship Graph Metrics Deck ─────────────── */}
+      <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <ErmsRelationalAnalyticsDeck
+          grossDealVolumeAED={stats.totalRevenueAED}
+          totalDealsCount={visibleNodes.filter(n => n.type === 'DEAL').length || 1}
+        />
+        <ErmsZoeCopilot
+          entities={visibleNodes}
+          onSelectEntity={id => {
+            const match = visibleNodes.find(n => n.id === id);
+            if (match) handleSelectNode(match);
+          }}
+        />
+      </div>
+
       <MetricsGrid>
         <MetricCard $accentColor="#10B981">
           <div className="label">Active Relationship Chain</div>
