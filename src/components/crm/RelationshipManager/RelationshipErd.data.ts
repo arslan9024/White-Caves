@@ -184,6 +184,9 @@ export const CANONICAL_ERD_RELATIONS: ERDRelation[] = [
     multiplicity: '1 to 0..*',
     type: 'AGGREGATION',
     foreignKey: 'userId',
+    actionVerb: 'DISPATCH_TASK',
+    actionTaskId: 'TSK-001',
+    departmentCode: 'DEPT-12',
   },
   {
     id: 'rel-2',
@@ -193,6 +196,9 @@ export const CANONICAL_ERD_RELATIONS: ERDRelation[] = [
     multiplicity: '1 to 0..*',
     type: 'AGGREGATION',
     foreignKey: 'landlordId',
+    actionVerb: 'ASSIGN_TITLE_DEED',
+    actionTaskId: 'TSK-002',
+    departmentCode: 'DEPT-06',
   },
   {
     id: 'rel-3',
@@ -202,6 +208,9 @@ export const CANONICAL_ERD_RELATIONS: ERDRelation[] = [
     multiplicity: '1 to 0..*',
     type: 'ASSOCIATION',
     foreignKey: 'tenantId',
+    actionVerb: 'EXECUTE_EJARI',
+    actionTaskId: 'TSK-036',
+    departmentCode: 'DEPT-05',
   },
   {
     id: 'rel-4',
@@ -211,6 +220,9 @@ export const CANONICAL_ERD_RELATIONS: ERDRelation[] = [
     multiplicity: '1 to 0..*',
     type: 'ASSOCIATION',
     foreignKey: 'propertyId',
+    actionVerb: 'ALLOCATE_INVENTORY',
+    actionTaskId: 'TSK-040',
+    departmentCode: 'DEPT-06',
   },
   {
     id: 'rel-5',
@@ -220,6 +232,9 @@ export const CANONICAL_ERD_RELATIONS: ERDRelation[] = [
     multiplicity: '1 to 0..*',
     type: 'COMPOSITION',
     foreignKey: 'contractId',
+    actionVerb: 'COLLECT_RENT_CHEQUE',
+    actionTaskId: 'TSK-050',
+    departmentCode: 'DEPT-10',
   },
   {
     id: 'rel-6',
@@ -229,6 +244,9 @@ export const CANONICAL_ERD_RELATIONS: ERDRelation[] = [
     multiplicity: '1 to 0..*',
     type: 'ASSOCIATION',
     foreignKey: 'contractId',
+    actionVerb: 'AUDIT_LEASE_LIFECYCLE',
+    actionTaskId: 'TSK-044',
+    departmentCode: 'DEPT-11',
   },
   {
     id: 'rel-7',
@@ -238,6 +256,9 @@ export const CANONICAL_ERD_RELATIONS: ERDRelation[] = [
     multiplicity: '1 to 0..*',
     type: 'ASSOCIATION',
     foreignKey: 'propertyId',
+    actionVerb: 'INSPECT_ASSET_CONDITION',
+    actionTaskId: 'TSK-042',
+    departmentCode: 'DEPT-06',
   },
   {
     id: 'rel-8',
@@ -247,6 +268,9 @@ export const CANONICAL_ERD_RELATIONS: ERDRelation[] = [
     multiplicity: '1 to 0..*',
     type: 'COMPOSITION',
     foreignKey: 'dealId',
+    actionVerb: 'GENERATE_VAT_INVOICE',
+    actionTaskId: 'TSK-060',
+    departmentCode: 'DEPT-10',
   },
   {
     id: 'rel-9',
@@ -256,5 +280,8 @@ export const CANONICAL_ERD_RELATIONS: ERDRelation[] = [
     multiplicity: '1 to 0..*',
     type: 'COMPOSITION',
     foreignKey: 'dealId',
+    actionVerb: 'DEPOSIT_ESCROW_CHEQUE',
+    actionTaskId: 'TSK-065',
+    departmentCode: 'DEPT-10',
   },
 ];
