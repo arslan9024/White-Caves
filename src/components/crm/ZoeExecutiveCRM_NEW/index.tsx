@@ -158,19 +158,25 @@ const ZoeExecutiveCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['suggestions', 'calendar', 'tasks', 'executives', 'reports'].map(tab => (
+        {['console', 'suggestions', 'calendar', 'tasks', 'executives', 'reports'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'console' ? 'AI Zoe Terminal' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
 
       <div className="tab-content">
         <Suspense fallback={<div className="loading">Loading...</div>}>
+          {activeTab === 'console' && (
+            <div style={{ marginTop: '10px' }}>
+              <ZoeConsole />
+            </div>
+          )}
+
           {activeTab === 'suggestions' && (
             <SuggestionsTab
               suggestions={filteredSuggestions}
