@@ -57,7 +57,7 @@ describe('VipPitchBookModalView UI mounting and interaction', () => {
     render(<VipPitchBookModalView property={MOCK_PROPERTY} isOpen={true} onClose={vi.fn()} />);
 
     expect(screen.getByTestId('vip-pitch-book-modal')).toBeInTheDocument();
-    expect(screen.getByText(/Palm Jumeirah Signature Villa/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Palm Jumeirah Signature Villa/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/AED 25,000,000/i)).toBeInTheDocument();
     expect(screen.getByTestId('btn-print-pitch-book')).toBeInTheDocument();
   });
