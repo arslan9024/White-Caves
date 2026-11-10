@@ -172,6 +172,6 @@ export const RelationshipErdInspector: FC<RelationshipErdInspectorProps> = memo(
       </div>
     </div>
   );
-};
+});
 
 export default RelationshipErdInspector;
