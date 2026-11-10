@@ -8,6 +8,7 @@ import React, { FC, useState } from 'react';
 import { X, MapPin, ShieldCheck, CheckCircle2, FileText, UserCheck, ArrowLeft, Sparkles } from 'lucide-react';
 import type { REPropertyNode, REPropertyStatus } from './REPropertyManager.types';
 import VipPitchBookModalView from '../VipPitchBookModal';
+import { formatCurrency } from '../../../utils';
 
 export interface REPropertyDetailModalProps {
   property: REPropertyNode | null;
