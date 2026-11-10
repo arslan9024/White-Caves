@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, DollarSign, Users, AlertTriangle } from 'lucide-react';
+import { TrendingUp, DollarSign, Users, AlertTriangle, ShieldCheck, Scale, FileCheck } from 'lucide-react';
 import type { ConfidentialVaultState } from '../../../../store/slices/aiAssistant/types';
 
 interface FunnelMetrics {
