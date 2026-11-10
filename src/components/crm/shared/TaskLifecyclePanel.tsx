@@ -15,6 +15,7 @@ import {
   Flag,
 } from 'lucide-react';
 import type { Task, TaskLifecycleStage, TaskAction, TaskResult } from '../../../store/slices/aiAssistant/types';
+import { formatTime } from '../../../utils';
 import './TaskLifecyclePanel.css';
 
 // ── Lifecycle stage configuration ──────────────────────────────────────────
@@ -88,16 +89,7 @@ function getStageIndex(stage?: TaskLifecycleStage): number {
 }
 
 // ── Helper: format ISO timestamp ───────────────────────────────────────────
-function formatTime(iso?: string): string {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  return d.toLocaleString('en-AE', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
+// Canonical formatTime now consumed directly from src/utils/index.ts
 
 // ── ActionRow ─────────────────────────────────────────────────────────────
 interface ActionRowProps {
