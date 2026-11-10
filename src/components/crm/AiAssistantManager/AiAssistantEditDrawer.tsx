@@ -5,7 +5,7 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AI_DEPARTMENTS_OPTIONS, AI_MODELS_LIST } from './AiAssistantManager.data';
 import type {
   AiAgentRecord,
@@ -13,6 +13,8 @@ import type {
   AiAgentTier,
   AiAgentStatus,
 } from './AiAssistantManager.types';
+import { useDirtyStateGuard } from '../../../hooks/useDirtyStateGuard';
+import { UnsavedChangesModal, TaskActionBar } from '../../common/UnsavedChangesModal';
 
 export interface AiAssistantEditDrawerProps {
   isOpen: boolean;
@@ -27,6 +29,7 @@ export const AiAssistantEditDrawer: React.FC<AiAssistantEditDrawerProps> = ({
   onClose,
   onSave,
 }) => {
+  const [initialSnapshot, setInitialSnapshot] = useState<string>('');
   const [formData, setFormData] = useState<AiAgentFormPayload>({
     agentId: '',
     code: '',
@@ -46,7 +49,7 @@ export const AiAssistantEditDrawer: React.FC<AiAssistantEditDrawerProps> = ({
 
   useEffect(() => {
     if (agent) {
-      setFormData({
+      const snapData = {
         agentId: agent.agentId,
         code: agent.code,
         name: agent.name,
@@ -60,10 +63,13 @@ export const AiAssistantEditDrawer: React.FC<AiAssistantEditDrawerProps> = ({
         systemPrompt: agent.systemPrompt,
         capabilities: agent.capabilities,
         activeWorkload: agent.activeWorkload,
-      });
-      setCapabilitiesInput((agent.capabilities || []).join(', '));
+      };
+      setFormData(snapData);
+      const caps = (agent.capabilities || []).join(', ');
+      setCapabilitiesInput(caps);
+      setInitialSnapshot(JSON.stringify({ ...snapData, caps }));
     } else {
-      setFormData({
+      const defaultData: AiAgentFormPayload = {
         agentId: '',
         code: '',
         name: '',
@@ -77,10 +83,25 @@ export const AiAssistantEditDrawer: React.FC<AiAssistantEditDrawerProps> = ({
         systemPrompt: '',
         capabilities: ['Autonomous Execution', '15-Min SLA'],
         activeWorkload: 0,
-      });
+      };
+      setFormData(defaultData);
       setCapabilitiesInput('Autonomous Execution, 15-Min SLA');
+      setInitialSnapshot(JSON.stringify({ ...defaultData, caps: 'Autonomous Execution, 15-Min SLA' }));
     }
   }, [agent, isOpen]);
+
+  const isDirty = useMemo(() => {
+    if (!isOpen) return false;
+    return Boolean(
+      initialSnapshot &&
+        JSON.stringify({ ...formData, caps: capabilitiesInput }) !== initialSnapshot
+    );
+  }, [isOpen, formData, capabilitiesInput, initialSnapshot]);
+
+  const { showPrompt, proceed, cancel, confirmExit } = useDirtyStateGuard({
+    isDirty,
+    onConfirmDiscard: onClose,
+  });
 
   if (!isOpen) return null;
 
@@ -93,8 +114,7 @@ export const AiAssistantEditDrawer: React.FC<AiAssistantEditDrawerProps> = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveData = (shouldClose: boolean) => {
     if (!formData.name.trim() || !formData.role.trim()) return;
     const caps = capabilitiesInput
       .split(',')
@@ -104,6 +124,14 @@ export const AiAssistantEditDrawer: React.FC<AiAssistantEditDrawerProps> = ({
       ...formData,
       capabilities: caps.length > 0 ? caps : ['Autonomous Execution'],
     });
+    if (shouldClose) {
+      onClose();
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSaveData(true);
   };
 
   return (
