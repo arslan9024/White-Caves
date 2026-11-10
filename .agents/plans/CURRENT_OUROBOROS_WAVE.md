@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #17756 Blueprint
-**Generated:** 2026-11-10T23:46:42.368Z
+# AEGIS Perpetual Ouroboros — Cycle #17757 Blueprint
+**Generated:** 2026-11-10T23:46:56.899Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-06 — Bilingual Arabic (RTL) & Micro-Typography Geometry
-- **Lead Researcher:** @Invoice (Dept 10)
-- **Core Objective:** Dir="rtl" Font Metrics & Cairo/Tajawal Dual-Script Polish
+- **Domain:** DOM-07 — Sub-10ms Microsecond Engine & Memory Persistence
+- **Lead Researcher:** @Mira (Dept 04)
+- **Core Objective:** Redis Tier-0 Caching, LCP Preload & Zero-Layout-Shift Gates
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
