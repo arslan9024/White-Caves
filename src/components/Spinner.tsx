@@ -1,10 +1,6 @@
-import React from 'react';
-import './Spinner.css';
-
-const Spinner: React.FC = () => (
-  <div className="spinner-overlay" role="status" aria-live="polite" aria-label="Loading">
-    <div className="spinner" />
-  </div>
-);
-
-export default Spinner;
+/**
+ * Spinner Component (Canonical Re-export from src/components/ui/Spinner)
+ * Standard: AEGIS V5.0 Unified Design System Deduplication
+ */
+export { default } from './ui/Spinner';
+export type { SpinnerProps } from './ui/advancedUI.types';
