@@ -234,6 +234,13 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
             />
           </div>
           <button
+            onClick={() => setIsQuickDrawerOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all whitespace-nowrap shadow-md shadow-red-600/20"
+            data-testid="quick-create-entity-btn"
+          >
+            <Plus size={14} /> Quick Ingest
+          </button>
+          <button
             onClick={handleOpenCreate}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all whitespace-nowrap"
             data-testid="create-entity-btn"
