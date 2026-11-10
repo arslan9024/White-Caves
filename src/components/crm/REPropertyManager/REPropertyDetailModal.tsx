@@ -273,16 +273,23 @@ export const REPropertyDetailModal: FC<REPropertyDetailModalProps> = ({
   }
 
   return (
-    <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      data-testid="property-detail-modal"
-    >
+    <>
       <div
-        data-testid="property-detail-card"
-        className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        data-testid="property-detail-modal"
       >
-        {cardContent}
+        <div
+          data-testid="property-detail-card"
+          className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        >
+          {cardContent}
+        </div>
       </div>
-    </div>
+      <VipPitchBookModalView
+        property={property}
+        isOpen={isPitchBookOpen}
+        onClose={() => setIsPitchBookOpen(false)}
+      />
+    </>
   );
 };

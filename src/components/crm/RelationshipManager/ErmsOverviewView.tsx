@@ -25,6 +25,7 @@ import {
 import { CANONICAL_ALL_ENTITIES } from './RelationshipEntities.data';
 import { CANONICAL_ERD_RELATIONS, CANONICAL_ERD_MODELS } from './RelationshipErd.data';
 import { CANONICAL_RELATIONSHIPS } from './RelationshipManager.data';
+import { ErmsCorporateUmbrellaBanner } from './ErmsCorporateUmbrellaBanner';
 
 export interface ErmsOverviewViewProps {
   onNavigate: (route: string) => void;
