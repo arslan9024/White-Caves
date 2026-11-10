@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { authFetch } from '../../utils/authFetch';
 import { createLogger } from '../../utils/logger';
+import { formatDate, formatCurrency } from '../../utils';
 import '../RolePages.css';
 import './RentalManagementPage.css';
 
