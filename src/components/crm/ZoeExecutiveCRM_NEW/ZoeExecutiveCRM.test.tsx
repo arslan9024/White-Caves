@@ -25,6 +25,10 @@ vi.mock('lucide-react', () => {
 vi.mock('../AssistantDashboard.css', () => ({}));
 vi.mock('./ZoeExecutiveCRM.css', () => ({}));
 
+vi.mock('../ZoeConsole', () => ({
+  default: () => <div data-testid="zoe-console">Zoe Console</div>,
+}));
+
 // Mock tab components
 vi.mock('./tabs/SuggestionsTab', () => ({
   default: ({ suggestions, unreviewedCount, criticalCount }: any) => (
