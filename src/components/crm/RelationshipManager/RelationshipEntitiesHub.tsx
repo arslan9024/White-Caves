@@ -143,7 +143,15 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
 
   const filteredEntities = useMemo(() => {
     return entities.filter(e => {
-      const matchesType = selectedType === 'ALL' || e.type === selectedType;
+      let matchesType = true;
+      if (selectedType === 'ACTORS') {
+        matchesType = e.category === 'ACTOR';
+      } else if (selectedType === 'OBJECTS') {
+        matchesType = e.category === 'OBJECT';
+      } else if (selectedType !== 'ALL') {
+        matchesType = e.type === selectedType;
+      }
+
       const matchesSearch =
         e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         e.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
