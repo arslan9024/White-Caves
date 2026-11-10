@@ -23,7 +23,7 @@ const TYPE_ICONS: Record<string, React.ComponentType<{ size?: number | string }>
   cost_saving: DollarSign
 };
 
-const SuggestionsTab: React.FC<SuggestionsTabProps> = ({ suggestions, unreviewedCount, criticalCount, onStatusChange }) => {
+const SuggestionsTab: React.FC<SuggestionsTabProps> = memo(({ suggestions, unreviewedCount, criticalCount, onStatusChange }) => {
   return (
     <div className="suggestions-view">
       <div className="view-header">
@@ -77,6 +77,6 @@ const SuggestionsTab: React.FC<SuggestionsTabProps> = ({ suggestions, unreviewed
       </div>
     </div>
   );
-};
+});
 
 export default SuggestionsTab;
