@@ -8,6 +8,7 @@ import React, { FC } from 'react';
 import { Bed, Bath, Maximize2, MapPin, ShieldCheck, ChevronRight } from 'lucide-react';
 import type { REPropertyNode, REPropertyStatus } from './REPropertyManager.types';
 import { propStyles as s } from './REPropertyManager.styles';
+import { formatCurrency } from '../../../utils';
 
 interface REPropertyCardProps {
   property: REPropertyNode;
