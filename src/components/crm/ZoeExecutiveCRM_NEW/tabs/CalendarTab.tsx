@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Calendar, Clock, MapPin, Users, Video, Phone } from 'lucide-react';
 
 interface Meeting {
@@ -17,7 +17,7 @@ interface CalendarTabProps {
   onSearchChange: (query: string) => void;
 }
 
-const CalendarTab: React.FC<CalendarTabProps> = ({ meetings, searchQuery, onSearchChange }) => {
+const CalendarTab: React.FC<CalendarTabProps> = memo(({ meetings, searchQuery, onSearchChange }) => {
   const upcomingMeetings = meetings.filter((m: Meeting) => m.status === 'upcoming');
 
   return (
@@ -57,6 +57,6 @@ const CalendarTab: React.FC<CalendarTabProps> = ({ meetings, searchQuery, onSear
       </div>
     </div>
   );
-};
+});
 
 export default CalendarTab;

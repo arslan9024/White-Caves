@@ -10,6 +10,8 @@ import { Plus, Search, Edit2, Trash2, Eye, ArrowLeft } from 'lucide-react';
 import type { EntityNode, EntityType } from './RelationshipManager.types';
 import { CANONICAL_ALL_ENTITIES, ENTITY_TYPE_OPTIONS } from './RelationshipEntities.data';
 import { EntityFormModal, EntityInspectModal } from './RelationshipEntityModals';
+import { ErmsEntityDrawer } from './ErmsEntityDrawer';
+import { ErmsRbacSecurityLedger } from './ErmsRbacSecurityLedger';
 
 const STORAGE_KEY = 'whitecaves_all_entities_store';
 
@@ -49,6 +51,7 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
 
   // Modal state
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isQuickDrawerOpen, setIsQuickDrawerOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeViewNode, setActiveViewNode] = useState<EntityNode | null>(null);
 
@@ -196,6 +199,8 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
 
           <h2 className="text-xl font-bold text-white">{activeViewNode.name}</h2>
           <p className="text-xs text-slate-300">{activeViewNode.description}</p>
+
+          <ErmsRbacSecurityLedger entity={activeViewNode} />
 
           <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono space-y-2">
             <div className="text-[10px] uppercase font-bold text-slate-500 mb-2">
