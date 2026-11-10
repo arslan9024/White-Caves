@@ -122,6 +122,20 @@ export const RelationshipSingleLinkView: FC<RelationshipSingleLinkViewProps> = (
                 {erdRelation.type}
               </div>
               <div className="w-full h-0.5 bg-gradient-to-r from-emerald-500 via-sky-500 to-emerald-500 rounded my-2" />
+              {erdRelation.actionVerb && (
+                <div className="px-2 py-0.5 rounded bg-sky-950/80 border border-sky-800 text-[10px] font-mono text-sky-300 font-bold" data-testid="link-action-verb">
+                  ⚡ {erdRelation.actionVerb}
+                </div>
+              )}
+              {erdRelation.actionTaskId && (
+                <div className="text-[10px] text-slate-400">
+                  Task:{' '}
+                  <span className="font-mono text-amber-300 font-bold">{erdRelation.actionTaskId}</span>
+                  {erdRelation.departmentCode && (
+                    <span className="text-slate-500 ml-1">({erdRelation.departmentCode})</span>
+                  )}
+                </div>
+              )}
               <div className="text-[11px] font-bold text-slate-300">
                 FK: <span className="font-mono text-sky-400">{erdRelation.foreignKey}</span>
               </div>
