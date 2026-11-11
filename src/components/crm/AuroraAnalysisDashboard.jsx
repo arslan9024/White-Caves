@@ -92,7 +92,7 @@ const AuroraAnalysisDashboard = () => {
           </div>
         </div>
         <div className="aurora-providers">
-          {providers.available.map(p => (
+          {(providers?.available || []).map(p => (
             <div key={p.id} className="provider-badge" title={p.description}>
               <CheckCircle size={12} />
               <span>{p.name}</span>
