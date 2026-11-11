@@ -82,7 +82,7 @@ export const TrakheesiPermitRenewalRadar: FC<TrakheesiPermitRenewalRadarProps> =
       {/* 2. Compliance Metrics Deck */}
       <MetricDeck>
         <MetricTile $color="#EF4444">
-          <div className="label">Critical (< 15 Days)</div>
+          <div className="label">Critical (&lt; 15 Days)</div>
           <div className="num" data-testid="metric-critical-count">{metrics.criticalCount}</div>
           <div className="sub">Ad Fines / Broker Card Risk</div>
         </MetricTile>

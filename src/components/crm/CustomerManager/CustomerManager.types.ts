@@ -42,5 +42,7 @@ export interface CustomerItem {
   activePropertyId?: string;
   interactions: CustomerInteraction[];
   kycVerified: boolean;
+  status?: string;
+  lastContactDate?: string;
   createdAt: string;
 }
