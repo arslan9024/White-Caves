@@ -16,7 +16,11 @@ function readText(path) {
 }
 
 function parsePersonaCount(text) {
-  const patterns = [/AI Assistants[^\n]*?(\d+) personas/i, /(\d+) documented personas/i, /(\d+)-persona/i];
+  const patterns = [
+    /AI Assistants[^\n]*?(\d+) personas/i,
+    /(\d+) documented personas/i,
+    /(\d+)-persona/i,
+  ];
   for (const pattern of patterns) {
     const match = text.match(pattern);
     if (match) return Number(match[1]);
@@ -70,19 +74,29 @@ export function runGovernanceAudit() {
   const handoffSchemaPath = join(schemaDir, 'conversation-summary-handoff.schema.json');
   const priorityOrder = safeReadJson(paths.priorityOrder);
   if (priorityOrder?.dispatchPacket && existsSync(dispatchSchemaPath)) {
-    errors.push(...validateAgainstSchema(loadSchema(dispatchSchemaPath), priorityOrder.dispatchPacket, 'dispatchPacket'));
+    errors.push(
+      ...validateAgainstSchema(
+        loadSchema(dispatchSchemaPath),
+        priorityOrder.dispatchPacket,
+        'dispatchPacket'
+      )
+    );
   }
 
   const routingDecision = safeReadJson(paths.routingDecision);
   if (routingDecision && existsSync(routingSchemaPath)) {
-    errors.push(...validateAgainstSchema(loadSchema(routingSchemaPath), routingDecision, 'routingDecision'));
+    errors.push(
+      ...validateAgainstSchema(loadSchema(routingSchemaPath), routingDecision, 'routingDecision')
+    );
   } else if (strict) {
     warnings.push('routingDecision artifact not generated yet');
   }
 
   const manifest = safeReadJson(paths.contextManifest);
   if (manifest && existsSync(manifestSchemaPath)) {
-    errors.push(...validateAgainstSchema(loadSchema(manifestSchemaPath), manifest, 'contextManifest'));
+    errors.push(
+      ...validateAgainstSchema(loadSchema(manifestSchemaPath), manifest, 'contextManifest')
+    );
   } else if (strict) {
     warnings.push('session context manifest not generated yet');
   }
@@ -103,18 +117,20 @@ export function runGovernanceAudit() {
   const wavesDir = join(ROOT, '.agents/plans/waves');
   const highestWaveFiles = existsSync(wavesDir)
     ? readdirSync(wavesDir)
-        .map((name) => {
+        .map(name => {
           const match = name.match(/^WAVE_(\d+)_/);
           return match ? Number(match[1]) : null;
         })
-        .filter((value) => Number.isFinite(value))
+        .filter(value => Number.isFinite(value))
     : [];
   const highestWave = highestWaveFiles.length ? Math.max(...highestWaveFiles) : null;
   if (highestWave) {
-    const master = readText(join(ROOT, '.agents/plans/MASTER_PLAN.md'));
-    const pending = readText(join(ROOT, '.agents/plans/PENDING_TASKS_ONLY.md'));
-    const waveIndex = readText(join(ROOT, '.agents/plans/waves/README.md'));
-    for (const [label, text] of [['MASTER_PLAN.md', master], ['PENDING_TASKS_ONLY.md', pending], ['.agents/plans/waves/README.md', waveIndex]]) {
+    const master = readText(join(ROOT, '.agents/plans/MASTER_STRATEGIC_PLAN.md'));
+    const planIndex = readText(join(ROOT, '.agents/plans/INDEX.md'));
+    for (const [label, text] of [
+      ['MASTER_STRATEGIC_PLAN.md', master],
+      ['.agents/plans/INDEX.md', planIndex],
+    ]) {
       if (!text.includes(`Wave ${highestWave}`) && !text.includes(`WAVE_${highestWave}_`)) {
         errors.push(`${label} does not reference highest wave bundle (Wave ${highestWave})`);
       }
@@ -126,18 +142,27 @@ export function runGovernanceAudit() {
   const businessCount = parsePersonaCount(businessDocs);
   const assistantCount = parsePersonaCount(assistantDocs);
   if (businessCount && assistantCount && businessCount !== assistantCount) {
-    errors.push(`AI persona count drift: business_docs/README=${businessCount}, assistants README=${assistantCount}`);
+    errors.push(
+      `AI persona count drift: business_docs/README=${businessCount}, assistants README=${assistantCount}`
+    );
   }
 
-  const coverageMatrixPath = join(ROOT, '.agents/plans/FEATURE_COVERAGE_MATRIX.md');
+  const coverageMatrixPath = join(ROOT, '.agents/plans/feature-coverage-matrix.md');
   if (!existsSync(coverageMatrixPath)) {
-    errors.push('missing plans/FEATURE_COVERAGE_MATRIX.md');
+    errors.push('missing .agents/plans/feature-coverage-matrix.md');
   } else {
     const coverageMatrix = readText(coverageMatrixPath);
-    const requiredColumns = ['Feature', 'Business Rule Doc', 'Workflow Doc', 'Wave Backlog', 'Code Module', 'Test Surface'];
+    const requiredColumns = [
+      'Feature',
+      'Business Rule Doc',
+      'Workflow Doc',
+      'Wave Backlog',
+      'Code Module',
+      'Test Surface',
+    ];
     for (const column of requiredColumns) {
       if (!coverageMatrix.includes(column)) {
-        errors.push(`.agents/plans/FEATURE_COVERAGE_MATRIX.md missing column: ${column}`);
+        errors.push(`.agents/plans/feature-coverage-matrix.md missing column: ${column}`);
       }
     }
   }
@@ -149,25 +174,35 @@ export function runGovernanceAudit() {
   return { errors, warnings, info };
 }
 
-const result = runGovernanceAudit();
-if (jsonOut) {
-  console.log(JSON.stringify(result, null, 2));
-} else {
-  if (result.info.length) {
-    console.log('ℹ️  Governance audit info:');
-    for (const item of result.info) console.log(` - ${item}`);
-  }
-  if (result.warnings.length) {
-    console.warn('⚠️  Governance audit warnings:');
-    for (const item of result.warnings) console.warn(` - ${item}`);
-  }
-  if (result.errors.length) {
-    console.error('❌ Governance audit failed:');
-    for (const item of result.errors) console.error(` - ${item}`);
-  } else {
-    console.log('✅ Governance audit passed.');
-  }
+const isDirectRun =
+  process.argv[1] &&
+  import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href;
+
+if (isDirectRun) {
+  runCli();
 }
-if (result.errors.length || (strict && result.warnings.length)) {
-  process.exit(1);
+
+function runCli() {
+  const result = runGovernanceAudit();
+  if (jsonOut) {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    if (result.info.length) {
+      console.log('ℹ️  Governance audit info:');
+      for (const item of result.info) console.log(` - ${item}`);
+    }
+    if (result.warnings.length) {
+      console.warn('⚠️  Governance audit warnings:');
+      for (const item of result.warnings) console.warn(` - ${item}`);
+    }
+    if (result.errors.length) {
+      console.error('❌ Governance audit failed:');
+      for (const item of result.errors) console.error(` - ${item}`);
+    } else {
+      console.log('✅ Governance audit passed.');
+    }
+  }
+  if (result.errors.length || (strict && result.warnings.length)) {
+    process.exit(1);
+  }
 }
