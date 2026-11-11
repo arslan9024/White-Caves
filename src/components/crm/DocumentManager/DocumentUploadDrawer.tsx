@@ -4,9 +4,11 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect, useMemo } from 'react';
 import { X, UploadCloud, Save } from 'lucide-react';
 import { DocumentItem, DocumentType } from './DocumentManager.types';
+import { useDirtyStateGuard } from '../../../hooks/useDirtyStateGuard';
+import { UnsavedChangesModal, TaskActionBar } from '../../common/UnsavedChangesModal';
 
 interface DocumentUploadDrawerProps {
   isOpen: boolean;
@@ -19,6 +21,7 @@ export const DocumentUploadDrawer: FC<DocumentUploadDrawerProps> = ({
   onClose,
   onSave,
 }) => {
+  const [initialSnapshot, setInitialSnapshot] = useState<string>('');
   const [title, setTitle] = useState('');
   const [docType, setDocType] = useState<DocumentType>('TITLE_DEED');
   const [docCode, setDocCode] = useState('');
@@ -26,10 +29,49 @@ export const DocumentUploadDrawer: FC<DocumentUploadDrawerProps> = ({
   const [dealId, setDealId] = useState('DEAL-001');
   const [propertyId, setPropertyId] = useState('REP-001');
 
+  useEffect(() => {
+    if (isOpen) {
+      setTitle('');
+      setDocType('TITLE_DEED');
+      setDocCode('');
+      setEntityName('');
+      setDealId('DEAL-001');
+      setPropertyId('REP-001');
+      setInitialSnapshot(
+        JSON.stringify({
+          title: '',
+          docType: 'TITLE_DEED',
+          docCode: '',
+          entityName: '',
+          dealId: 'DEAL-001',
+          propertyId: 'REP-001',
+        })
+      );
+    }
+  }, [isOpen]);
+
+  const isDirty = useMemo(() => {
+    if (!isOpen) return false;
+    const current = JSON.stringify({
+      title,
+      docType,
+      docCode,
+      entityName,
+      dealId,
+      propertyId,
+    });
+    return Boolean(initialSnapshot && current !== initialSnapshot);
+  }, [isOpen, title, docType, docCode, entityName, dealId, propertyId, initialSnapshot]);
+
+  const { showPrompt, proceed, cancel, confirmExit } = useDirtyStateGuard({
+    isDirty,
+    onConfirmDiscard: onClose,
+  });
+
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveData = (shouldClose: boolean) => {
+    if (!title.trim()) return;
     onSave({
       title,
       docType,
@@ -41,8 +83,14 @@ export const DocumentUploadDrawer: FC<DocumentUploadDrawerProps> = ({
       ocrConfidence: 99.2,
       fileSizeKB: 1200,
     });
-    setTitle('');
-    setEntityName('');
+    if (shouldClose) {
+      onClose();
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSaveData(true);
   };
 
   return (
