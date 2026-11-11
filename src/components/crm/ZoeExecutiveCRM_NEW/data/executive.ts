@@ -18,6 +18,8 @@ export interface Task {
   dueDate: string;
   status: string;
   assignee: string;
+  dispatchedByZoe?: boolean;
+  departmentCode?: string;
 }
 
 export interface Executive {
