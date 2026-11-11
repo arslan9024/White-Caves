@@ -97,11 +97,11 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       test.skip(roleDialogVisible, 'Role-selection modal is intercepting pointer events.');
 
       const searchButton = page.getByRole('button', {
-        name: 'Open Property Search Modal',
+        name: 'Search Dubai luxury properties',
         exact: true,
       });
       await expect(searchButton).toBeVisible({ timeout: 30000 });
-      await expect(page.getByRole('button', { name: 'Close Modal', exact: true })).toBeHidden();
+      await expect(page.getByRole('dialog', { name: 'Quick Property Search' })).toBeHidden();
       await searchButton.evaluate(button => {
         button.addEventListener(
           'click',
@@ -109,7 +109,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
             performance.mark('button-click-start');
             // Time the application's DOM response, not Playwright's actionability checks or RPCs.
             const observer = new MutationObserver(() => {
-              if (document.querySelector('button[aria-label="Close Modal"]')) {
+              if (document.querySelector('[role="dialog"][aria-label="Quick Property Search"]')) {
                 performance.measure('button-click-response', 'button-click-start');
                 observer.disconnect();
               }
@@ -121,7 +121,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       });
 
       await searchButton.click();
-      await expect(page.getByRole('button', { name: 'Close Modal', exact: true })).toBeVisible();
+      await expect(page.getByRole('dialog', { name: 'Quick Property Search' })).toBeVisible();
       await page.waitForFunction(
         () => performance.getEntriesByName('button-click-response').length > 0
       );
