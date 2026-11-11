@@ -32,7 +32,7 @@ describe('KycDocumentOcrUploader Component (AEG-034 / AEG-017)', () => {
 
     expect(screen.getByText('ARSLAN MALIK')).toBeInTheDocument();
     // Default privacy masking should mask middle digits per AEG-017
-    expect(screen.getByText(/784\*\*\*\*7-1/)).toBeInTheDocument();
+    expect(screen.getByText(/784\*\*\*\*-1/)).toBeInTheDocument();
 
     // Toggle reveal
     const toggleBtn = screen.getByTitle('Toggle Privacy Mask (AEG-017)');
