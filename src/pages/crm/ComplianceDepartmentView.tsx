@@ -1,4 +1,5 @@
 import React, { FC, useState, useCallback } from 'react';
+import TrakheesiPermitRenewalRadar from '../../components/compliance/TrakheesiPermitRenewalRadar';
 
 const RED = '#EF4444';
 const WHITE = '#FFFFFF';

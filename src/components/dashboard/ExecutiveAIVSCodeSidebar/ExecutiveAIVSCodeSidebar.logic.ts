@@ -107,7 +107,7 @@ export function useExecutiveAIVSCodeSidebarLogic(props?: UseExecutiveAIVSCodeSid
     }));
 
     const specialistAgents = MASTER_35_AI_ASSISTANTS
-      .filter(ast => ast.id !== 'linda' && ast.id !== 'mary')
+      .filter(ast => ast.id !== 'linda' && ast.id !== 'mary' && ast.id !== 'zoe')
       .map(ast => ({
         id: ast.id,
         name: ast.name,
