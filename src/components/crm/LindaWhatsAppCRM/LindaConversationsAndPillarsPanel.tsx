@@ -169,7 +169,7 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Layers size={15} color={isDark ? '#38BDF8' : '#0284C7'} />
               <h3 style={{ margin: 0, color: isDark ? '#F0F9FF' : '#0F172A', fontSize: 14, fontWeight: 700 }}>
-                🏛️ 10 Enterprise Architectural Pillars
+                🏛️ Linda Master System Registry — 10 Pillars
               </h3>
             </div>
             <span style={{ fontSize: 11, color: isDark ? '#38BDF8' : '#0284C7', fontWeight: 700 }}>10/10 Online</span>
