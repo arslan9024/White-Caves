@@ -6,10 +6,8 @@
  */
 
 import React, { FC, useState } from 'react';
-import { ArrowLeft, Edit3, Trash2, Cpu, Zap, CheckCircle2, Play, MessageSquare, Database } from 'lucide-react';
-import LindaWhatsAppCRM from '../LindaWhatsAppCRM';
-import LindaSandboxView from '../LindaWhatsAppCRM/LindaSandbox';
-import MaryInventoryCRM from '../MaryInventoryCRM_NEW';
+import { ArrowLeft, Edit3, Trash2, Cpu, Zap, CheckCircle2, Play, Terminal } from 'lucide-react';
+import DynamicAssistantCRM from '../DynamicAssistantCRM';
 import type { AiAgentRecord } from './AiAssistantManager.types';
 
 export interface AiAssistantDetailDossierProps {

@@ -335,7 +335,7 @@
     "aegis:context:bootstrap": "node .agents/orchestrator/context-manager.js --bootstrap",
     "aegis:context:status": "node .agents/orchestrator/context-manager.js --status",
     "aegis:context:validate": "node .agents/orchestrator/governance-audit.js --strict",
-    "dead-code-sweep": "node scripts/dead-code-sweep.js",
+    "dead-code-sweep": "node .agents/scripts/dead-code-sweep.js",
     "aegis:skills-sync": "powershell -ExecutionPolicy Bypass -Command \"& { Copy-Item -Path '~/.gemini/config/plugins/*/skills/*', '~/.gemini/antigravity/builtin/skills/*' -Destination '.agents/skills' -Recurse -Force -ErrorAction SilentlyContinue }\"",
     "start:24-7": "cross-env NODE_ENV=production node --expose-gc --no-warnings --import tsx server/index.ts",
     "dev:24-7": "nodemon --exec tsx --expose-gc server/index.ts --ignore sessions/ --ignore outputs/ --ignore logs/ --delay 3000 --max-restarts 999 --signal SIGTERM",
