@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #297 Blueprint
-**Generated:** 2026-11-11T11:00:09.929Z
+# AEGIS Perpetual Ouroboros — Cycle #81 Blueprint
+**Generated:** 2026-11-11T11:00:18.474Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-07 — Sub-10ms Microsecond Engine & Memory Persistence
-- **Lead Researcher:** @Mira (Dept 04)
-- **Core Objective:** Redis Tier-0 Caching, LCP Preload & Zero-Layout-Shift Gates
+- **Domain:** DOM-01 — Dubai Luxury Discovery & Visual Hero Immersion
+- **Lead Researcher:** @Elena (CRO)
+- **Core Objective:** Adaptive Bitrate 4K Stream & TruCheck™ Verification
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
