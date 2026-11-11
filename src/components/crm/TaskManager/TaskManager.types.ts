@@ -87,6 +87,7 @@ export interface TaskNode {
   sourceActorId?: string; // ERMS Actor Entity Foreign Key (e.g. 'user-001', 'emp-003', 'broker-001')
   targetObjectId?: string; // ERMS Object Entity Foreign Key (e.g. 'prop-001', 'contract-001', 'permit-001')
   departmentCode?: string; // DMS Canonical Department Foreign Key ('DEPT-01' to 'DEPT-12')
+  divisionCode?: string; // Canonical 108 Division Foreign Key ('DIV-01-1' to 'DIV-12-9')
   lineage?: TaskHierarchyLineage; // Bhakti 5-Tier Lineage tags
   useCase?: RUPUseCaseDossier; // RUP Specification
   dueDate?: string;
