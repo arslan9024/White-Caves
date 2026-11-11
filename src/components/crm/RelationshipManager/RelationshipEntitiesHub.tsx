@@ -326,7 +326,7 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
         <EntityInspectModal node={activeViewNode} onClose={() => setActiveViewNode(null)} />
       )}
 
-      {/* ── Atomic Quick-Create Drawer (Pillars 1 & 4) ────────────────────── */}
+      {/* ── Atomic Quick-Create Drawer & Bulk Ingestion (Pillars 1, 3, 4) ── */}
       <ErmsEntityDrawer
         isOpen={isQuickDrawerOpen}
         onClose={() => setIsQuickDrawerOpen(false)}
@@ -337,7 +337,6 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
         }}
       />
 
-      {/* ── Bulk Entity Importer (Pillars 1 & 3) ─────────────────────────── */}
       <ErmsBulkImporterModal
         isOpen={isBulkModalOpen}
         existingEntities={entities}
