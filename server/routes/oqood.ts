@@ -59,6 +59,8 @@ export const governmentTimeoutMiddleware = (_req: Request, res: Response, next: 
 
 oqoodRouter.use(governmentTimeoutMiddleware);
 
+oqoodRouter.post('/register', async (req: Request, res: Response) => {
+
   const {
     projectNumber,
     developerId,

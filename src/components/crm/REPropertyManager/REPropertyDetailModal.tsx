@@ -5,9 +5,10 @@
  */
 
 import React, { FC, useState } from 'react';
-import { X, MapPin, ShieldCheck, CheckCircle2, FileText, UserCheck, ArrowLeft, Sparkles } from 'lucide-react';
+import { X, MapPin, ShieldCheck, CheckCircle2, FileText, UserCheck, ArrowLeft, Sparkles, Coins } from 'lucide-react';
 import type { REPropertyNode, REPropertyStatus } from './REPropertyManager.types';
 import VipPitchBookModalView from '../VipPitchBookModal';
+import MultiCurrencyConverterModal from '../../common/MultiCurrencyConverterModal';
 import { formatCurrency } from '../../../utils';
 
 export interface REPropertyDetailModalProps {
@@ -26,6 +27,7 @@ export const REPropertyDetailModal: FC<REPropertyDetailModalProps> = ({
   isInline = false,
 }) => {
   const [isPitchBookOpen, setIsPitchBookOpen] = useState(false);
+  const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
   if (!property) return null;
 
   const pricePerSqft = Math.round(property.priceAED / property.areaSqft);
