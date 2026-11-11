@@ -121,6 +121,11 @@ export function executeAdvanceTaskStatusWorkflow(
 
   const updated = tasks.map(t => (t._id === id ? { ...t, status: newStatus, completionRate } : t));
 
+  // TURING-SEPARATION-010: Synchronize completed task into ERMS
+  if (newStatus === 'COMPLETED') {
+    syncCompletedTaskToErms({ ...target, status: 'COMPLETED', completionRate: 100 });
+  }
+
   const message =
     newStatus === 'COMPLETED'
       ? `Task ${target.taskCode} marked COMPLETED! +${awardedXp} Merit XP awarded to ${target.reportingChain.supervisorName}.`
