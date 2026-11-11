@@ -177,3 +177,32 @@ export function getOptimizedImageAttributes(
     decoding: 'async',
   };
 }
+
+/**
+ * Cloudflare Image Resizing / CDN edge cache URL builder (DOM-04 Invariant)
+ */
+export function buildCloudflareCdnUrl({
+  src,
+  width = 1200,
+  quality = 80,
+  format = 'auto',
+}: {
+  src: string;
+  width?: number;
+  quality?: number;
+  format?: 'avif' | 'webp' | 'jpeg' | 'auto';
+}): string {
+  if (!src) return '';
+  const isCdn = src.startsWith('https://whitecaves.com') || src.startsWith('/');
+  if (isCdn) {
+    const cleanSrc = src.replace(/^https?:\/\/[^/]+/, '');
+    return `/cdn-cgi/image/width=${width},quality=${quality},format=${format}${cleanSrc}`;
+  }
+  return generateOptimizedImageUrl(src, format === 'auto' ? 'webp' : format, width);
+}
+
+export function getOptimalImageFormat(supportsAvif = false, supportsWebp = true): 'avif' | 'webp' | 'jpeg' {
+  if (supportsAvif) return 'avif';
+  if (supportsWebp) return 'webp';
+  return 'jpeg';
+}
