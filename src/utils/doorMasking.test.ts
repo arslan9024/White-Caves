@@ -10,12 +10,12 @@ describe('AEG-017 Unit Door Masking Security Control', () => {
   it('masks standalone apartment and unit numbers for public views', () => {
     expect(maskUnitDoor('Unit 402')).toBe('Unit 4**');
     expect(maskUnitDoor('Apt 1204')).toBe('Apt 12**');
-    expect(maskUnitDoor('Suite 1801-A')).toBe('Suite 180****');
+    expect(maskUnitDoor('Suite 1801-A')).toBe('Suite 180***');
   });
 
   it('masks villas and townhouses preserving prefix but hiding exact address', () => {
     expect(maskUnitDoor('Villa 42')).toBe('Villa 4*');
-    expect(maskUnitDoor('Villa B-12')).toBe('Villa B-***');
+    expect(maskUnitDoor('Villa B-12')).toBe('Villa B-**');
     expect(maskUnitDoor('Townhouse 104')).toBe('Townhouse 1**');
     expect(maskUnitDoor('Plot 8892')).toBe('Plot 88**');
   });
