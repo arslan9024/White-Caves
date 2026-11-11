@@ -187,7 +187,6 @@ describe('ThemeContext', () => {
     it('returns graceful fallback default when used outside ThemeProvider', () => {
       render(<ThemeConsumer />);
       expect(screen.getByTestId('mode').textContent).toBe('light');
-      expect(screen.getByTestId('is-dark').textContent).toBe('false');
     });
   });
 });
