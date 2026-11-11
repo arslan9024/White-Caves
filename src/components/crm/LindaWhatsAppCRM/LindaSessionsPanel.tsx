@@ -65,7 +65,7 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = memo(({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
         <div>
           <h3 style={{ margin: 0, color: isDark ? '#F8FAFC' : '#0F172A', fontSize: 15 }}>
-            📱 Active WhatsApp Multi-Agent Sessions ({sessions.length})
+            📱 Multi-Account WhatsApp Sessions & Device Linking Desk ({sessions.length})
           </h3>
           <p style={{ margin: '4px 0 0 0', color: isDark ? '#94A3B8' : '#64748B', fontSize: 12 }}>
             Real-time Baileys Multi-Device socket status & health inspection
