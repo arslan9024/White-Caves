@@ -99,7 +99,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
         isMDMode={isLevel5}
         onToggleSidebar={() => {
           setIsSidebarCollapsed(prev => !prev);
-          setIsSidebarOpen(prev => !prev);
+          setIsSidebarOpen(!isSidebarOpen);
         }}
       />
 
