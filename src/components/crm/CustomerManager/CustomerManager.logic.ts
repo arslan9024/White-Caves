@@ -6,6 +6,7 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   CustomerItem,
   CustomerType,
@@ -16,6 +17,7 @@ import { CANONICAL_CUSTOMERS } from './CustomerManager.data';
 import { CustomerTelemetry } from './CustomerManager.telemetry';
 import { loadCustomersCache, saveCustomersCache } from './CustomerManager.cache';
 import { v1CustomersApi } from '../../../services/api/v1ApiClient';
+import { useRecordHighlight } from '../../../hooks/useRecordHighlight';
 
 export interface UseCustomerManagerProps {
   initialCustomers?: CustomerItem[];
