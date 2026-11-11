@@ -209,6 +209,13 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
             />
           </div>
           <button
+            onClick={() => setIsBulkModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all whitespace-nowrap border border-slate-700"
+            data-testid="bulk-import-entity-btn"
+          >
+            <Plus size={14} /> Bulk Ingest
+          </button>
+          <button
             onClick={() => setIsQuickDrawerOpen(true)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all whitespace-nowrap shadow-md shadow-red-600/20"
             data-testid="quick-create-entity-btn"

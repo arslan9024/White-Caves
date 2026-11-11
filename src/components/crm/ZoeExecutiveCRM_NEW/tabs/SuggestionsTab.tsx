@@ -1,28 +1,3 @@
-import React, { memo } from 'react';
-import { Search, Plus, Filter, AlertCircle, CheckCircle, Clock, TrendingUp, Lightbulb, AlertTriangle, DollarSign } from 'lucide-react';
-
-interface Suggestion {
-  id: string;
-  title?: string;
-  description?: string;
-  type: string;
-  priority?: string;
-}
-
-interface SuggestionsTabProps {
-  suggestions: Suggestion[];
-  unreviewedCount: number;
-  criticalCount: number;
-  onStatusChange: (id: string, status: string) => void;
-}
-
-const TYPE_ICONS: Record<string, React.ComponentType<{ size?: number | string }>> = {
-  process_improvement: TrendingUp,
-  new_opportunity: Lightbulb,
-  risk_alert: AlertTriangle,
-  cost_saving: DollarSign
-};
-
 import React, { memo, useState } from 'react';
 import {
   Search,
