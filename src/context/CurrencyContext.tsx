@@ -92,9 +92,11 @@ export const CurrencyProvider: FC<CurrencyProviderProps> = ({ children }) => {
     (amountInAED: number): string => {
       const converted = convertFromAED(amountInAED, currency);
       const curr = SUPPORTED_CURRENCIES[currency];
+      const isCrypto = currency === 'BTC';
       const formattedNumber = new Intl.NumberFormat('en-US', {
-        maximumFractionDigits: 0,
-      }).format(Math.round(converted));
+        maximumFractionDigits: isCrypto ? 4 : 0,
+        minimumFractionDigits: isCrypto ? 2 : 0,
+      }).format(isCrypto ? converted : Math.round(converted));
 
       return `${curr.symbol} ${formattedNumber}`;
     },
