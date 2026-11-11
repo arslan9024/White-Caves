@@ -69,7 +69,7 @@ export function syncCompletedTaskToErms(task: TaskNode): {
       ...currentRelations[existingIdx],
       actionTaskId: task.taskCode,
       actionVerb: task.actionVerb || currentRelations[existingIdx].actionVerb,
-      departmentCode: task.departmentCode || currentRelations[existingIdx].departmentCode,
+      departmentCode: task.deptId || task.departmentCode || currentRelations[existingIdx].departmentCode,
       label: `${currentRelations[existingIdx].label} (Verified via ${task.taskCode})`,
     };
     currentRelations[existingIdx] = updatedRelation;
@@ -85,7 +85,7 @@ export function syncCompletedTaskToErms(task: TaskNode): {
       foreignKey: 'actionTaskId',
       actionVerb: task.actionVerb || 'EXECUTE_STATUTORY_TASK',
       actionTaskId: task.taskCode,
-      departmentCode: task.departmentCode || 'DEPT-01',
+      departmentCode: task.deptId || task.departmentCode || 'DEPT-01',
     };
     currentRelations.push(updatedRelation);
   }
