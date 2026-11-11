@@ -3,10 +3,7 @@
  * White Caves Real Estate LLC - Modern Dashboard Viewport Content Router
  * Standard: AEGIS Canonical 12-Way Architecture Standard & Single Purpose File Law
  * Single Purpose File Law: < 350 lines
-<<<<<<< Updated upstream
  * Protocol: Turing Protocol Law T11 (Level 5 RBAC Boundary & Sovereign Privacy Vault)
-=======
->>>>>>> Stashed changes
  */
 
 import React, { FC } from 'react';
@@ -14,10 +11,7 @@ import { DepartmentManagementWorkspace } from '../../components/crm/DepartmentMa
 import { DepartmentOverviewView } from '../../components/crm/DepartmentManager/DepartmentOverviewView';
 import { EmployeeManagerView } from '../../components/crm/EmployeeManager';
 import { EmployeeOverviewView } from '../../components/crm/EmployeeManager/EmployeeOverviewView';
-<<<<<<< Updated upstream
 import { AiAssistantManagerView } from '../../components/crm/AiAssistantManager';
-=======
->>>>>>> Stashed changes
 import { TaskManagerView } from '../../components/crm/TaskManager';
 import { TaskOverviewView } from '../../components/crm/TaskManager/TaskOverviewView';
 import { LeaderboardView } from '../../components/crm/Leaderboard';
@@ -32,7 +26,6 @@ import { CustomerManagerView } from '../../components/crm/CustomerManager';
 import { CustomerOverviewView } from '../../components/crm/CustomerManager/CustomerOverviewView';
 import { RelationshipManagerView } from '../../components/crm/RelationshipManager';
 import { ErmsOverviewView } from '../../components/crm/RelationshipManager/ErmsOverviewView';
-<<<<<<< Updated upstream
 import { RoleManagerView } from '../../components/crm/RoleManager';
 import { LandlordManagerView } from '../../components/crm/LandlordManager';
 import { TenantManagerView } from '../../components/crm/TenantManager';
@@ -43,8 +36,6 @@ import { ProfileDashboardView } from './ProfileDashboardView';
 import { LegacyDomainRouter } from './LegacyDomainRouter';
 import { checkDashboardRoleGuard } from './DashboardRoleGuards';
 import { UserRoleContext } from '../../context/UserRoleContext';
-=======
->>>>>>> Stashed changes
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
 export interface DashboardContentRouterProps {
@@ -56,13 +47,9 @@ export interface DashboardContentRouterProps {
   ermsSubTab: 'entities' | 'relationships' | 'graph' | 'matrix';
   ermsEntityId: string | null;
   ermsRelationshipId: string | null;
-<<<<<<< Updated upstream
   activeAgent?: { id: string; name: string } | null;
   navigate: (route: string) => void;
   onOpenRoleModal?: () => void;
-=======
-  navigate: (route: string) => void;
->>>>>>> Stashed changes
 }
 
 export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
@@ -74,7 +61,6 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   ermsSubTab,
   ermsEntityId,
   ermsRelationshipId,
-<<<<<<< Updated upstream
   activeAgent,
   navigate,
   onOpenRoleModal,
@@ -135,10 +121,6 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   }
 
   // Tier 1 Internal Corporate Directorate (L3, L4, L5)
-=======
-  navigate,
-}) => {
->>>>>>> Stashed changes
   switch (activeTab) {
     case 'departments':
       return isRootOverview ? (
@@ -233,7 +215,6 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
         />
       );
 
-<<<<<<< Updated upstream
     case 'relationships':
     case 'erms': {
       const initialErmsTab =
@@ -242,29 +223,6 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
         return <ErmsOverviewView onNavigate={navigate} />;
       }
       return (
-=======
-    case 'relationships': {
-      const initialRelTab =
-        ermsSubTab === 'entities' || ermsSubTab === 'relationships' ? ermsSubTab : 'erd';
-      return (
-        <RelationshipManagerView
-          initialTab={initialRelTab}
-          selectedEntityId={ermsEntityId}
-          selectedRelationshipId={ermsRelationshipId}
-          onSelectEntity={id => navigate(`/dashboard/erms/entities/${id}`)}
-          onSelectRelationship={id => navigate(`/dashboard/erms/relationships/${id}`)}
-          onNavigateToDeepRoute={route => navigate(route)}
-        />
-      );
-    }
-
-    case 'erms': {
-      const initialErmsTab =
-        ermsSubTab === 'entities' || ermsSubTab === 'relationships' ? ermsSubTab : 'erd';
-      return isErmsRootOverview ? (
-        <ErmsOverviewView onNavigate={navigate} />
-      ) : (
->>>>>>> Stashed changes
         <RelationshipManagerView
           initialTab={initialErmsTab}
           selectedEntityId={ermsEntityId}
@@ -289,7 +247,6 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
         />
       );
 
-<<<<<<< Updated upstream
     case 'roles':
       return (
         <RoleManagerView
@@ -330,20 +287,6 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
     default:
       return (
         <div style={{ flex: 1, padding: '32px', textAlign: 'center', color: '#94a3b8' }}>
-=======
-    default:
-      return (
-        <div
-          style={{
-            flex: 1,
-            padding: '32px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
->>>>>>> Stashed changes
           <span>🎯 {activeTab.toUpperCase()} Viewport Initialized</span>
         </div>
       );
