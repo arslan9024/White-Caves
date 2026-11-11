@@ -136,3 +136,14 @@ export * from './exportUtils';
  * Offline-First IndexedDB Chat Store
  */
 export * from './indexedChatStore';
+
+/**
+ * Executable Business Engines & Regulatory Math (Dubai / UAE Statutory)
+ */
+export * from './commissionEngine';
+export * from './uaeTaxEngine';
+export * from './reraRentIndexEngine';
+export * from './pdcComplianceEngine';
+export * from './generatePdcSchedule';
+export * from './PredictiveROIMatrix';
+
