@@ -326,9 +326,10 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
                       ⬇️
                     </button>
                   </div>
-                );
-              })
-            )}
+                </div>
+              );
+            })
+          )}
           </div>
         </>
       )}
