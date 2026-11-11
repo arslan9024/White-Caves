@@ -361,6 +361,14 @@ const ZoeConsole = () => {
           </div>
         </div>
         <div className="console-actions">
+          <button
+            className={`action-btn ${voiceSpeechEnabled ? 'active' : ''}`}
+            onClick={() => setVoiceSpeechEnabled(prev => !prev)}
+            title={voiceSpeechEnabled ? 'Mute Zoe Voice' : 'Unmute Zoe Voice'}
+            data-testid="toggle-voice-btn"
+          >
+            {voiceSpeechEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+          </button>
           <button 
             className={`action-btn ${showHistory ? 'active' : ''}`}
             onClick={toggleHistory}
