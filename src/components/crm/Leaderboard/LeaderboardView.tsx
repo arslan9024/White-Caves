@@ -51,16 +51,7 @@ export const LeaderboardView: React.FC = () => {
   } = useLeaderboardLogic();
 
   if (error) {
-<<<<<<< Updated upstream
     return <LeaderboardFallback error={error} onRetry={() => setError(null)} />;
-=======
-    return (
-      <LeaderboardFallback
-        error={error}
-        onRetry={() => setError(null)}
-      />
-    );
->>>>>>> Stashed changes
   }
 
   return (

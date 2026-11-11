@@ -9,6 +9,7 @@ import {
   type LindaConversationItem,
 } from './LindaWhatsAppCRM.types';
 import {
+  INITIAL_LINDA_CONVERSATIONS,
   INITIAL_LINDA_SESSIONS,
   INITIAL_LINDA_CAMPAIGNS,
   INITIAL_LINDA_FEATURES,
@@ -41,10 +42,14 @@ export interface UseLindaOperationsCenterReturn {
   setSessions: React.Dispatch<React.SetStateAction<LindaSessionItem[]>>;
   campaigns: LindaCampaignItem[];
   setCampaigns: React.Dispatch<React.SetStateAction<LindaCampaignItem[]>>;
+  conversations: LindaConversationItem[];
+  setConversations: React.Dispatch<React.SetStateAction<LindaConversationItem[]>>;
   features: LindaFeatureBadge[];
   playbooks: LindaPlaybookBadge[];
   activeModalOutput: { title: string; output: string } | null;
-  setActiveModalOutput: React.Dispatch<React.SetStateAction<{ title: string; output: string } | null>>;
+  setActiveModalOutput: React.Dispatch<
+    React.SetStateAction<{ title: string; output: string } | null>
+  >;
   terminalLines: string[];
   setTerminalLines: React.Dispatch<React.SetStateAction<string[]>>;
   liveLogs: string[];
@@ -88,10 +93,16 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
 
   const [sessions, setSessions] = useState<LindaSessionItem[]>(INITIAL_LINDA_SESSIONS);
   const [campaigns, setCampaigns] = useState<LindaCampaignItem[]>(INITIAL_LINDA_CAMPAIGNS);
+  const [conversations, setConversations] = useState<LindaConversationItem[]>(
+    INITIAL_LINDA_CONVERSATIONS
+  );
   const [features, setFeatures] = useState<LindaFeatureBadge[]>(INITIAL_LINDA_FEATURES);
   const [playbooks, setPlaybooks] = useState<LindaPlaybookBadge[]>(INITIAL_LINDA_PLAYBOOKS);
 
-  const [activeModalOutput, setActiveModalOutput] = useState<{ title: string; output: string } | null>(null);
+  const [activeModalOutput, setActiveModalOutput] = useState<{
+    title: string;
+    output: string;
+  } | null>(null);
   const [terminalLines, setTerminalLines] = useState<string[]>([
     '🤖 [LINDA MASTER] whatsapp-bot-linda v2.0.0-enterprise initialized.',
     '⚡ LocalAuth multi-account profiles: session-master, session-goraha, session-outreach.',
@@ -142,6 +153,43 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
         setIsConnected(Boolean(response.data.isConnected));
       }
 
+      // Live WhatsApp Conversations sync from server
+      try {
+        const convRes = (await apiClient.get('/linda/conversations')) as {
+          success?: boolean;
+          data?: {
+            conversations?: Array<{
+              id: string;
+              name: string;
+              unreadCount: number;
+              lastMessage?: string;
+              timestamp?: string;
+            }>;
+          };
+        };
+        if (convRes?.data?.conversations && convRes.data.conversations.length > 0) {
+          const mapped: LindaConversationItem[] = convRes.data.conversations.map(c => ({
+            id: c.id,
+            contactName: c.name,
+            phone: c.id.replace('@c.us', ''),
+            cluster: 'Live WhatsApp Contact',
+            unit: 'Direct Inquiry',
+            intent: 'WhatsApp Communication',
+            sentiment: 'NEUTRAL',
+            confidence: 90,
+            gorahaSaved: true,
+            maryMatch: 'Syncing live chat from device',
+            lastMessage: c.lastMessage || 'No recent messages',
+            timestamp: c.timestamp || 'Just now',
+          }));
+          setConversations(mapped);
+        }
+      } catch {
+        appendLog(
+          'Live WhatsApp conversations could not be synced; retained current conversations.'
+        );
+      }
+
       try {
         const metricsRes = (await apiClient.get('/linda/metrics')) as {
           success?: boolean;
@@ -169,7 +217,7 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
     } catch {
       setHeartbeatLatency(42);
     }
-  }, []);
+  }, [appendLog]);
 
   useEffect(() => {
     void refreshLindaStatus();
@@ -183,7 +231,7 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
         const streamUrl = '/api/linda/metrics/stream';
         eventSource = new EventSource(streamUrl);
 
-        eventSource.onmessage = (event) => {
+        eventSource.onmessage = event => {
           try {
             const data = JSON.parse(event.data);
             if (data) {
@@ -244,7 +292,9 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
       await apiClient.post(isConnected ? '/linda/disconnect' : '/linda/connect', {});
       setIsConnected(!isConnected);
       setLindaStatus(!isConnected ? 'connected' : 'disconnected');
-      appendLog(`Runtime switched to ${!isConnected ? 'CONNECTED' : 'DISCONNECTED'} by Managing Director.`);
+      appendLog(
+        `Runtime switched to ${!isConnected ? 'CONNECTED' : 'DISCONNECTED'} by Managing Director.`
+      );
     } catch {
       setIsConnected(!isConnected);
       setLindaStatus(!isConnected ? 'connected' : 'disconnected');
@@ -291,6 +341,8 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
     setSessions,
     campaigns,
     setCampaigns,
+    conversations,
+    setConversations,
     features,
     playbooks,
     activeModalOutput,

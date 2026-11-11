@@ -301,6 +301,7 @@ const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/Sales
 // Leasing Acquisition (Sprint 1)
 const LeasingAcquisition = lazy(() => import('./pages/LeasingAcquisition'));
 const LeasingOperationsHub = lazy(() => import('./pages/LeasingOperationsHub'));
+const LindaWhatsAppCRMPage = lazy(() => import('./components/crm/LindaWhatsAppCRM'));
 
 // Executive Dashboard (central command center)
 const CRMHubPage = lazy(() => import('./pages/crm/CRMHubPage'));
@@ -1017,6 +1018,15 @@ function App(): React.JSX.Element {
                                 <Route
                                   path="/nadia"
                                   element={renderProtectedAppPage(<NadiaPage />, 'Nadia AI')}
+                                />
+
+                                {/* Linda WhatsApp Bot Operations Center & Terminal */}
+                                <Route
+                                  path="/linda"
+                                  element={renderProtectedAppPage(
+                                    <LindaWhatsAppCRMPage />,
+                                    'AI Linda Operations'
+                                  )}
                                 />
 
                                 {/* ==================== OTHER ROUTES ==================== */}

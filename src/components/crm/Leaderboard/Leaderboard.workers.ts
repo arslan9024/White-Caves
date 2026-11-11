@@ -67,7 +67,3 @@ export function calculateLeaderboardRanksOffThread(
     }, 10);
   });
 }
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

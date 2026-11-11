@@ -11,10 +11,7 @@ import { DocumentItem, DocumentType, DocumentStatus } from './DocumentManager.ty
 import { CANONICAL_DOCUMENTS } from './DocumentManager.data';
 import { DocumentTelemetry } from './DocumentManager.telemetry';
 import { loadDocumentsCache, saveDocumentsCache } from './DocumentManager.cache';
-<<<<<<< Updated upstream
 import { useRecordHighlight } from '../../../hooks/useRecordHighlight';
-=======
->>>>>>> Stashed changes
 
 export interface UseDocumentManagerProps {
   initialDocuments?: DocumentItem[];
@@ -169,46 +166,46 @@ export function useDocumentManager({
     });
   }, []);
 
-  const handleSaveDocument = useCallback((docData: Partial<DocumentItem>) => {
-    let createdDoc: DocumentItem | null = null;
-    setDocuments(prev => {
-      const newId = `DOC-00${prev.length + 1}`;
-      const newDoc: DocumentItem = {
-        id: newId,
-        _id: `doc-00${prev.length + 1}`,
-        docCode: docData.docCode || `DOC-CODE-${prev.length + 1}`,
-        title: docData.title || 'Untitled Document',
-        docType: docData.docType || 'TITLE_DEED',
-        status: docData.status || 'VERIFIED',
-        fileUrl: docData.fileUrl || '/documents/sample-doc.pdf',
-        fileSizeKB: docData.fileSizeKB || 1024,
-        uploadedAt: new Date().toISOString().split('T')[0],
-        dealId: docData.dealId || 'DEAL-001',
-        propertyId: docData.propertyId || 'REP-001',
-        entityId: docData.entityId || 'tenant-001',
-        entityName: docData.entityName || 'Hassan Al-Nuaimi',
-        ocrConfidence: docData.ocrConfidence || 99.0,
-        metadata: docData.metadata || { note: 'Directly ingested via Document Vault' },
-      };
-      createdDoc = newDoc;
-      const updated = [newDoc, ...prev];
-      saveDocumentsCache(updated);
-      return updated;
-    });
-
-    if (createdDoc) {
-      DocumentTelemetry.track('UPLOAD', {
-        docId: (createdDoc as DocumentItem).id,
-        docCode: (createdDoc as DocumentItem).docCode,
+  const handleSaveDocument = useCallback(
+    (docData: Partial<DocumentItem>) => {
+      let createdDoc: DocumentItem | null = null;
+      setDocuments(prev => {
+        const newId = `DOC-00${prev.length + 1}`;
+        const newDoc: DocumentItem = {
+          id: newId,
+          _id: `doc-00${prev.length + 1}`,
+          docCode: docData.docCode || `DOC-CODE-${prev.length + 1}`,
+          title: docData.title || 'Untitled Document',
+          docType: docData.docType || 'TITLE_DEED',
+          status: docData.status || 'VERIFIED',
+          fileUrl: docData.fileUrl || '/documents/sample-doc.pdf',
+          fileSizeKB: docData.fileSizeKB || 1024,
+          uploadedAt: new Date().toISOString().split('T')[0],
+          dealId: docData.dealId || 'DEAL-001',
+          propertyId: docData.propertyId || 'REP-001',
+          entityId: docData.entityId || 'tenant-001',
+          entityName: docData.entityName || 'Hassan Al-Nuaimi',
+          ocrConfidence: docData.ocrConfidence || 99.0,
+          metadata: docData.metadata || { note: 'Directly ingested via Document Vault' },
+        };
+        createdDoc = newDoc;
+        const updated = [newDoc, ...prev];
+        saveDocumentsCache(updated);
+        return updated;
       });
-<<<<<<< Updated upstream
-      triggerHighlight((createdDoc as DocumentItem).id);
-=======
->>>>>>> Stashed changes
-    }
 
-    setIsDrawerOpen(false);
-  }, [triggerHighlight]);
+      if (createdDoc) {
+        DocumentTelemetry.track('UPLOAD', {
+          docId: (createdDoc as DocumentItem).id,
+          docCode: (createdDoc as DocumentItem).docCode,
+        });
+        triggerHighlight((createdDoc as DocumentItem).id);
+      }
+
+      setIsDrawerOpen(false);
+    },
+    [triggerHighlight]
+  );
 
   return {
     documents: filteredDocuments,

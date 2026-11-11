@@ -14,11 +14,7 @@ export default function ListingLegalStep({ formData, updateField }) {
           <input
             type="text"
             value={formData.titleDeedNumber}
-<<<<<<< Updated upstream
             onChange={e => updateField('titleDeedNumber', e.target.value)}
-=======
-            onChange={(e) => updateField('titleDeedNumber', e.target.value)}
->>>>>>> Stashed changes
             placeholder="For ready properties"
             className="form-input"
           />
@@ -28,11 +24,7 @@ export default function ListingLegalStep({ formData, updateField }) {
           <input
             type="text"
             value={formData.reraPermitNumber}
-<<<<<<< Updated upstream
             onChange={e => updateField('reraPermitNumber', e.target.value)}
-=======
-            onChange={(e) => updateField('reraPermitNumber', e.target.value)}
->>>>>>> Stashed changes
             placeholder="Required for listing"
             className="form-input"
           />
@@ -49,11 +41,7 @@ export default function ListingLegalStep({ formData, updateField }) {
                 name="ownershipType"
                 value={type}
                 checked={formData.ownershipType === type}
-<<<<<<< Updated upstream
                 onChange={e => updateField('ownershipType', e.target.value)}
-=======
-                onChange={(e) => updateField('ownershipType', e.target.value)}
->>>>>>> Stashed changes
               />
               <span>{type.charAt(0).toUpperCase() + type.slice(1)}</span>
             </label>
@@ -77,13 +65,9 @@ export default function ListingLegalStep({ formData, updateField }) {
               </div>
               <ul className="package-features">
                 {pkg.features.map((f, i) => (
-<<<<<<< Updated upstream
                   <li key={i}>
                     <Check size={14} /> {f}
                   </li>
-=======
-                  <li key={i}><Check size={14} /> {f}</li>
->>>>>>> Stashed changes
                 ))}
               </ul>
             </button>
@@ -98,11 +82,7 @@ export default function ListingLegalStep({ formData, updateField }) {
           min="1"
           max="10"
           value={formData.featuredLevel}
-<<<<<<< Updated upstream
           onChange={e => updateField('featuredLevel', parseInt(e.target.value, 10))}
-=======
-          onChange={(e) => updateField('featuredLevel', parseInt(e.target.value, 10))}
->>>>>>> Stashed changes
           className="form-range"
         />
         <div className="range-labels">
@@ -114,7 +94,3 @@ export default function ListingLegalStep({ formData, updateField }) {
     </div>
   );
 }
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

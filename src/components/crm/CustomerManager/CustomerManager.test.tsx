@@ -18,16 +18,12 @@ import { CANONICAL_CUSTOMERS } from './CustomerManager.data';
 import { CustomerManagerFallback } from './CustomerManager.fallback';
 import { CustomerTelemetry } from './CustomerManager.telemetry';
 import { getCustomerI18n } from './CustomerManager.i18n';
-<<<<<<< Updated upstream
 import {
   saveCustomersCache,
   loadCustomersCache,
   getCustomerByTuringId,
   indexCustomersInMemory,
 } from './CustomerManager.cache';
-=======
-import { saveCustomersCache, loadCustomersCache, getCustomerByTuringId, indexCustomersInMemory } from './CustomerManager.cache';
->>>>>>> Stashed changes
 import { calculateCustomerLeadScoreOffThread } from './CustomerManager.workers';
 
 const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);

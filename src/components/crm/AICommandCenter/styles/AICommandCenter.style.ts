@@ -312,13 +312,4 @@ export const AssistantHeader = styled.div`
   }
 `;
 
-<<<<<<< Updated upstream
 export { TagList, CapabilityTag, MetricsRow, LaunchBtn } from './AICommandCenterCard.style';
-=======
-export {
-  TagList,
-  CapabilityTag,
-  MetricsRow,
-  LaunchBtn,
-} from './AICommandCenterCard.style';
->>>>>>> Stashed changes

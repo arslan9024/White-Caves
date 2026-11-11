@@ -3,7 +3,6 @@ import SignatureToken from '../models/SignatureToken.js';
 import SignatureAudit from '../models/SignatureAudit.js';
 import Contract from '../models/Contract.js';
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
 
 class SignatureService {
   /**

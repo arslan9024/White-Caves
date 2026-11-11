@@ -87,7 +87,9 @@ export class WhatsAppEngine extends EventEmitter {
    * Returns true only when physical hardware has emitted ready event.
    */
   public isHardwareConnected(): boolean {
-    return this.clientAuthenticated && this.sessionActive && this.status === WhatsAppEngineStatus.READY;
+    return (
+      this.clientAuthenticated && this.sessionActive && this.status === WhatsAppEngineStatus.READY
+    );
   }
 
   /**
@@ -100,14 +102,16 @@ export class WhatsAppEngine extends EventEmitter {
     try {
       this.clientAuthenticated = false;
       this.setStatus(WhatsAppEngineStatus.AUTHENTICATING);
-      console.log(`[WhatsAppEngine] Initializing WhatsApp LocalAuth client for ${this.config.clientId}...`);
+      console.log(
+        `[WhatsAppEngine] Initializing WhatsApp LocalAuth client for ${this.config.clientId}...`
+      );
       console.log(`[WhatsAppEngine] Session path: ${this.config.sessionPath}`);
 
       // Dynamic import avoids hard dependency when Chrome is unavailable
       const wwjs = await import('whatsapp-web.js');
       const { Client, LocalAuth } = wwjs.default ?? wwjs;
 
-      // Ensure session directory exists
+      // Chromium manages its own lock lifecycle; never remove locks that may belong to another active session.
       const fs = await import('fs');
       if (!fs.existsSync(this.config.sessionPath)) {
         fs.mkdirSync(this.config.sessionPath, { recursive: true });
@@ -121,7 +125,8 @@ export class WhatsAppEngine extends EventEmitter {
         }),
         webVersionCache: {
           type: 'remote',
-          remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1018944883-alpha.html',
+          remotePath:
+            'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1018944883-alpha.html',
         },
         puppeteer: {
           headless: this.config.headless,
@@ -159,7 +164,9 @@ export class WhatsAppEngine extends EventEmitter {
 
     // STATE 1: QR_RECEIVED Event
     this.client.on('qr', (qr: string) => {
-      console.log(`[WhatsAppEngine:${this.config.clientId}] STATE 1: QR Code generated — scan to authenticate`);
+      console.log(
+        `[WhatsAppEngine:${this.config.clientId}] STATE 1: QR Code generated — scan to authenticate`
+      );
       this.clientAuthenticated = false;
       this.qrCode = qr;
       this.emit('qr', qr);
@@ -167,14 +174,18 @@ export class WhatsAppEngine extends EventEmitter {
 
     // STATE 2: AUTHENTICATED Event
     this.client.on('authenticated', () => {
-      console.log(`[WhatsAppEngine:${this.config.clientId}] STATE 2: Physical device authenticated successfully`);
+      console.log(
+        `[WhatsAppEngine:${this.config.clientId}] STATE 2: Physical device authenticated successfully`
+      );
       this.clientAuthenticated = true;
       this.emit('authenticated');
     });
 
     // STATE 3: READY Event
     this.client.on('ready', () => {
-      console.log(`[WhatsAppEngine:${this.config.clientId}] STATE 3: Client ready and physical hardware link active`);
+      console.log(
+        `[WhatsAppEngine:${this.config.clientId}] STATE 3: Client ready and physical hardware link active`
+      );
       this.qrCode = null; // Clear QR once authenticated
       this.reconnectAttempts = 0;
       this.clientAuthenticated = true;
@@ -198,7 +209,10 @@ export class WhatsAppEngine extends EventEmitter {
 
     // EXPLICIT EXCEPTION HANDLING: Disconnected
     this.client.on('disconnected', (reason: string) => {
-      console.log(`[WhatsAppEngine:${this.config.clientId}] EXCEPTION: Disconnected from hardware:`, reason);
+      console.log(
+        `[WhatsAppEngine:${this.config.clientId}] EXCEPTION: Disconnected from hardware:`,
+        reason
+      );
       this.clientAuthenticated = false;
       this.sessionActive = false;
       this.qrCode = null;
@@ -210,9 +224,12 @@ export class WhatsAppEngine extends EventEmitter {
     });
 
     // Incoming message
-    this.client.on('message', async (message: { body?: string; from?: string; type?: string; id?: { id: string } }) => {
-      await this.handleIncomingMessage(message);
-    });
+    this.client.on(
+      'message',
+      async (message: { body?: string; from?: string; type?: string; id?: { id: string } }) => {
+        await this.handleIncomingMessage(message);
+      }
+    );
 
     console.log(`[WhatsAppEngine:${this.config.clientId}] Hardware event listeners registered`);
   }
@@ -238,16 +255,24 @@ export class WhatsAppEngine extends EventEmitter {
       this.messagesReceived += 1;
       this.emit('message', wrapped);
 
-      console.log(`[WhatsAppEngine:${this.config.clientId}] ← from ${wrapped.from}: ${wrapped.body.substring(0, 60)}`);
+      console.log(
+        `[WhatsAppEngine:${this.config.clientId}] ← from ${wrapped.from}: ${wrapped.body.substring(0, 60)}`
+      );
     } catch (error) {
-      console.error(`[WhatsAppEngine:${this.config.clientId}] Error handling incoming message:`, error);
+      console.error(
+        `[WhatsAppEngine:${this.config.clientId}] Error handling incoming message:`,
+        error
+      );
     }
   }
 
   /**
    * Detect message type from MIME type or hasMedia flag.
    */
-  private detectMessageType(message: { hasMedia?: boolean; mimetype?: string }): WhatsAppMessage['type'] {
+  private detectMessageType(message: {
+    hasMedia?: boolean;
+    mimetype?: string;
+  }): WhatsAppMessage['type'] {
     if (!message.hasMedia) return 'text';
     const mime: string = message.mimetype ?? '';
     if (mime.startsWith('image/')) return 'image';
@@ -272,7 +297,9 @@ export class WhatsAppEngine extends EventEmitter {
     try {
       if (typeof this.client.requestPairingCode === 'function') {
         const code = await this.client.requestPairingCode(sanitizedNumber);
-        console.log(`[WhatsAppEngine:${this.config.clientId}] Pairing code generated for ${sanitizedNumber}: ${code}`);
+        console.log(
+          `[WhatsAppEngine:${this.config.clientId}] Pairing code generated for ${sanitizedNumber}: ${code}`
+        );
         return code;
       }
       return `WC-${sanitizedNumber.slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -289,7 +316,9 @@ export class WhatsAppEngine extends EventEmitter {
    */
   public async sendMessage(phoneNumber: string, message: string): Promise<string> {
     if (!this.sessionActive || !this.client) {
-      throw new Error(`WhatsAppEngine(${this.config.clientId}) session not active — call initialize() first`);
+      throw new Error(
+        `WhatsAppEngine(${this.config.clientId}) session not active — call initialize() first`
+      );
     }
     const chatId = phoneNumber.includes('@') ? phoneNumber : `${phoneNumber}@c.us`;
     const sent = await this.client.sendMessage(chatId, message);
@@ -297,7 +326,9 @@ export class WhatsAppEngine extends EventEmitter {
       sent?.id?.id ?? `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     this.messagesSent += 1;
     this.emit('message_sent', { to: phoneNumber, message, messageId, timestamp: new Date() });
-    console.log(`[WhatsAppEngine:${this.config.clientId}] → to ${phoneNumber}: ${message.substring(0, 60)}`);
+    console.log(
+      `[WhatsAppEngine:${this.config.clientId}] → to ${phoneNumber}: ${message.substring(0, 60)}`
+    );
     return messageId;
   }
 
@@ -358,19 +389,17 @@ export class WhatsAppEngine extends EventEmitter {
     const chatId = phoneNumber.includes('@') ? phoneNumber : `${phoneNumber}@c.us`;
     const chat = await this.client.getChatById(chatId);
     const messages = await chat.fetchMessages({ limit });
-    return messages.map(
-      (m: Record<string, any>): WhatsAppMessage => ({
-        // eslint-disable-line @typescript-eslint/no-explicit-any
-        id: m.id?.id ?? String(Date.now()),
-        from: m.from ?? phoneNumber,
-        to: m.to,
-        body: m.body ?? '',
-        timestamp: new Date((m.timestamp ?? 0) * 1000),
-        isFromMe: m.fromMe ?? false,
-        hasMedia: m.hasMedia ?? false,
-        type: this.detectMessageType(m),
-      })
-    );
+    return messages.map((m: Record<string, any>): WhatsAppMessage => ({
+      // eslint-disable-line @typescript-eslint/no-explicit-any
+      id: m.id?.id ?? String(Date.now()),
+      from: m.from ?? phoneNumber,
+      to: m.to,
+      body: m.body ?? '',
+      timestamp: new Date((m.timestamp ?? 0) * 1000),
+      isFromMe: m.fromMe ?? false,
+      hasMedia: m.hasMedia ?? false,
+      type: this.detectMessageType(m),
+    }));
   }
 
   /**
@@ -466,7 +495,10 @@ export class WhatsAppEngine extends EventEmitter {
 const engines = new Map<string, WhatsAppEngine>();
 
 /** Return the process-wide WhatsAppEngine singleton for a specific clientId, optionally applying config on first call. */
-export function getWhatsAppEngine(clientId: string, config?: Omit<WhatsAppEngineConfig, 'clientId'>): WhatsAppEngine {
+export function getWhatsAppEngine(
+  clientId: string,
+  config?: Omit<WhatsAppEngineConfig, 'clientId'>
+): WhatsAppEngine {
   if (!engines.has(clientId)) {
     engines.set(clientId, new WhatsAppEngine({ clientId, ...config }));
   }

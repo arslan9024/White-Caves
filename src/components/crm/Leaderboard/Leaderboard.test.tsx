@@ -20,16 +20,12 @@ import { INITIAL_LEADERBOARD_DATA } from './Leaderboard.data';
 import { LeaderboardFallback } from './Leaderboard.fallback';
 import { LeaderboardTelemetry } from './Leaderboard.telemetry';
 import { getLeaderboardI18n } from './Leaderboard.i18n';
-<<<<<<< Updated upstream
 import {
   saveLeaderboardCache,
   loadLeaderboardCache,
   getLeaderboardMemberByTuringId,
   indexLeaderboardInMemory,
 } from './Leaderboard.cache';
-=======
-import { saveLeaderboardCache, loadLeaderboardCache, getLeaderboardMemberByTuringId, indexLeaderboardInMemory } from './Leaderboard.cache';
->>>>>>> Stashed changes
 import { calculateLeaderboardRanksOffThread } from './Leaderboard.workers';
 
 const mockMemberL4: LeaderboardMember = {
@@ -52,7 +48,6 @@ const mockMemberL4: LeaderboardMember = {
   directFollowersCount: 5,
 };
 
-<<<<<<< Updated upstream
 const mockMemberL5: LeaderboardMember = {
   id: 'TEST-L5-001',
   name: 'Noura Al-Suwaidi',
@@ -73,8 +68,6 @@ const mockMemberL5: LeaderboardMember = {
   directFollowersCount: 0,
 };
 
-=======
->>>>>>> Stashed changes
 describe('Leaderboard 12-Way Suite', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -162,7 +155,6 @@ describe('Leaderboard 12-Way Suite', () => {
     expect(promoted.milestones.length).toBe(1);
   });
 
-<<<<<<< Updated upstream
   // --- HR Promotion Bylaws: Follower Gate Tests ---
   it('rejects L5→L4 promotion when employee has fewer than 3 followers', () => {
     const twoFollowers: LeaderboardMember = {
@@ -205,8 +197,6 @@ describe('Leaderboard 12-Way Suite', () => {
     expect(promoted.nextTier).toBe('L3');
   });
 
-=======
->>>>>>> Stashed changes
   // --- Tier 8: Failure Boundary ---
   it('renders LeaderboardFallback boundary with errorId and triggers onRetry', () => {
     const onRetry = vi.fn();

@@ -54,16 +54,6 @@ export const TaskManagerView: FC<TaskManagerViewProps> = ({
     handleCloseDrawer,
   } = useTaskManager();
 
-  if (error) {
-    return (
-      <TaskManagerFallback
-        error={error}
-        onRetry={() => setError(null)}
-        onNavigateBack={onNavigateBack}
-      />
-    );
-  }
-
   const [executingTask, setExecutingTask] = useState<TaskNode | null>(null);
   const [visibleCount, setVisibleCount] = useState<number>(60);
 

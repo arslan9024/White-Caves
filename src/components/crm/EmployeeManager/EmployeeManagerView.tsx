@@ -49,16 +49,6 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
     handleCloseDrawer,
   } = useEmployeeManager();
 
-  if (error) {
-    return (
-      <EmployeeManagerFallback
-        error={error}
-        onRetry={() => setError(null)}
-        onNavigateBack={onNavigateBack}
-      />
-    );
-  }
-
   const targetEmployee = React.useMemo(() => {
     if (!selectedEmpId || filteredEmployees.length === 0) return null;
     const cleanId = selectedEmpId.toUpperCase();
@@ -236,7 +226,8 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
               </div>
             ) : (
               filteredEmployees.map(emp => {
-                const isHighlighted = highlightedEmpId === emp._id || highlightedEmpId === emp.employeeCode;
+                const isHighlighted =
+                  highlightedEmpId === emp._id || highlightedEmpId === emp.employeeCode;
                 return (
                   <div
                     key={emp._id}
@@ -253,93 +244,93 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
                     }
                     data-testid={`employee-card-${emp.employeeCode}`}
                   >
-                  <div>
-                    <div className={s.cardTop}>
-                      <div className={s.cardIdentity}>
-                        <div className={s.avatar}>
-                          {emp.fullName
-                            .split(' ')
-                            .map(n => n[0])
-                            .join('')
-                            .slice(0, 2)}
-                        </div>
-                        <div className="overflow-hidden">
-                          <div className="flex items-center gap-1.5">
-                            <span className={s.codePill}>{emp.employeeCode}</span>
-                            <span className={`${s.roleBadge} ${getRoleBadgeClass(emp.roleTier)}`}>
-                              {emp.roleTier}
-                            </span>
+                    <div>
+                      <div className={s.cardTop}>
+                        <div className={s.cardIdentity}>
+                          <div className={s.avatar}>
+                            {emp.fullName
+                              .split(' ')
+                              .map(n => n[0])
+                              .join('')
+                              .slice(0, 2)}
                           </div>
-                          <h3 className={s.name}>{emp.fullName}</h3>
-                          <div className={s.designation}>{emp.designation}</div>
+                          <div className="overflow-hidden">
+                            <div className="flex items-center gap-1.5">
+                              <span className={s.codePill}>{emp.employeeCode}</span>
+                              <span className={`${s.roleBadge} ${getRoleBadgeClass(emp.roleTier)}`}>
+                                {emp.roleTier}
+                              </span>
+                            </div>
+                            <h3 className={s.name}>{emp.fullName}</h3>
+                            <div className={s.designation}>{emp.designation}</div>
+                          </div>
                         </div>
-                      </div>
-                      <span className={`${s.statusPill} ${getStatusClass(emp.status)}`}>
-                        ● {emp.status.toUpperCase()}
-                      </span>
-                    </div>
-
-                    <div className={s.metaSection}>
-                      <div className={s.metaRow}>
-                        <span className={s.metaLabel}>Pillar</span>
-                        <span className="text-slate-300 font-semibold truncate max-w-[160px]">
-                          {emp.pillarName}
+                        <span className={`${s.statusPill} ${getStatusClass(emp.status)}`}>
+                          ● {emp.status.toUpperCase()}
                         </span>
                       </div>
-                      <div className={s.metaRow}>
-                        <span className={s.metaLabel}>Reports To</span>
-                        <span className={s.metaValue}>{emp.supervisorName}</span>
-                      </div>
-                      {emp.reraCardNumber && (
+
+                      <div className={s.metaSection}>
                         <div className={s.metaRow}>
-                          <span className={s.metaLabel}>RERA Card</span>
-                          <span className="text-amber-400 font-mono font-bold text-[11px]">
-                            {emp.reraCardNumber}
+                          <span className={s.metaLabel}>Pillar</span>
+                          <span className="text-slate-300 font-semibold truncate max-w-[160px]">
+                            {emp.pillarName}
                           </span>
                         </div>
-                      )}
-                      <div className={s.metaRow}>
-                        <span className={s.metaLabel}>Compensation</span>
-                        <span className="text-emerald-400 font-mono text-[11px]">
-                          AED {emp.baseSalaryAED.toLocaleString()} + {emp.commissionRatePct}%
-                        </span>
+                        <div className={s.metaRow}>
+                          <span className={s.metaLabel}>Reports To</span>
+                          <span className={s.metaValue}>{emp.supervisorName}</span>
+                        </div>
+                        {emp.reraCardNumber && (
+                          <div className={s.metaRow}>
+                            <span className={s.metaLabel}>RERA Card</span>
+                            <span className="text-amber-400 font-mono font-bold text-[11px]">
+                              {emp.reraCardNumber}
+                            </span>
+                          </div>
+                        )}
+                        <div className={s.metaRow}>
+                          <span className={s.metaLabel}>Compensation</span>
+                          <span className="text-emerald-400 font-mono text-[11px]">
+                            AED {emp.baseSalaryAED.toLocaleString()} + {emp.commissionRatePct}%
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className={s.skillsRow}>
+                        {emp.skills.slice(0, 3).map((skill, idx) => (
+                          <span key={idx} className={s.skillTag}>
+                            {skill}
+                          </span>
+                        ))}
+                        {emp.skills.length > 3 && (
+                          <span className={s.skillTag}>+{emp.skills.length - 3}</span>
+                        )}
                       </div>
                     </div>
 
-                    <div className={s.skillsRow}>
-                      {emp.skills.slice(0, 3).map((skill, idx) => (
-                        <span key={idx} className={s.skillTag}>
-                          {skill}
-                        </span>
-                      ))}
-                      {emp.skills.length > 3 && (
-                        <span className={s.skillTag}>+{emp.skills.length - 3}</span>
-                      )}
+                    <div className={s.cardFooter}>
+                      <button
+                        onClick={() => handleOpenEdit(emp)}
+                        className={s.editBtn}
+                        data-testid={`edit-emp-${emp.employeeCode}`}
+                      >
+                        <span>✏️</span>
+                        <span>Edit Profile</span>
+                      </button>
+                      <button
+                        onClick={() => handleDemoteEmployee(emp._id, 'Moved to Standby Reserve')}
+                        className={s.demoteBtn}
+                        title="Shift to Standby Pool"
+                        data-testid={`demote-emp-${emp.employeeCode}`}
+                      >
+                        ⬇️
+                      </button>
                     </div>
                   </div>
-
-                  <div className={s.cardFooter}>
-                    <button
-                      onClick={() => handleOpenEdit(emp)}
-                      className={s.editBtn}
-                      data-testid={`edit-emp-${emp.employeeCode}`}
-                    >
-                      <span>✏️</span>
-                      <span>Edit Profile</span>
-                    </button>
-                    <button
-                      onClick={() => handleDemoteEmployee(emp._id, 'Moved to Standby Reserve')}
-                      className={s.demoteBtn}
-                      title="Shift to Standby Pool"
-                      data-testid={`demote-emp-${emp.employeeCode}`}
-                    >
-                      ⬇️
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          )}
+                );
+              })
+            )}
           </div>
         </>
       )}

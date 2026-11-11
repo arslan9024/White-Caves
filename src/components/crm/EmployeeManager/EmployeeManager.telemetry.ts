@@ -18,14 +18,10 @@ export interface EmployeeTelemetryEvent {
 class EmployeeTelemetryService {
   private queue: EmployeeTelemetryEvent[] = [];
 
-<<<<<<< Updated upstream
   public track(
     eventType: EmployeeTelemetryEvent['eventType'],
     details: Partial<EmployeeTelemetryEvent> = {}
   ) {
-=======
-  public track(eventType: EmployeeTelemetryEvent['eventType'], details: Partial<EmployeeTelemetryEvent> = {}) {
->>>>>>> Stashed changes
     const event: EmployeeTelemetryEvent = {
       eventId: `tel-emp-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       eventType,
@@ -56,7 +52,3 @@ class EmployeeTelemetryService {
 }
 
 export const EmployeeTelemetry = new EmployeeTelemetryService();
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

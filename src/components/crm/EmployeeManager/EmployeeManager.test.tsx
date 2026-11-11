@@ -9,10 +9,7 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-<<<<<<< Updated upstream
 import { MemoryRouter } from 'react-router-dom';
-=======
->>>>>>> Stashed changes
 import { EmployeeManagerView } from './EmployeeManagerView';
 import {
   executeHireEmployeeWorkflow,
@@ -27,7 +24,6 @@ import { INITIAL_EMPLOYEES_SEED } from './EmployeeManager.data';
 import { EmployeeManagerFallback } from './EmployeeManager.fallback';
 import { EmployeeTelemetry } from './EmployeeManager.telemetry';
 import { getEmployeeI18n } from './EmployeeManager.i18n';
-<<<<<<< Updated upstream
 import {
   saveEmployeesCache,
   loadEmployeesCache,
@@ -38,11 +34,6 @@ import { calculateEmployeeCompensationOffThread } from './EmployeeManager.worker
 
 const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
-=======
-import { saveEmployeesCache, loadEmployeesCache, getEmployeeByTuringId, indexEmployeesInMemory } from './EmployeeManager.cache';
-import { calculateEmployeeCompensationOffThread } from './EmployeeManager.workers';
-
->>>>>>> Stashed changes
 describe('EmployeeManager 12-Way Suite', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -187,13 +178,9 @@ describe('EmployeeManager 12-Way Suite', () => {
 
     expect(screen.getByTestId('employee-manager-fallback')).toBeInTheDocument();
     expect(screen.getByText('ERR-EMP-503')).toBeInTheDocument();
-<<<<<<< Updated upstream
     expect(
       screen.getByText(/DLD Broker License Verification Gateway Offline/i)
     ).toBeInTheDocument();
-=======
-    expect(screen.getByText(/DLD Broker License Verification Gateway Offline/i)).toBeInTheDocument();
->>>>>>> Stashed changes
 
     const retryBtn = screen.getByTestId('employee-fallback-retry-btn');
     fireEvent.click(retryBtn);

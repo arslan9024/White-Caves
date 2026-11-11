@@ -20,16 +20,12 @@ import { buildCanonical200Tasks } from './TaskManager.data';
 import { TaskManagerFallback } from './TaskManager.fallback';
 import { TaskTelemetry } from './TaskManager.telemetry';
 import { getTaskI18n } from './TaskManager.i18n';
-<<<<<<< Updated upstream
 import {
   saveTasksCache,
   loadTasksCache,
   getTaskByTuringId,
   indexTasksInMemory,
 } from './TaskManager.cache';
-=======
-import { saveTasksCache, loadTasksCache, getTaskByTuringId, indexTasksInMemory } from './TaskManager.cache';
->>>>>>> Stashed changes
 import { executeTaskWorkbenchOffThread } from './TaskManager.workers';
 
 describe('TaskManager 12-Way Suite', () => {

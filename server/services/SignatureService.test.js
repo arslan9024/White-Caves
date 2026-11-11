@@ -29,10 +29,6 @@ vi.mock('../models/SignatureAudit.js', () => ({
 vi.mock('../models/Contract.js', () => ({
   default: {},
 }));
-vi.mock('nodemailer', () => ({
-  default: { createTransport: vi.fn() },
-}));
-
 import SignatureService from './SignatureService.js';
 
 describe('SignatureService notification email flow', () => {

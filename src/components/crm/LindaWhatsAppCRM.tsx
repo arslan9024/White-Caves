@@ -15,7 +15,6 @@ import { LindaLiveWhatsAppWeb } from './LindaWhatsAppCRM/LindaLiveWhatsAppWeb';
 import { type LindaViewTab } from './LindaWhatsAppCRM/LindaWhatsAppCRM.types';
 import {
   INITIAL_OUTREACH_OWNERS,
-  INITIAL_LINDA_CONVERSATIONS,
   LINDA_10_PILLARS,
 } from './LindaWhatsAppCRM/LindaWhatsAppCRM.data';
 import { useLindaOperationsCenter } from './LindaWhatsAppCRM/useLindaOperationsCenter';
@@ -47,6 +46,7 @@ const LindaWhatsAppCRM = memo(() => {
     metrics,
     sessions,
     campaigns,
+    conversations,
     features,
     playbooks,
     activeModalOutput,
@@ -95,9 +95,9 @@ const LindaWhatsAppCRM = memo(() => {
 
       {(activeViewTab === 'all' || activeViewTab === 'whatsapp_web') && (
         <LindaLiveWhatsAppWeb
-          conversations={INITIAL_LINDA_CONVERSATIONS}
+          conversations={conversations}
           onSendMessage={(convId, text) => {
-            const match = INITIAL_LINDA_CONVERSATIONS.find(c => c.id === convId);
+            const match = conversations.find(c => c.id === convId);
             if (match) {
               handleSendQuickReply({ ...match, lastMessage: text });
             }
@@ -143,7 +143,7 @@ const LindaWhatsAppCRM = memo(() => {
 
       {(activeViewTab === 'all' || activeViewTab === 'conversations') && (
         <LindaConversationsAndPillarsPanel
-          conversations={INITIAL_LINDA_CONVERSATIONS}
+          conversations={conversations}
           pillars={LINDA_10_PILLARS}
           liveLogs={liveLogs}
           onSendQuickReply={handleSendQuickReply}

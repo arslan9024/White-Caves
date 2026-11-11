@@ -7,17 +7,8 @@
 
 export interface TaskTelemetryEvent {
   eventId: string;
-<<<<<<< Updated upstream
   eventType:
-    | 'MOUNT'
-    | 'STATUS_TRANSITION'
-    | 'WORKBENCH_EXECUTE'
-    | 'SLA_BREACH'
-    | 'MERIT_XP_AWARD'
-    | 'ERROR';
-=======
-  eventType: 'MOUNT' | 'STATUS_TRANSITION' | 'WORKBENCH_EXECUTE' | 'SLA_BREACH' | 'MERIT_XP_AWARD' | 'ERROR';
->>>>>>> Stashed changes
+    'MOUNT' | 'STATUS_TRANSITION' | 'WORKBENCH_EXECUTE' | 'SLA_BREACH' | 'MERIT_XP_AWARD' | 'ERROR';
   taskId?: string;
   taskCode?: string;
   initialCount?: number;
@@ -29,14 +20,10 @@ export interface TaskTelemetryEvent {
 class TaskTelemetryService {
   private queue: TaskTelemetryEvent[] = [];
 
-<<<<<<< Updated upstream
   public track(
     eventType: TaskTelemetryEvent['eventType'],
     details: Partial<TaskTelemetryEvent> = {}
   ) {
-=======
-  public track(eventType: TaskTelemetryEvent['eventType'], details: Partial<TaskTelemetryEvent> = {}) {
->>>>>>> Stashed changes
     const event: TaskTelemetryEvent = {
       eventId: `tel-tsk-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       eventType,
@@ -67,7 +54,3 @@ class TaskTelemetryService {
 }
 
 export const TaskTelemetry = new TaskTelemetryService();
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

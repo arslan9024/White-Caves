@@ -24,12 +24,8 @@ export const TASK_TRANSLATIONS: Record<SupportedLanguage, TaskTranslations> = {
   en: {
     dir: 'ltr',
     workspaceTitle: 'Statutory Operations & RUP Tasks Engine',
-<<<<<<< Updated upstream
     workspaceSubtitle:
       '600+ departmental operational procedures, DLD compliance and escalation automation',
-=======
-    workspaceSubtitle: '600+ departmental operational procedures, DLD compliance and escalation automation',
->>>>>>> Stashed changes
     createTaskBtn: 'Dispatch New Task',
     inspectTaskBtn: 'Inspect Task Dossier',
     searchPlaceholder: 'Search tasks by title, code, pillar, or role...',
@@ -41,12 +37,8 @@ export const TASK_TRANSLATIONS: Record<SupportedLanguage, TaskTranslations> = {
   ar: {
     dir: 'rtl',
     workspaceTitle: 'محرك المهام والعمليات القانونية (RUP)',
-<<<<<<< Updated upstream
     workspaceSubtitle:
       'أكثر من 600 إجراء تشغيلي للأقسام، وامتثال دائرة الأراضي والأملاك ونظام التصعيد',
-=======
-    workspaceSubtitle: 'أكثر من 600 إجراء تشغيلي للأقسام، وامتثال دائرة الأراضي والأملاك ونظام التصعيد',
->>>>>>> Stashed changes
     createTaskBtn: 'إسناد مهمة جديدة',
     inspectTaskBtn: 'فحص ملف المهمة',
     searchPlaceholder: 'البحث عن المهام بالعنوان، الكود، الركيزة، أو المسمى الوظيفي...',
@@ -58,12 +50,8 @@ export const TASK_TRANSLATIONS: Record<SupportedLanguage, TaskTranslations> = {
   es: {
     dir: 'ltr',
     workspaceTitle: 'Motor de Operaciones Estatutarias y Tareas RUP',
-<<<<<<< Updated upstream
     workspaceSubtitle:
       'Más de 600 procedimientos departamentales, cumplimiento DLD y automatización de escalamiento',
-=======
-    workspaceSubtitle: 'Más de 600 procedimientos departamentales, cumplimiento DLD y automatización de escalamiento',
->>>>>>> Stashed changes
     createTaskBtn: 'Despachar Nueva Tarea',
     inspectTaskBtn: 'Inspeccionar Expediente de Tarea',
     searchPlaceholder: 'Buscar tareas por título, código, pilar o rol...',
@@ -91,7 +79,3 @@ export function getTaskI18n(lang: SupportedLanguage = 'en'): TaskTranslations {
 }
 
 export default TASK_TRANSLATIONS;
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
