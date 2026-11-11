@@ -19,10 +19,14 @@ export interface DocumentTelemetryEvent {
 class DocumentTelemetryService {
   private queue: DocumentTelemetryEvent[] = [];
 
+<<<<<<< Updated upstream
   public track(
     eventType: DocumentTelemetryEvent['eventType'],
     details: Partial<DocumentTelemetryEvent> = {}
   ) {
+=======
+  public track(eventType: DocumentTelemetryEvent['eventType'], details: Partial<DocumentTelemetryEvent> = {}) {
+>>>>>>> Stashed changes
     const event: DocumentTelemetryEvent = {
       eventId: `tel-doc-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       eventType,
@@ -53,3 +57,7 @@ class DocumentTelemetryService {
 }
 
 export const DocumentTelemetry = new DocumentTelemetryService();
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

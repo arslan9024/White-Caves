@@ -76,3 +76,7 @@ export function saveDocumentsCache(documents: DocumentItem[]): void {
     // Non-fatal fallback
   }
 }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

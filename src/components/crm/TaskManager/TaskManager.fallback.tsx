@@ -50,8 +50,12 @@ export const TaskManagerFallback: FC<TaskManagerFallbackProps> = ({
       <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-400 text-[11px] space-y-1">
         <span className="font-bold text-slate-300 block">Autopilot Isolation Guarantee:</span>
         <p>
+<<<<<<< Updated upstream
           This failure boundary prevented global dashboard router termination. Operational task
           catalog remains secured in local cache.
+=======
+          This failure boundary prevented global dashboard router termination. Operational task catalog remains secured in local cache.
+>>>>>>> Stashed changes
         </p>
       </div>
 
@@ -82,3 +86,7 @@ export const TaskManagerFallback: FC<TaskManagerFallbackProps> = ({
 };
 
 export default TaskManagerFallback;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

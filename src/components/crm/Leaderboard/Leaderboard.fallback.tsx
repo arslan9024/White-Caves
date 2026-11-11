@@ -35,9 +35,13 @@ export const LeaderboardFallback: FC<LeaderboardFallbackProps> = ({
             <span className="text-[10px] font-mono font-bold text-rose-400 uppercase tracking-wider block">
               Granular Failure Boundary (Tier 8)
             </span>
+<<<<<<< Updated upstream
             <h3 className="text-base font-bold text-white">
               Gamification Leaderboard Execution Error
             </h3>
+=======
+            <h3 className="text-base font-bold text-white">Gamification Leaderboard Execution Error</h3>
+>>>>>>> Stashed changes
           </div>
         </div>
         <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-950 text-rose-300 border border-rose-800">
@@ -52,8 +56,12 @@ export const LeaderboardFallback: FC<LeaderboardFallbackProps> = ({
       <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-400 text-[11px] space-y-1">
         <span className="font-bold text-slate-300 block">Autopilot Isolation Guarantee:</span>
         <p>
+<<<<<<< Updated upstream
           This failure boundary prevented global dashboard router termination. Merit XP rankings
           remain secured in local cache.
+=======
+          This failure boundary prevented global dashboard router termination. Merit XP rankings remain secured in local cache.
+>>>>>>> Stashed changes
         </p>
       </div>
 
@@ -84,3 +92,7 @@ export const LeaderboardFallback: FC<LeaderboardFallbackProps> = ({
 };
 
 export default LeaderboardFallback;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

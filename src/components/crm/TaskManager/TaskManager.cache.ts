@@ -82,3 +82,7 @@ export function saveTasksCache(tasks: TaskNode[]): void {
     // Non-fatal fallback
   }
 }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

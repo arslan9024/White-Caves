@@ -6,12 +6,18 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
+<<<<<<< Updated upstream
 import { useSearchParams } from 'react-router-dom';
+=======
+>>>>>>> Stashed changes
 import type { EmployeeNode } from './EmployeeManager.types';
 import { INITIAL_EMPLOYEES_SEED, PILLARS_7 } from './EmployeeManager.data';
 import { EmployeeTelemetry } from './EmployeeManager.telemetry';
 import { loadEmployeesCache, saveEmployeesCache } from './EmployeeManager.cache';
+<<<<<<< Updated upstream
 import { useRecordHighlight } from '../../../hooks/useRecordHighlight';
+=======
+>>>>>>> Stashed changes
 import {
   executeHireEmployeeWorkflow,
   executeUpdateEmployeeWorkflow,
@@ -80,8 +86,11 @@ export function useEmployeeManager() {
         if (res.success) {
           saveEmployeesCache(res.employees);
           EmployeeTelemetry.track('HIRE', { meta: { fullName: payload.fullName } });
+<<<<<<< Updated upstream
           const newlyCreated = res.employees.find(e => e.fullName === payload.fullName);
           if (newlyCreated) createdId = newlyCreated._id;
+=======
+>>>>>>> Stashed changes
           return res.employees;
         }
         return prev;

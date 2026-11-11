@@ -49,6 +49,16 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
     handleCloseDrawer,
   } = useEmployeeManager();
 
+  if (error) {
+    return (
+      <EmployeeManagerFallback
+        error={error}
+        onRetry={() => setError(null)}
+        onNavigateBack={onNavigateBack}
+      />
+    );
+  }
+
   const targetEmployee = React.useMemo(() => {
     if (!selectedEmpId || filteredEmployees.length === 0) return null;
     const cleanId = selectedEmpId.toUpperCase();

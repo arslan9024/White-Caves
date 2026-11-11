@@ -24,8 +24,12 @@ export const CUSTOMER_TRANSLATIONS: Record<SupportedLanguage, CustomerTranslatio
   en: {
     dir: 'ltr',
     workspaceTitle: 'Client & Investor Registry',
+<<<<<<< Updated upstream
     workspaceSubtitle:
       'Omnichannel client relationship governance across 18-step Dubai real estate journey',
+=======
+    workspaceSubtitle: 'Omnichannel client relationship governance across 18-step Dubai real estate journey',
+>>>>>>> Stashed changes
     registerCustomerBtn: 'Register New Client',
     inspectCustomerBtn: 'Inspect Client Dossier',
     searchPlaceholder: 'Search clients by name, code, phone, or community...',
@@ -49,8 +53,12 @@ export const CUSTOMER_TRANSLATIONS: Record<SupportedLanguage, CustomerTranslatio
   es: {
     dir: 'ltr',
     workspaceTitle: 'Registro de Clientes e Inversionistas',
+<<<<<<< Updated upstream
     workspaceSubtitle:
       'Gobernanza de relaciones de clientes en el recorrido de 18 etapas de bienes raíces en Dubái',
+=======
+    workspaceSubtitle: 'Gobernanza de relaciones de clientes en el recorrido de 18 etapas de bienes raíces en Dubái',
+>>>>>>> Stashed changes
     registerCustomerBtn: 'Registrar Nuevo Cliente',
     inspectCustomerBtn: 'Inspeccionar Expediente de Cliente',
     searchPlaceholder: 'Buscar clientes por nombre, código, teléfono o comunidad...',
@@ -62,8 +70,12 @@ export const CUSTOMER_TRANSLATIONS: Record<SupportedLanguage, CustomerTranslatio
   ru: {
     dir: 'ltr',
     workspaceTitle: 'Реестр Клиентов и Инвесторов',
+<<<<<<< Updated upstream
     workspaceSubtitle:
       'Управление отношениями с клиентами на всех 18 этапах пути на рынке недвижимости Дубая',
+=======
+    workspaceSubtitle: 'Управление отношениями с клиентами на всех 18 этапах пути на рынке недвижимости Дубая',
+>>>>>>> Stashed changes
     registerCustomerBtn: 'Зарегистрировать Клиента',
     inspectCustomerBtn: 'Изучить Досье Клиента',
     searchPlaceholder: 'Поиск клиентов по имени, коду, телефону или району...',
@@ -79,3 +91,7 @@ export function getCustomerI18n(lang: SupportedLanguage = 'en'): CustomerTransla
 }
 
 export default CUSTOMER_TRANSLATIONS;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

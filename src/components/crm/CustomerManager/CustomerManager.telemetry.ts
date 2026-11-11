@@ -7,6 +7,7 @@
 
 export interface CustomerTelemetryEvent {
   eventId: string;
+<<<<<<< Updated upstream
   eventType:
     | 'MOUNT'
     | 'STAGE_ADVANCE'
@@ -14,6 +15,9 @@ export interface CustomerTelemetryEvent {
     | 'INTERACTION_LOGGED'
     | 'KYC_AML_VERIFIED'
     | 'ERROR';
+=======
+  eventType: 'MOUNT' | 'STAGE_ADVANCE' | 'REGISTER' | 'INTERACTION_LOGGED' | 'KYC_AML_VERIFIED' | 'ERROR';
+>>>>>>> Stashed changes
   customerId?: string;
   customerCode?: string;
   initialCount?: number;
@@ -25,10 +29,14 @@ export interface CustomerTelemetryEvent {
 class CustomerTelemetryService {
   private queue: CustomerTelemetryEvent[] = [];
 
+<<<<<<< Updated upstream
   public track(
     eventType: CustomerTelemetryEvent['eventType'],
     details: Partial<CustomerTelemetryEvent> = {}
   ) {
+=======
+  public track(eventType: CustomerTelemetryEvent['eventType'], details: Partial<CustomerTelemetryEvent> = {}) {
+>>>>>>> Stashed changes
     const event: CustomerTelemetryEvent = {
       eventId: `tel-cust-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       eventType,
@@ -59,3 +67,7 @@ class CustomerTelemetryService {
 }
 
 export const CustomerTelemetry = new CustomerTelemetryService();
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

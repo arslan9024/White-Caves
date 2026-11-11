@@ -16,8 +16,13 @@ export const TagList = styled.div`
 export const CapabilityTag = styled.span`
   padding: 3px 8px;
   border-radius: 6px;
+<<<<<<< Updated upstream
   background: var(--bg-secondary, #f1f5f9);
   color: var(--text-secondary, #334155);
+=======
+  background: var(--bg-secondary, #F1F5F9);
+  color: var(--text-secondary, #475569);
+>>>>>>> Stashed changes
   font-size: 0.72rem;
   font-weight: 600;
 `;
@@ -27,8 +32,13 @@ export const MetricsRow = styled.div`
   justify-content: space-between;
   padding: 8px 12px;
   border-radius: 8px;
+<<<<<<< Updated upstream
   background: var(--bg-secondary, #f8fafc);
   border: 1px solid var(--border-color, #e2e8f0);
+=======
+  background: var(--bg-secondary, #F8FAFC);
+  border: 1px solid var(--border-color, #E2E8F0);
+>>>>>>> Stashed changes
   font-size: 0.76rem;
   font-weight: 700;
 
@@ -39,13 +49,21 @@ export const MetricsRow = styled.div`
     gap: 2px;
 
     span.label {
+<<<<<<< Updated upstream
       color: var(--text-muted, #475569);
+=======
+      color: var(--text-muted, #94A3B8);
+>>>>>>> Stashed changes
       font-size: 0.68rem;
       text-transform: uppercase;
     }
 
     strong.val {
+<<<<<<< Updated upstream
       color: #0f172a;
+=======
+      color: #0F172A;
+>>>>>>> Stashed changes
     }
   }
 `;
@@ -59,8 +77,13 @@ export const LaunchBtn = styled.button`
   padding: 10px;
   border-radius: 10px;
   border: none;
+<<<<<<< Updated upstream
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: #ffffff;
+=======
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+>>>>>>> Stashed changes
   font-size: 0.84rem;
   font-weight: 800;
   cursor: pointer;
@@ -68,6 +91,7 @@ export const LaunchBtn = styled.button`
   box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
 
   &:hover {
+<<<<<<< Updated upstream
     background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     transform: translateY(-1px);
     box-shadow: 0 6px 18px rgba(239, 68, 68, 0.4);
@@ -78,3 +102,11 @@ export const LaunchBtn = styled.button`
     outline-offset: 2px;
   }
 `;
+=======
+    background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.4);
+  }
+`;
+
+>>>>>>> Stashed changes

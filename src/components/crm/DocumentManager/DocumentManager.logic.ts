@@ -11,7 +11,10 @@ import { DocumentItem, DocumentType, DocumentStatus } from './DocumentManager.ty
 import { CANONICAL_DOCUMENTS } from './DocumentManager.data';
 import { DocumentTelemetry } from './DocumentManager.telemetry';
 import { loadDocumentsCache, saveDocumentsCache } from './DocumentManager.cache';
+<<<<<<< Updated upstream
 import { useRecordHighlight } from '../../../hooks/useRecordHighlight';
+=======
+>>>>>>> Stashed changes
 
 export interface UseDocumentManagerProps {
   initialDocuments?: DocumentItem[];
@@ -65,6 +68,10 @@ export function useDocumentManager({
       setIsDrawerOpen(false);
     }
   }, [searchParams, documents]);
+
+  useEffect(() => {
+    DocumentTelemetry.track('MOUNT', { initialCount: documents.length });
+  }, []);
 
   // Sync with selectedDocId deep link
   useEffect(() => {
@@ -194,7 +201,10 @@ export function useDocumentManager({
         docId: (createdDoc as DocumentItem).id,
         docCode: (createdDoc as DocumentItem).docCode,
       });
+<<<<<<< Updated upstream
       triggerHighlight((createdDoc as DocumentItem).id);
+=======
+>>>>>>> Stashed changes
     }
 
     setIsDrawerOpen(false);

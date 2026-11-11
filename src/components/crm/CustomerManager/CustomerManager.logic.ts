@@ -74,6 +74,10 @@ export function useCustomerManager({
     }
   }, [searchParams, customers]);
 
+  useEffect(() => {
+    CustomerTelemetry.track('MOUNT', { initialCount: customers.length });
+  }, []);
+
   // Sync with selectedCustomerId deep link
   useEffect(() => {
     if (selectedCustomerId) {

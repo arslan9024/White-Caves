@@ -24,8 +24,12 @@ export const DOCUMENT_TRANSLATIONS: Record<SupportedLanguage, DocumentTranslatio
   en: {
     dir: 'ltr',
     workspaceTitle: 'Statutory Real Estate Document Vault',
+<<<<<<< Updated upstream
     workspaceSubtitle:
       'DLD, Title Deed, Ejari & KYC regulatory compliance and OCR extraction engine',
+=======
+    workspaceSubtitle: 'DLD, Title Deed, Ejari & KYC regulatory compliance and OCR extraction engine',
+>>>>>>> Stashed changes
     uploadDocBtn: 'Upload Statutory Document',
     inspectDocBtn: 'Inspect Document Dossier',
     searchPlaceholder: 'Search documents by title, code, deal, or entity...',
@@ -37,8 +41,12 @@ export const DOCUMENT_TRANSLATIONS: Record<SupportedLanguage, DocumentTranslatio
   ar: {
     dir: 'rtl',
     workspaceTitle: 'خزينة المستندات العقارية القانونية',
+<<<<<<< Updated upstream
     workspaceSubtitle:
       'محرك الامتثال التنظيمي واستخراج النصوص لعقود إيجاري وسندات الملكية ودائرة الأراضي والأملاك',
+=======
+    workspaceSubtitle: 'محرك الامتثال التنظيمي واستخراج النصوص لعقود إيجاري وسندات الملكية ودائرة الأراضي والأملاك',
+>>>>>>> Stashed changes
     uploadDocBtn: 'رفع مستند قانوني',
     inspectDocBtn: 'فحص ملف المستند',
     searchPlaceholder: 'البحث عن المستندات بالعنوان، الكود، الصفقة، أو المالك...',
@@ -62,8 +70,12 @@ export const DOCUMENT_TRANSLATIONS: Record<SupportedLanguage, DocumentTranslatio
   ru: {
     dir: 'ltr',
     workspaceTitle: 'Хранилище Уставных Документов по Недвижимости',
+<<<<<<< Updated upstream
     workspaceSubtitle:
       'Движок соответствия нормам DLD, свидетельств о собственности, договоров Ejari и KYC',
+=======
+    workspaceSubtitle: 'Движок соответствия нормам DLD, свидетельств о собственности, договоров Ejari и KYC',
+>>>>>>> Stashed changes
     uploadDocBtn: 'Загрузить Уставной Документ',
     inspectDocBtn: 'Изучить Досье Документа',
     searchPlaceholder: 'Поиск документов по названию, коду, сделке или лицу...',
@@ -79,3 +91,7 @@ export function getDocumentI18n(lang: SupportedLanguage = 'en'): DocumentTransla
 }
 
 export default DOCUMENT_TRANSLATIONS;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

@@ -55,3 +55,7 @@ export function extractDocumentOcrFieldsOffThread(
     }, 10);
   });
 }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

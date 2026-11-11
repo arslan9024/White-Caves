@@ -60,3 +60,7 @@ export function calculateEmployeeCompensationOffThread(
     }, 10);
   });
 }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

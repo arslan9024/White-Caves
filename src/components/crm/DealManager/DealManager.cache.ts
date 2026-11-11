@@ -84,3 +84,4 @@ export function invalidateDealsCache(): void {
     inMemoryIndex.clear();
   } catch {}
 }
+

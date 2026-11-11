@@ -16,6 +16,7 @@ import { GlobalEntityCommandPalette } from '../../components/dashboard/GlobalEnt
 import { CorporateDepartmentsProvider } from '../../context/CorporateDepartmentsContext';
 import { ErmsProvider } from '../../context/ErmsContext';
 import { VSCodeBreadcrumbs } from '../../components/dashboard/VSCodeBreadcrumbs';
+<<<<<<< Updated upstream
 import { DashboardLiveTicker } from '../../components/dashboard/header/DashboardLiveTicker';
 import { MDCommandStrip } from '../../components/dashboard/header/MDCommandStrip';
 import { DashboardContentRouter } from './DashboardContentRouter';
@@ -27,6 +28,9 @@ import {
   resolveSidebarItemRoute,
   normalizeDashboardRoute,
 } from './ModernDashboardPage.logic';
+=======
+import { DashboardContentRouter } from './DashboardContentRouter';
+>>>>>>> Stashed changes
 import type { ActivityTab } from '../../components/dashboard/ExecutiveVSCodeSidebar/ExecutiveVSCodeSidebar.logic';
 
 export const ModernDashboardPage: FC = () => {
@@ -50,6 +54,7 @@ export const ModernDashboardPage: FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const isReadOnly = queryParams.get('mode') === 'view' || queryParams.get('mode') === 'execution';
 
+<<<<<<< Updated upstream
   let ermsSubTab: 'entities' | 'relationships' | 'graph' | 'matrix' = 'entities';
   let ermsEntityId: string | null = null;
   let ermsRelationshipId: string | null = null;
@@ -71,6 +76,40 @@ export const ModernDashboardPage: FC = () => {
     } else if (subIdentifier === 'graph') {
       ermsSubTab = 'graph';
     } else if (subIdentifier === 'matrix') {
+=======
+  const validTabs: ActivityTab[] = [
+    'departments',
+    'employees',
+    'tasks',
+    'leaderboard',
+    'REproperties',
+    'deals',
+    'documents',
+    'relationships',
+    'erms',
+    'customers',
+  ];
+
+  const activeTab: ActivityTab = rawTab && validTabs.includes(rawTab) ? rawTab : 'departments';
+
+  let ermsSubTab: 'entities' | 'relationships' | 'graph' | 'matrix' = 'entities';
+  let ermsEntityId: string | null = null;
+  let ermsRelationshipId: string | null = null;
+  const isErmsRootOverview =
+    (activeTab === 'erms' || activeTab === 'relationships') &&
+    (pathParts.length === 1 || !pathParts[1]);
+
+  if (activeTab === 'erms' || activeTab === 'relationships') {
+    if (pathParts[1] === 'entities') {
+      ermsSubTab = 'entities';
+      ermsEntityId = pathParts[2] || null;
+    } else if (pathParts[1] === 'relationships') {
+      ermsSubTab = 'relationships';
+      ermsRelationshipId = pathParts[2] || null;
+    } else if (pathParts[1] === 'graph') {
+      ermsSubTab = 'graph';
+    } else if (pathParts[1] === 'matrix') {
+>>>>>>> Stashed changes
       ermsSubTab = 'matrix';
     }
   }
@@ -81,7 +120,11 @@ export const ModernDashboardPage: FC = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+<<<<<<< Updated upstream
       if ((e.metaKey || e.ctrlKey) && e.key === 'key' || ((e.metaKey || e.ctrlKey) && e.key === 'k')) {
+=======
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+>>>>>>> Stashed changes
         e.preventDefault();
         setIsCommandPaletteOpen(prev => !prev);
       }
@@ -90,6 +133,7 @@ export const ModernDashboardPage: FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+<<<<<<< Updated upstream
   useEffect(() => {
     const isMdOrFounder = Boolean(
       roleContext?.isManagingDirector || roleContext?.isFounder || roleContext?.role === 'managing_director'
@@ -97,6 +141,30 @@ export const ModernDashboardPage: FC = () => {
     if (isMdOrFounder) {
       setIsRoleModalOpen(false);
       return;
+=======
+  const handleSelectSidebarTab = (tab: ActivityTab) => {
+    navigate(`/dashboard/${tab}`);
+  };
+
+  const handleSelectSidebarItem = (key: string, label: string) => {
+    if (key === 'departments-crud') return navigate('/dashboard/departments/slots');
+    if (key.startsWith('route-')) return navigate(key.replace('route-', ''));
+    if (key.startsWith('entity-'))
+      return navigate(`/dashboard/erms/entities/${key.replace('entity-', '')}`);
+    if (key.startsWith('rel-'))
+      return navigate(`/dashboard/erms/relationships/${key.replace('rel-', '')}`);
+    const prefixes: Record<string, string> = {
+      'emp-': '/dashboard/employees/',
+      'task-': '/dashboard/tasks/',
+      'lead-': '/dashboard/leaderboard/',
+      'prop-': '/dashboard/REproperties/',
+      'deal-': '/dashboard/deals/',
+      'doc-': '/dashboard/documents/',
+      'cust-': '/dashboard/customers/',
+    };
+    for (const [pfx, route] of Object.entries(prefixes)) {
+      if (key.startsWith(pfx)) return navigate(`${route}${key.replace(pfx, '')}`);
+>>>>>>> Stashed changes
     }
     if (
       roleContext?.user &&
@@ -248,6 +316,7 @@ export const ModernDashboardPage: FC = () => {
               data-testid="viewport-main-area"
             >
               <DashboardContentRouter
+<<<<<<< Updated upstream
                   activeTab={activeTab}
                   isRootOverview={isRootOverview}
                   activeItemId={activeItemId}
@@ -261,6 +330,18 @@ export const ModernDashboardPage: FC = () => {
                   onOpenRoleModal={() => setIsRoleModalOpen(true)}
                 />
               
+=======
+                activeTab={activeTab}
+                isRootOverview={isRootOverview}
+                activeItemId={activeItemId}
+                isReadOnly={isReadOnly}
+                isErmsRootOverview={isErmsRootOverview}
+                ermsSubTab={ermsSubTab}
+                ermsEntityId={ermsEntityId}
+                ermsRelationshipId={ermsRelationshipId}
+                navigate={navigate}
+              />
+>>>>>>> Stashed changes
             </main>
 
             <ExecutiveAIVSCodeSidebar

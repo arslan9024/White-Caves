@@ -12,14 +12,22 @@ export default function ListingLocationStep({ formData, updateField }) {
         <label>Community *</label>
         <select
           value={formData.community}
+<<<<<<< Updated upstream
           onChange={e => updateField('community', e.target.value)}
+=======
+          onChange={(e) => updateField('community', e.target.value)}
+>>>>>>> Stashed changes
           className="form-select"
         >
           <option value="">Select Community</option>
           {DUBAI_COMMUNITIES.map(community => (
+<<<<<<< Updated upstream
             <option key={community} value={community}>
               {community}
             </option>
+=======
+            <option key={community} value={community}>{community}</option>
+>>>>>>> Stashed changes
           ))}
         </select>
       </div>
@@ -30,7 +38,11 @@ export default function ListingLocationStep({ formData, updateField }) {
           <input
             type="text"
             value={formData.subCommunity}
+<<<<<<< Updated upstream
             onChange={e => updateField('subCommunity', e.target.value)}
+=======
+            onChange={(e) => updateField('subCommunity', e.target.value)}
+>>>>>>> Stashed changes
             placeholder="e.g., Frond A"
             className="form-input"
           />
@@ -40,7 +52,11 @@ export default function ListingLocationStep({ formData, updateField }) {
           <input
             type="text"
             value={formData.buildingName}
+<<<<<<< Updated upstream
             onChange={e => updateField('buildingName', e.target.value)}
+=======
+            onChange={(e) => updateField('buildingName', e.target.value)}
+>>>>>>> Stashed changes
             placeholder="e.g., Burj Khalifa"
             className="form-input"
           />
@@ -53,7 +69,11 @@ export default function ListingLocationStep({ formData, updateField }) {
           <input
             type="number"
             value={formData.floorNumber}
+<<<<<<< Updated upstream
             onChange={e => updateField('floorNumber', e.target.value)}
+=======
+            onChange={(e) => updateField('floorNumber', e.target.value)}
+>>>>>>> Stashed changes
             placeholder="e.g., 25"
             className="form-input"
           />
@@ -63,7 +83,11 @@ export default function ListingLocationStep({ formData, updateField }) {
           <input
             type="text"
             value={formData.unitNumber}
+<<<<<<< Updated upstream
             onChange={e => updateField('unitNumber', e.target.value)}
+=======
+            onChange={(e) => updateField('unitNumber', e.target.value)}
+>>>>>>> Stashed changes
             placeholder="e.g., 2501"
             className="form-input"
           />
@@ -75,7 +99,11 @@ export default function ListingLocationStep({ formData, updateField }) {
         <input
           type="text"
           value={formData.address}
+<<<<<<< Updated upstream
           onChange={e => updateField('address', e.target.value)}
+=======
+          onChange={(e) => updateField('address', e.target.value)}
+>>>>>>> Stashed changes
           placeholder="Complete property address"
           className="form-input"
         />
@@ -88,3 +116,7 @@ export default function ListingLocationStep({ formData, updateField }) {
     </div>
   );
 }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

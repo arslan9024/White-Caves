@@ -1,5 +1,6 @@
 // FILE: src/components/crm/AgentListingForm/AgentListingForm.data.js
 import {
+<<<<<<< Updated upstream
   Home,
   MapPin,
   Ruler,
@@ -19,6 +20,11 @@ import {
   Wifi,
   Sun,
   TreePine,
+=======
+  Home, MapPin, Ruler, DollarSign, Image, FileText,
+  Building2, Castle, Hotel, Warehouse, LandPlot,
+  Car, Sofa, Waves, Dumbbell, Shield, Wifi, Sun, TreePine
+>>>>>>> Stashed changes
 } from 'lucide-react';
 
 export const STEPS = [
@@ -44,6 +50,7 @@ export const PROPERTY_TYPES = [
 ];
 
 export const DUBAI_COMMUNITIES = [
+<<<<<<< Updated upstream
   'Downtown Dubai',
   'Palm Jumeirah',
   'Dubai Marina',
@@ -60,6 +67,12 @@ export const DUBAI_COMMUNITIES = [
   'DIFC',
   'Jumeirah Golf Estates',
   'MBR City',
+=======
+  'Downtown Dubai', 'Palm Jumeirah', 'Dubai Marina', 'Emirates Hills',
+  'Dubai Hills Estate', 'Jumeirah Bay Island', 'Business Bay', 'Arabian Ranches',
+  'Al Barari', 'Bluewaters Island', 'City Walk', 'Dubai Creek Harbour',
+  'JLT', 'DIFC', 'Jumeirah Golf Estates', 'MBR City'
+>>>>>>> Stashed changes
 ];
 
 export const AMENITIES = [
@@ -74,6 +87,7 @@ export const AMENITIES = [
 ];
 
 export const VIEWS = [
+<<<<<<< Updated upstream
   'Sea View',
   'City View',
   'Golf View',
@@ -81,6 +95,9 @@ export const VIEWS = [
   'Lake View',
   'Marina View',
   'Garden View',
+=======
+  'Sea View', 'City View', 'Golf View', 'Park View', 'Lake View', 'Marina View', 'Garden View'
+>>>>>>> Stashed changes
 ];
 
 export const COMPLETION_STATUS = [
@@ -97,6 +114,7 @@ export const FURNISH_TYPES = [
 
 export const MARKETING_PACKAGES = [
   { id: 'basic', name: 'Basic', price: 'Free', features: ['Standard listing', 'Basic visibility'] },
+<<<<<<< Updated upstream
   {
     id: 'premium',
     name: 'Premium',
@@ -115,6 +133,11 @@ export const MARKETING_PACKAGES = [
     price: 'AED 5,000',
     features: ['All Luxury features', 'PR coverage', 'International syndication'],
   },
+=======
+  { id: 'premium', name: 'Premium', price: 'AED 500', features: ['Featured badge', 'Priority ranking', 'Social promotion'] },
+  { id: 'luxury', name: 'Luxury', price: 'AED 1,500', features: ['All Premium features', 'Virtual staging', 'Drone footage'] },
+  { id: 'platinum', name: 'Platinum', price: 'AED 5,000', features: ['All Luxury features', 'PR coverage', 'International syndication'] },
+>>>>>>> Stashed changes
 ];
 
 export const INITIAL_FORM_DATA = {
@@ -153,3 +176,7 @@ export const INITIAL_FORM_DATA = {
   marketingPackage: 'premium',
   featuredLevel: 5,
 };
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

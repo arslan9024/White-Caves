@@ -39,14 +39,22 @@ export default function ListingPricingStep({ formData, updateField }) {
           <input
             type="number"
             value={formData.salePrice}
+<<<<<<< Updated upstream
             onChange={e => updateField('salePrice', e.target.value)}
+=======
+            onChange={(e) => updateField('salePrice', e.target.value)}
+>>>>>>> Stashed changes
             placeholder="e.g., 15000000"
             className="form-input price-input"
           />
           {formData.salePrice && formData.builtUpArea && (
             <div className="price-calc">
+<<<<<<< Updated upstream
               Price per sqft: AED{' '}
               {Math.round(formData.salePrice / formData.builtUpArea).toLocaleString()}
+=======
+              Price per sqft: AED {Math.round(formData.salePrice / formData.builtUpArea).toLocaleString()}
+>>>>>>> Stashed changes
             </div>
           )}
         </div>
@@ -59,7 +67,11 @@ export default function ListingPricingStep({ formData, updateField }) {
             <input
               type="number"
               value={formData.rentPrice}
+<<<<<<< Updated upstream
               onChange={e => updateField('rentPrice', e.target.value)}
+=======
+              onChange={(e) => updateField('rentPrice', e.target.value)}
+>>>>>>> Stashed changes
               placeholder="e.g., 250000"
               className="form-input price-input"
             />
@@ -68,7 +80,11 @@ export default function ListingPricingStep({ formData, updateField }) {
             <label>Rent Frequency</label>
             <select
               value={formData.rentFrequency}
+<<<<<<< Updated upstream
               onChange={e => updateField('rentFrequency', e.target.value)}
+=======
+              onChange={(e) => updateField('rentFrequency', e.target.value)}
+>>>>>>> Stashed changes
               className="form-select"
             >
               <option value="yearly">Yearly</option>
@@ -84,7 +100,11 @@ export default function ListingPricingStep({ formData, updateField }) {
         <input
           type="number"
           value={formData.serviceCharges}
+<<<<<<< Updated upstream
           onChange={e => updateField('serviceCharges', e.target.value)}
+=======
+          onChange={(e) => updateField('serviceCharges', e.target.value)}
+>>>>>>> Stashed changes
           placeholder="e.g., 50000"
           className="form-input"
         />
@@ -92,3 +112,7 @@ export default function ListingPricingStep({ formData, updateField }) {
     </div>
   );
 }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

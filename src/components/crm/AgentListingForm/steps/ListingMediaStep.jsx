@@ -40,7 +40,11 @@ export default function ListingMediaStep({ formData, updateField }) {
           <input
             type="url"
             value={formData.videoUrl}
+<<<<<<< Updated upstream
             onChange={e => updateField('videoUrl', e.target.value)}
+=======
+            onChange={(e) => updateField('videoUrl', e.target.value)}
+>>>>>>> Stashed changes
             placeholder="YouTube or Vimeo link"
             className="form-input"
           />
@@ -50,7 +54,11 @@ export default function ListingMediaStep({ formData, updateField }) {
           <input
             type="url"
             value={formData.virtualTourUrl}
+<<<<<<< Updated upstream
             onChange={e => updateField('virtualTourUrl', e.target.value)}
+=======
+            onChange={(e) => updateField('virtualTourUrl', e.target.value)}
+>>>>>>> Stashed changes
             placeholder="Matterport or 3D tour link"
             className="form-input"
           />
@@ -59,3 +67,7 @@ export default function ListingMediaStep({ formData, updateField }) {
     </div>
   );
 }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

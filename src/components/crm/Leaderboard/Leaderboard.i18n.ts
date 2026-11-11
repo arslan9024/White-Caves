@@ -24,8 +24,12 @@ export const LEADERBOARD_TRANSLATIONS: Record<SupportedLanguage, LeaderboardTran
   en: {
     dir: 'ltr',
     workspaceTitle: 'Gamified Promotion & Merit XP Leaderboard',
+<<<<<<< Updated upstream
     workspaceSubtitle:
       'Corporate tier progression, peer endorsements, and real-time XP accumulation ladder',
+=======
+    workspaceSubtitle: 'Corporate tier progression, peer endorsements, and real-time XP accumulation ladder',
+>>>>>>> Stashed changes
     promoteMemberBtn: 'Promote Tier Role',
     inspectMemberBtn: 'Inspect Member Dossier',
     searchPlaceholder: 'Search rankings by agent name, department, or tier...',
@@ -49,8 +53,12 @@ export const LEADERBOARD_TRANSLATIONS: Record<SupportedLanguage, LeaderboardTran
   es: {
     dir: 'ltr',
     workspaceTitle: 'Tabla de Clasificación y Mérito XP Gamificado',
+<<<<<<< Updated upstream
     workspaceSubtitle:
       'Progresión de niveles corporativos, respaldos entre pares y escala de XP en tiempo real',
+=======
+    workspaceSubtitle: 'Progresión de niveles corporativos, respaldos entre pares y escala de XP en tiempo real',
+>>>>>>> Stashed changes
     promoteMemberBtn: 'Promover Nivel',
     inspectMemberBtn: 'Inspeccionar Expediente de Miembro',
     searchPlaceholder: 'Buscar clasificaciones por nombre, departamento o nivel...',
@@ -62,8 +70,12 @@ export const LEADERBOARD_TRANSLATIONS: Record<SupportedLanguage, LeaderboardTran
   ru: {
     dir: 'ltr',
     workspaceTitle: 'Таблица Лидеров и Геймифицированного Опыта (XP)',
+<<<<<<< Updated upstream
     workspaceSubtitle:
       'Корпоративный рост по уровням, рекомендации коллег и лестница накопления опыта XP',
+=======
+    workspaceSubtitle: 'Корпоративный рост по уровням, рекомендации коллег и лестница накопления опыта XP',
+>>>>>>> Stashed changes
     promoteMemberBtn: 'Повысить Уровень',
     inspectMemberBtn: 'Изучить Досье Участника',
     searchPlaceholder: 'Поиск по имени, отделу или уровню...',
@@ -79,3 +91,7 @@ export function getLeaderboardI18n(lang: SupportedLanguage = 'en'): LeaderboardT
 }
 
 export default LEADERBOARD_TRANSLATIONS;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

@@ -65,8 +65,12 @@ export function calculateCustomerLeadScoreOffThread(
         customerId: payload.customerId,
         intentScore: finalScore,
         urgencyLevel: urgency,
+<<<<<<< Updated upstream
         recommendedNextStep:
           payload.currentStep >= 14 ? 'FORM_F_EJARI_REGISTRATION' : 'SCHEDULE_VIP_VIEWING',
+=======
+        recommendedNextStep: payload.currentStep >= 14 ? 'FORM_F_EJARI_REGISTRATION' : 'SCHEDULE_VIP_VIEWING',
+>>>>>>> Stashed changes
         meritBonusXp: finalScore >= 80 ? 500 : 100,
         verificationToken: token,
         timestamp: Date.now(),
@@ -74,3 +78,7 @@ export function calculateCustomerLeadScoreOffThread(
     }, 10);
   });
 }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
