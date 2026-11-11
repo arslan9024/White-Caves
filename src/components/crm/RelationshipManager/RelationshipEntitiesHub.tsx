@@ -56,20 +56,12 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
   const [activeViewNode, setActiveViewNode] = useState<EntityNode | null>(null);
 
   // Form State
-  const [formData, setFormData] = useState({
-    name: '',
-    type: 'PROPERTY' as EntityType,
-    badge: '',
-    description: '',
-    status: 'ACTIVE',
-  });
+  const [formData, setFormData] = useState({ name: '', type: 'PROPERTY' as EntityType, badge: '', description: '', status: 'ACTIVE' });
 
   useEffect(() => {
     if (selectedEntityId) {
       const match = entities.find(e => e.id.toLowerCase() === selectedEntityId.toLowerCase());
-      if (match) {
-        setActiveViewNode(match);
-      }
+      if (match) setActiveViewNode(match);
     }
   }, [selectedEntityId, entities]);
 
