@@ -1,6 +1,9 @@
 import React from 'react';
 import { CheckCircle, AlertCircle, Clock, Plus } from 'lucide-react';
 
+import React from 'react';
+import { CheckCircle, AlertCircle, Clock, Plus, Bot, ShieldAlert } from 'lucide-react';
+
 interface Task {
   id: string | number;
   title: string;
@@ -8,15 +11,18 @@ interface Task {
   priority: string;
   dueDate: string;
   assignee: string;
+  dispatchedByZoe?: boolean;
+  departmentCode?: string;
 }
 
 interface TasksTabProps {
   tasks: Task[];
   filterStatus: string;
   onFilterChange: (status: string) => void;
+  onAddTask?: () => void;
 }
 
-const TasksTab = ({ tasks, filterStatus, onFilterChange }: TasksTabProps) => {
+const TasksTab = ({ tasks, filterStatus, onFilterChange, onAddTask }: TasksTabProps) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed': return <CheckCircle size={16} className="status-completed" />;
@@ -35,7 +41,14 @@ const TasksTab = ({ tasks, filterStatus, onFilterChange }: TasksTabProps) => {
     }
   };
 
-  const filteredTasks = filterStatus === 'all' ? tasks : tasks.filter(t => t.status === filterStatus);
+  const filteredTasks =
+    filterStatus === 'all'
+      ? tasks
+      : filterStatus === 'zoe_dispatched'
+        ? tasks.filter(t => t.dispatchedByZoe)
+        : tasks.filter(t => t.status === filterStatus);
+
+  const zoeCount = tasks.filter(t => t.dispatchedByZoe).length;
 
   return (
     <div className="tasks-view">
@@ -46,6 +59,17 @@ const TasksTab = ({ tasks, filterStatus, onFilterChange }: TasksTabProps) => {
             onClick={() => onFilterChange('all')}
           >
             All Tasks ({tasks.length})
+          </button>
+          <button 
+            className={`filter-btn ${filterStatus === 'zoe_dispatched' ? 'active' : ''}`}
+            onClick={() => onFilterChange('zoe_dispatched')}
+            data-testid="filter-zoe-dispatched-btn"
+            style={{
+              borderColor: filterStatus === 'zoe_dispatched' ? '#EF4444' : undefined,
+              color: filterStatus === 'zoe_dispatched' ? '#EF4444' : undefined,
+            }}
+          >
+            <Bot size={14} color="#EF4444" /> Zoe Dispatched ({zoeCount})
           </button>
           <button 
             className={`filter-btn ${filterStatus === 'pending' ? 'active' : ''}`}
@@ -66,7 +90,7 @@ const TasksTab = ({ tasks, filterStatus, onFilterChange }: TasksTabProps) => {
             <CheckCircle size={14} /> Completed
           </button>
         </div>
-        <button className="add-btn"><Plus size={16} /> New Task</button>
+        <button className="add-btn" onClick={onAddTask}><Plus size={16} /> New Task</button>
       </div>
       <div className="tasks-list">
         {filteredTasks.map(task => (
@@ -75,7 +99,28 @@ const TasksTab = ({ tasks, filterStatus, onFilterChange }: TasksTabProps) => {
               {getStatusIcon(task.status)}
             </div>
             <div className="task-content">
-              <h4>{task.title}</h4>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h4>{task.title}</h4>
+                {task.dispatchedByZoe && (
+                  <span
+                    data-testid="badge-zoe-dispatched"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '3px',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      background: 'rgba(239, 68, 68, 0.15)',
+                      border: '1px solid rgba(239, 68, 68, 0.35)',
+                      color: '#EF4444',
+                      fontSize: '0.65rem',
+                      fontWeight: 800,
+                    }}
+                  >
+                    <Bot size={10} /> AI Zoe SLA
+                  </span>
+                )}
+              </div>
               <span className="due-date">Due: {task.dueDate}</span>
             </div>
             <div className="task-meta">
