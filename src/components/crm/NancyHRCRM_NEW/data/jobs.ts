@@ -163,10 +163,10 @@ export const BHAKTI_RECURSIVE_CAPACITY = {
   tier1_Directors: { label: 'Department Directors', count: 12, multiplier: 12, isTheoretical: false },
   tier2_Managers: { label: 'Division Managers (9 per Dir)', count: 108, multiplier: 9, isTheoretical: false },
   tier3_Supervisors: { label: 'Operational Supervisors (12 per Mgr)', count: 1296, multiplier: 12, isTheoretical: true },
-  tier4_TeamLeaders: { label: 'Frontline Team Leaders (9 per Sup)', count: 11664, multiplier: 9, isTheoretical: true },
+  tier4_TeamLeaders: { label: 'Frontline Team Leaders (Dynamic Merit Promotion)', count: 'Dynamic (On-Demand)', multiplier: 'Max 9/Sup', isTheoretical: true },
   totalActiveRequisitions: DUMMY_JOBS.length,
-  totalAuthorizedSlots: 1 + 12 + 108 + 1296 + 11664, // 13,081 total enterprise seats
-  note: 'Tiers 3-4 represent theoretical maximum capacity, not active headcount targets.',
+  totalCoreStructuralSlots: 1 + 12 + 108, // 121 Core Command Slots
+  note: 'Team Leaders are never static bloat; they are promoted on-demand via Law B4 upon mentoring >= 3 mentees and >= 1000 Merit XP.',
 };
 
 /**
@@ -175,10 +175,13 @@ export const BHAKTI_RECURSIVE_CAPACITY = {
  */
 export const HR_PROMOTION_BYLAWS = {
   MIN_FOLLOWERS_FOR_TEAM_LEADER: 3,
+  MIN_MERIT_XP_FOR_TEAM_LEADER: 1000,
+  MIN_SLA_COMPLIANCE_RATE: 98.5,
   MAX_TEAM_LEADERS_PER_SUPERVISOR: 9,
   MAX_SUPERVISORS_PER_MANAGER: 12,
   MAX_MANAGERS_PER_DIRECTOR: 9,
   MAX_DIRECTORS: 12,
   ENTRY_LEVEL_UNLIMITED: true,
-  NOTE: 'Tier 4 (11,664) is theoretical maximum capacity. Employees at L5 are unlimited. Promotion from L5 to L4 (Team Leader) requires at least 3 active direct followers/mentees.',
+  DYNAMIC_PROMOTION_FORMULA: 'L5 Agent + 3 Active Mentees + 1000 XP -> Promoted to L4 Team Leader',
+  NOTE: 'Bhakti Law B4: Team Leaders are promoted dynamically on-demand based on actual team leadership rather than holding 11,664 fictitious static vacancies.',
 } as const;
