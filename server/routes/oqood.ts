@@ -41,7 +41,24 @@ export function calculateOqoodFees(purchasePriceAed: number) {
  * POST /api/oqood/register
  * Register off-plan unit in DLD Oqood System with Escrow validation & Idempotency (AEG-012)
  */
-oqoodRouter.post('/register', async (req: Request, res: Response) => {
+/**
+ * Middleware: Hard 1500ms government API timeout contract (AEG-011)
+ */
+export const governmentTimeoutMiddleware = (_req: Request, res: Response, next: () => void) => {
+  res.setTimeout(1500, () => {
+    if (!res.headersSent) {
+      res.status(504).json({
+        success: false,
+        error: 'GATEWAY_TIMEOUT',
+        message: 'External Government DLD/RERA handshake timed out after statutory 1500ms limit (AEG-011).',
+      });
+    }
+  });
+  next();
+};
+
+oqoodRouter.use(governmentTimeoutMiddleware);
+
   const {
     projectNumber,
     developerId,
