@@ -1,3 +1,12 @@
+/**
+ * landlordSlice.js
+ * White Caves Real Estate LLC — AEGIS V5.0 Architecture
+ *
+ * 🏢 CANONICAL FLOOR BLUEPRINT:
+ * SECTION B: THE REVENUE, INVENTORY & OPERATIONAL PIPELINE
+ * FLOOR 06: Leasing & Tenancy Operations (Activity 2 Core)
+ * Triad Formula: Rental Lifecycle Execution / Landlord Portfolio Onboarding / Tenancy Regulatory Compliance
+ */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Async thunks for API calls
