@@ -235,6 +235,15 @@ export const REPropertyDetailModal: FC<REPropertyDetailModalProps> = ({
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => setIsCurrencyModalOpen(true)}
+            data-testid="btn-open-currency-converter"
+            className="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
+          >
+            <Coins size={13} />
+            <span>FX & Crypto</span>
+          </button>
+          <button
+            type="button"
             onClick={() => setIsPitchBookOpen(true)}
             data-testid="btn-open-pitch-book"
             className="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
@@ -291,6 +300,12 @@ export const REPropertyDetailModal: FC<REPropertyDetailModalProps> = ({
         property={property}
         isOpen={isPitchBookOpen}
         onClose={() => setIsPitchBookOpen(false)}
+      />
+      <MultiCurrencyConverterModal
+        isOpen={isCurrencyModalOpen}
+        onClose={() => setIsCurrencyModalOpen(false)}
+        baseAmountAED={property.priceAED}
+        propertyTitle={property.title}
       />
     </>
   );
