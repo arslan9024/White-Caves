@@ -53,11 +53,11 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
               Bhakti 1-12-108 Recursive Enterprise Capacity
             </h4>
             <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
-              Formula: 1 MD → 12 Directors (×12) → 108 Managers (×9) → 1,296 Supervisors (×12) → 11,664 Team Leaders (×9)
+              Formula: 1 MD → 12 Directors (×12) → 108 Managers (×9) → 1,296 Supervisory Desks (×12) → Dynamic Team Leaders (On-Demand Merit)
             </span>
           </div>
           <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10B981', background: 'rgba(16, 185, 129, 0.12)', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-            Total Capacity: {BHAKTI_RECURSIVE_CAPACITY.totalAuthorizedSlots.toLocaleString()} Authorized Seats
+            Core Command: 121 Locked Slots · Law B4 Dynamic Scale
           </div>
         </div>
 
@@ -65,8 +65,8 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
           {[
             { label: 'Tier 1 Directors', count: '12 Seats', key: 'DIRECTOR', color: '#8B5CF6' },
             { label: 'Tier 2 Managers', count: '108 Seats', key: 'MANAGER', color: '#3B82F6' },
-            { label: 'Tier 3 Supervisors', count: '1,296 Seats', key: 'SUPERVISOR', color: '#10B981' },
-            { label: 'Tier 4 Team Leaders', count: '11,664 Seats', key: 'TEAM_LEADER', color: '#F59E0B' },
+            { label: 'Tier 3 Desks', count: '1,296 Capacity', key: 'SUPERVISOR', color: '#10B981' },
+            { label: 'Tier 4 Team Leaders', count: 'Dynamic (On-Demand)', key: 'TEAM_LEADER', color: '#F59E0B' },
           ].map(tier => (
             <div
               key={tier.key}
