@@ -29,6 +29,7 @@ import {
   executeLeaseParseTask,
   executeFinancialReceiptLedgerTask,
 } from './taskExecutorsRup.workflow';
+import { syncCompletedTaskToErms } from '../RelationshipManager/ErmsSyncBridge';
 
 export interface TaskWorkflowResult {
   success: boolean;
