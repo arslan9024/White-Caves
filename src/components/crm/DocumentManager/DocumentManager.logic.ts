@@ -6,10 +6,12 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DocumentItem, DocumentType, DocumentStatus } from './DocumentManager.types';
 import { CANONICAL_DOCUMENTS } from './DocumentManager.data';
 import { DocumentTelemetry } from './DocumentManager.telemetry';
 import { loadDocumentsCache, saveDocumentsCache } from './DocumentManager.cache';
+import { useRecordHighlight } from '../../../hooks/useRecordHighlight';
 
 export interface UseDocumentManagerProps {
   initialDocuments?: DocumentItem[];
@@ -35,10 +37,34 @@ export function useDocumentManager({
   // Modal / Drawer state
   const [selectedDocForModal, setSelectedDocForModal] = useState<DocumentItem | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { highlightedId, triggerHighlight } = useRecordHighlight(4000);
 
   useEffect(() => {
     DocumentTelemetry.track('MOUNT', { initialCount: documents.length });
   }, []);
+
+  // Synchronize drawer state bidirectionally with URL search parameters
+  useEffect(() => {
+    const drawerParam = searchParams.get('drawer');
+    const idParam = searchParams.get('id');
+
+    if (drawerParam === 'create' || drawerParam === 'upload') {
+      setIsDrawerOpen(true);
+    } else if (drawerParam === 'edit' && idParam) {
+      const match = documents.find(
+        d =>
+          d.id.toLowerCase() === idParam.toLowerCase() ||
+          d._id.toLowerCase() === idParam.toLowerCase() ||
+          d.docCode.toLowerCase() === idParam.toLowerCase()
+      );
+      if (match) {
+        setSelectedDocForModal(match);
+      }
+    } else if (!drawerParam && isDrawerOpen) {
+      setIsDrawerOpen(false);
+    }
+  }, [searchParams, documents]);
 
   // Sync with selectedDocId deep link
   useEffect(() => {
