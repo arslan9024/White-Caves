@@ -1,8 +1,13 @@
-import { useState, useMemo, useCallback } from 'react';
-import { CurrencyCode, useGlobalCurrency } from '../../../context/CurrencyContext';
+import { useState, useMemo, useCallback, useContext } from 'react';
+import { CurrencyCode, CurrencyContext, SUPPORTED_CURRENCIES } from '../../../context/CurrencyContext';
 
 export function useMultiCurrencyConverterLogic(initialAmountAED = 18500000) {
-  const { currency, setCurrency, currencies, convertFromAED, convertToAED } = useGlobalCurrency();
+  const context = useContext(CurrencyContext);
+  const currency = context?.currency || 'AED';
+  const currencies = context?.currencies || SUPPORTED_CURRENCIES;
+  const convertFromAED = context?.convertFromAED || ((amt: number, code?: CurrencyCode) => amt / (SUPPORTED_CURRENCIES[code || 'AED']?.rateToAED || 1));
+  const setCurrency = context?.setCurrency || (() => {});
+
   const [inputAmountAED, setInputAmountAED] = useState<number>(initialAmountAED);
   const [selectedTarget, setSelectedTarget] = useState<CurrencyCode>(currency);
 
