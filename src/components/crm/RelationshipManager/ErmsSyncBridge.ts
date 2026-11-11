@@ -15,14 +15,14 @@ const ERMS_STORAGE_KEY = 'white_caves_erms_relations_v1';
  * Loads dynamic ERD relations from localStorage or falls back to canonical defaults.
  */
 export function loadErmsRelations(): ERDRelation[] {
-  if (typeof window === 'undefined') return CANONICAL_ERD_RELATIONS;
+  if (typeof window === 'undefined') return [...CANONICAL_ERD_RELATIONS];
   try {
     const raw = localStorage.getItem(ERMS_STORAGE_KEY);
-    if (!raw) return CANONICAL_ERD_RELATIONS;
+    if (!raw) return [...CANONICAL_ERD_RELATIONS];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : CANONICAL_ERD_RELATIONS;
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : [...CANONICAL_ERD_RELATIONS];
   } catch {
-    return CANONICAL_ERD_RELATIONS;
+    return [...CANONICAL_ERD_RELATIONS];
   }
 }
 
