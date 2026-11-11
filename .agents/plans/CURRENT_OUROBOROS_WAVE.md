@@ -1,5 +1,5 @@
-# AEGIS Perpetual Ouroboros — Cycle #595 Blueprint
-**Generated:** 2026-11-11T12:10:57.877Z
+# AEGIS Perpetual Ouroboros — Cycle #155 Blueprint
+**Generated:** 2026-11-11T12:11:10.606Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
