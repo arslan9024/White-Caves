@@ -85,7 +85,7 @@ export function syncCompletedTaskToErms(task: TaskNode): {
       foreignKey: 'actionTaskId',
       actionVerb: task.actionVerb || 'EXECUTE_STATUTORY_TASK',
       actionTaskId: task.taskCode,
-      departmentCode: task.deptId || task.departmentCode || 'DEPT-01',
+      departmentCode: (task as any).deptId || task.departmentCode || 'DEPT-01',
     };
     currentRelations.push(updatedRelation);
   }

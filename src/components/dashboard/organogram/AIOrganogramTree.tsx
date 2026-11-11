@@ -153,7 +153,7 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
         <div style={{ width: '80%', height: '2px', background: '#CBD5E1', margin: '0 auto' }} />
       </div>
 
-      {/* ── LEVEL 1: 12 CORPORATE DEPARTMENT MANAGERS ── */}
+      {/* ── LEVEL 1: 12 CORPORATE DEPARTMENT DIRECTORS ── */}
       <div style={{ marginBottom: '1.5rem' }}>
         <div
           style={{
@@ -172,10 +172,10 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
               textTransform: 'uppercase',
             }}
           >
-            Level 1: 12 Corporate Department Leads ({ASSISTANTS_108_REGISTRY.length} Departments)
+            Level 1: 12 Corporate Department Directors ({departmentsRegistry.length} Locked Departments)
           </h4>
           <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
-            Click a department to expand its 9 supervisors
+            Click a department to view its 9 Division Managers (108 total company-wide)
           </span>
         </div>
 
@@ -186,7 +186,7 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
             gap: '8px',
           }}
         >
-          {ASSISTANTS_108_REGISTRY.map((dept: DepartmentRegistryItem) => {
+          {departmentsRegistry.map((dept: DepartmentRegistryItem) => {
             const isSelected = dept.id === selectedDeptId;
             return (
               <button
@@ -220,7 +220,7 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                   </span>
                 </div>
                 <div style={{ fontSize: '0.68rem', color: isSelected ? '#94A3B8' : '#64748B' }}>
-                  👤 {dept.manager}
+                  👔 {dept.manager}
                 </div>
                 <div
                   style={{
@@ -237,7 +237,7 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
         </div>
       </div>
 
-      {/* ── LEVEL 2: 9 SUPERVISORS OF SELECTED DEPARTMENT ── */}
+      {/* ── LEVEL 2: 9 DIVISION MANAGERS OF SELECTED DEPARTMENT (108 TOTAL) ── */}
       <div
         style={{
           background: '#F8FAFC',
@@ -268,10 +268,10 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                 textTransform: 'uppercase',
               }}
             >
-              Level 2 Supervisors
+              Level 2 Division Managers (108 Total)
             </span>
             <h4 style={{ margin: '4px 0 0 0', fontSize: '1.05rem', fontWeight: 800 }}>
-              {activeDept.icon} {activeDept.name} — 9 Specialized Supervisors
+              {activeDept.icon} {activeDept.name} — 9 Division Managers (12 Supervisors Capacity Each)
             </h4>
           </div>
 
