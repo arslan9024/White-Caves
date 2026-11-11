@@ -141,8 +141,8 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
             <option value="ALL">All Tiers (1 to 4)</option>
             <option value="DIRECTOR">Tier 1: Directors (12)</option>
             <option value="MANAGER">Tier 2: Managers (108)</option>
-            <option value="SUPERVISOR">Tier 3: Supervisors (1,296)</option>
-            <option value="TEAM_LEADER">Tier 4: Team Leaders (11,664)</option>
+            <option value="SUPERVISOR">Tier 3: Supervisory Desks (1,296)</option>
+            <option value="TEAM_LEADER">Tier 4: Team Leaders (Dynamic Merit)</option>
           </select>
         </div>
         <button className="action-btn primary">
