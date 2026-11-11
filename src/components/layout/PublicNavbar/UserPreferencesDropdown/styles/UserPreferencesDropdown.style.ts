@@ -15,7 +15,9 @@ export const DropdownContainer = styled.div`
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 16px;
-  box-shadow: 0 16px 40px -4px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 16px 40px -4px rgba(15, 23, 42, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
   padding: 14px;
   z-index: 1200;
   animation: dropdownSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -213,6 +215,36 @@ export const LinksGroup = styled.div`
   margin-top: 12px;
   padding-top: 10px;
   border-top: 1px solid var(--border-color, #f1f5f9);
+`;
+
+export const ExecutiveChipsRow = styled.div`
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  margin-bottom: 2px;
+`;
+
+export const ExecutiveChipBtn = styled.button<{ $tone?: string }>`
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 4px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--bg-secondary, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  color: ${({ $tone }) => $tone || 'var(--text-primary, #0f172a)'};
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: ${({ $tone }) => $tone || '#ef4444'};
+    background: ${({ $tone }) => ($tone ? `${$tone}15` : 'rgba(239, 68, 68, 0.1)')};
+    transform: translateY(-1px);
+  }
 `;
 
 export const TelemetryPillsRow = styled.div`
