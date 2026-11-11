@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #32 Blueprint
-**Generated:** 2026-11-11T11:42:59.606Z
+# AEGIS Perpetual Ouroboros — Cycle #475 Blueprint
+**Generated:** 2026-11-11T11:43:12.555Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-02 — Founder Sovereign Executive Deck & RBAC Gateway
-- **Lead Researcher:** @Aurora (CTO)
-- **Core Objective:** Level 5 Multi-Org Tenant Clearance & Audit Isolation
+- **Domain:** DOM-05 — 3D Matterport Digital Twin & Floorplan Engine
+- **Lead Researcher:** @Una (Dept 02)
+- **Core Objective:** WebGL 60FPS Spatial Walkthrough & Room Dimension Vector Overlay
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
