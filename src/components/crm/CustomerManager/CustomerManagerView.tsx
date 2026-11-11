@@ -44,6 +44,7 @@ export const CustomerManagerView: FC<CustomerManagerViewProps> = ({
     setError,
     selectedCustomerForModal,
     isDrawerOpen,
+    highlightedCustomerId,
     handleOpenDetailModal,
     handleCloseDetailModal,
     handleOpenCreateDrawer,
@@ -199,6 +200,7 @@ export const CustomerManagerView: FC<CustomerManagerViewProps> = ({
               <CustomerCard
                 key={customer.id}
                 customer={customer}
+                isHighlighted={highlightedCustomerId === customer.id || highlightedCustomerId === customer._id}
                 onSelect={target => {
                   if (onSelectCustomer) {
                     onSelectCustomer(target.id);
