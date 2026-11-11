@@ -46,6 +46,8 @@ export const AI_MODELS_LIST = [
 ];
 
 function buildCanonicalAiAgentsSeed(): AiAgentRecord[] {
+  const storedDepts = typeof window !== 'undefined' ? loadStoredDepartments() : [];
+
   const zoeAgent: AiAgentRecord = {
     id: 'ai-zoe-001',
     agentId: EXECUTIVE_COMMAND_1.executiveAi.id,
@@ -136,44 +138,57 @@ function buildCanonicalAiAgentsSeed(): AiAgentRecord[] {
     avatar: 'https://ui-avatars.com/api/?name=Mary+AI&background=3B82F6&color=fff',
   };
 
-  const managerAgents: AiAgentRecord[] = CORPORATE_DEPARTMENTS_12.map((dept, idx) => ({
-    id: `ai-mgr-${String(idx + 1).padStart(2, '0')}`,
-    agentId: dept.managerAi.id,
-    code: `AI-MGR-${String(idx + 1).padStart(2, '0')}`,
-    name: dept.managerAi.name,
-    role: dept.managerAi.title,
-    departmentId: dept.id,
-    department: dept.name,
-    tier: 'MANAGER',
-    status: 'OPTIMAL',
-    model: 'gemini-1.5-pro',
-    specialty: `${dept.name} Directorate & 9-Squad Supervision`,
-    systemPrompt: dept.description,
-    capabilities: ['Department Orchestration', '9-Squad SLA Oversight', 'Statutory Verification'],
-    assignedTasks: [dept.description],
-    slaResponseTime: '< 4s',
-    accuracyRate: 99.8,
-    activeWorkload: 12 + (idx % 7),
-    avatar: dept.managerAi.avatar,
-  }));
+  const managerAgents: AiAgentRecord[] = CORPORATE_DEPARTMENTS_12.map((dept, idx) => {
+    const matchedStored = storedDepts.find(sd => sd.slug === dept.id || sd.order === idx + 1);
+    const resolvedName = matchedStored?.title || dept.name;
 
-  const supervisorAgents: AiAgentRecord[] = SUPERVISORS_108.map(sup => ({
-    id: `ai-${sup.id}`,
-    agentId: sup.id,
-    code: sup.code,
-    name: sup.name,
-    role: sup.title,
-    departmentId: sup.departmentId,
-    department: sup.departmentName,
-    tier: 'SUPERVISOR',
-    status: sup.status === 'optimal' ? 'OPTIMAL' : sup.status === 'standby' ? 'STANDBY' : 'ACTIVE',
-    model: 'gemini-1.5-flash',
-    specialty: sup.specialty,
-    systemPrompt: sup.description,
-    capabilities: sup.capabilities,
-    assignedTasks: sup.assignedTasks,
-    slaResponseTime: sup.slaResponseTime,
-    accuracyRate: sup.metrics.accuracyRate,
+    return {
+      id: `ai-mgr-${String(idx + 1).padStart(2, '0')}`,
+      agentId: dept.managerAi.id,
+      code: `AI-DIR-${String(idx + 1).padStart(2, '0')}`,
+      name: dept.managerAi.name,
+      role: dept.managerAi.title,
+      departmentId: dept.id,
+      department: resolvedName,
+      tier: 'MANAGER',
+      status: 'OPTIMAL',
+      model: 'gemini-1.5-pro',
+      specialty: `${resolvedName} Directorate & 9-Squad Supervision`,
+      systemPrompt: dept.description,
+      capabilities: ['Department Directorate', '9 Division Managers SLA Oversight', 'Statutory Verification'],
+      assignedTasks: [dept.description],
+      slaResponseTime: '< 4s',
+      accuracyRate: 99.8,
+      activeWorkload: 12 + (idx % 7),
+      avatar: dept.managerAi.avatar,
+    };
+  });
+
+  const supervisorAgents: AiAgentRecord[] = SUPERVISORS_108.map(sup => {
+    const matchedStored = storedDepts.find(sd => sd.slug === sup.departmentId);
+    const resolvedDeptName = matchedStored?.title || sup.departmentName;
+
+    return {
+      id: `ai-${sup.id}`,
+      agentId: sup.id,
+      code: sup.code,
+      name: sup.name,
+      role: sup.title,
+      departmentId: sup.departmentId,
+      department: resolvedDeptName,
+      tier: 'SUPERVISOR',
+      status: sup.status === 'optimal' ? 'OPTIMAL' : sup.status === 'standby' ? 'STANDBY' : 'ACTIVE',
+      model: 'gemini-1.5-flash',
+      specialty: sup.specialty,
+      systemPrompt: sup.description,
+      capabilities: sup.capabilities,
+      assignedTasks: sup.assignedTasks,
+      slaResponseTime: sup.slaResponseTime,
+      accuracyRate: sup.metrics.accuracyRate,
+      activeWorkload: sup.metrics.tasksCompletedToday,
+      avatar: sup.avatar,
+    };
+  });
     activeWorkload: sup.metrics.tasksCompletedToday,
     avatar: sup.avatar,
   }));
