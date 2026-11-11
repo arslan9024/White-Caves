@@ -146,12 +146,9 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <button
             type="button"
-            onClick={() => {
-              setActiveViewNode(null);
-              onNavigateBack?.();
-            }}
+            onClick={() => { setActiveViewNode(null); onNavigateBack?.(); }}
             data-testid="entity-back-btn"
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-bold transition-colors cursor-pointer border border-slate-700"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-bold transition-colors cursor-pointer border border-slate-700"
           >
             <ArrowLeft size={15} />
             <span>← Back to Entities Hub</span>
@@ -161,26 +158,17 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
 
         <div className="p-6 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300">
-              {activeViewNode.type}
-            </span>
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950/40 text-emerald-300 border border-emerald-800/40">
-              {activeViewNode.badge}
-            </span>
-            <span className="font-mono text-[11px] text-emerald-400 ml-auto">
-              {activeViewNode.status || 'ACTIVE'}
-            </span>
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300">{activeViewNode.type}</span>
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950/40 text-emerald-300 border border-emerald-800/40">{activeViewNode.badge}</span>
+            <span className="font-mono text-[11px] text-emerald-400 ml-auto">{activeViewNode.status || 'ACTIVE'}</span>
           </div>
 
           <h2 className="text-xl font-bold text-white">{activeViewNode.name}</h2>
           <p className="text-xs text-slate-300">{activeViewNode.description}</p>
-
           <ErmsRbacSecurityLedger entity={activeViewNode} />
 
           <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono space-y-2">
-            <div className="text-[10px] uppercase font-bold text-slate-500 mb-2">
-              Relational Attributes
-            </div>
+            <div className="text-[10px] uppercase font-bold text-slate-500 mb-2">Relational Attributes</div>
             {Object.entries(activeViewNode.details || {}).map(([k, v]) => (
               <div key={k} className="flex justify-between py-1 border-b border-slate-800/50">
                 <span className="text-slate-400">{k}:</span>
