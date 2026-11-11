@@ -26,6 +26,8 @@ import {
 } from './DocumentManager.cache';
 import { extractDocumentOcrFieldsOffThread } from './DocumentManager.workers';
 
+const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
+
 describe('DocumentManager Suite (12-Way Blueprint)', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -35,7 +37,7 @@ describe('DocumentManager Suite (12-Way Blueprint)', () => {
 
   // --- Tier 1 & 2: View and Logic Integration ---
   it('renders workspace title, metrics deck, and canonical document cards', () => {
-    render(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
+    renderWithRouter(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
 
     expect(screen.getByText(/Sovereign Document Vault & Henry OCR Centre/i)).toBeInTheDocument();
     expect(screen.getByText(/Documents in Vault/i)).toBeInTheDocument();
@@ -47,7 +49,7 @@ describe('DocumentManager Suite (12-Way Blueprint)', () => {
   });
 
   it('filters documents by type dropdown', () => {
-    render(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
+    renderWithRouter(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
 
     const typeSelect = screen.getByTestId('filter-doc-type');
     fireEvent.change(typeSelect, { target: { value: 'EJARI_CONTRACT' } });
@@ -57,7 +59,7 @@ describe('DocumentManager Suite (12-Way Blueprint)', () => {
   });
 
   it('filters documents by search query', () => {
-    render(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
+    renderWithRouter(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
 
     const searchInput = screen.getByTestId('doc-search-input');
     fireEvent.change(searchInput, { target: { value: 'REC-5510' } });
@@ -67,7 +69,7 @@ describe('DocumentManager Suite (12-Way Blueprint)', () => {
   });
 
   it('opens document inspection detail modal when clicking Inspect Dossier', () => {
-    render(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
+    renderWithRouter(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
 
     const inspectBtn = screen.getByTestId('inspect-doc-DOC-001');
     fireEvent.click(inspectBtn);
@@ -83,14 +85,14 @@ describe('DocumentManager Suite (12-Way Blueprint)', () => {
   });
 
   it('auto-opens detail modal when selectedDocId prop is provided (deep link)', () => {
-    render(<DocumentManagerView selectedDocId="DOC-004" initialDocuments={CANONICAL_DOCUMENTS} />);
+    renderWithRouter(<DocumentManagerView selectedDocId="DOC-004" initialDocuments={CANONICAL_DOCUMENTS} />);
 
     expect(screen.getByTestId('document-detail-modal')).toBeInTheDocument();
     expect(screen.getAllByText(/EJA-2026-88/i).length).toBeGreaterThan(0);
   });
 
   it('opens upload drawer and registers a new document', () => {
-    render(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
+    renderWithRouter(<DocumentManagerView initialDocuments={CANONICAL_DOCUMENTS} />);
 
     const uploadBtn = screen.getByTestId('upload-doc-btn');
     fireEvent.click(uploadBtn);
