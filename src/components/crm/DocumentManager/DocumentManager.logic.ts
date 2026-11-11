@@ -194,10 +194,11 @@ export function useDocumentManager({
         docId: (createdDoc as DocumentItem).id,
         docCode: (createdDoc as DocumentItem).docCode,
       });
+      triggerHighlight((createdDoc as DocumentItem).id);
     }
 
     setIsDrawerOpen(false);
-  }, []);
+  }, [triggerHighlight]);
 
   return {
     documents: filteredDocuments,
@@ -213,6 +214,8 @@ export function useDocumentManager({
     setError,
     selectedDocForModal,
     isDrawerOpen,
+    highlightedDocId: highlightedId,
+    triggerHighlight,
     handleOpenDetailModal,
     handleCloseDetailModal,
     handleOpenUploadDrawer,
