@@ -226,11 +226,11 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
               </div>
             ) : (
               filteredEmployees.map(emp => {
-                const isHighlighted = highlightedEmpId === emp.id || highlightedEmpId === emp._id || highlightedEmpId === emp.employeeCode;
+                const isHighlighted = highlightedEmpId === emp._id || highlightedEmpId === emp.employeeCode;
                 return (
                   <div
                     key={emp._id}
-                    id={`record-${emp.id || emp._id || emp.employeeCode}`}
+                    id={`record-${emp._id || emp.employeeCode}`}
                     className={s.card}
                     style={
                       isHighlighted
