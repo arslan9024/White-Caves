@@ -11,7 +11,7 @@ describe('ExecutiveTopNavbar Component (7-Category Co-Location Spec)', () => {
     cleanup();
   });
 
-  it('renders the executive navbar with brand logo, DLD and RERA badges', () => {
+  it('renders the executive navbar with brand logo and single White Caves HQ anchor', () => {
     render(
       <MemoryRouter>
         <ThemeProvider>
@@ -22,7 +22,6 @@ describe('ExecutiveTopNavbar Component (7-Category Co-Location Spec)', () => {
       </MemoryRouter>
     );
     expect(screen.getByAltText(/White Caves Logo/i)).toBeInTheDocument();
-    expect(screen.getByText(/1388443/i)).toBeInTheDocument();
-    expect(screen.getByText(/44483/i)).toBeInTheDocument();
+    expect(screen.getByText(/White Caves HQ/i)).toBeInTheDocument();
   });
 });
