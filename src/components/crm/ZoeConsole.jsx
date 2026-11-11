@@ -276,6 +276,7 @@ const ZoeConsole = () => {
           confidence: data.metadata?.confidence
         };
         setMessages(prev => [...prev, assistantMessage]);
+        speakText(data.response);
       } else {
         throw new Error(data.message || 'Failed to get response');
       }
