@@ -60,3 +60,4 @@ describe('MultiCurrencyConverterModal Component', () => {
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 });
+

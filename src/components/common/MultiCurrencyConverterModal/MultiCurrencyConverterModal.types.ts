@@ -23,3 +23,4 @@ export interface MultiCurrencyConverterModalProps {
   baseAmountAED?: number;
   propertyTitle?: string;
 }
+
