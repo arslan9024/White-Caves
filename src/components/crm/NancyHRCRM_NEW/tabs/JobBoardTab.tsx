@@ -1,7 +1,7 @@
 import type { useHRData } from '../hooks/useHRData';
 import { useState } from 'react';
-import { Plus, Edit, Users, Eye, Layers } from 'lucide-react';
-import { BHAKTI_RECURSIVE_CAPACITY } from '../data/jobs';
+import { Plus, Edit, Users, Eye, Layers, ShieldCheck } from 'lucide-react';
+import { BHAKTI_RECURSIVE_CAPACITY, HR_PROMOTION_BYLAWS } from '../data/jobs';
 
 type JobBoardState = ReturnType<typeof useHRData>;
 
@@ -84,6 +84,38 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
               <div style={{ fontSize: '0.95rem', fontWeight: 800, color: tier.color, marginTop: '2px' }}>{tier.count}</div>
             </div>
           ))}
+        </div>
+
+        {/* ── HR Promotion Bylaws Summary ── */}
+        <div
+          style={{
+            marginTop: '12px',
+            paddingTop: '10px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '8px',
+            fontSize: '0.72rem',
+            color: '#94A3B8',
+          }}
+          data-testid="hr-promotion-bylaws"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ShieldCheck size={14} color="#10B981" />
+            <strong style={{ color: '#E2E8F0' }}>HR Promotion Bylaws:</strong>
+            <span>L5 Entry Unlimited</span>
+            <span style={{ color: '#64748B' }}>•</span>
+            <span>Team Leader: min <strong style={{ color: '#F59E0B' }}>{HR_PROMOTION_BYLAWS.MIN_FOLLOWERS_FOR_TEAM_LEADER}+ active followers</strong></span>
+            <span style={{ color: '#64748B' }}>•</span>
+            <span>Supervisor: max <strong style={{ color: '#10B981' }}>{HR_PROMOTION_BYLAWS.MAX_TEAM_LEADERS_PER_SUPERVISOR} TLs</strong></span>
+            <span style={{ color: '#64748B' }}>•</span>
+            <span>Manager: max <strong style={{ color: '#3B82F6' }}>{HR_PROMOTION_BYLAWS.MAX_SUPERVISORS_PER_MANAGER} Sups</strong></span>
+          </div>
+          <div style={{ color: '#CBD5E1', fontSize: '0.7rem' }}>
+            Integrated with <span style={{ color: '#F59E0B', fontWeight: 700 }}>Merit Leaderboard</span>
+          </div>
         </div>
       </div>
 
