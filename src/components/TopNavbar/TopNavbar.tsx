@@ -40,19 +40,21 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
       }}
       data-testid="top-navbar"
     >
-      {/* ── Left Wing: Navigation Links ── */}
+      {/* ── Left Wing: Navigation Links (Single White Caves HQ Anchor) ── */}
       <NavWing $align="left">
-        <NavLink $active={currentPath === '/'} onClick={() => handleNavigate('/')}>
-          🏢 Corporate HQ
-        </NavLink>
-        <NavLink $active={currentPath === '/off-plan'} onClick={() => handleNavigate('/off-plan')}>
-          🏗️ Primary Market
-        </NavLink>
         <NavLink
-          $active={currentPath === '/properties'}
-          onClick={() => handleNavigate('/properties')}
+          $active={currentPath === '/' || currentPath.startsWith('/dashboard') || currentPath.startsWith('/crm')}
+          onClick={() => {
+            if (props.onToggleSidebar) {
+              props.onToggleSidebar();
+            } else {
+              handleNavigate('/dashboard');
+            }
+          }}
+          data-testid="navbar-white-caves-hq"
+          title="White Caves HQ — Sovereign System Navigation"
         >
-          🏡 Secondary Market
+          🏢 White Caves HQ
         </NavLink>
       </NavWing>
 
