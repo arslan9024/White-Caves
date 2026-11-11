@@ -246,3 +246,4 @@ export const LindaChatThreadPane: FC<LindaChatThreadPaneProps> = ({
     </div>
   );
 };
+

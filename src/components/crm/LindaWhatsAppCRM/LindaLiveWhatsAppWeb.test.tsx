@@ -67,3 +67,4 @@ describe('LindaLiveWhatsAppWeb Component Suite', () => {
     expect(handleAi).toHaveBeenCalled();
   });
 });
+
