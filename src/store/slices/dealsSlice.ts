@@ -1,3 +1,12 @@
+/**
+ * dealsSlice.ts
+ * White Caves Real Estate LLC — AEGIS V5.0 Architecture
+ *
+ * 🏢 CANONICAL FLOOR BLUEPRINT:
+ * SECTION B: THE REVENUE, INVENTORY & OPERATIONAL PIPELINE
+ * FLOOR 05: Sales & CRM Operations (Activity 1 Core)
+ * Triad Formula: Secondary Market Brokerage / Developer Off-Plan Launches / Lead-to-Deal Conversion Pipelines
+ */
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 export const fetchTenancyDeals = createAsyncThunk(
