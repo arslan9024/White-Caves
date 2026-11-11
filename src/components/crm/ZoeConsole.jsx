@@ -117,8 +117,76 @@ const ZoeConsole = () => {
   const [sessionId, setSessionId] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
   const [conversationHistory, setConversationHistory] = useState([]);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const [voiceSpeechEnabled, setVoiceSpeechEnabled] = useState(true);
+  const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Initialize Web Speech Recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setSpeechSupported(true);
+        const recog = new SpeechRecognition();
+        recog.continuous = false;
+        recog.interimResults = false;
+        recog.lang = 'en-AE';
+
+        recog.onresult = (e) => {
+          const transcript = e.results[0]?.[0]?.transcript || '';
+          if (transcript) {
+            setInputValue(transcript);
+            sendMessage(transcript);
+          }
+          setIsListening(false);
+        };
+
+        recog.onerror = () => {
+          setIsListening(false);
+        };
+
+        recog.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recog;
+      }
+    }
+  }, []);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) return;
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        setIsListening(false);
+      }
+    }
+  };
+
+  const speakText = (text) => {
+    if (!voiceSpeechEnabled || typeof window === 'undefined' || !window.speechSynthesis) return;
+    try {
+      window.speechSynthesis.cancel();
+      const plainText = text.replace(/[*_#•]/g, '').trim();
+      const utterance = new SpeechSynthesisUtterance(plainText);
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      // Non-critical fallback
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
