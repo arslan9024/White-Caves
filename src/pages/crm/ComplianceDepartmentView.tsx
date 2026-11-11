@@ -194,6 +194,11 @@ export const ComplianceDepartmentView: FC = () => {
           </div>
         )}
       </div>
+
+      {/* Trakheesi Permit Radar Integration */}
+      <div style={{ marginTop: '24px' }}>
+        <TrakheesiPermitRenewalRadar />
+      </div>
       {toasts.length > 0 && (
         <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '10px', pointerEvents: 'none' }}>
           {toasts.map(t => (
