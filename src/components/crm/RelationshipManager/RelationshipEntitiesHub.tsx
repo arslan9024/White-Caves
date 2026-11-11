@@ -348,6 +348,18 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
           saveStoredEntities(next);
         }}
       />
+
+      {/* ── Bulk Entity Importer (Pillars 1 & 3) ─────────────────────────── */}
+      <ErmsBulkImporterModal
+        isOpen={isBulkModalOpen}
+        existingEntities={entities}
+        onClose={() => setIsBulkModalOpen(false)}
+        onImport={imported => {
+          const next = [...imported, ...entities];
+          setEntities(next);
+          saveStoredEntities(next);
+        }}
+      />
     </div>
   );
 };
