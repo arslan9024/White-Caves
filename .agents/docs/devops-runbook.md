@@ -9,10 +9,12 @@
 ---
 
 ## 1. CI/CD Pipeline Standards
+
 - **Pre-Commit / Pre-Push:** Runs `npm run plans:validate` and `npm run aegis` to guarantee 0 planning drift.
 - **Automated SQA Gates:** Full Vitest test suites must pass 100% green before any PR merge.
 - **Production Build:** Vite production bundling with code splitting, Brotli compression, and immutable asset hashing.
 
 ## 2. Server Cluster Architecture
-- Node.js 20.x runtime orchestrated with PM2 cluster mode.
+
+- Node.js 22.x runtime (22.13+) orchestrated with PM2 cluster mode.
 - Nginx reverse proxy enforcing SSL TLS 1.3, HSTS, and strict Content Security Policies.

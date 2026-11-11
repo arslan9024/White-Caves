@@ -10,7 +10,10 @@ npm-debug.log*
 .vscode
 *.swp
 *.swo
-server/
+server/*
+!server/shared/
+!server/models/
+!server/utils/
 scripts/
 /docs/
 *.md
