@@ -6,7 +6,33 @@
  * Protocol: Turing Protocol Data Isolation & Bhakti Protocol Anchors
  */
 
-export type ClientRole = 'LANDLORD' | 'TENANT' | 'BUYER' | 'SELLER';
+export type ClientRole = 'LANDLORD' | 'TENANT' | 'BUYER' | 'SELLER' | 'INVESTOR';
+
+/**
+ * 18 Canonical Domain Actors under TURING-SEPARATION-010
+ */
+export type DomainActorType =
+  // Internal Platform & Workforce
+  | 'USER'
+  | 'ROLE'
+  | 'EMPLOYEE'
+  | 'STAFF_PROFILE'
+  | 'AI_ASSISTANT'
+  | 'CANDIDATE'
+  // Transacting Parties & Personas
+  | 'CLIENT'
+  | 'LANDLORD'
+  | 'TENANT'
+  | 'BUYER'
+  | 'SELLER'
+  | 'BROKER_AGENT'
+  // Institutional & Dubai Ecosystem
+  | 'DEVELOPER'
+  | 'REGISTRATION_TRUSTEE'
+  | 'MORTGAGE_LENDER'
+  | 'CORPORATE_SPV'
+  | 'MOLLAK_ASSOCIATION'
+  | 'CONTRACTOR';
 
 export type DealStage = 'DRAFTING' | 'SIGNATURE_PENDING' | 'CLEARANCE_RUN' | 'COMPLETED';
 

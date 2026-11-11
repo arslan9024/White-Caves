@@ -74,19 +74,23 @@ export function useEmployeeManager() {
   // CRUD Workflows dispatch
   const handleHireEmployee = useCallback(
     (payload: Omit<EmployeeNode, '_id' | 'employeeCode'>) => {
+      let createdId: string | null = null;
       setEmployees(prev => {
         const res = executeHireEmployeeWorkflow(prev, payload);
         showStatus(res.message);
         if (res.success) {
           saveEmployeesCache(res.employees);
           EmployeeTelemetry.track('HIRE', { meta: { fullName: payload.fullName } });
+          const newlyCreated = res.employees.find(e => e.fullName === payload.fullName);
+          if (newlyCreated) createdId = newlyCreated.id || newlyCreated._id;
           return res.employees;
         }
         return prev;
       });
       setIsDrawerOpen(false);
+      if (createdId) triggerHighlight(createdId);
     },
-    [showStatus]
+    [showStatus, triggerHighlight]
   );
 
   const handleUpdateEmployee = useCallback(
@@ -102,8 +106,9 @@ export function useEmployeeManager() {
         return prev;
       });
       setIsDrawerOpen(false);
+      triggerHighlight(id);
     },
-    [showStatus]
+    [showStatus, triggerHighlight]
   );
 
   const handleDemoteEmployee = useCallback(
