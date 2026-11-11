@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from 'react';
-import QRCode from 'qrcode';
 import { apiClient } from '../../../utils/apiClient';
 import {
   type LindaMetricsState,
@@ -15,7 +14,7 @@ import {
   INITIAL_LINDA_FEATURES,
   INITIAL_LINDA_PLAYBOOKS,
 } from './LindaWhatsAppCRM.data';
-import { getFallbackCommandOutput } from './lindaCommandFallbacks';
+import { createLindaActionHandlers } from './lindaActionHandlers';
 
 export interface UseLindaOperationsCenterReturn {
   isConnected: boolean;
@@ -61,6 +60,10 @@ export interface UseLindaOperationsCenterReturn {
   handleSendQuickReply: (conv: LindaConversationItem) => void;
 }
 
+/**
+ * useLindaOperationsCenter — Master hook for Linda WhatsApp Bot visual operations
+ * Refactored to delegate actions to lindaActionHandlers under AEGIS APOCALYPSE-AEG-042 (< 350 lines).
+ */
 export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
   const [isConnected, setIsConnected] = useState<boolean>(true);
   const [lindaStatus, setLindaStatus] = useState<string>('connected');
@@ -72,40 +75,38 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
   const [confirmEmergencyStop, setConfirmEmergencyStop] = useState<boolean>(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
   const [isQrLoading, setIsQrLoading] = useState<boolean>(false);
-  const [toastNotification, setToastNotification] = useState<string | null>(
-    '⚡ WhatsApp Bot Linda (v2.0-Enterprise) Online · 300/300 Upgrades Synced (Priority #1 Assistant)'
-  );
+  const [toastNotification, setToastNotification] = useState<string | null>(null);
 
   const [metrics, setMetrics] = useState<LindaMetricsState>({
-    uptime: '14d 06h 42m',
     activeSessions: '4 / 5 Online',
-    rateLimit: '18 / 60 min (Safe)',
-    memory: '112 MB RSS',
-    conversionVelocity: '24.8% (Hot)',
-    antiBanSafetyScore: '98 / 100',
+    messagesToday: '1,428',
+    deliveryRate: '99.4%',
+    optOutRate: '0.04%',
+    rateLimit: '42 WPM (Gaussian)',
+    uptime: '99.98% (14d 6h)',
+    memory: '214 MB / 1024 MB',
+    cpu: '4.2%',
   });
 
   const [sessions, setSessions] = useState<LindaSessionItem[]>(INITIAL_LINDA_SESSIONS);
   const [campaigns, setCampaigns] = useState<LindaCampaignItem[]>(INITIAL_LINDA_CAMPAIGNS);
   const [features, setFeatures] = useState<LindaFeatureBadge[]>(INITIAL_LINDA_FEATURES);
   const [playbooks, setPlaybooks] = useState<LindaPlaybookBadge[]>(INITIAL_LINDA_PLAYBOOKS);
-  const [activeModalOutput, setActiveModalOutput] = useState<{ title: string; output: string } | null>(null);
 
+  const [activeModalOutput, setActiveModalOutput] = useState<{ title: string; output: string } | null>(null);
   const [terminalLines, setTerminalLines] = useState<string[]>([
-    '======================================================================',
-    '  LINDA — WHATSAPP BOT VISUAL OPERATIONS CENTER (v2.0.0-enterprise)',
-    '  300/300 Enterprise Upgrades Active (Priority #1) · 10 Pillars Online',
-    '  Master Account: +971505760056 (LINKED) · GorahaBot: +971553633545',
-    '======================================================================',
-    '$ doctor -> [12/12 PASS] Node, Chromium, LocalAuth, Goraha, Sheets & Anti-Ban Ready.',
+    '🤖 [LINDA MASTER] whatsapp-bot-linda v2.0.0-enterprise initialized.',
+    '⚡ LocalAuth multi-account profiles: session-master, session-goraha, session-outreach.',
+    '🛡️ Anti-ban Gaussian typing delay active: 3000ms–6000ms jitter (42 WPM).',
+    'Type "doctor", "status", or click any quick-action below to inspect runtime.',
   ]);
 
   const [liveLogs, setLiveLogs] = useState<string[]>([
-    '[GST 09:40:12] [MASTER +971505760056] Heartbeat OK · Link: LINKED · Conn: CONNECTED',
-    '[GST 09:41:05] [GORAHA +971553633545] Verified contact Tariq Al Gergawi (VRD-312) — SAVED',
-    '[GST 09:42:19] [NLP-BRAIN] Classified inbound thread +971504418920 -> Seller Listing Intent (94%)',
-    '[GST 09:43:02] [MARY-SYNC] Matched VRD-312 with 3 VIP cash buyers (AED 1.85M)',
-    '[GST 09:44:10] [OUTREACH-F35] Budget check 8/15 daily new chats used (Asia/Dubai)',
+    '[GST 16:20:11] Linda Bot heartbeat acknowledged from Node container (24ms).',
+    '[GST 16:18:44] Inbound query from +971 50 123 4567: "Send me 2BR in Vardon under 1.2M".',
+    '[GST 16:18:45] NLP Intent: BUYER_MATCH_SEARCH (94% confidence) -> Matched unit #V-402.',
+    '[GST 16:15:02] Drip campaign "Vardon Phase 1 Outreach" dispatched 15 safe messages.',
+    '[GST 16:00:00] Daily budget reset: 15 new chats allocated for Asia/Dubai window.',
   ]);
 
   useEffect(() => {
@@ -143,7 +144,6 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
         setIsConnected(Boolean(response.data.isConnected));
       }
 
-      // Fetch live metrics from backend
       try {
         const metricsRes = (await apiClient.get('/linda/metrics')) as {
           success?: boolean;
@@ -176,7 +176,6 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
   useEffect(() => {
     void refreshLindaStatus();
 
-    // Prefer persistent real-time Server-Sent Events (SSE) stream
     let eventSource: EventSource | null = null;
     let fallbackIntervalId: number | null = null;
 
@@ -205,7 +204,6 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
         };
 
         eventSource.onerror = () => {
-          // If SSE encounters an error (e.g. auth proxy), fallback gracefully to 15s polling
           if (eventSource) {
             eventSource.close();
             eventSource = null;
@@ -258,157 +256,17 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
     }
   }, [appendLog, isConnected, loadingAction]);
 
-  const handleExecuteCommand = useCallback(
-    async (cmd: string, label?: string) => {
-      const normalized = cmd.trim().toLowerCase();
-      const title = label || cmd.toUpperCase();
-
-      if (/^f\d+$/i.test(normalized)) {
-        const fId = normalized.toUpperCase();
-        setFeatures(prev => prev.map(f => (f.id === fId ? { ...f, uses: f.uses + 1 } : f)));
-      }
-      if (/^p\d+$/i.test(normalized)) {
-        const pId = normalized.toUpperCase();
-        setPlaybooks(prev => prev.map(p => (p.id === pId ? { ...p, uses: p.uses + 1 } : p)));
-      }
-
-      let outputText = '';
-      try {
-        const res = (await apiClient.post('/linda/run-script', { script: normalized })) as {
-          success?: boolean;
-          data?: { output?: string };
-        };
-        if (res?.data?.output) {
-          outputText = res.data.output;
-        }
-      } catch {
-        // Fallback local execution
-      }
-
-      if (!outputText) {
-        outputText = getFallbackCommandOutput(normalized, title);
-      }
-
-      setTerminalLines(prev => [...prev, `$ ${cmd}`, outputText]);
-      setActiveModalOutput({ title, output: outputText });
-      appendLog(`Executed command "${cmd}" (${title})`);
-    },
-    [appendLog]
-  );
-
-  const handlePingSession = useCallback(
-    (sessionId: string) => {
-      setSessions(prev =>
-        prev.map(s =>
-          s.id === sessionId
-            ? { ...s, status: 'connected', connState: 'CONNECTED', lastActivity: 'Just now' }
-            : s
-        )
-      );
-      appendLog(`Pinged session ${sessionId} -> Heartbeat OK (CONNECTED).`);
-    },
-    [appendLog]
-  );
-
-  const handlePairDeviceCode = useCallback(
-    (session: LindaSessionItem) => {
-      const code = '849-204-19';
-      const output = [
-        `🔑 8-DIGIT PHONE PAIRING CODE GENERATED (Menu 2.1 · Feature F2)`,
-        `  Account: ${session.name}`,
-        `  Phone:   ${session.phone}`,
-        `  Code:    ${code} (Valid for 180 seconds)`,
-        `  Steps:   Open WhatsApp on phone -> Linked Devices -> Link with phone number instead -> Enter ${code}`,
-      ].join('\n');
-      setActiveModalOutput({ title: `8-Digit Pairing Code — ${session.phone}`, output });
-      setTerminalLines(prev => [...prev, `$ link-code ${session.phone}`, output]);
-      appendLog(`Generated 8-digit pairing code ${code} for ${session.phone}`);
-    },
-    [appendLog]
-  );
-
-  const handleScanDeviceQr = useCallback(
-    async (session: LindaSessionItem) => {
-      setIsQrLoading(true);
-      let qrImgUrl: string | null = null;
-      try {
-        const res = (await apiClient.get('/linda/qr')) as {
-          success?: boolean;
-          data?: { qr?: string; isConnected?: boolean };
-        };
-        if (res?.data?.qr) {
-          qrImgUrl = await QRCode.toDataURL(res.data.qr, { width: 220, margin: 1 });
-          setQrCodeDataUrl(qrImgUrl);
-        }
-      } catch {
-        // Fallback local mock QR
-      } finally {
-        setIsQrLoading(false);
-      }
-
-      if (!qrImgUrl) {
-        try {
-          qrImgUrl = await QRCode.toDataURL(`whatsapp://connect?session=${session.id}&phone=${session.phone}`, {
-            width: 220,
-            margin: 1,
-          });
-          setQrCodeDataUrl(qrImgUrl);
-        } catch {
-          // ignore
-        }
-      }
-
-      const output = [
-        `📷 QR CODE DEVICE LINKING SESSION READY (Menu 2.2 · Feature F3)`,
-        `  Account: ${session.name} (${session.phone})`,
-        `  Profile: LocalAuth ./.linda-sessions/${session.id}`,
-        `  ┌──────────────────────────┐`,
-        `  │ ▄▄▄▄▄ █▀█ █▄█ ▀█▀ ▄▄▄▄▄ │`,
-        `  │ █   █ ██▀ ▄▀▄ █▀█ █   █ │`,
-        `  │ █▄▄▄█ █▀█ █▀█ ▄█▄ █▄▄▄█ │`,
-        `  │ ▄▄▄▄▄ ▄ ▄ ▀▄▀ █ █ ▄▄▄▄▄ │`,
-        `  └──────────────────────────┘`,
-        `  Status: Scan with WhatsApp on phone (Linked Devices -> Link a Device). Zero-data-loss guaranteed.`,
-      ].join('\n');
-      setActiveModalOutput({ title: `QR Device Linking — ${session.name}`, output });
-      setTerminalLines(prev => [...prev, `$ link-qr ${session.id}`, output]);
-      appendLog(`Opened QR linking modal for ${session.name}`);
-    },
-    [appendLog, setQrCodeDataUrl]
-  );
-
-  const handleToggleCampaignStatus = useCallback(
-    (campaignId: string) => {
-      setCampaigns(prev =>
-        prev.map(c => {
-          if (c.id !== campaignId) return c;
-          const next = c.status === 'active' ? 'paused' : 'active';
-          appendLog(`Campaign "${c.name}" switched to ${next.toUpperCase()}.`);
-          return { ...c, status: next, nextBatch: next === 'active' ? 'In 3 mins' : 'Paused by Admin' };
-        })
-      );
-    },
-    [appendLog]
-  );
-
-  const handleQueueOutreachBatch = useCallback(
-    (cluster: string) => {
-      const msg = `📅 [F35 Outreach Planner] Queued safe humanized batch for cluster [${cluster}] within Asia/Dubai daily budget (42 WPM Gaussian typing).`;
-      setTerminalLines(prev => [...prev, `$ outreach --cluster=${cluster}`, msg]);
-      setActiveModalOutput({ title: `Outreach Batch Queued (${cluster})`, output: msg });
-      appendLog(`Dispatched safe owner outreach batch for cluster ${cluster}.`);
-    },
-    [appendLog]
-  );
-
-  const handleSendQuickReply = useCallback(
-    (conv: LindaConversationItem) => {
-      const msg = `Automated quick response dispatched to ${conv.contactName} (${conv.phone}) via NLP Assistant.`;
-      setTerminalLines(prev => [...prev, `$ reply ${conv.phone} --auto`, msg]);
-      appendLog(`Quick-reply sent to ${conv.contactName} on WhatsApp.`);
-    },
-    [appendLog]
-  );
+  const actionHandlers = createLindaActionHandlers({
+    appendLog,
+    setFeatures,
+    setPlaybooks,
+    setTerminalLines,
+    setActiveModalOutput,
+    setSessions,
+    setCampaigns,
+    setQrCodeDataUrl,
+    setIsQrLoading,
+  });
 
   return {
     isConnected,
@@ -445,12 +303,12 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
     appendLog,
     refreshLindaStatus,
     handleToggleLindaRuntime,
-    handleExecuteCommand,
-    handlePingSession,
-    handlePairDeviceCode,
-    handleScanDeviceQr,
-    handleToggleCampaignStatus,
-    handleQueueOutreachBatch,
-    handleSendQuickReply,
+    handleExecuteCommand: actionHandlers.handleExecuteCommand,
+    handlePingSession: actionHandlers.handlePingSession,
+    handlePairDeviceCode: actionHandlers.handlePairDeviceCode,
+    handleScanDeviceQr: actionHandlers.handleScanDeviceQr,
+    handleToggleCampaignStatus: actionHandlers.handleToggleCampaignStatus,
+    handleQueueOutreachBatch: actionHandlers.handleQueueOutreachBatch,
+    handleSendQuickReply: actionHandlers.handleSendQuickReply,
   };
 }
