@@ -300,6 +300,7 @@ const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/Sales
 
 // Leasing Acquisition (Sprint 1)
 const LeasingAcquisition = lazy(() => import('./pages/LeasingAcquisition'));
+const LeasingOperationsHub = lazy(() => import('./pages/LeasingOperationsHub'));
 
 // Executive Dashboard (central command center)
 const CRMHubPage = lazy(() => import('./pages/crm/CRMHubPage'));
@@ -667,6 +668,12 @@ function App(): React.JSX.Element {
       path: '/leasing-acquisition',
       section: 'Leasing Acquisition',
       page: <LeasingAcquisition />,
+      allowedRoles: ['leasing-agent', 'owner', 'admin'],
+    },
+    {
+      path: '/leasing-ops',
+      section: 'Leasing Operations Hub',
+      page: <LeasingOperationsHub />,
       allowedRoles: ['leasing-agent', 'owner', 'admin'],
     },
     {
