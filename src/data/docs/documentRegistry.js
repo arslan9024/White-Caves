@@ -135,7 +135,7 @@ export const DOCUMENT_REGISTRY = {
         <table>
           <tr><th>Layer</th><th>Technologies</th></tr>
           <tr><td>Frontend</td><td>React 18, Redux Toolkit, Vite 7.3, React Router v6</td></tr>
-          <tr><td>Backend</td><td>Express.js, Node.js 20, JWT Auth</td></tr>
+          <tr><td>Backend</td><td>Express.js, Node.js 22, JWT Auth</td></tr>
           <tr><td>Database</td><td>MongoDB Atlas, PostgreSQL (Neon)</td></tr>
           <tr><td>Auth</td><td>Firebase Authentication</td></tr>
           <tr><td>Payments</td><td>Stripe, Mashreq NEOBiz, Aani</td></tr>
@@ -669,12 +669,12 @@ Users (1) ──< Transactions (many) [as client]
   },
 };
 
-export const getDocumentById = (docId) => DOCUMENT_REGISTRY[docId] || null;
+export const getDocumentById = docId => DOCUMENT_REGISTRY[docId] || null;
 
-export const getDocumentsBySource = (source) => 
+export const getDocumentsBySource = source =>
   Object.values(DOCUMENT_REGISTRY).filter(doc => doc.source === source);
 
-export const getDocumentsByCategory = (category) =>
+export const getDocumentsByCategory = category =>
   Object.values(DOCUMENT_REGISTRY).filter(doc => doc.category === category);
 
 export const getAuroraDocuments = () => getDocumentsBySource(DOCUMENT_SOURCES.AURORA);
