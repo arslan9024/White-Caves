@@ -52,7 +52,6 @@ export function useEmployeeManager() {
     } else if (drawerParam === 'edit' && idParam) {
       const match = employees.find(
         e =>
-          e.id.toLowerCase() === idParam.toLowerCase() ||
           e._id.toLowerCase() === idParam.toLowerCase() ||
           e.employeeCode.toLowerCase() === idParam.toLowerCase()
       );
@@ -82,7 +81,7 @@ export function useEmployeeManager() {
           saveEmployeesCache(res.employees);
           EmployeeTelemetry.track('HIRE', { meta: { fullName: payload.fullName } });
           const newlyCreated = res.employees.find(e => e.fullName === payload.fullName);
-          if (newlyCreated) createdId = newlyCreated.id || newlyCreated._id;
+          if (newlyCreated) createdId = newlyCreated._id;
           return res.employees;
         }
         return prev;
