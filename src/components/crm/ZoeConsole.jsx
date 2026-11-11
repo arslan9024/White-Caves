@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Send, Bot, User, Calendar, BarChart3, Users, Phone, 
   List, Workflow, Loader2, ChevronRight, Clock, Sparkles,
-  MessageSquare, History, Trash2, RefreshCw
+  MessageSquare, History, Trash2, RefreshCw, Mic, MicOff, Volume2, VolumeX
 } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
 import './ZoeConsole.css';
