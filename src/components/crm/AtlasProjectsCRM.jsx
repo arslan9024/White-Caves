@@ -98,6 +98,9 @@ export const AtlasProjectsCRM = ({ moduleId, role, user }) => {
         <button onClick={() => setActiveTab('tracker')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'tracker' ? '1px solid var(--color-ea580c, #EA580C)' : '1px solid transparent', background: activeTab === 'tracker' ? 'var(--color-ea580c, #EA580C)' : 'var(--color-f8fafc, #F8FAFC)', color: activeTab === 'tracker' ? 'var(--white, #FFF)' : 'var(--color-334155, #334155)', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
           3.7.3 Developer Tracker
         </button>
+        <button onClick={() => setActiveTab('escrow')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'escrow' ? '1px solid var(--color-ea580c, #EA580C)' : '1px solid transparent', background: activeTab === 'escrow' ? 'var(--color-ea580c, #EA580C)' : 'var(--color-f8fafc, #F8FAFC)', color: activeTab === 'escrow' ? 'var(--white, #FFF)' : 'var(--color-334155, #334155)', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }} data-testid="tab-escrow-milestone">
+          3.7.5 DLD Escrow Stepper
+        </button>
         <button onClick={() => setActiveTab('delay')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'delay' ? '1px solid var(--color-ea580c, #EA580C)' : '1px solid transparent', background: activeTab === 'delay' ? 'var(--color-ea580c, #EA580C)' : 'var(--color-f8fafc, #F8FAFC)', color: activeTab === 'delay' ? 'var(--white, #FFF)' : 'var(--color-334155, #334155)', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
           3.7.1 Construction Delay Estimator
         </button>
