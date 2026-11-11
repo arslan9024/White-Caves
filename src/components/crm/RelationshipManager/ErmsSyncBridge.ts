@@ -5,8 +5,8 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import type { ERDRelation } from '../RelationshipManager.types';
-import { CANONICAL_ERD_RELATIONS } from '../RelationshipErd.data';
+import type { ERDRelation } from './RelationshipManager.types';
+import { CANONICAL_ERD_RELATIONS } from './RelationshipErd.data';
 import type { TaskNode } from '../TaskManager/TaskManager.types';
 
 const ERMS_STORAGE_KEY = 'white_caves_erms_relations_v1';
