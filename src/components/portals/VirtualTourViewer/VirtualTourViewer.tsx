@@ -259,7 +259,7 @@ export const VirtualTourViewer: FC<VirtualTourViewerProps> = ({
                   color: '#FFF',
                   border: 'none',
                   padding: '10px 24px',
-                  borderRadius: 9999px,
+                  borderRadius: '9999px',
                   fontWeight: 800,
                   fontSize: '0.85rem',
                   cursor: 'pointer',
