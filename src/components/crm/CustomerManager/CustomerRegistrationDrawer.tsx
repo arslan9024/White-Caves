@@ -349,30 +349,28 @@ export const CustomerRegistrationDrawer: FC<CustomerRegistrationDrawerProps> = (
           <div
             style={{
               marginTop: 'auto',
-              paddingTop: '20px',
+              paddingTop: '16px',
               borderTop: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
-            <button
-              type="submit"
-              data-testid="submit-customer-btn"
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #10B981, #059669)',
-                border: 'none',
-                color: '#FFFFFF',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-              }}
-            >
-              Confirm Client Onboarding
-            </button>
+            <TaskActionBar
+              isDirty={isDirty}
+              onSave={() => handleSaveData(false)}
+              onSaveAndClose={() => handleSaveData(true)}
+              onCancel={() => confirmExit(onClose)}
+              saveLabel="Confirm Client Onboarding"
+              saveAndCloseLabel="Save & Close"
+              saveTestId="submit-customer-btn"
+            />
           </div>
         </form>
       </div>
+
+      <UnsavedChangesModal
+        isOpen={showPrompt}
+        onProceed={proceed}
+        onCancel={cancel}
+      />
     </div>
   );
 };
