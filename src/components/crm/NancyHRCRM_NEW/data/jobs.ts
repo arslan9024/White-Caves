@@ -159,11 +159,26 @@ export const DUMMY_JOBS: Job[] = [
 ];
 
 export const BHAKTI_RECURSIVE_CAPACITY = {
-  tier0_MD: { label: 'Managing Director (Penthouse)', count: 1, multiplier: 1 },
-  tier1_Directors: { label: 'Department Directors', count: 12, multiplier: 12 },
-  tier2_Managers: { label: 'Division Managers (9 per Dir)', count: 108, multiplier: 9 },
-  tier3_Supervisors: { label: 'Operational Supervisors (12 per Mgr)', count: 1296, multiplier: 12 },
-  tier4_TeamLeaders: { label: 'Frontline Team Leaders (9 per Sup)', count: 11664, multiplier: 9 },
-  totalActiveRequisitions: DUMMY_JOBS.length, // 12 + 108 + 12 + 12 = 144 master requisitions
+  tier0_MD: { label: 'Managing Director (Penthouse)', count: 1, multiplier: 1, isTheoretical: false },
+  tier1_Directors: { label: 'Department Directors', count: 12, multiplier: 12, isTheoretical: false },
+  tier2_Managers: { label: 'Division Managers (9 per Dir)', count: 108, multiplier: 9, isTheoretical: false },
+  tier3_Supervisors: { label: 'Operational Supervisors (12 per Mgr)', count: 1296, multiplier: 12, isTheoretical: true },
+  tier4_TeamLeaders: { label: 'Frontline Team Leaders (9 per Sup)', count: 11664, multiplier: 9, isTheoretical: true },
+  totalActiveRequisitions: DUMMY_JOBS.length,
   totalAuthorizedSlots: 1 + 12 + 108 + 1296 + 11664, // 13,081 total enterprise seats
+  note: 'Tiers 3-4 represent theoretical maximum capacity, not active headcount targets.',
 };
+
+/**
+ * HR Promotion Bylaws — Single Source of Truth
+ * Governs employee → team leader → supervisor → manager → director advancement
+ */
+export const HR_PROMOTION_BYLAWS = {
+  MIN_FOLLOWERS_FOR_TEAM_LEADER: 3,
+  MAX_TEAM_LEADERS_PER_SUPERVISOR: 9,
+  MAX_SUPERVISORS_PER_MANAGER: 12,
+  MAX_MANAGERS_PER_DIRECTOR: 9,
+  MAX_DIRECTORS: 12,
+  ENTRY_LEVEL_UNLIMITED: true,
+  NOTE: 'Tier 4 (11,664) is theoretical maximum capacity. Employees at L5 are unlimited. Promotion from L5 to L4 (Team Leader) requires at least 3 active direct followers/mentees.',
+} as const;

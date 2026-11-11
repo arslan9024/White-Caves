@@ -45,6 +45,27 @@ const mockMemberL4: LeaderboardMember = {
   nextTierProgressPercent: 100,
   badges: [],
   milestones: [],
+  directFollowersCount: 5,
+};
+
+const mockMemberL5: LeaderboardMember = {
+  id: 'TEST-L5-001',
+  name: 'Noura Al-Suwaidi',
+  avatar: 'https://example.com/noura.jpg',
+  email: 'noura@whitecaves.ae',
+  departmentId: 'D01',
+  departmentName: 'Leasing Brokerage',
+  currentTier: 'L5',
+  currentRole: 'Junior Broker Trainee',
+  meritXp: 1500,
+  tasksCompleted: 15,
+  slaOnTimeRate: 88.0,
+  promotionStatus: 'IN_PROGRESS',
+  nextTier: 'L4',
+  nextTierProgressPercent: 0,
+  badges: [],
+  milestones: [],
+  directFollowersCount: 0,
 };
 
 describe('Leaderboard 12-Way Suite', () => {
@@ -132,6 +153,48 @@ describe('Leaderboard 12-Way Suite', () => {
     expect(promoted.currentTier).toBe('L3');
     expect(promoted.currentRole).toContain('Operational Supervisor');
     expect(promoted.milestones.length).toBe(1);
+  });
+
+  // --- HR Promotion Bylaws: Follower Gate Tests ---
+  it('rejects L5→L4 promotion when employee has fewer than 3 followers', () => {
+    const twoFollowers: LeaderboardMember = {
+      ...mockMemberL5,
+      meritXp: 1500,
+      tasksCompleted: 15,
+      slaOnTimeRate: 90,
+      directFollowersCount: 2,
+    };
+    const result = evaluatePromotionEligibilityWorkflow(twoFollowers);
+    expect(result.isEligible).toBe(false);
+    expect(result.missingRequirements.some(r => r.includes('followers'))).toBe(true);
+  });
+
+  it('approves L5→L4 promotion when employee has 3+ followers and meets XP/SLA', () => {
+    const eligible: LeaderboardMember = {
+      ...mockMemberL5,
+      meritXp: 1500,
+      tasksCompleted: 15,
+      slaOnTimeRate: 90,
+      directFollowersCount: 4,
+    };
+    const result = evaluatePromotionEligibilityWorkflow(eligible);
+    expect(result.isEligible).toBe(true);
+    expect(result.missingRequirements.length).toBe(0);
+  });
+
+  it('executes L5→L4 Team Leader promotion and records milestone', () => {
+    const eligible: LeaderboardMember = {
+      ...mockMemberL5,
+      meritXp: 1500,
+      tasksCompleted: 15,
+      slaOnTimeRate: 90,
+      directFollowersCount: 4,
+    };
+    const promoted = executeTierPromotionWorkflow(eligible, 'HR Department');
+    expect(promoted.currentTier).toBe('L4');
+    expect(promoted.currentRole).toContain('Team Leader');
+    expect(promoted.milestones.length).toBe(1);
+    expect(promoted.nextTier).toBe('L3');
   });
 
   // --- Tier 8: Failure Boundary ---

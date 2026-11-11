@@ -15,6 +15,7 @@ import {
   Sparkles,
   ShieldCheck,
   History,
+  Users,
 } from 'lucide-react';
 import { LeaderboardMember, PromotionCriteria } from './Leaderboard.types';
 import { TIER_METADATA } from './Leaderboard.config';
@@ -174,6 +175,32 @@ export const LeaderboardPromotionDrawer: React.FC<LeaderboardPromotionDrawerProp
                     {audit.criteria.minSlaRate}%)
                   </span>
                 </div>
+
+                {/* Rule 4: Follower / Mentee Sponsorship Gate */}
+                {audit.criteria.minDirectFollowers != null && audit.criteria.minDirectFollowers > 0 && (
+                  <div className={LEADERBOARD_STYLES.checklistItem}>
+                    {(member.directFollowersCount ?? 0) >= audit.criteria.minDirectFollowers ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                    )}
+                    <span className="text-slate-300 text-xs">
+                      <Users className="w-3 h-3 inline mr-1" />
+                      Active Followers:{' '}
+                      <strong className="text-white">{member.directFollowersCount ?? 0}</strong>{' '}
+                      / {audit.criteria.minDirectFollowers} required
+                    </span>
+                  </div>
+                )}
+
+                {/* Rule 5: Capacity Cap Info */}
+                {audit.criteria.maxSlotsInTargetTier != null && (
+                  <div className="mt-1 px-1">
+                    <span className="text-[10px] text-slate-500 italic">
+                      Capacity: max {audit.criteria.maxSlotsInTargetTier} {audit.criteria.targetRole}s per reporting superior
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
