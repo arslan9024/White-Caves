@@ -32,6 +32,8 @@ import {
 } from './EmployeeManager.cache';
 import { calculateEmployeeCompensationOffThread } from './EmployeeManager.workers';
 
+const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
+
 describe('EmployeeManager 12-Way Suite', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -41,7 +43,7 @@ describe('EmployeeManager 12-Way Suite', () => {
 
   // --- Tier 1 & 2: View and Logic Integration ---
   it('renders employee directory view with header, metrics, and cards', () => {
-    render(<EmployeeManagerView />);
+    renderWithRouter(<EmployeeManagerView />);
 
     expect(screen.getByTestId('employee-manager-view')).toBeInTheDocument();
     expect(screen.getByTestId('employee-metrics-row')).toBeInTheDocument();
@@ -53,7 +55,7 @@ describe('EmployeeManager 12-Way Suite', () => {
   });
 
   it('filters employees dynamically via search input', () => {
-    render(<EmployeeManagerView />);
+    renderWithRouter(<EmployeeManagerView />);
 
     const searchInput = screen.getByTestId('employee-search-input');
     fireEvent.change(searchInput, { target: { value: 'Elena' } });
@@ -63,7 +65,7 @@ describe('EmployeeManager 12-Way Suite', () => {
   });
 
   it('filters employees by operational pillar', () => {
-    render(<EmployeeManagerView />);
+    renderWithRouter(<EmployeeManagerView />);
 
     const pillarSelect = screen.getByTestId('filter-pillar-select');
     fireEvent.change(pillarSelect, { target: { value: 'pillar-1' } });
@@ -73,7 +75,7 @@ describe('EmployeeManager 12-Way Suite', () => {
   });
 
   it('opens create drawer when clicking Onboard New Employee', () => {
-    render(<EmployeeManagerView />);
+    renderWithRouter(<EmployeeManagerView />);
 
     const addBtn = screen.getByTestId('add-employee-btn');
     fireEvent.click(addBtn);
@@ -83,7 +85,7 @@ describe('EmployeeManager 12-Way Suite', () => {
   });
 
   it('shifts employee to standby reserve status upon demoting', () => {
-    render(<EmployeeManagerView />);
+    renderWithRouter(<EmployeeManagerView />);
 
     const demoteBtn = screen.getByTestId('demote-emp-EMP-009');
     fireEvent.click(demoteBtn);
