@@ -25,6 +25,7 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTier: 'L3',
     nextTierProgressPercent: 100,
     badges: ['Ejari Master', 'Speed Closer', 'Zero Defects'],
+    directFollowersCount: 5,
     milestones: [
       {
         id: 'MS-001',
@@ -56,6 +57,7 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTier: 'L3',
     nextTierProgressPercent: 100,
     badges: ['Regulatory Sentinel', 'RERA Ace', '100% Audit'],
+    directFollowersCount: 4,
     milestones: [],
   },
   {
@@ -75,6 +77,7 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTier: 'L2',
     nextTierProgressPercent: 100,
     badges: ['MOU Veteran', 'High Value Closer', 'Team Mentor'],
+    directFollowersCount: 7,
     milestones: [
       {
         id: 'MS-002',
@@ -106,6 +109,7 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTier: 'L3',
     nextTierProgressPercent: 86,
     badges: ['FTA Auditor', 'Calculated Precision'],
+    directFollowersCount: 2,
     milestones: [],
   },
   {
@@ -125,6 +129,7 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTier: 'L3',
     nextTierProgressPercent: 74,
     badges: ['Quick Resolver', 'Tenant Favorite'],
+    directFollowersCount: 1,
     milestones: [],
   },
   {
@@ -144,6 +149,7 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTier: null,
     nextTierProgressPercent: 100,
     badges: ['Executive Council', 'DLD Ambassador', 'Legal Authority'],
+    directFollowersCount: 12,
     milestones: [],
   },
   {
@@ -163,6 +169,7 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTier: 'L3',
     nextTierProgressPercent: 96,
     badges: ['Sub-5-Min Response', 'High Pipeline'],
+    directFollowersCount: 3,
     milestones: [],
   },
   {
@@ -182,6 +189,7 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTier: 'L1',
     nextTierProgressPercent: 49,
     badges: ['Automation Architect', 'Zero Downtime', 'Subagent Champion'],
+    directFollowersCount: 9,
     milestones: [],
   },
   {
@@ -201,8 +209,5 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTier: null,
     nextTierProgressPercent: 100,
     badges: ['Top Broker Award', 'Centurion Closer', 'DAMAC Specialist'],
-    milestones: [],
-  },
-];
-
-export const CANONICAL_LEADERBOARD_MEMBERS = INITIAL_LEADERBOARD_DATA;
+    directFollowersCount: 11,
+    milestones
