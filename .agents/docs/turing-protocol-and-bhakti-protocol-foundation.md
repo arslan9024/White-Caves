@@ -44,8 +44,9 @@ BHAKTI PROTOCOL: Fixed Spatial Coordinates & 13-Floor Building Matrix
 
 ### The Canonical Bhakti Recursive Math Formula:
 $$\text{Level 0: Leader (1 MD)} \xrightarrow{\times 12} \text{Tier A: 12 Floor Directors} \xrightarrow{\times 9} \text{Tier B: 108 Division Managers}$$
-When scaled recursively down the operational chain:
-$$\xrightarrow{\times 12} \text{Tier C: 1,296 Operational Supervisors} \xrightarrow{\times 9} \text{Tier D: 11,664 Team Leads}$$
+When scaled down the operational chain:
+$$\xrightarrow{\times 12} \text{Tier C: 1,296 Operational Supervisors (Capacity Limit)}$$
+$$\xrightarrow{\text{Dynamic Law B4}} \text{Tier D: Frontline Team Leaders (Promoted dynamically on merit $\ge 3$ mentees)}$$
 
 ---
 
@@ -55,7 +56,7 @@ $$\xrightarrow{\times 12} \text{Tier C: 1,296 Operational Supervisors} \xrightar
 
 The top corporate coordinates of White Caves Real Estate LLC are mathematically fixed:
 
-- **12 Department Directors:** `D01` (Leasing) through `D12` (Operations & Admin).
+- **12 Department Directors:** `D01` through `D12` (Floors 01 to 12).
 - **108 Division Managers:** `M01` through `M108` (9 functional task divisions per department).
   These coordinates cannot be deleted, renumbered, or corrupted by drag-and-drop operations.
 
@@ -70,6 +71,13 @@ When a director, manager, or supervisor is reassigned, promoted, or demoted:
 #### Law B3: Zero-Delete Preservation Law
 
 No operational unit or personnel record is ever purged. All personnel retain cumulative merit points (XP), completed task logs, and career milestones.
+
+#### Law B4: Dynamic Hiring & On-Demand Team Leader Promotion Law
+
+Team Leaders are never maintained as static bloat (11,664 fixed seats). Frontline personnel are promoted dynamically to Team Leader only upon meeting:
+1. **Span of Control:** Guiding and mentoring $\ge 3$ active direct junior brokers/specialists.
+2. **Merit Threshold:** Accumulating $\ge 1,000\text{ Merit XP}$ in the corporate ledger (`AEG-037`).
+3. **Supervisor Ceiling:** An active supervisor can supervise at most 9 dynamically promoted Team Leaders.
 
 ---
 
