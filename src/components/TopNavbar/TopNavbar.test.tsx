@@ -50,11 +50,9 @@ describe('Unified Merged TopNavbar (Consolidation & Even Wings)', () => {
     expect(logoImg.getAttribute('src')).toBe('/company-logo.jpg');
   });
 
-  it('renders left navigation wing with platform links', () => {
+  it('renders left navigation wing with single White Caves HQ anchor', () => {
     renderNavbar(<TopNavbar />);
-    expect(screen.getByText(/Corporate HQ/i)).toBeDefined();
-    expect(screen.getByText(/Primary Market/i)).toBeDefined();
-    expect(screen.getByText(/Secondary Market/i)).toBeDefined();
+    expect(screen.getByText(/White Caves HQ/i)).toBeDefined();
   });
 
   it('renders right navigation wing with notifications and profile trigger', () => {

@@ -95,7 +95,13 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
       }}
     >
       {/* ── FIXED TOP NAVBAR ────────────────────────────────────────────────── */}
-      <TopNavbar isMDMode={isLevel5} />
+      <TopNavbar
+        isMDMode={isLevel5}
+        onToggleSidebar={() => {
+          setIsSidebarCollapsed(prev => !prev);
+          setIsSidebarOpen(prev => !prev);
+        }}
+      />
 
       {/* ── MAIN WORKSPACE BODY ─────────────────────────────────────────────── */}
       <div
