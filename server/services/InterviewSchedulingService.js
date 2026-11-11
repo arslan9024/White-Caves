@@ -1,12 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import MessageTemplateService from './MessageTemplateService.js';
 import { WhatsAppMessage, WhatsAppContact } from '../lib/database.js';
+import { normalizeInterviewSchedule } from './recruitmentRecordMapper.js';
 
 const prisma = new PrismaClient();
 
 /**
  * Interview Scheduling Service - Phase 1C Part 2
- * 
+ *
  * Enables candidates to schedule interviews via WhatsApp by:
  * 1. Offering available time slots
  * 2. Detecting "schedule" intent in candidate messages
@@ -23,12 +24,11 @@ export class InterviewSchedulingService {
     try {
       // Find candidate and job
       const candidate = await prisma.candidate.findUnique({
-        where: { id: candidateId }
+        where: { id: candidateId },
       });
 
       const job = await prisma.job.findUnique({
         where: { id: jobId },
-        include: { company: true }
       });
 
       if (!candidate || !job) {
@@ -36,17 +36,20 @@ export class InterviewSchedulingService {
       }
 
       // Create interview session
-      const session = await prisma.interviewSession.create({
-        data: {
-          candidateId,
-          jobId,
-          status: 'pending_scheduling',
-          interviewers: interviewerIds,
-          availableSlots: slotOptions,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      });
+      const session = normalizeInterviewSchedule(
+        await prisma.interviewSchedule.create({
+          data: {
+            candidate_id: candidateId,
+            job_id: jobId,
+            session_status: 'pending_scheduling',
+            interview_type: 'hr',
+            interviewer_ids: interviewerIds,
+            available_slots: slotOptions,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        })
+      );
 
       // Send WhatsApp with available slots
       await this.sendInterviewInvitation(candidate, job, session, slotOptions);
@@ -54,13 +57,13 @@ export class InterviewSchedulingService {
       return {
         success: true,
         sessionId: session.id,
-        message: 'Interview invitation sent via WhatsApp'
+        message: 'Interview invitation sent via WhatsApp',
       };
     } catch (error) {
       console.error('❌ Error creating interview session:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -71,9 +74,7 @@ export class InterviewSchedulingService {
   static async sendInterviewInvitation(candidate, job, session, slots) {
     try {
       // Format slots for display
-      const slotsText = slots
-        .map((slot, i) => `${i + 1}. ${this.formatSlot(slot)}`)
-        .join('\n');
+      const slotsText = slots.map((slot, i) => `${i + 1}. ${this.formatSlot(slot)}`).join('\n');
 
       const variables = {
         candidate_name: candidate.first_name || candidate.name,
@@ -82,22 +83,22 @@ export class InterviewSchedulingService {
         interview_duration: '45',
         available_times: slotsText,
         meeting_link: `https://zoom.us/j/${this.generateMeetingId()}`,
-        next_action: 'Reply with number (1-3) to book your slot'
+        next_action: 'Reply with number (1-3) to book your slot',
       };
 
       // Render message using template
       const message = MessageTemplateService.render('interview_invitation', variables);
 
       // Get or create WhatsApp contact
-      const phone = this.formatPhoneForWhatsApp(candidate.whatsapp_phone || candidate.phone_number);
-      
+      const phone = this.formatPhoneForWhatsApp(candidate.whatsapp_phone || candidate.phone);
+
       let contact = await WhatsAppContact.findOne({ phoneNumber: phone });
       if (!contact) {
         contact = new WhatsAppContact({
           phoneNumber: phone,
           waId: `${phone.replace('+', '')}@c.us`,
           name: candidate.first_name || candidate.name,
-          conversationStatus: 'active'
+          conversationStatus: 'active',
         });
         await contact.save();
       }
@@ -114,9 +115,9 @@ export class InterviewSchedulingService {
           sessionId: session.id,
           candidateId: candidate.id,
           jobId: job.id,
-          slots: slots
+          slots: slots,
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await messageRecord.save();
@@ -125,13 +126,13 @@ export class InterviewSchedulingService {
       return {
         success: true,
         messageId: messageRecord._id,
-        phone
+        phone,
       };
     } catch (error) {
       console.error('❌ Error sending interview invitation:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -146,13 +147,15 @@ export class InterviewSchedulingService {
       const intent = this.detectInterviewIntent(messageContent);
 
       // Get session
-      const session = await prisma.interviewSession.findUnique({
-        where: { id: sessionId },
-        include: {
-          candidate: true,
-          job: true
-        }
-      });
+      const session = normalizeInterviewSchedule(
+        await prisma.interviewSchedule.findUnique({
+          where: { id: sessionId },
+          include: {
+            candidate: true,
+            job: true,
+          },
+        })
+      );
 
       if (!session) {
         throw new Error('Interview session not found');
@@ -191,7 +194,7 @@ export class InterviewSchedulingService {
       console.error('❌ Error processing interview response:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -208,7 +211,7 @@ export class InterviewSchedulingService {
       return {
         type: 'slot_selected',
         slotIndex: parseInt(slotMatch[1]) - 1,
-        confidence: 0.95
+        confidence: 0.95,
       };
     }
 
@@ -216,7 +219,7 @@ export class InterviewSchedulingService {
     if (/^(schedule|book|confirm|yes|ready)/.test(lowerMessage)) {
       return {
         type: 'interested',
-        confidence: 0.9
+        confidence: 0.9,
       };
     }
 
@@ -224,7 +227,7 @@ export class InterviewSchedulingService {
     if (/(reschedule|different time|other time|can't make it|change|another slot)/i.test(message)) {
       return {
         type: 'reschedule',
-        confidence: 0.85
+        confidence: 0.85,
       };
     }
 
@@ -233,22 +236,26 @@ export class InterviewSchedulingService {
       return {
         type: 'decline',
         reason: this.extractDeclineReason(message),
-        confidence: 0.9
+        confidence: 0.9,
       };
     }
 
     // Check for question/unsure
-    if (/(question|when|how|where|what|where|tell me more|more info|unclear|don't understand)/i.test(message)) {
+    if (
+      /(question|when|how|where|what|where|tell me more|more info|unclear|don't understand)/i.test(
+        message
+      )
+    ) {
       return {
         type: 'question',
-        confidence: 0.7
+        confidence: 0.7,
       };
     }
 
     // Default: unsure
     return {
       type: 'unsure',
-      confidence: 0.5
+      confidence: 0.5,
     };
   }
 
@@ -262,33 +269,32 @@ export class InterviewSchedulingService {
       if (!slot) {
         return {
           success: false,
-          error: 'Invalid slot selection'
+          error: 'Invalid slot selection',
         };
       }
 
       // Update session
-      const updatedSession = await prisma.interviewSession.update({
+      await prisma.interviewSchedule.update({
         where: { id: session.id },
         data: {
-          status: 'scheduled',
-          selectedSlot: slot,
-          scheduledAt: new Date(slot.start),
-          updatedAt: new Date()
-        }
+          session_status: 'scheduled',
+          selected_slot: slot,
+          interview_date: new Date(slot.start),
+          updatedAt: new Date(),
+        },
       });
 
       // Create interview record
       const interview = await prisma.interview.create({
         data: {
-          candidateId: session.candidateId,
-          jobId: session.jobId,
-          sessionId: session.id,
+          candidate_id: session.candidateId,
+          job_id: session.jobId,
           status: 'scheduled',
-          scheduledAt: new Date(slot.start),
-          interviewers: session.interviewers,
-          meetingLink: `https://zoom.us/j/${this.generateMeetingId()}`,
-          createdAt: new Date()
-        }
+          scheduled_at: new Date(slot.start),
+          interview_type: 'hr',
+          interviewer: session.interviewers.join(', '),
+          createdAt: new Date(),
+        },
       });
 
       // Send confirmation
@@ -323,9 +329,9 @@ Reply REMINDER to get a reminder 24 hours before.
         metadata: {
           sessionId: session.id,
           interviewId: interview.id,
-          slot
+          slot,
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await messageRecord.save();
@@ -336,13 +342,13 @@ Reply REMINDER to get a reminder 24 hours before.
         success: true,
         interviewId: interview.id,
         scheduledAt: slot.start,
-        message: 'Interview successfully scheduled'
+        message: 'Interview successfully scheduled',
       };
     } catch (error) {
       console.error('❌ Error booking slot:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -355,9 +361,7 @@ Reply REMINDER to get a reminder 24 hours before.
       // Generate new slot options
       const newSlots = this.generateAlternativeSlots();
 
-      const slotsText = newSlots
-        .map((slot, i) => `${i + 1}. ${this.formatSlot(slot)}`)
-        .join('\n');
+      const slotsText = newSlots.map((slot, i) => `${i + 1}. ${this.formatSlot(slot)}`).join('\n');
 
       const rescheduleMessage = `
 ⏰ No problem! Here are alternative times:
@@ -377,20 +381,20 @@ Reply with your preferred number (1-3) or let us know if you need more flexibili
         status: 'sent',
         metadata: {
           sessionId: session.id,
-          slots: newSlots
+          slots: newSlots,
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await messageRecord.save();
 
       // Update session with new slots
-      await prisma.interviewSession.update({
+      await prisma.interviewSchedule.update({
         where: { id: session.id },
         data: {
-          availableSlots: newSlots,
-          updatedAt: new Date()
-        }
+          available_slots: newSlots,
+          updatedAt: new Date(),
+        },
       });
 
       console.log(`✅ Reschedule options sent to ${phoneNumber}`);
@@ -398,13 +402,13 @@ Reply with your preferred number (1-3) or let us know if you need more flexibili
       return {
         success: true,
         messageId: messageRecord._id,
-        slots: newSlots
+        slots: newSlots,
       };
     } catch (error) {
       console.error('❌ Error offering reschedule:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -415,31 +419,29 @@ Reply with your preferred number (1-3) or let us know if you need more flexibili
   static async declineInterview(session, phoneNumber, reason) {
     try {
       // Update session status
-      await prisma.interviewSession.update({
+      await prisma.interviewSchedule.update({
         where: { id: session.id },
         data: {
-          status: 'declined',
-          declineReason: reason,
-          updatedAt: new Date()
-        }
+          session_status: 'declined',
+          decline_reason: reason,
+          updatedAt: new Date(),
+        },
       });
 
       // Update candidate score status
       const score = await prisma.candidateScore.findFirst({
         where: {
-          candidateId: session.candidateId,
-          jobId: session.jobId
-        }
+          candidate_id: session.candidateId,
+          job_id: session.jobId,
+        },
       });
 
       if (score) {
         await prisma.candidateScore.update({
           where: { id: score.id },
           data: {
-            screening_status: 'declined_interview',
             feedback: `Candidate declined interview: ${reason}`,
-            updatedAt: new Date()
-          }
+          },
         });
       }
 
@@ -459,9 +461,9 @@ Good luck with your other opportunities! 👋
         status: 'sent',
         metadata: {
           sessionId: session.id,
-          reason
+          reason,
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await messageRecord.save();
@@ -471,13 +473,13 @@ Good luck with your other opportunities! 👋
       return {
         success: true,
         status: 'declined',
-        reason
+        reason,
       };
     } catch (error) {
       console.error('❌ Error declining interview:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -489,9 +491,7 @@ Good luck with your other opportunities! 👋
     try {
       const slots = this.generateTimeSlots(5);
 
-      const slotsText = slots
-        .map((slot, i) => `${i + 1}. ${this.formatSlot(slot)}`)
-        .join('\n');
+      const slotsText = slots.map((slot, i) => `${i + 1}. ${this.formatSlot(slot)}`).join('\n');
 
       const optionsMessage = `
 Great! Here are your available interview slots:
@@ -511,9 +511,9 @@ Reply with your preferred number (1-5) to confirm.
         status: 'sent',
         metadata: {
           sessionId: session.id,
-          slots
+          slots,
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await messageRecord.save();
@@ -521,13 +521,13 @@ Reply with your preferred number (1-5) to confirm.
       return {
         success: true,
         messageId: messageRecord._id,
-        slots
+        slots,
       };
     } catch (error) {
       console.error('❌ Error sending slot options:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -558,22 +558,22 @@ Or proceed with scheduling by replying with your preferred time slot number.
         status: 'sent',
         metadata: {
           sessionId: session.id,
-          originalQuestion: questionContent
+          originalQuestion: questionContent,
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await messageRecord.save();
 
       return {
         success: true,
-        messageId: messageRecord._id
+        messageId: messageRecord._id,
       };
     } catch (error) {
       console.error('❌ Error sending support message:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -603,22 +603,22 @@ Which would you like to do?
         content: guideMessage,
         status: 'sent',
         metadata: {
-          sessionId: session.id
+          sessionId: session.id,
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await messageRecord.save();
 
       return {
         success: true,
-        messageId: messageRecord._id
+        messageId: messageRecord._id,
       };
     } catch (error) {
       console.error('❌ Error sending guide message:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -632,8 +632,8 @@ Which would you like to do?
         where: { id: interviewId },
         include: {
           candidate: true,
-          job: true
-        }
+          job: true,
+        },
       });
 
       if (!interview) {
@@ -641,18 +641,18 @@ Which would you like to do?
       }
 
       const phone = this.formatPhoneForWhatsApp(
-        interview.candidate.whatsapp_phone || interview.candidate.phone_number
+        interview.candidate.whatsapp_phone || interview.candidate.phone
       );
 
       const reminderMessage = `
 ⏰ Reminder: Your Interview is Tomorrow!
 
 Role: ${interview.job.title}
-Date & Time: ${this.formatDateTime(interview.scheduledAt)}
+Date & Time: ${this.formatDateTime(interview.scheduled_at)}
 Duration: 45 minutes
 Platform: Zoom
 
-Zoom Link: ${interview.meetingLink}
+Meeting instructions will be provided by your interviewer.
 
 Reply CONFIRM to let us know you're ready!
       `.trim();
@@ -667,19 +667,23 @@ Reply CONFIRM to let us know you're ready!
         status: 'sent',
         metadata: {
           interviewId,
-          reminderType: 'day_before'
+          reminderType: 'day_before',
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await messageRecord.save();
 
       // Update interview record
-      await prisma.interview.update({
-        where: { id: interviewId },
+      await prisma.interviewSchedule.updateMany({
+        where: {
+          candidate_id: interview.candidate_id,
+          job_id: interview.job_id,
+          interview_date: interview.scheduled_at,
+        },
         data: {
-          reminderSentAt: new Date()
-        }
+          reminder_sent_at: new Date(),
+        },
       });
 
       console.log(`🔔 Reminder sent for interview ${interviewId}`);
@@ -687,13 +691,13 @@ Reply CONFIRM to let us know you're ready!
       return {
         success: true,
         messageId: messageRecord._id,
-        phone
+        phone,
       };
     } catch (error) {
       console.error('❌ Error sending reminder:', error.message);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -731,7 +735,7 @@ Reply CONFIRM to let us know you're ready!
           end: end.toISOString(),
           day: this.getDayName(currentDate),
           date: currentDate.toISOString().split('T')[0],
-          time
+          time,
         });
 
         slotCount++;
@@ -778,7 +782,7 @@ Reply CONFIRM to let us know you're ready!
         end: end.toISOString(),
         day: this.getDayName(currentDate),
         date: currentDate.toISOString().split('T')[0],
-        time
+        time,
       });
 
       currentDate.setDate(currentDate.getDate() + 1);
@@ -809,7 +813,7 @@ Reply CONFIRM to let us know you're ready!
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     });
   }
 
@@ -825,8 +829,9 @@ Reply CONFIRM to let us know you're ready!
    * Generate unique meeting ID
    */
   static generateMeetingId() {
-    return Math.random().toString(36).substring(2, 15) +
-           Math.random().toString(36).substring(2, 15);
+    return (
+      Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    );
   }
 
   /**
@@ -877,23 +882,23 @@ Reply CONFIRM to let us know you're ready!
   static async getInterviewStats(jobId) {
     try {
       const interviews = await prisma.interview.findMany({
-        where: { jobId },
+        where: { job_id: jobId },
         include: {
-          candidate: true
-        }
+          candidate: true,
+        },
       });
 
-      const sessions = await prisma.interviewSession.findMany({
-        where: { jobId }
+      const sessions = await prisma.interviewSchedule.findMany({
+        where: { job_id: jobId },
       });
 
       return {
         total_sessions: sessions.length,
-        scheduled: sessions.filter(s => s.status === 'scheduled').length,
-        pending: sessions.filter(s => s.status === 'pending_scheduling').length,
-        declined: sessions.filter(s => s.status === 'declined').length,
+        scheduled: sessions.filter(s => s.session_status === 'scheduled').length,
+        pending: sessions.filter(s => s.session_status === 'pending_scheduling').length,
+        declined: sessions.filter(s => s.session_status === 'declined').length,
         completed: interviews.filter(i => i.status === 'completed').length,
-        no_show: interviews.filter(i => i.status === 'no_show').length
+        no_show: interviews.filter(i => i.status === 'no_show').length,
       };
     } catch (error) {
       console.error('❌ Error getting stats:', error.message);
