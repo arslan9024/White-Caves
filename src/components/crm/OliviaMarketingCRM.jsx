@@ -30,7 +30,7 @@ import {
   selectTopProperties
 } from '../../store/slices/featuredSlice';
 import './AssistantDashboard.css';
-import './OliviaMarketingCRM.css';
+import './OliviaMarketingCRM_NEW/OliviaMarketingCRM.css';
 
 const CAMPAIGNS = [
   { id: 1, name: 'Summer Property Showcase', platform: 'facebook', status: 'active', budget: 25000, spent: 18500, reach: 125000, leads: 48, cpl: 385 },

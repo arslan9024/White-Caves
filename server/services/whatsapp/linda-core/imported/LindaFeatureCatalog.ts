@@ -204,6 +204,13 @@ class LindaFeatureCatalogService {
     }));
   }
 
+  getCountsSnapshot() {
+    return {
+      features: Object.fromEntries(this.counts),
+      playbooks: Object.fromEntries(this.playbookCounts),
+    };
+  }
+
   recordFeatureUse(idOrCommand: number | string): LindaFeatureDef | null {
     const feature =
       typeof idOrCommand === 'number'

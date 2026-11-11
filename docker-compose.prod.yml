@@ -15,8 +15,8 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=5000
-      - DATABASE_URL=${DATABASE_URL:-mongodb://mongodb:27017/whitecaves}
-      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL must be set with MongoDB authentication}
+      - REDIS_URL=${REDIS_URL:?REDIS_URL must be set with Redis authentication}
       - JWT_SECRET=${JWT_SECRET:?JWT_SECRET must be set for production}
       - WHATSAPP_OWNER_EMAIL=${WHATSAPP_OWNER_EMAIL:-arslanmalikgoraha@gmail.com}
       - API_URL=${API_URL:-http://localhost:5000}
@@ -49,7 +49,7 @@ services:
     container_name: white-caves-mongodb
     environment:
       - MONGO_INITDB_DATABASE=whitecaves
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:?MONGO_USERNAME must be set}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:?MONGO_PASSWORD must be set for production}
     # SECURITY: No host port mapping — only accessible via internal Docker network
     # To debug, temporarily add: ports: ["127.0.0.1:27017:27017"]

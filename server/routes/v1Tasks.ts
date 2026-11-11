@@ -16,6 +16,10 @@ import type {
 const router = Router();
 let inMemoryTasks: TaskNode[] = buildCanonical200Tasks();
 
+function queryString(value: unknown): string | undefined {
+  return typeof value === 'string' ? value : undefined;
+}
+
 // Entity state tracking for real-time synchronization
 const entityStateLedger = {
   properties: new Map<string, { vacancyStatus: string; isMasked: boolean }>(),
@@ -31,7 +35,10 @@ const entityStateLedger = {
 router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
-    const { pillar, category, status, search } = req.query;
+    const pillar = queryString(req.query.pillar);
+    const category = queryString(req.query.category);
+    const status = queryString(req.query.status);
+    const search = queryString(req.query.search);
     let result = [...inMemoryTasks];
 
     if (pillar && pillar !== 'all') {
@@ -119,6 +126,7 @@ router.post(
       action: `Execute ${title}`,
       results: `Verified output and telemetry emitted for ${nextCode}`,
       dueDate: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+      createdAt: new Date().toISOString(),
       completionRate: 0,
     };
 

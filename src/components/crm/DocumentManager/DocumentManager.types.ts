@@ -34,4 +34,10 @@ export interface DocumentItem {
   entityName: string;
   ocrConfidence: number; // e.g. 98.5
   metadata: Record<string, string | number | boolean>;
+  documentNumber?: string;
+  linkedDealId?: string;
+  linkedPropertyName?: string;
+  ocrStatus?: string;
+  verifiedBy?: string;
+  verifiedAt?: string;
 }

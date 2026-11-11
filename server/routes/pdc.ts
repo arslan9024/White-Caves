@@ -23,6 +23,17 @@ export interface PdcBounceIncident {
 
 export const pdcRegistry = new Map<string, PdcBounceIncident>();
 
+pdcRouter.use((_req: Request, res: Response, next) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(503).json({
+      success: false,
+      error: 'SERVICE_UNAVAILABLE',
+      message: 'PDC workflow is disabled until durable storage and verified legal workflow rules are configured.',
+    });
+  }
+  next();
+});
+
 /**
  * Calculate statutory escalation deadlines under UAE Law No. 50 of 2022
  * - Day 0 to Day 5: 5 Business Days Grace Period
@@ -120,7 +131,11 @@ pdcRouter.post('/bounce', async (req: Request, res: Response) => {
  * Advance state machine (e.g. to FORMAL_NOTICE_ISSUED or DIRECT_CIVIL_EXECUTION)
  */
 pdcRouter.patch('/:incidentId/escalate', async (req: Request, res: Response) => {
-  const { incidentId } = req.params;
+  const incidentIdParam = req.params.incidentId;
+  const incidentId = Array.isArray(incidentIdParam) ? incidentIdParam[0] : incidentIdParam;
+  if (!incidentId) {
+    return res.status(400).json({ success: false, error: 'Incident ID is required' });
+  }
   const { status } = req.body || {};
 
   const validStatuses = ['FORMAL_NOTICE_ISSUED', 'DIRECT_CIVIL_EXECUTION', 'RESOLVED_SETTLED'];

@@ -59,6 +59,17 @@ export const governmentTimeoutMiddleware = (_req: Request, res: Response, next: 
 
 oqoodRouter.use(governmentTimeoutMiddleware);
 
+oqoodRouter.use((_req: Request, res: Response, next) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(503).json({
+      success: false,
+      error: 'SERVICE_UNAVAILABLE',
+      message: 'Oqood registration is disabled until durable storage and verified DLD/RERA integration are configured.',
+    });
+  }
+  next();
+});
+
 oqoodRouter.post('/register', async (req: Request, res: Response) => {
 
   const {

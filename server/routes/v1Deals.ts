@@ -85,6 +85,8 @@ router.post(
       commissionRate: Number(body.commissionRate) || 5,
       pdcSchedule: body.pdcSchedule || [],
       documents: body.documents || [],
+      tasksCompleted: [],
+      meritXPAwarded: 0,
       createdAt: new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString().split('T')[0],
     };

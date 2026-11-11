@@ -108,6 +108,7 @@ export interface RelationshipEdge {
 
 export interface RelationshipChain {
   id: string; // e.g. 'REL-001'
+  dealId?: string;
   name: string;
   dealNumber: string;
   summary: string;

@@ -30,9 +30,9 @@ router.get(
         d =>
           d.title.toLowerCase().includes(q) ||
           d.id.toLowerCase().includes(q) ||
-          d.documentNumber.toLowerCase().includes(q) ||
-          d.linkedDealId.toLowerCase().includes(q) ||
-          d.linkedPropertyName.toLowerCase().includes(q)
+          (d.documentNumber || d.docCode).toLowerCase().includes(q) ||
+          (d.linkedDealId || d.dealId || '').toLowerCase().includes(q) ||
+          (d.linkedPropertyName || '').toLowerCase().includes(q)
       );
     }
 

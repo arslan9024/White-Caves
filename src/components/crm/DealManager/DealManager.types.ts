@@ -53,7 +53,8 @@ export interface DealItem {
   commissionRate: number; // e.g. 5 for lease, 2 for sale
   pdcSchedule: DealPDC[];
   documents: DealDocumentRef[];
-  tasksCompleted: string[]; // e.g. ['TSK-001', 'TSK-002', 'TSK-003', 'TSK-004']
+  tasksCompleted?: string[]; // e.g. ['TSK-001', 'TSK-002', 'TSK-003', 'TSK-004']
   closingDate?: string;
-  meritXPAwarded: number;
+  meritXPAwarded?: number;
+  updatedAt?: string;
 }

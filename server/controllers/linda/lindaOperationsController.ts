@@ -61,7 +61,7 @@ export const getLindaMetrics = async (_req: Request, res: Response) => {
  */
 export const runLindaScript = async (req: Request, res: Response) => {
   try {
-    const { script, args } = req.body as { script?: string; args?: Record<string, unknown> };
+    const { script } = req.body as { script?: string };
     if (!script || typeof script !== 'string') {
       return res.status(400).json({
         success: false,
@@ -69,7 +69,7 @@ export const runLindaScript = async (req: Request, res: Response) => {
       });
     }
 
-    const result = executeLindaCommandOrScript(script, args);
+    const result = executeLindaCommandOrScript(script);
     res.json({
       success: result.success,
       data: result,

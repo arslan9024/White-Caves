@@ -436,13 +436,6 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
-// AEGIS V5 Omni-Orchestrator Telemetry & Control API
-app.use('/api/aegis', aegisRoutes);
-// DLD Oqood Off-Plan Pre-Registration API (DU004 / AEG-012)
-app.use('/api/oqood', oqoodRouter);
-// UAE Law 50/2022 PDC Bounce & Direct Civil Execution API (DU008)
-app.use('/api/pdc', pdcRouter);
-
 // Database health check — Wave 15 (W15-002)
 app.get(
   '/api/health/db',
@@ -576,6 +569,11 @@ if (process.env.NODE_ENV === 'production' || process.env.DEV_AUTH_BYPASS === 'fa
   app.use('/api', authMiddleware);
   logger.info(`Auth middleware enabled for NODE_ENV=${process.env.NODE_ENV}`);
 }
+
+// These internal telemetry and statutory workflows must not bypass API authentication.
+app.use('/api/aegis', aegisRoutes);
+app.use('/api/oqood', oqoodRouter);
+app.use('/api/pdc', pdcRouter);
 
 // Leads API (Clara - Lead Manager)
 app.use('/api/leads', leadsRoutes);

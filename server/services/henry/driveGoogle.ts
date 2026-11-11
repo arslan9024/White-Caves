@@ -1,5 +1,4 @@
-import { auth as googleAuth, drive, type drive_v3 } from 'googleapis/build/src/apis/drive/index.js';
-import type { Credentials, OAuth2Client } from 'google-auth-library';
+import { google, type drive_v3 } from 'googleapis';
 import { AppError } from '../../middleware/errorHandler.js';
 import { maxSourceBytes } from './documentVault.js';
 
@@ -13,18 +12,18 @@ export function driveConfigured(): boolean {
   return !!(process.env.GOOGLE_DRIVE_CLIENT_ID && process.env.GOOGLE_DRIVE_CLIENT_SECRET &&
     process.env.GOOGLE_DRIVE_REDIRECT_URI);
 }
-export function driveOAuth(): OAuth2Client {
+export function driveOAuth(): InstanceType<typeof google.auth.OAuth2> {
   if (!driveConfigured()) throw new AppError('Drive setup required: GOOGLE_DRIVE_CLIENT_ID, GOOGLE_DRIVE_CLIENT_SECRET, GOOGLE_DRIVE_REDIRECT_URI and encrypted vault', 503);
   const redirect = new URL(process.env.GOOGLE_DRIVE_REDIRECT_URI!);
   if (redirect.pathname !== '/henry-drive-callback' || redirect.search || redirect.hash ||
     (redirect.protocol !== 'https:' && !(redirect.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(redirect.hostname))))
     throw new AppError('Drive redirect must be the application /henry-drive-callback URL (HTTPS in production)', 503);
-  return new googleAuth.OAuth2(process.env.GOOGLE_DRIVE_CLIENT_ID, process.env.GOOGLE_DRIVE_CLIENT_SECRET, redirect.href);
+  return new google.auth.OAuth2(process.env.GOOGLE_DRIVE_CLIENT_ID, process.env.GOOGLE_DRIVE_CLIENT_SECRET, redirect.href);
 }
 export class DriveGoogle {
   private readonly api;
-  constructor(auth: OAuth2Client) {
-    this.api = drive({ version: 'v3', auth });
+  constructor(auth: InstanceType<typeof google.auth.OAuth2>) {
+    this.api = google.drive({ version: 'v3', auth });
   }
   async identity(): Promise<string> {
     const response = await this.api.about.get({ fields: 'user(permissionId,emailAddress)' }, { timeout: 15000, retry: false });
@@ -67,4 +66,4 @@ export class DriveGoogle {
     return bytes;
   }
 }
-export type DriveCredentials = Credentials;
+export type DriveCredentials = InstanceType<typeof google.auth.OAuth2>['credentials'];
