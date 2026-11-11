@@ -45,7 +45,7 @@ describe('imageOptimization utilities', () => {
 
     expect(sources.avifSrc).toContain('fm=avif');
     expect(sources.webpSrc).toContain('fm=webp');
-    expect(sources.fallbackSrc).toContain('fm=jpeg');
+    expect(sources.fallbackSrc).toContain('fm=jpg');
     expect(sources.avifSrc).toContain('w=1024');
   });
 
