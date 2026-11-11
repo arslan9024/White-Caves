@@ -66,7 +66,7 @@ export const DubaiSunsetGallery: FC<DubaiSunsetGalleryProps> = ({
             <h3 className="text-lg font-black text-white tracking-tight">
               Dubai Marina &amp; Palm Jumeirah Sunset Curation
             </h3>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-[var(--text-muted)]">
               High-resolution golden hour photography captured across Dubai prime waterfronts
             </p>
           </div>

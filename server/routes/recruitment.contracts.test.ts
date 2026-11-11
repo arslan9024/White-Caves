@@ -34,8 +34,8 @@ describe('Recruitment persistence and authorization contracts', () => {
     ['post', '/applications/a1/manager-review'],
   ] as const)('rejects spoofed role on %s %s', async (method, path) => {
     vi.stubEnv('RECRUITMENT_AUTH_MODE', 'enforced');
-    const response = await request(appFor())
-      [method](`/api/recruitment${path}`)
+    const client = request(appFor());
+    const response = await client[method](`/api/recruitment${path}`)
       .set('x-user-role', 'hr')
       .send({});
     expect(response.status).toBe(401);
