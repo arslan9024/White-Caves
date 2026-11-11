@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #120 Blueprint
-**Generated:** 2026-11-11T13:16:58.408Z
+# AEGIS Perpetual Ouroboros — Cycle #856 Blueprint
+**Generated:** 2026-11-11T13:17:18.752Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-10 — Defensive SQA Matrices, WCAG 2.2 AA & Cryptographic Shield
-- **Lead Researcher:** @Rachel_QA (Dept 12)
-- **Core Objective:** Zero-Regression Gate, Husky Secret Scanning & CSRF Hardening
+- **Domain:** DOM-06 — Bilingual Arabic (RTL) & Micro-Typography Geometry
+- **Lead Researcher:** @Invoice (Dept 10)
+- **Core Objective:** Dir="rtl" Font Metrics & Cairo/Tajawal Dual-Script Polish
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
