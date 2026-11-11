@@ -189,9 +189,6 @@ function buildCanonicalAiAgentsSeed(): AiAgentRecord[] {
       avatar: sup.avatar,
     };
   });
-    activeWorkload: sup.metrics.tasksCompletedToday,
-    avatar: sup.avatar,
-  }));
 
   const coreAgentIds = new Set<string>([
     zoeAgent.agentId.toLowerCase(),
