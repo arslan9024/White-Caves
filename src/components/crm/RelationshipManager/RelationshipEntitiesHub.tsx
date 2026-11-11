@@ -53,6 +53,7 @@ export const RelationshipEntitiesHub: FC<RelationshipEntitiesHubProps> = ({
   // Modal state
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isQuickDrawerOpen, setIsQuickDrawerOpen] = useState(false);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeViewNode, setActiveViewNode] = useState<EntityNode | null>(null);
 
