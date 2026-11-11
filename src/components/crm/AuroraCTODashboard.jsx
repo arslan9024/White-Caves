@@ -389,7 +389,7 @@ const TECH_STACK = {
     'Lucide Icons',
     'CSS Modules',
   ],
-  backend: ['Express.js', 'Node.js 20', 'Mongoose ODM', 'JWT Auth', 'RESTful API'],
+  backend: ['Express.js', 'Node.js 22', 'Mongoose ODM', 'JWT Auth', 'RESTful API'],
   database: ['MongoDB Atlas', 'Firebase Auth', 'PostgreSQL (Neon)'],
   integrations: [
     'Stripe',

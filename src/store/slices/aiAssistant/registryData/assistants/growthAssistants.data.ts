@@ -172,7 +172,7 @@ export const growthAssistants: Record<string, AIAssistant> = {
     apiEndpoints: ['/api/system', '/api/deployments', '/api/applications'],
     techStack: {
       frontend: ['React 18', 'Redux Toolkit', 'Vite'],
-      backend: ['Node.js 20', 'Express', 'MongoDB 7'],
+      backend: ['Node.js 22', 'Express', 'MongoDB 7'],
       database: ['MongoDB', 'Redis'],
       infrastructure: ['Replit', 'MongoDB Atlas'],
     },
