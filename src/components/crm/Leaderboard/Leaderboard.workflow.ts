@@ -98,7 +98,8 @@ export function evaluatePromotionEligibilityWorkflow(member: LeaderboardMember):
   }
 
   let criteriaKey = '';
-  if (member.currentTier === 'L4') criteriaKey = 'L4_TO_L3';
+  if (member.currentTier === 'L5') criteriaKey = 'L5_TO_L4';
+  else if (member.currentTier === 'L4') criteriaKey = 'L4_TO_L3';
   else if (member.currentTier === 'L3') criteriaKey = 'L3_TO_L2';
   else if (member.currentTier === 'L2') criteriaKey = 'L2_TO_L1';
   else {
@@ -128,13 +129,31 @@ export function evaluatePromotionEligibilityWorkflow(member: LeaderboardMember):
   if (member.slaOnTimeRate < criteria.minSlaRate) {
     missing.push(`SLA rate ${member.slaOnTimeRate}% is below required ${criteria.minSlaRate}%`);
   }
+  if (criteria.minDirectFollowers && criteria.minDirectFollowers > 0) {
+    const currentFollowers = member.directFollowersCount ?? 0;
+    if (currentFollowers < criteria.minDirectFollowers) {
+      missing.push(
+        `Requires at least ${criteria.minDirectFollowers} active followers (currently has ${currentFollowers})`
+      );
+    }
+  }
 
   const taskProgress = Math.min(
     100,
     Math.round((member.tasksCompleted / criteria.minTasksCompleted) * 100)
   );
   const xpProgress = Math.min(100, Math.round((member.meritXp / criteria.minMeritXp) * 100));
-  const progressPercent = Math.min(100, Math.round((taskProgress + xpProgress) / 2));
+  const followerProgress =
+    criteria.minDirectFollowers && criteria.minDirectFollowers > 0
+      ? Math.min(
+          100,
+          Math.round(((member.directFollowersCount ?? 0) / criteria.minDirectFollowers) * 100)
+        )
+      : 100;
+  const progressPercent = Math.min(
+    100,
+    Math.round((taskProgress + xpProgress + followerProgress) / (followerProgress < 100 ? 3 : 2))
+  );
 
   const isEligible = missing.length === 0;
 
@@ -167,7 +186,10 @@ export function executeTierPromotionWorkflow(
   let newRole = previousRole;
   let nextTier: TierLevel | null = null;
 
-  if (criteria.toTier === 'L3') {
+  if (criteria.toTier === 'L4') {
+    newRole = `Team Leader (${member.departmentName})`;
+    nextTier = 'L3';
+  } else if (criteria.toTier === 'L3') {
     newRole = `Operational Supervisor (${member.departmentName})`;
     nextTier = 'L2';
   } else if (criteria.toTier === 'L2') {

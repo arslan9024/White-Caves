@@ -19,6 +19,20 @@ export const BONUS_MULTIPLIERS = {
 } as const;
 
 export const PROMOTION_CRITERIA: Record<string, PromotionCriteria> = {
+  L5_TO_L4: {
+    fromTier: 'L5',
+    toTier: 'L4',
+    targetRole: 'TEAM_LEADER',
+    minTasksCompleted: 10,
+    minMeritXp: 1200,
+    minSlaRate: 85,
+    endorsementRequired: false,
+    minDirectFollowers: 3,
+    maxSlotsInTargetTier: 9,
+    title: 'Promotion to Team Leader (L4)',
+    description:
+      'Requires 10+ tasks, 1,200+ XP, 85%+ SLA, and minimum 3 active direct followers/mentees.',
+  },
   L4_TO_L3: {
     fromTier: 'L4',
     toTier: 'L3',
@@ -27,6 +41,8 @@ export const PROMOTION_CRITERIA: Record<string, PromotionCriteria> = {
     minMeritXp: 2500,
     minSlaRate: 90,
     endorsementRequired: true,
+    minDirectFollowers: 0,
+    maxSlotsInTargetTier: 12,
     title: 'Promotion to Operational Supervisor (L3)',
     description:
       'Requires 25+ completed tasks, 2,500+ XP, 90%+ on-time SLA, and 1 supervisor endorsement.',
@@ -106,7 +122,7 @@ export const TIER_METADATA: Record<TierLevel, TierMeta> = {
   },
   L4: {
     tier: 'L4',
-    label: 'Frontline Specialist',
+    label: 'Team Leader',
     badgeBg: 'bg-cyan-900/40',
     badgeText: 'text-cyan-300',
     badgeBorder: 'border-cyan-500/40',
@@ -115,7 +131,7 @@ export const TIER_METADATA: Record<TierLevel, TierMeta> = {
   },
   L5: {
     tier: 'L5',
-    label: 'Operational Task Unit',
+    label: 'Frontline Employee',
     badgeBg: 'bg-gray-800/40',
     badgeText: 'text-gray-300',
     badgeBorder: 'border-gray-600/40',
