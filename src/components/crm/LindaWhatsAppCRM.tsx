@@ -11,6 +11,7 @@ import {
   LindaCampaignsAndOutreachPanel,
   LindaConversationsAndPillarsPanel,
 } from './LindaWhatsAppCRM/LindaCampaignsAndOutreachPanels';
+import { LindaLiveWhatsAppWeb } from './LindaWhatsAppCRM/LindaLiveWhatsAppWeb';
 import { type LindaViewTab } from './LindaWhatsAppCRM/LindaWhatsAppCRM.types';
 import {
   INITIAL_OUTREACH_OWNERS,
@@ -91,6 +92,19 @@ const LindaWhatsAppCRM = memo(() => {
       />
 
       <LindaTelemetryGrid isDark={isDark} metrics={metrics} />
+
+      {(activeViewTab === 'all' || activeViewTab === 'whatsapp_web') && (
+        <LindaLiveWhatsAppWeb
+          conversations={INITIAL_LINDA_CONVERSATIONS}
+          onSendMessage={(convId, text) => {
+            const match = INITIAL_LINDA_CONVERSATIONS.find(c => c.id === convId);
+            if (match) {
+              handleSendQuickReply({ ...match, lastMessage: text });
+            }
+          }}
+          onAutoReplyWithAI={handleSendQuickReply}
+        />
+      )}
 
       {(activeViewTab === 'all' || activeViewTab === 'terminal') && (
         <LindaQuickActionsAndTerminal
