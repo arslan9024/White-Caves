@@ -87,5 +87,11 @@ declare module '@opentelemetry/instrumentation-http';
 declare module '@opentelemetry/instrumentation';
 declare module '@opentelemetry/sdk-trace-base';
 declare module '@opentelemetry/sdk-trace-node';
+declare module '*/DynamicAssistantCRM' {
+  import { FC, ComponentType } from 'react';
+  const DynamicAssistantCRM: ComponentType<any>;
+  export default DynamicAssistantCRM;
+  export { DynamicAssistantCRM };
+}
 
 
