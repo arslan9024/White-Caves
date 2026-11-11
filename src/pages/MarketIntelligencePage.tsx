@@ -1,5 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
+import DubaiGeospatialClusterViewer from '../components/maps/DubaiGeospatialClusterViewer';
 import 'leaflet/dist/leaflet.css';
 
 const MarketChoroplethMap = lazy(() => import('../components/maps/MarketChoroplethMap'));

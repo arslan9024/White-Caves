@@ -60,6 +60,36 @@ describe('TasksTab', () => {
     expect(screen.queryByText(/Verify DLD Title Deeds Submission/i)).not.toBeInTheDocument();
   });
 
+  it('renders Zoe Dispatched filter and AI Zoe SLA badges', () => {
+    const handleFilterChange = vi.fn();
+    const tasksWithZoe = [
+      {
+        id: 'task-zoe-1',
+        title: 'Audit 14 Active Ejari Contracts',
+        status: 'in_progress',
+        priority: 'high',
+        dueDate: '2026-11-20',
+        assignee: 'AI Clara (DEPT-05)',
+        dispatchedByZoe: true,
+      },
+    ];
+
+    render(
+      <TasksTab
+        tasks={tasksWithZoe}
+        filterStatus="all"
+        onFilterChange={handleFilterChange}
+      />
+    );
+
+    expect(screen.getByTestId('filter-zoe-dispatched-btn')).toBeInTheDocument();
+    expect(screen.getByTestId('badge-zoe-dispatched')).toBeInTheDocument();
+    expect(screen.getByText(/AI Zoe SLA/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('filter-zoe-dispatched-btn'));
+    expect(handleFilterChange).toHaveBeenCalledWith('zoe_dispatched');
+  });
+
   it('triggers onFilterChange when clicking filter buttons', () => {
     const handleFilterChange = vi.fn();
     render(
