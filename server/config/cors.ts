@@ -80,6 +80,42 @@ function isLocalDevOrigin(origin: string): boolean {
   }
 }
 
+/**
+ * Production origins that are always allowed regardless of CORS_ORIGIN env.
+ * Keeps the Vercel frontend and the named Cloudflare tunnel working even when
+ * the env allowlist is misconfigured.
+ */
+const ALLOWED_STATIC_ORIGINS: readonly string[] = [
+  'https://whitecaves.com',
+  'https://www.whitecaves.com',
+  'https://white-caves.vercel.app',
+  'https://api.whitecaves.com',
+];
+
+/**
+ * Hosted-platform hostname suffixes allowed for preview/tunnel traffic (https only).
+ * Deliberately scoped: `.vercel.app` previews are restricted to this project's
+ * account suffix so arbitrary third-party Vercel apps cannot send credentialed
+ * requests; `.trycloudflare.com` enables Cloudflare quick tunnels during bridge
+ * development.
+ */
+const ALLOWED_ORIGIN_SUFFIXES: readonly string[] = [
+  '.trycloudflare.com',
+  '-arslan-maliks-projects.vercel.app',
+];
+
+function matchesAllowedSuffix(origin: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(origin);
+    if (protocol !== 'https:') {
+      return false;
+    }
+    return ALLOWED_ORIGIN_SUFFIXES.some(suffix => hostname.endsWith(suffix));
+  } catch {
+    return false;
+  }
+}
+
 export function isCorsOriginAllowed(
   origin: string | undefined,
   allowedOrigins: readonly string[],
@@ -100,6 +136,14 @@ export function isCorsOriginAllowed(
   }
 
   if ((nodeEnv || 'development') !== 'production' && isLocalDevOrigin(normalizedOrigin)) {
+    return true;
+  }
+
+  if (ALLOWED_STATIC_ORIGINS.includes(normalizedOrigin)) {
+    return true;
+  }
+
+  if (matchesAllowedSuffix(normalizedOrigin)) {
     return true;
   }
 

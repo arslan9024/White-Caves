@@ -1,7 +1,8 @@
 import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config/env.js';
+import { JWT_SECRET, CORS_ORIGINS } from '../config/env.js';
+import { buildAllowedCorsOrigins, isCorsOriginAllowed } from '../config/cors.js';
 
 interface UserKPI {
   userId: string;
@@ -30,10 +31,23 @@ export class RealtimeService {
   private updateInterval: NodeJS.Timeout | null = null;
 
   constructor(httpServer: HTTPServer) {
+    // Share the HTTP CORS allowlist (env CORS_ORIGIN + static/tunnel/preview
+    // origins from server/config/cors.ts) instead of a single CLIENT_URL.
+    const allowedOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);
+
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: process.env.CLIENT_URL || 'http://localhost:3001',
+        origin: (origin, callback) => {
+          if (
+            isCorsOriginAllowed(origin ?? undefined, allowedOrigins, null, process.env.NODE_ENV)
+          ) {
+            callback(null, true);
+            return;
+          }
+          callback(new Error('Socket.io CORS: origin not allowed'));
+        },
         credentials: true,
+        allowedHeaders: ['Authorization', 'Content-Type', 'X-Requested-With'],
       },
       transports: ['websocket', 'polling'],
     });
