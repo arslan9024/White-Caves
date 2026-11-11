@@ -296,7 +296,10 @@ export function useCustomerManager({
     // Live REST API sync
     v1CustomersApi.create(custData).catch(() => {});
     setIsDrawerOpen(false);
-  }, []);
+    if (createdCustomer) {
+      triggerHighlight((createdCustomer as CustomerItem).id);
+    }
+  }, [triggerHighlight]);
 
   return {
     customers: filteredCustomers,
@@ -313,6 +316,8 @@ export function useCustomerManager({
     setError,
     selectedCustomerForModal,
     isDrawerOpen,
+    highlightedCustomerId: highlightedId,
+    triggerHighlight,
     handleOpenDetailModal,
     handleCloseDetailModal,
     handleOpenCreateDrawer,
