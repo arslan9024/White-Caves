@@ -1,8 +1,9 @@
 ---
+name: macro-huge-wave-implementation
 description: 'Run one macro/huge-wave implementation from blocker identification to validated completion'
 ---
 
-# Macro/Huge-wave Implementation Prompt
+# Macro/Huge-wave Implementation
 
 Execute a single macro/huge-wave bundle with this sequence:
 
