@@ -12,6 +12,7 @@ import { CANONICAL_ALL_ENTITIES, ENTITY_TYPE_OPTIONS } from './RelationshipEntit
 import { EntityFormModal, EntityInspectModal } from './RelationshipEntityModals';
 import { ErmsEntityDrawer } from './ErmsEntityDrawer';
 import { ErmsRbacSecurityLedger } from './ErmsRbacSecurityLedger';
+import { ErmsBulkImporterModal } from './ErmsBulkImporterModal';
 
 const STORAGE_KEY = 'whitecaves_all_entities_store';
 
