@@ -112,34 +112,7 @@ export const CustomerRegistrationDrawer: FC<CustomerRegistrationDrawerProps> = (
   if (!isOpen) return null;
 
   const handleSaveData = (shouldClose: boolean) => {
-    if (!fullName.trim()) return;
-    onSubmit({
-      fullName,
-      customerCode: customerCode || `CUST-${Date.now().toString().slice(-4)}`,
-      email,
-      phone,
-      customerType,
-      preferredCommunity,
-      budgetAED,
-      assignedAgentName,
-      source,
-      status: 'ACTIVE',
-      lastContactDate: new Date().toISOString().slice(0, 10),
-    });
-    if (shouldClose) {
-      onClose();
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSaveData(true);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
     if (!fullName.trim() || !email.trim()) return;
-
     onSubmit({
       customerCode: customerCode.trim() || `CUST-AUTO-${Math.floor(Math.random() * 900 + 100)}`,
       fullName: fullName.trim(),
@@ -154,12 +127,21 @@ export const CustomerRegistrationDrawer: FC<CustomerRegistrationDrawerProps> = (
       budgetAED: Number(budgetAED) || 100000,
       kycVerified: false,
       source,
+      status: 'ACTIVE',
+      lastContactDate: new Date().toISOString().slice(0, 10),
     });
     setFullName('');
     setCustomerCode('');
     setEmail('');
     setPhone('');
-    onClose();
+    if (shouldClose) {
+      onClose();
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSaveData(true);
   };
 
   return (

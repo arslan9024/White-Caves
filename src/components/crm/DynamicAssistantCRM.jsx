@@ -8,7 +8,7 @@ import './DynamicAssistantCRM.css';
 // Lazy loaders map for specialized CRM components
 const ASSISTANT_LOADERS = {
   linda: () => import('./LindaWhatsAppCRM'),
-  mary: () => import('./MaryInventoryCRM'),
+  mary: () => import('./MaryInventoryCRM_NEW'),
   clara: () => import('./ClaraLeadsCRM'),
   nina: () => import('./NinaWhatsAppBotCRM_NEW'),
   nancy: () => import('./NancyHRCRM'),
