@@ -8,11 +8,12 @@ export interface LindaViewTabsProps {
 }
 
 const TABS: { id: LindaViewTab; label: string }[] = [
-  { id: 'all', label: '🎛️ All Components Unified View (Default)' },
-  { id: 'terminal', label: '📟 4-Panel Terminal, F1–F35 & Playbooks' },
-  { id: 'sessions', label: '📱 Multi-Account Sessions & QR/Code (2.1/2.2)' },
-  { id: 'outreach', label: '📢 Campaigns & Area Owner Outreach (F35)' },
-  { id: 'conversations', label: '💬 Convos (F34), Mary Sourcing & 10 Pillars' },
+  { id: 'all', label: '🎛️ All Unified View' },
+  { id: 'whatsapp_web', label: '💬 WhatsApp Web Live Desk' },
+  { id: 'terminal', label: '📟 4-Panel Terminal & Playbooks' },
+  { id: 'sessions', label: '📱 Multi-Account Sessions & QR/Code' },
+  { id: 'outreach', label: '📢 Campaigns & Area Owner Outreach' },
+  { id: 'conversations', label: '📊 Convo Analyzer (F34) & 10 Pillars' },
 ];
 
 export const LindaViewTabs: React.FC<LindaViewTabsProps> = ({
