@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { afterEach, describe, it, expect, beforeEach, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import { pdcRouter, pdcRegistry, calculateEscalationDeadlines } from './pdc';
@@ -11,6 +11,19 @@ describe('UAE Law 50/2022 PDC Bounce & Direct Civil Execution Suite (DU008)', ()
     app = express();
     app.use(express.json());
     app.use('/api/pdc', pdcRouter);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('fails closed in production until durable storage and legal workflow rules exist', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+
+    const res = await request(app).post('/api/pdc/bounce').send({});
+
+    expect(res.status).toBe(503);
+    expect(res.body.error).toBe('SERVICE_UNAVAILABLE');
   });
 
   it('calculates statutory grace period and civil execution dates', () => {

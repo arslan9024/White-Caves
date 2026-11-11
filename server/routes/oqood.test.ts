@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { afterEach, describe, it, expect, beforeEach, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import { oqoodRouter, oqoodRegistry, calculateOqoodFees } from './oqood';
@@ -11,6 +11,19 @@ describe('DLD Oqood Pre-Registration Suite (DU004 / AEG-012)', () => {
     app = express();
     app.use(express.json());
     app.use('/api/oqood', oqoodRouter);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('fails closed in production until durable storage and authority integration exist', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+
+    const res = await request(app).post('/api/oqood/register').send({});
+
+    expect(res.status).toBe(503);
+    expect(res.body.error).toBe('SERVICE_UNAVAILABLE');
   });
 
   it('calculates statutory DLD & Oqood fees accurately', () => {
