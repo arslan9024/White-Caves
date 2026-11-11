@@ -38,6 +38,7 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
     setError,
     isDrawerOpen,
     editingEmployee,
+    highlightedEmpId,
     metrics,
     pillars,
     handleHireEmployee,

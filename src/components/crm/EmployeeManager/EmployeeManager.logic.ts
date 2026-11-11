@@ -210,6 +210,8 @@ export function useEmployeeManager() {
     setError,
     isDrawerOpen,
     editingEmployee,
+    highlightedEmpId: highlightedId,
+    triggerHighlight,
     metrics,
     pillars: PILLARS_7,
     handleHireEmployee,
