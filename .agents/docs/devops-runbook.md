@@ -18,3 +18,10 @@
 
 - Node.js 22.x runtime (22.19+) orchestrated with PM2 cluster mode.
 - Nginx reverse proxy enforcing SSL TLS 1.3, HSTS, and strict Content Security Policies.
+
+## 3. Backend Deployment Status
+
+- Retain the full Express/Docker backend; Cloudflare deployment preparation is deferred to the next deployment task.
+- No reachable production backend origin has been verified. Do not configure a proxy to an assumed hostname.
+- The legacy Vercel API currently fails module loading. A successful frontend build does not verify API health or backend feature parity.
+- Before enabling production traffic, verify backend health, authentication/RBAC, and the required Express routes against the selected deployment.

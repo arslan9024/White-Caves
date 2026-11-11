@@ -16,7 +16,8 @@ export const CURATED_DUBAI_SUNSET_PHOTOS: LuxurySunsetPhoto[] = [
     id: 'sunset-palm-01',
     title: 'Atlantis The Royal Sunset Horizon',
     location: 'Palm Jumeirah, Crescent',
-    imageUrl: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=85',
+    imageUrl:
+      'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=85',
     goldenHourTime: '17:42 GST',
     tag: 'Ultra-Prime Waterfront',
     curatedBy: 'White Caves Media Architecture',
@@ -25,7 +26,8 @@ export const CURATED_DUBAI_SUNSET_PHOTOS: LuxurySunsetPhoto[] = [
     id: 'sunset-marina-02',
     title: 'Dubai Marina Twilight Yacht Promenade',
     location: 'Dubai Marina Channel',
-    imageUrl: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?auto=format&fit=crop&w=1200&q=85',
+    imageUrl:
+      'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?auto=format&fit=crop&w=1200&q=85',
     goldenHourTime: '17:50 GST',
     tag: 'Skyline Reflections',
     curatedBy: 'Victoria Chen (Luxury Lead)',
@@ -34,7 +36,8 @@ export const CURATED_DUBAI_SUNSET_PHOTOS: LuxurySunsetPhoto[] = [
     id: 'sunset-hills-03',
     title: 'Emerald Fairways Golden Hour Vista',
     location: 'Dubai Hills Estate',
-    imageUrl: 'https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=1200&q=85',
+    imageUrl:
+      'https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=1200&q=85',
     goldenHourTime: '17:38 GST',
     tag: 'Private Golf Sanctuary',
     curatedBy: 'White Caves Creative Guild',
@@ -53,10 +56,7 @@ export const DubaiSunsetGallery: FC<DubaiSunsetGalleryProps> = ({
   const [activePhoto, setActivePhoto] = useState<LuxurySunsetPhoto | null>(null);
 
   return (
-    <section
-      aria-label="Curated Dubai Prime Sunset Photography"
-      className={`py-8 ${className}`}
-    >
+    <section aria-label="Curated Dubai Prime Sunset Photography" className={`py-8 ${className}`}>
       <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
         <div className="flex items-center gap-2.5">
           <div className="p-2 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-600 text-white shadow-lg shadow-rose-600/30">
@@ -66,7 +66,7 @@ export const DubaiSunsetGallery: FC<DubaiSunsetGalleryProps> = ({
             <h3 className="text-lg font-black text-white tracking-tight">
               Dubai Marina &amp; Palm Jumeirah Sunset Curation
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600">
               High-resolution golden hour photography captured across Dubai prime waterfronts
             </p>
           </div>
@@ -157,9 +157,7 @@ export const DubaiSunsetGallery: FC<DubaiSunsetGalleryProps> = ({
                   {activePhoto.location}
                 </p>
               </div>
-              <span className="text-xs text-slate-400 italic">
-                {activePhoto.curatedBy}
-              </span>
+              <span className="text-xs text-slate-400 italic">{activePhoto.curatedBy}</span>
             </div>
           </div>
         </div>
