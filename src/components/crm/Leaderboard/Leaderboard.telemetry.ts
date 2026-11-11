@@ -19,14 +19,10 @@ export interface LeaderboardTelemetryEvent {
 class LeaderboardTelemetryService {
   private queue: LeaderboardTelemetryEvent[] = [];
 
-<<<<<<< Updated upstream
   public track(
     eventType: LeaderboardTelemetryEvent['eventType'],
     details: Partial<LeaderboardTelemetryEvent> = {}
   ) {
-=======
-  public track(eventType: LeaderboardTelemetryEvent['eventType'], details: Partial<LeaderboardTelemetryEvent> = {}) {
->>>>>>> Stashed changes
     const event: LeaderboardTelemetryEvent = {
       eventId: `tel-ldr-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       eventType,
@@ -57,7 +53,3 @@ class LeaderboardTelemetryService {
 }
 
 export const LeaderboardTelemetry = new LeaderboardTelemetryService();
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

@@ -4,8 +4,9 @@
  */
 
 import { Request, Response } from 'express';
+import { Readable } from 'node:stream';
 import multer from 'multer';
-import * as XLSX from 'xlsx';
+import ExcelJS, { type Cell } from 'exceljs';
 import { prisma } from '../../database.js';
 import { AppError } from '../../middleware/errorHandler.js';
 import { sanitizeString } from '../../utils/sanitize.js';
@@ -31,14 +32,53 @@ export const importUpload = multer({
   },
 });
 
+function spreadsheetCellText(cell: Cell): string | null {
+  return cell.value === null || cell.value === undefined ? null : cell.text;
+}
+
+async function readImportRows(
+  buffer: Buffer,
+  fileName: string
+): Promise<Record<string, string | null>[]> {
+  const workbook = new ExcelJS.Workbook();
+  if (fileName.toLowerCase().endsWith('.csv')) {
+    await workbook.csv.read(Readable.from([buffer]));
+  } else {
+    await workbook.xlsx.load(Uint8Array.from(buffer).buffer);
+  }
+
+  const worksheet = workbook.worksheets[0];
+  if (!worksheet) throw new AppError('File contains no worksheet', 400);
+  if (worksheet.rowCount > 501) throw new AppError('Maximum 500 rows per import', 400);
+
+  const headerRow = worksheet.getRow(1);
+  const headers = Array.from(
+    { length: worksheet.columnCount },
+    (_, index) => spreadsheetCellText(headerRow.getCell(index + 1))?.trim() ?? ''
+  );
+  if (!headers.some(Boolean)) throw new AppError('File contains no header row', 400);
+
+  const rows: Record<string, string | null>[] = [];
+  for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber += 1) {
+    const row = worksheet.getRow(rowNumber);
+    const values: Record<string, string | null> = {};
+    let hasData = false;
+    for (let column = 0; column < headers.length; column += 1) {
+      const header = headers[column];
+      if (!header) continue;
+      const value = spreadsheetCellText(row.getCell(column + 1));
+      values[header] = value;
+      if (value?.trim()) hasData = true;
+    }
+    if (hasData) rows.push(values);
+  }
+  return rows;
+}
+
 export async function importLeadsFile(req: Request, res: Response): Promise<void> {
   if (!req.file) throw new AppError('No file uploaded', 400);
 
-  const wb = XLSX.read(req.file.buffer, { type: 'buffer' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rawRows = XLSX.utils.sheet_to_json<Record<string, string | number | null>>(ws, {
-    defval: null,
-  });
+  const rawRows = await readImportRows(req.file.buffer, req.file.originalname);
 
   if (rawRows.length === 0) throw new AppError('File contains no data rows', 400);
   if (rawRows.length > 500) throw new AppError('Maximum 500 rows per import', 400);
@@ -100,9 +140,7 @@ export async function importLeadsFile(req: Request, res: Response): Promise<void
     const budget = budgetRaw ? parseFloat(budgetRaw) || null : null;
 
     const scoreRaw = get('score', 'Score');
-    const score = scoreRaw
-      ? Math.min(100, Math.max(0, Math.round(parseFloat(scoreRaw) || 0)))
-      : 0;
+    const score = scoreRaw ? Math.min(100, Math.max(0, Math.round(parseFloat(scoreRaw) || 0))) : 0;
 
     candidates.push({
       name: sanitizeString(name.slice(0, 200)),
@@ -139,9 +177,7 @@ export async function importLeadsFile(req: Request, res: Response): Promise<void
   );
   const duplicates = candidates.length - toInsert.length;
 
-  const result = toInsert.length
-    ? await prisma.lead.createMany({ data: toInsert })
-    : { count: 0 };
+  const result = toInsert.length ? await prisma.lead.createMany({ data: toInsert }) : { count: 0 };
 
   res.status(201).json({
     success: true,
@@ -335,4 +371,3 @@ export async function bulkImportLeads(req: RouteRequest, res: Response): Promise
     },
   });
 }
-

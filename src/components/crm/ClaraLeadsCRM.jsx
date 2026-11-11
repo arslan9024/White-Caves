@@ -1,22 +1,51 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { 
-  Users, Plus, Search, Filter, MoreVertical, Edit2, Trash2, 
-  Eye, Phone, Mail, MessageCircle, Calendar, Tag, Star,
-  ChevronDown, ChevronUp, Download, Upload, RefreshCw, Bot,
-  UserPlus, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle,
-  DollarSign, Home, MapPin, Briefcase, Zap, Building2, Key, Loader
+import {
+  Users,
+  Plus,
+  Search,
+  Filter,
+  MoreVertical,
+  Edit2,
+  Trash2,
+  Eye,
+  Phone,
+  Mail,
+  MessageCircle,
+  Calendar,
+  Tag,
+  Star,
+  ChevronDown,
+  ChevronUp,
+  Download,
+  Upload,
+  RefreshCw,
+  Bot,
+  UserPlus,
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  DollarSign,
+  Home,
+  MapPin,
+  Briefcase,
+  Zap,
+  Building2,
+  Key,
+  Loader,
 } from 'lucide-react';
 import FullScreenDetailModal from '../../shared/components/ui/FullScreenDetailModal';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
 import { DualCategoryTabStrip } from './shared';
 import { CLARA_FEATURES } from './data/assistantFeatures';
-import { 
-  loadLeads, 
+import {
+  loadLeads,
   loadLeadMetrics,
-  selectAllLeads, 
-  selectLeadMetrics 
-} from '../../store/slices/leadsSlice';
+  selectAllLeads,
+  selectLeadMetrics,
+} from '../../store/slices/leadsSlice.js';
 import './ClaraLeadsCRM.css';
 
 const LEAD_STAGES = [
@@ -26,35 +55,37 @@ const LEAD_STAGES = [
   { id: 'negotiation', label: 'Negotiation', color: '#f59e0b' },
   { id: 'offer', label: 'Offer Made', color: '#22c55e' },
   { id: 'closed', label: 'Closed/Won', color: '#10b981' },
-  { id: 'lost', label: 'Lost', color: '#ef4444' }
+  { id: 'lost', label: 'Lost', color: '#ef4444' },
 ];
 
 const LeadForm = ({ lead, onSave, onCancel }) => {
-  const [formData, setFormData] = useState(lead || {
-    name: '',
-    email: '',
-    phone: '',
-    source: 'website',
-    status: 'warm',
-    stage: 'initial',
-    interest: { type: 'buy', propertyType: 'apartment', budget: '', area: '' },
-    notes: '',
-    score: 50
-  });
+  const [formData, setFormData] = useState(
+    lead || {
+      name: '',
+      email: '',
+      phone: '',
+      source: 'website',
+      status: 'warm',
+      stage: 'initial',
+      interest: { type: 'buy', propertyType: 'apartment', budget: '', area: '' },
+      notes: '',
+      score: 50,
+    }
+  );
 
   const handleChange = (field, value) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.');
       setFormData(prev => ({
         ...prev,
-        [parent]: { ...prev[parent], [child]: value }
+        [parent]: { ...prev[parent], [child]: value },
       }));
     } else {
       setFormData(prev => ({ ...prev, [field]: value }));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     onSave({
       ...formData,
@@ -64,7 +95,7 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
       lastContact: new Date().toISOString().split('T')[0],
       nextFollowUp: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       activities: lead?.activities || [],
-      assignedAgent: lead?.assignedAgent || null
+      assignedAgent: lead?.assignedAgent || null,
     });
   };
 
@@ -75,20 +106,20 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
         <div className="form-row">
           <div className="form-group">
             <label>Full Name *</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
+              onChange={e => handleChange('name', e.target.value)}
               placeholder="e.g., Mohammed Al Rashid"
               required
             />
           </div>
           <div className="form-group">
             <label>Email *</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               value={formData.email}
-              onChange={(e) => handleChange('email', e.target.value)}
+              onChange={e => handleChange('email', e.target.value)}
               placeholder="email@example.com"
               required
             />
@@ -97,17 +128,17 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
         <div className="form-row">
           <div className="form-group">
             <label>Phone Number *</label>
-            <input 
-              type="tel" 
+            <input
+              type="tel"
               value={formData.phone}
-              onChange={(e) => handleChange('phone', e.target.value)}
+              onChange={e => handleChange('phone', e.target.value)}
               placeholder="+971501234567"
               required
             />
           </div>
           <div className="form-group">
             <label>Lead Source</label>
-            <select value={formData.source} onChange={(e) => handleChange('source', e.target.value)}>
+            <select value={formData.source} onChange={e => handleChange('source', e.target.value)}>
               <option value="website">Website</option>
               <option value="referral">Referral</option>
               <option value="whatsapp">WhatsApp</option>
@@ -125,7 +156,7 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
         <div className="form-row">
           <div className="form-group">
             <label>Temperature</label>
-            <select value={formData.status} onChange={(e) => handleChange('status', e.target.value)}>
+            <select value={formData.status} onChange={e => handleChange('status', e.target.value)}>
               <option value="hot">Hot 🔥</option>
               <option value="warm">Warm ☀️</option>
               <option value="cold">Cold ❄️</option>
@@ -133,20 +164,22 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
           </div>
           <div className="form-group">
             <label>Stage</label>
-            <select value={formData.stage} onChange={(e) => handleChange('stage', e.target.value)}>
+            <select value={formData.stage} onChange={e => handleChange('stage', e.target.value)}>
               {LEAD_STAGES.map(stage => (
-                <option key={stage.id} value={stage.id}>{stage.label}</option>
+                <option key={stage.id} value={stage.id}>
+                  {stage.label}
+                </option>
               ))}
             </select>
           </div>
           <div className="form-group">
             <label>Lead Score (1-100)</label>
-            <input 
-              type="number" 
+            <input
+              type="number"
               min="1"
               max="100"
               value={formData.score}
-              onChange={(e) => handleChange('score', parseInt(e.target.value))}
+              onChange={e => handleChange('score', parseInt(e.target.value))}
             />
           </div>
         </div>
@@ -157,14 +190,20 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
         <div className="form-row">
           <div className="form-group">
             <label>Interest Type</label>
-            <select value={formData.interest.type} onChange={(e) => handleChange('interest.type', e.target.value)}>
+            <select
+              value={formData.interest.type}
+              onChange={e => handleChange('interest.type', e.target.value)}
+            >
               <option value="buy">Looking to Buy</option>
               <option value="rent">Looking to Rent</option>
             </select>
           </div>
           <div className="form-group">
             <label>Property Type</label>
-            <select value={formData.interest.propertyType} onChange={(e) => handleChange('interest.propertyType', e.target.value)}>
+            <select
+              value={formData.interest.propertyType}
+              onChange={e => handleChange('interest.propertyType', e.target.value)}
+            >
               <option value="apartment">Apartment</option>
               <option value="villa">Villa</option>
               <option value="townhouse">Townhouse</option>
@@ -176,19 +215,19 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
         <div className="form-row">
           <div className="form-group">
             <label>Budget (AED)</label>
-            <input 
-              type="number" 
+            <input
+              type="number"
               value={formData.interest.budget}
-              onChange={(e) => handleChange('interest.budget', parseInt(e.target.value))}
+              onChange={e => handleChange('interest.budget', parseInt(e.target.value))}
               placeholder="e.g., 3500000"
             />
           </div>
           <div className="form-group">
             <label>Preferred Area</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={formData.interest.area}
-              onChange={(e) => handleChange('interest.area', e.target.value)}
+              onChange={e => handleChange('interest.area', e.target.value)}
               placeholder="e.g., Dubai Marina"
             />
           </div>
@@ -199,9 +238,9 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
         <h3>Notes</h3>
         <div className="form-row">
           <div className="form-group full-width">
-            <textarea 
+            <textarea
               value={formData.notes}
-              onChange={(e) => handleChange('notes', e.target.value)}
+              onChange={e => handleChange('notes', e.target.value)}
               placeholder="Add any relevant notes about this lead..."
               rows={3}
             />
@@ -210,7 +249,9 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
       </div>
 
       <div className="form-actions">
-        <button type="button" className="cancel-btn" onClick={onCancel}>Cancel</button>
+        <button type="button" className="cancel-btn" onClick={onCancel}>
+          Cancel
+        </button>
         <button type="submit" className="save-btn">
           {lead ? 'Update Lead' : 'Add Lead'}
         </button>
@@ -222,15 +263,15 @@ const LeadForm = ({ lead, onSave, onCancel }) => {
 const INTEREST_CATEGORIES = [
   { id: 'all', label: 'All Leads', icon: Users },
   { id: 'buy', label: 'Buyers (Sale)', icon: Building2 },
-  { id: 'rent', label: 'Tenants (Rent)', icon: Key }
+  { id: 'rent', label: 'Tenants (Rent)', icon: Key },
 ];
 
 const FEATURE_TO_VIEW = {
-  'dashboard': 'table',
-  'pipeline': 'pipeline',
-  'lead_list': 'table',
-  'scoring': 'scoring',
-  'nurturing_workflows': 'workflows'
+  dashboard: 'table',
+  pipeline: 'pipeline',
+  lead_list: 'table',
+  scoring: 'scoring',
+  nurturing_workflows: 'workflows',
 };
 
 const ClaraLeadsCRM = ({ activeFeature }) => {
@@ -239,7 +280,7 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
   const apiMetrics = useSelector(selectLeadMetrics);
   const loading = useSelector(state => state.leads?.loading);
   const error = useSelector(state => state.leads?.error);
-  
+
   const [localLeads, setLocalLeads] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -255,10 +296,10 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [viewMode, setViewMode] = useState('table');
 
-  const hashCode = (str) => {
+  const hashCode = str => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
-      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash = (hash << 5) - hash + str.charCodeAt(i);
       hash |= 0;
     }
     return hash;
@@ -278,16 +319,31 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
         phone: lead.phone || '',
         avatar: `https://i.pravatar.cc/150?img=${Math.abs(hashCode(lead._id || lead.id || '')) % 70}`,
         source: lead.source || 'website',
-        status: lead.status === 'new' ? 'warm' : (lead.status === 'qualified' ? 'hot' : lead.status) || 'warm',
+        status:
+          lead.status === 'new'
+            ? 'warm'
+            : (lead.status === 'qualified' ? 'hot' : lead.status) || 'warm',
         stage: lead.stage || 'initial',
-        interest: lead.propertyInterest || { type: 'buy', propertyType: 'apartment', budget: 0, area: '' },
-        assignedAgent: lead.assignedAgent ? { name: lead.assignedAgent.name || lead.assignedAgent, id: lead.assignedAgent.id || lead.assignedAgent } : null,
+        interest: lead.propertyInterest || {
+          type: 'buy',
+          propertyType: 'apartment',
+          budget: 0,
+          area: '',
+        },
+        assignedAgent: lead.assignedAgent
+          ? {
+              name: lead.assignedAgent.name || lead.assignedAgent,
+              id: lead.assignedAgent.id || lead.assignedAgent,
+            }
+          : null,
         score: lead.score || 50,
         lastContact: lead.updatedAt?.split('T')[0] || new Date().toISOString().split('T')[0],
-        nextFollowUp: lead.nextFollowUp?.split('T')[0] || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        nextFollowUp:
+          lead.nextFollowUp?.split('T')[0] ||
+          new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         notes: lead.notes || '',
         activities: lead.interactions || [],
-        createdAt: lead.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0]
+        createdAt: lead.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
       }));
       setLocalLeads(normalizedLeads);
     }
@@ -300,32 +356,39 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
     dispatch(loadLeadMetrics());
   };
 
-  const stats = useMemo(() => ({
-    total: apiMetrics?.total || leads.length,
-    hot: leads.filter(l => l.status === 'hot').length,
-    warm: leads.filter(l => l.status === 'warm').length,
-    cold: leads.filter(l => l.status === 'cold').length,
-    unassigned: leads.filter(l => !l.assignedAgent).length,
-    avgScore: Math.round(leads.reduce((acc, l) => acc + (l.score || 0), 0) / leads.length) || 0,
-    buyers: leads.filter(l => l.interest?.type === 'buy').length,
-    renters: leads.filter(l => l.interest?.type === 'rent').length,
-    conversionRate: apiMetrics?.conversionRate || 0,
-    newLeads: apiMetrics?.new || 0,
-    qualified: apiMetrics?.qualified || 0
-  }), [leads, apiMetrics]);
+  const stats = useMemo(
+    () => ({
+      total: apiMetrics?.total || leads.length,
+      hot: leads.filter(l => l.status === 'hot').length,
+      warm: leads.filter(l => l.status === 'warm').length,
+      cold: leads.filter(l => l.status === 'cold').length,
+      unassigned: leads.filter(l => !l.assignedAgent).length,
+      avgScore: Math.round(leads.reduce((acc, l) => acc + (l.score || 0), 0) / leads.length) || 0,
+      buyers: leads.filter(l => l.interest?.type === 'buy').length,
+      renters: leads.filter(l => l.interest?.type === 'rent').length,
+      conversionRate: apiMetrics?.conversionRate || 0,
+      newLeads: apiMetrics?.new || 0,
+      qualified: apiMetrics?.qualified || 0,
+    }),
+    [leads, apiMetrics]
+  );
 
-  const categoryCounts = useMemo(() => ({
-    all: leads.length,
-    buy: leads.filter(l => l.interest?.type === 'buy').length,
-    rent: leads.filter(l => l.interest?.type === 'rent').length
-  }), [leads]);
+  const categoryCounts = useMemo(
+    () => ({
+      all: leads.length,
+      buy: leads.filter(l => l.interest?.type === 'buy').length,
+      rent: leads.filter(l => l.interest?.type === 'rent').length,
+    }),
+    [leads]
+  );
 
   const filteredLeads = useMemo(() => {
     return leads
       .filter(l => {
-        const matchesSearch = l.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                             l.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                             l.phone.includes(searchQuery);
+        const matchesSearch =
+          l.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          l.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          l.phone.includes(searchQuery);
         const matchesStatus = filterStatus === 'all' || l.status === filterStatus;
         const matchesStage = filterStage === 'all' || l.stage === filterStage;
         const matchesSource = filterSource === 'all' || l.source === filterSource;
@@ -340,52 +403,73 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
         }
         return aVal < bVal ? 1 : -1;
       });
-  }, [leads, searchQuery, filterStatus, filterStage, filterSource, interestCategory, sortBy, sortOrder]);
+  }, [
+    leads,
+    searchQuery,
+    filterStatus,
+    filterStage,
+    filterSource,
+    interestCategory,
+    sortBy,
+    sortOrder,
+  ]);
 
-  const handleAddLead = (lead) => {
+  const handleAddLead = lead => {
     setLocalLeads(prev => [...prev, lead]);
     setShowAddForm(false);
   };
 
-  const handleEditLead = (lead) => {
-    setLocalLeads(prev => prev.map(l => l.id === lead.id ? lead : l));
+  const handleEditLead = lead => {
+    setLocalLeads(prev => prev.map(l => (l.id === lead.id ? lead : l)));
     setEditLead(null);
   };
 
-  const handleDeleteLead = (id) => {
+  const handleDeleteLead = id => {
     if (window.confirm('Are you sure you want to delete this lead?')) {
       setLocalLeads(prev => prev.filter(l => l.id !== id));
     }
   };
 
-  const handleViewLead = (lead) => {
+  const handleViewLead = lead => {
     setSelectedLead(lead);
     setShowDetailModal(true);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
-      case 'hot': return '#ef4444';
-      case 'warm': return '#f59e0b';
-      case 'cold': return '#EF4444';
-      default: return '#6b7280';
+      case 'hot':
+        return '#ef4444';
+      case 'warm':
+        return '#f59e0b';
+      case 'cold':
+        return '#EF4444';
+      default:
+        return '#6b7280';
     }
   };
 
-  const getSourceIcon = (source) => {
+  const getSourceIcon = source => {
     switch (source) {
-      case 'website': return '🌐';
-      case 'referral': return '👥';
-      case 'whatsapp': return '💬';
-      case 'portal': return '🏠';
-      case 'social': return '📱';
-      case 'walk_in': return '🚶';
-      case 'call': return '📞';
-      default: return '📋';
+      case 'website':
+        return '🌐';
+      case 'referral':
+        return '👥';
+      case 'whatsapp':
+        return '💬';
+      case 'portal':
+        return '🏠';
+      case 'social':
+        return '📱';
+      case 'walk_in':
+        return '🚶';
+      case 'call':
+        return '📞';
+      default:
+        return '📋';
     }
   };
 
-  const getStageInfo = (stageId) => {
+  const getStageInfo = stageId => {
     return LEAD_STAGES.find(s => s.id === stageId) || { label: stageId, color: '#6b7280' };
   };
 
@@ -403,19 +487,19 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
           </div>
         </div>
         <div className="clara-actions">
-          <button className="clara-action-btn"><Upload size={18} /> Import</button>
-          <button className="clara-action-btn"><Download size={18} /> Export</button>
-          <button 
+          <button className="clara-action-btn">
+            <Upload size={18} /> Import
+          </button>
+          <button className="clara-action-btn">
+            <Download size={18} /> Export
+          </button>
+          <button
             className={`clara-action-btn features ${showFeatures ? 'active' : ''}`}
             onClick={() => setShowFeatures(!showFeatures)}
           >
             <Zap size={18} /> Features ({CLARA_FEATURES.length})
           </button>
-          <button 
-            className="clara-action-btn" 
-            onClick={handleRefresh}
-            disabled={loading}
-          >
+          <button className="clara-action-btn" onClick={handleRefresh} disabled={loading}>
             <RefreshCw size={18} className={loading ? 'spinner' : ''} /> Refresh
           </button>
           <button className="clara-action-btn primary" onClick={() => setShowAddForm(true)}>
@@ -426,11 +510,20 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
 
       {showFeatures && (
         <div className="clara-features-panel">
-          <AssistantFeatureMatrix 
+          <AssistantFeatureMatrix
             features={CLARA_FEATURES}
             title="Clara's Lead Management Capabilities"
             accentColor="#ec4899"
-            categories={['Lead Management', 'AI Features', 'Communication', 'Task Management', 'Analytics', 'Team Management', 'Display', 'Compliance']}
+            categories={[
+              'Lead Management',
+              'AI Features',
+              'Communication',
+              'Task Management',
+              'Analytics',
+              'Team Management',
+              'Display',
+              'Compliance',
+            ]}
           />
         </div>
       )}
@@ -442,7 +535,7 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
           <span>Loading leads from database...</span>
         </div>
       )}
-      
+
       {error && (
         <div className="clara-error">
           <AlertCircle size={20} />
@@ -465,21 +558,27 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
         <div className="stat-card">
           <span className="stat-icon">🔥</span>
           <div className="stat-content">
-            <span className="stat-value" style={{ color: 'var(--accent-red, #ef4444)' }}>{stats.hot}</span>
+            <span className="stat-value" style={{ color: 'var(--accent-red, #ef4444)' }}>
+              {stats.hot}
+            </span>
             <span className="stat-label">Hot Leads</span>
           </div>
         </div>
         <div className="stat-card">
           <span className="stat-icon">☀️</span>
           <div className="stat-content">
-            <span className="stat-value" style={{ color: 'var(--accent-gold, #f59e0b)' }}>{stats.warm}</span>
+            <span className="stat-value" style={{ color: 'var(--accent-gold, #f59e0b)' }}>
+              {stats.warm}
+            </span>
             <span className="stat-label">Warm Leads</span>
           </div>
         </div>
         <div className="stat-card">
           <span className="stat-icon">❄️</span>
           <div className="stat-content">
-            <span className="stat-value" style={{ color: 'var(--accent-blue, #EF4444)' }}>{stats.cold}</span>
+            <span className="stat-value" style={{ color: 'var(--accent-blue, #EF4444)' }}>
+              {stats.cold}
+            </span>
             <span className="stat-label">Cold Leads</span>
           </div>
         </div>
@@ -507,27 +606,29 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
       <div className="leads-filters">
         <div className="search-box">
           <Search size={18} />
-          <input 
+          <input
             type="text"
             placeholder="Search by name, email, or phone..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="filter-group">
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
             <option value="all">All Status</option>
             <option value="hot">🔥 Hot</option>
             <option value="warm">☀️ Warm</option>
             <option value="cold">❄️ Cold</option>
           </select>
-          <select value={filterStage} onChange={(e) => setFilterStage(e.target.value)}>
+          <select value={filterStage} onChange={e => setFilterStage(e.target.value)}>
             <option value="all">All Stages</option>
             {LEAD_STAGES.map(stage => (
-              <option key={stage.id} value={stage.id}>{stage.label}</option>
+              <option key={stage.id} value={stage.id}>
+                {stage.label}
+              </option>
             ))}
           </select>
-          <select value={filterSource} onChange={(e) => setFilterSource(e.target.value)}>
+          <select value={filterSource} onChange={e => setFilterSource(e.target.value)}>
             <option value="all">All Sources</option>
             <option value="website">🌐 Website</option>
             <option value="referral">👥 Referral</option>
@@ -535,15 +636,15 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
             <option value="portal">🏠 Portal</option>
             <option value="social">📱 Social</option>
           </select>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)}>
             <option value="score">Lead Score</option>
             <option value="lastContact">Last Contact</option>
             <option value="createdAt">Date Added</option>
             <option value="name">Name</option>
           </select>
-          <button 
+          <button
             className="sort-order-btn"
-            onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+            onClick={() => setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))}
           >
             {sortOrder === 'asc' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
@@ -581,8 +682,12 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
                 </td>
                 <td>
                   <div className="contact-cell">
-                    <span><Mail size={12} /> {lead.email}</span>
-                    <span><Phone size={12} /> {lead.phone}</span>
+                    <span>
+                      <Mail size={12} /> {lead.email}
+                    </span>
+                    <span>
+                      <Phone size={12} /> {lead.phone}
+                    </span>
                   </div>
                 </td>
                 <td>
@@ -591,22 +696,23 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
                   </span>
                 </td>
                 <td>
-                  <span 
+                  <span
                     className="status-badge"
-                    style={{ 
+                    style={{
                       backgroundColor: `${getStatusColor(lead.status)}20`,
-                      color: getStatusColor(lead.status)
+                      color: getStatusColor(lead.status),
                     }}
                   >
-                    {lead.status === 'hot' ? '🔥' : lead.status === 'warm' ? '☀️' : '❄️'} {lead.status}
+                    {lead.status === 'hot' ? '🔥' : lead.status === 'warm' ? '☀️' : '❄️'}{' '}
+                    {lead.status}
                   </span>
                 </td>
                 <td>
-                  <span 
+                  <span
                     className="stage-badge"
-                    style={{ 
+                    style={{
                       backgroundColor: `${getStageInfo(lead.stage).color}20`,
-                      color: getStageInfo(lead.stage).color
+                      color: getStageInfo(lead.stage).color,
                     }}
                   >
                     {getStageInfo(lead.stage).label}
@@ -614,18 +720,23 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
                 </td>
                 <td>
                   <div className="interest-cell">
-                    <span className="interest-type">{lead.interest.type === 'buy' ? '🏠 Buy' : '🔑 Rent'}</span>
-                    <span className="interest-budget">AED {lead.interest.budget?.toLocaleString()}</span>
+                    <span className="interest-type">
+                      {lead.interest.type === 'buy' ? '🏠 Buy' : '🔑 Rent'}
+                    </span>
+                    <span className="interest-budget">
+                      AED {lead.interest.budget?.toLocaleString()}
+                    </span>
                   </div>
                 </td>
                 <td>
                   <div className="score-cell">
                     <div className="score-bar">
-                      <div 
+                      <div
                         className="score-fill"
-                        style={{ 
+                        style={{
                           width: `${lead.score}%`,
-                          backgroundColor: lead.score >= 70 ? '#22c55e' : lead.score >= 40 ? '#f59e0b' : '#ef4444'
+                          backgroundColor:
+                            lead.score >= 70 ? '#22c55e' : lead.score >= 40 ? '#f59e0b' : '#ef4444',
                         }}
                       />
                     </div>
@@ -650,10 +761,18 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
                     <button className="action-btn view" onClick={() => handleViewLead(lead)}>
                       <Eye size={16} />
                     </button>
-                    <button className="action-btn call" onClick={() => window.location.href = `tel:${lead.phone}`}>
+                    <button
+                      className="action-btn call"
+                      onClick={() => (window.location.href = `tel:${lead.phone}`)}
+                    >
                       <Phone size={16} />
                     </button>
-                    <button className="action-btn whatsapp" onClick={() => window.open(`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`)}>
+                    <button
+                      className="action-btn whatsapp"
+                      onClick={() =>
+                        window.open(`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`)
+                      }
+                    >
                       <MessageCircle size={16} />
                     </button>
                     <button className="action-btn edit" onClick={() => setEditLead(lead)}>
@@ -672,18 +791,33 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
 
       {/* Add/Edit Form Modal */}
       {(showAddForm || editLead) && (
-        <div className="form-modal-overlay" onClick={() => { setShowAddForm(false); setEditLead(null); }}>
-          <div className="form-modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="form-modal-overlay"
+          onClick={() => {
+            setShowAddForm(false);
+            setEditLead(null);
+          }}
+        >
+          <div className="form-modal" onClick={e => e.stopPropagation()}>
             <div className="form-modal-header">
               <h2>{editLead ? 'Edit Lead' : 'Add New Lead'}</h2>
-              <button className="close-btn" onClick={() => { setShowAddForm(false); setEditLead(null); }}>
+              <button
+                className="close-btn"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setEditLead(null);
+                }}
+              >
                 &times;
               </button>
             </div>
-            <LeadForm 
+            <LeadForm
               lead={editLead}
               onSave={editLead ? handleEditLead : handleAddLead}
-              onCancel={() => { setShowAddForm(false); setEditLead(null); }}
+              onCancel={() => {
+                setShowAddForm(false);
+                setEditLead(null);
+              }}
             />
           </div>
         </div>
@@ -725,10 +859,19 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
                 <div className="detail-section">
                   <h3>Property Interest</h3>
                   <div className="interest-details">
-                    <p><strong>Type:</strong> {selectedLead.interest.type === 'buy' ? 'Looking to Buy' : 'Looking to Rent'}</p>
-                    <p><strong>Property:</strong> {selectedLead.interest.propertyType}</p>
-                    <p><strong>Budget:</strong> AED {selectedLead.interest.budget?.toLocaleString()}</p>
-                    <p><strong>Area:</strong> {selectedLead.interest.area}</p>
+                    <p>
+                      <strong>Type:</strong>{' '}
+                      {selectedLead.interest.type === 'buy' ? 'Looking to Buy' : 'Looking to Rent'}
+                    </p>
+                    <p>
+                      <strong>Property:</strong> {selectedLead.interest.propertyType}
+                    </p>
+                    <p>
+                      <strong>Budget:</strong> AED {selectedLead.interest.budget?.toLocaleString()}
+                    </p>
+                    <p>
+                      <strong>Area:</strong> {selectedLead.interest.area}
+                    </p>
                   </div>
                 </div>
                 <div className="detail-section">
@@ -736,7 +879,7 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
                   <p>{selectedLead.notes}</p>
                 </div>
               </div>
-            )
+            ),
           },
           {
             label: 'Activity',
@@ -747,11 +890,17 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
                 {selectedLead.activities.map((activity, idx) => (
                   <div key={idx} className="activity-item">
                     <div className="activity-icon">
-                      {activity.type === 'call' ? <Phone size={16} /> :
-                       activity.type === 'email' ? <Mail size={16} /> :
-                       activity.type === 'viewing' ? <Home size={16} /> :
-                       activity.type === 'meeting' ? <Briefcase size={16} /> :
-                       <MessageCircle size={16} />}
+                      {activity.type === 'call' ? (
+                        <Phone size={16} />
+                      ) : activity.type === 'email' ? (
+                        <Mail size={16} />
+                      ) : activity.type === 'viewing' ? (
+                        <Home size={16} />
+                      ) : activity.type === 'meeting' ? (
+                        <Briefcase size={16} />
+                      ) : (
+                        <MessageCircle size={16} />
+                      )}
                     </div>
                     <div className="activity-content">
                       <span className="activity-type">{activity.type}</span>
@@ -761,12 +910,23 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
                   </div>
                 ))}
               </div>
-            )
-          }
+            ),
+          },
         ]}
         actions={[
-          { label: 'Edit Lead', onClick: () => { setShowDetailModal(false); setEditLead(selectedLead); } },
-          { label: 'Call Now', icon: Phone, primary: true, onClick: () => window.location.href = `tel:${selectedLead?.phone}` }
+          {
+            label: 'Edit Lead',
+            onClick: () => {
+              setShowDetailModal(false);
+              setEditLead(selectedLead);
+            },
+          },
+          {
+            label: 'Call Now',
+            icon: Phone,
+            primary: true,
+            onClick: () => (window.location.href = `tel:${selectedLead?.phone}`),
+          },
         ]}
       />
     </div>

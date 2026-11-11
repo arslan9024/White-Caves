@@ -24,12 +24,8 @@ export const EMPLOYEE_TRANSLATIONS: Record<SupportedLanguage, EmployeeTranslatio
   en: {
     dir: 'ltr',
     workspaceTitle: 'Sovereign Personnel & Broker Roster',
-<<<<<<< Updated upstream
     workspaceSubtitle:
       'Corporate HR hierarchy, RERA broker accreditation and merit XP tracking engine',
-=======
-    workspaceSubtitle: 'Corporate HR hierarchy, RERA broker accreditation and merit XP tracking engine',
->>>>>>> Stashed changes
     hireEmployeeBtn: 'Hire Personnel / Broker',
     inspectEmployeeBtn: 'Inspect Employee Dossier',
     searchPlaceholder: 'Search personnel by name, EMP code, department, or RERA card...',
@@ -53,12 +49,8 @@ export const EMPLOYEE_TRANSLATIONS: Record<SupportedLanguage, EmployeeTranslatio
   es: {
     dir: 'ltr',
     workspaceTitle: 'Nómina de Personal y Corredores',
-<<<<<<< Updated upstream
     workspaceSubtitle:
       'Jerarquía corporativa de RRHH, acreditación de corredores RERA y seguimiento de mérito XP',
-=======
-    workspaceSubtitle: 'Jerarquía corporativa de RRHH, acreditación de corredores RERA y seguimiento de mérito XP',
->>>>>>> Stashed changes
     hireEmployeeBtn: 'Contratar Personal / Corredor',
     inspectEmployeeBtn: 'Inspeccionar Expediente de Empleado',
     searchPlaceholder: 'Buscar personal por nombre, código EMP, departamento o tarjeta RERA...',
@@ -70,12 +62,8 @@ export const EMPLOYEE_TRANSLATIONS: Record<SupportedLanguage, EmployeeTranslatio
   ru: {
     dir: 'ltr',
     workspaceTitle: 'Реестр Персонала и Брокеров',
-<<<<<<< Updated upstream
     workspaceSubtitle:
       'Корпоративная иерархия HR, аккредитация брокеров RERA и система начисления баллов XP',
-=======
-    workspaceSubtitle: 'Корпоративная иерархия HR, аккредитация брокеров RERA и система начисления баллов XP',
->>>>>>> Stashed changes
     hireEmployeeBtn: 'Нанять Сотрудника / Брокера',
     inspectEmployeeBtn: 'Изучить Досье Сотрудника',
     searchPlaceholder: 'Поиск по имени, коду EMP, отделу или карте RERA...',
@@ -91,7 +79,3 @@ export function getEmployeeI18n(lang: SupportedLanguage = 'en'): EmployeeTransla
 }
 
 export default EMPLOYEE_TRANSLATIONS;
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 export const COLUMN_MAPPING = {
   'P-NUMBER': 'pNumber',
@@ -111,6 +111,23 @@ function normalizeRow(rawRow) {
   return normalizedRow;
 }
 
+function normalizeCellValue(cell) {
+  if (cell === null || cell === undefined) return '';
+  if (cell instanceof Date) return cell.toISOString();
+  if (typeof cell === 'object') {
+    if ('result' in cell) return normalizeCellValue(cell.result);
+    if ('text' in cell && typeof cell.text === 'string') return cell.text.trim();
+    if ('richText' in cell && Array.isArray(cell.richText)) {
+      return cell.richText
+        .map(part => part.text)
+        .join('')
+        .trim();
+    }
+    return '';
+  }
+  return String(cell).trim();
+}
+
 function buildColumnMapping(rows, headers = []) {
   const mapping = {};
 
@@ -118,45 +135,6 @@ function buildColumnMapping(rows, headers = []) {
     const mappedField = resolveMappedField(header);
     if (mappedField && !mapping[mappedField]) {
       mapping[mappedField] = mappedField;
-    }
-
-    function normalizeCellValue(cell) {
-      if (cell === null || cell === undefined) return '';
-      if (cell instanceof Date) return cell.toISOString();
-      return String(cell).trim();
-    }
-
-    async function loadWorkbookFromFile(filePath) {
-      const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.readFile(filePath);
-      return workbook;
-    }
-
-    function worksheetToObjects(worksheet) {
-      const headerRow = worksheet.getRow(1);
-      const headers = [];
-      for (let col = 1; col <= headerRow.cellCount; col += 1) {
-        headers.push(normalizeCellValue(headerRow.getCell(col).value));
-      }
-
-      const rows = [];
-      for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber += 1) {
-        const row = worksheet.getRow(rowNumber);
-        const rowObject = {};
-        let hasValues = false;
-
-        for (let col = 1; col <= headers.length; col += 1) {
-          const header = headers[col - 1];
-          if (!header) continue;
-          const value = normalizeCellValue(row.getCell(col).value);
-          rowObject[header] = value;
-          if (value !== '') hasValues = true;
-        }
-
-        if (hasValues) rows.push(rowObject);
-      }
-
-      return { headers, rows };
     }
   }
 
@@ -172,12 +150,7 @@ function buildColumnMapping(rows, headers = []) {
 }
 
 async function loadWorkbookFromFile(filePath) {
-  const exceljsModule = await import('exceljs').catch(() => null);
-  if (!exceljsModule) {
-    throw new Error('ExcelJS is not available in this environment');
-  }
-
-  const workbook = new exceljsModule.default.Workbook();
+  const workbook = new ExcelJS.Workbook();
 
   // Use csv.readFile for .csv files, xlsx.readFile for Excel files
   if (filePath.toLowerCase().endsWith('.csv')) {

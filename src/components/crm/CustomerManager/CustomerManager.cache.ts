@@ -76,7 +76,3 @@ export function saveCustomersCache(customers: CustomerItem[]): void {
     // Non-fatal fallback
   }
 }
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

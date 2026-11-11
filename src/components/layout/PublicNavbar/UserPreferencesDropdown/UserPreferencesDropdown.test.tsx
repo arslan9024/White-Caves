@@ -82,6 +82,18 @@ describe('UserPreferencesDropdown (4-Way Component)', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it('renders executive command chips for managing director and navigates to module', () => {
+    const onClose = vi.fn();
+    renderDropdown(null, onClose);
+
+    expect(screen.getByTestId('dropdown-md-command-chips')).toBeDefined();
+    const treasuryBtn = screen.getByText('Treasury');
+    fireEvent.click(treasuryBtn);
+
+    expect(onClose).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard/module/theodora');
+  });
+
   it('renders avatar pencil button and inline edit profile link, and opens crop modal', () => {
     renderDropdown();
     const avatarEditBtn = screen.getByTestId('edit-avatar-btn');

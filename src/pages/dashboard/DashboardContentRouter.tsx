@@ -32,6 +32,7 @@ import { TenantManagerView } from '../../components/crm/TenantManager';
 import { BrokerManagerView } from '../../components/crm/BrokerManager';
 import LindaWhatsAppCRM from '../../components/crm/LindaWhatsAppCRM';
 import ZoeExecutiveCRM from '../../components/crm/ZoeExecutiveCRM_NEW';
+import { DashboardLiveTicker } from '../../components/dashboard/header/DashboardLiveTicker';
 import { ProfileDashboardView } from './ProfileDashboardView';
 import { LegacyDomainRouter } from './LegacyDomainRouter';
 import { checkDashboardRoleGuard } from './DashboardRoleGuards';
@@ -92,6 +93,7 @@ export const DashboardContentRouter: FC<DashboardContentRouterProps> = ({
   ) {
     return (
       <div style={{ padding: '20px', flex: 1, overflowY: 'auto' }}>
+        <DashboardLiveTicker />
         <ZoeExecutiveCRM />
       </div>
     );

@@ -8,7 +8,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      nodemailer: path.resolve(__dirname, '__mocks__/nodemailer.js'),
       winston: path.resolve(__dirname, '__mocks__/winston.js'),
     },
   },
@@ -18,11 +17,9 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     testTimeout: 30000,
     teardownTimeout: 30000,
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    pool: 'forks',
+    fileParallelism: false,
+    maxWorkers: 1,
     include: [
       'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'server/**/*.{test,spec}.{js,jsx,ts,tsx}',

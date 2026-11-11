@@ -124,7 +124,3 @@ export function renderSelector(
     ),
   };
 }
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

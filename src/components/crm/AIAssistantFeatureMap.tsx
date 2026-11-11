@@ -196,7 +196,3 @@ export const AIAssistantQuickStatsView: FC<AIAssistantQuickStatsViewProps> = ({
     )}
   </div>
 );
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

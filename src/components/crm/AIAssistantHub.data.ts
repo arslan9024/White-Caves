@@ -128,7 +128,3 @@ export const FEATURE_FLOWS: FeatureFlow[] = [
     automationLevel: 'semi-auto',
   },
 ];
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

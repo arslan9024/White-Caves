@@ -1,14 +1,39 @@
 import React, { useState } from 'react';
-import { 
-  Bot, Users, Briefcase, Calendar, Award, Clock, FileText,
-  Search, Plus, Edit, Trash2, Eye, Mail, Phone, MapPin,
-  ChevronDown, Filter, Download, Upload, CheckCircle, XCircle,
-  Building, GraduationCap, DollarSign, Star, UserPlus, Send, Zap, PenTool
+import {
+  Bot,
+  Users,
+  Briefcase,
+  Calendar,
+  Award,
+  Clock,
+  FileText,
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Mail,
+  Phone,
+  MapPin,
+  ChevronDown,
+  Filter,
+  Download,
+  Upload,
+  CheckCircle,
+  XCircle,
+  Building,
+  GraduationCap,
+  DollarSign,
+  Star,
+  UserPlus,
+  Send,
+  Zap,
+  PenTool,
 } from 'lucide-react';
 import AssistantFeatureMatrix from './shared/AssistantFeatureMatrix';
 import { JobPostComposer, AssistantDocsTab } from './shared';
 import { NANCY_FEATURES } from './data/assistantFeatures';
-import './NancyHRCRM.css';
+import './NancyHRCRM_NEW/NancyHRCRM.css';
 
 const DUMMY_EMPLOYEES = [
   {
@@ -26,7 +51,7 @@ const DUMMY_EMPLOYEES = [
     location: 'Dubai Marina Office',
     performance: 92,
     leaveBalance: 18,
-    attendance: 98
+    attendance: 98,
   },
   {
     id: 'EMP-002',
@@ -43,7 +68,7 @@ const DUMMY_EMPLOYEES = [
     location: 'Downtown Office',
     performance: 88,
     leaveBalance: 12,
-    attendance: 95
+    attendance: 95,
   },
   {
     id: 'EMP-003',
@@ -60,7 +85,7 @@ const DUMMY_EMPLOYEES = [
     location: 'Dubai Marina Office',
     performance: 95,
     leaveBalance: 22,
-    attendance: 100
+    attendance: 100,
   },
   {
     id: 'EMP-004',
@@ -77,7 +102,7 @@ const DUMMY_EMPLOYEES = [
     location: 'Head Office',
     performance: 85,
     leaveBalance: 5,
-    attendance: 92
+    attendance: 92,
   },
   {
     id: 'EMP-005',
@@ -94,8 +119,8 @@ const DUMMY_EMPLOYEES = [
     location: 'Head Office',
     performance: 90,
     leaveBalance: 15,
-    attendance: 97
-  }
+    attendance: 97,
+  },
 ];
 
 const DUMMY_JOBS = [
@@ -112,7 +137,7 @@ const DUMMY_JOBS = [
     interviewed: 3,
     posted: '2024-01-05',
     deadline: '2024-02-15',
-    requirements: ['5+ years experience', 'RERA certified', 'Strong negotiation skills']
+    requirements: ['5+ years experience', 'RERA certified', 'Strong negotiation skills'],
   },
   {
     id: 'JOB-002',
@@ -127,7 +152,7 @@ const DUMMY_JOBS = [
     interviewed: 5,
     posted: '2024-01-10',
     deadline: '2024-02-20',
-    requirements: ['3+ years in real estate marketing', 'SEO/SEM expertise', 'Creative portfolio']
+    requirements: ['3+ years in real estate marketing', 'SEO/SEM expertise', 'Creative portfolio'],
   },
   {
     id: 'JOB-003',
@@ -142,8 +167,12 @@ const DUMMY_JOBS = [
     interviewed: 4,
     posted: '2023-12-01',
     deadline: '2024-01-15',
-    requirements: ['Property management experience', 'Customer service skills', 'UAE driving license']
-  }
+    requirements: [
+      'Property management experience',
+      'Customer service skills',
+      'UAE driving license',
+    ],
+  },
 ];
 
 const DUMMY_APPLICANTS = [
@@ -158,7 +187,7 @@ const DUMMY_APPLICANTS = [
     appliedDate: '2024-01-08',
     experience: '6 years',
     resume: 'resume_khalid.pdf',
-    score: 85
+    score: 85,
   },
   {
     id: 'APP-002',
@@ -171,7 +200,7 @@ const DUMMY_APPLICANTS = [
     appliedDate: '2024-01-12',
     experience: '4 years',
     resume: 'resume_priya.pdf',
-    score: 78
+    score: 78,
   },
   {
     id: 'APP-003',
@@ -184,8 +213,8 @@ const DUMMY_APPLICANTS = [
     appliedDate: '2024-01-15',
     experience: '8 years',
     resume: 'resume_david.pdf',
-    score: 92
-  }
+    score: 92,
+  },
 ];
 
 export default function NancyHRCRM() {
@@ -199,39 +228,54 @@ export default function NancyHRCRM() {
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
   const [filterDepartment, setFilterDepartment] = useState('all');
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
-      case 'active': return '#10b981';
-      case 'on_leave': return '#f59e0b';
-      case 'terminated': return '#ef4444';
-      default: return '#6b7280';
+      case 'active':
+        return '#10b981';
+      case 'on_leave':
+        return '#f59e0b';
+      case 'terminated':
+        return '#ef4444';
+      default:
+        return '#6b7280';
     }
   };
 
-  const getJobStatusBadge = (status) => {
+  const getJobStatusBadge = status => {
     switch (status) {
-      case 'open': return { bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981' };
-      case 'closed': return { bg: 'rgba(107, 114, 128, 0.15)', color: '#6b7280' };
-      case 'paused': return { bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' };
-      default: return { bg: 'rgba(107, 114, 128, 0.15)', color: '#6b7280' };
+      case 'open':
+        return { bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981' };
+      case 'closed':
+        return { bg: 'rgba(107, 114, 128, 0.15)', color: '#6b7280' };
+      case 'paused':
+        return { bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' };
+      default:
+        return { bg: 'rgba(107, 114, 128, 0.15)', color: '#6b7280' };
     }
   };
 
-  const getApplicantStatusBadge = (status) => {
+  const getApplicantStatusBadge = status => {
     switch (status) {
-      case 'new': return { bg: 'rgba(59, 130, 246, 0.15)', color: '#EF4444' };
-      case 'shortlisted': return { bg: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' };
-      case 'interviewed': return { bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' };
-      case 'hired': return { bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981' };
-      case 'rejected': return { bg: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' };
-      default: return { bg: 'rgba(107, 114, 128, 0.15)', color: '#6b7280' };
+      case 'new':
+        return { bg: 'rgba(59, 130, 246, 0.15)', color: '#EF4444' };
+      case 'shortlisted':
+        return { bg: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' };
+      case 'interviewed':
+        return { bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' };
+      case 'hired':
+        return { bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981' };
+      case 'rejected':
+        return { bg: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' };
+      default:
+        return { bg: 'rgba(107, 114, 128, 0.15)', color: '#6b7280' };
     }
   };
 
   const filteredEmployees = employees.filter(emp => {
-    const matchesSearch = emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         emp.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         emp.position.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.position.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDept = filterDepartment === 'all' || emp.department === filterDepartment;
     return matchesSearch && matchesDept;
   });
@@ -243,7 +287,7 @@ export default function NancyHRCRM() {
     activeEmployees: employees.filter(e => e.status === 'active').length,
     onLeave: employees.filter(e => e.status === 'on_leave').length,
     openPositions: jobs.filter(j => j.status === 'open').length,
-    totalApplicants: applicants.length
+    totalApplicants: applicants.length,
   };
 
   return (
@@ -261,7 +305,7 @@ export default function NancyHRCRM() {
           </div>
         </div>
         <div className="nancy-actions">
-          <button 
+          <button
             className={`nancy-toggle ${nancyActive ? 'active' : ''}`}
             onClick={() => setNancyActive(!nancyActive)}
           >
@@ -309,49 +353,49 @@ export default function NancyHRCRM() {
       </div>
 
       <div className="nancy-tabs">
-        <button 
+        <button
           className={`nancy-tab ${activeTab === 'employees' ? 'active' : ''}`}
           onClick={() => setActiveTab('employees')}
         >
           <Users size={16} />
           Employees
         </button>
-        <button 
+        <button
           className={`nancy-tab ${activeTab === 'careers' ? 'active' : ''}`}
           onClick={() => setActiveTab('careers')}
         >
           <Briefcase size={16} />
           Job Board
         </button>
-        <button 
+        <button
           className={`nancy-tab ${activeTab === 'applicants' ? 'active' : ''}`}
           onClick={() => setActiveTab('applicants')}
         >
           <UserPlus size={16} />
           Applicants
         </button>
-        <button 
+        <button
           className={`nancy-tab ${activeTab === 'attendance' ? 'active' : ''}`}
           onClick={() => setActiveTab('attendance')}
         >
           <Calendar size={16} />
           Attendance
         </button>
-        <button 
+        <button
           className={`nancy-tab ${activeTab === 'performance' ? 'active' : ''}`}
           onClick={() => setActiveTab('performance')}
         >
           <Award size={16} />
           Performance
         </button>
-        <button 
+        <button
           className={`nancy-tab ${activeTab === 'post-job' ? 'active' : ''}`}
           onClick={() => setActiveTab('post-job')}
         >
           <PenTool size={16} />
           Post Job
         </button>
-        <button 
+        <button
           className={`nancy-tab ${activeTab === 'features' ? 'active' : ''}`}
           onClick={() => setActiveTab('features')}
         >
@@ -371,17 +415,19 @@ export default function NancyHRCRM() {
                     type="text"
                     placeholder="Search employees..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={e => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <select 
+                <select
                   value={filterDepartment}
-                  onChange={(e) => setFilterDepartment(e.target.value)}
+                  onChange={e => setFilterDepartment(e.target.value)}
                   className="filter-select"
                 >
                   <option value="all">All Departments</option>
                   {departments.map(dept => (
-                    <option key={dept} value={dept}>{dept}</option>
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -424,11 +470,11 @@ export default function NancyHRCRM() {
                         <span className="dept-badge">{emp.department}</span>
                       </td>
                       <td>
-                        <span 
+                        <span
                           className="status-badge"
-                          style={{ 
+                          style={{
                             backgroundColor: `${getStatusColor(emp.status)}20`,
-                            color: getStatusColor(emp.status)
+                            color: getStatusColor(emp.status),
                           }}
                         >
                           {emp.status.replace('_', ' ')}
@@ -437,12 +483,16 @@ export default function NancyHRCRM() {
                       <td>
                         <div className="performance-cell">
                           <div className="perf-bar">
-                            <div 
-                              className="perf-fill" 
-                              style={{ 
+                            <div
+                              className="perf-fill"
+                              style={{
                                 width: `${emp.performance}%`,
-                                backgroundColor: emp.performance >= 90 ? '#10b981' : 
-                                                emp.performance >= 70 ? '#f59e0b' : '#ef4444'
+                                backgroundColor:
+                                  emp.performance >= 90
+                                    ? '#10b981'
+                                    : emp.performance >= 70
+                                      ? '#f59e0b'
+                                      : '#ef4444',
                               }}
                             />
                           </div>
@@ -451,7 +501,13 @@ export default function NancyHRCRM() {
                       </td>
                       <td>
                         <div className="action-buttons">
-                          <button className="icon-btn" onClick={() => { setSelectedEmployee(emp); setShowEmployeeModal(true); }}>
+                          <button
+                            className="icon-btn"
+                            onClick={() => {
+                              setSelectedEmployee(emp);
+                              setShowEmployeeModal(true);
+                            }}
+                          >
                             <Eye size={16} />
                           </button>
                           <button className="icon-btn">
@@ -487,7 +543,7 @@ export default function NancyHRCRM() {
                     <div className="job-header">
                       <div className="job-title-section">
                         <h4>{job.title}</h4>
-                        <span 
+                        <span
                           className="job-status"
                           style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
                         >
@@ -518,7 +574,9 @@ export default function NancyHRCRM() {
 
                     <div className="job-requirements">
                       {job.requirements.slice(0, 2).map((req, i) => (
-                        <span key={i} className="requirement-tag">{req}</span>
+                        <span key={i} className="requirement-tag">
+                          {req}
+                        </span>
                       ))}
                       {job.requirements.length > 2 && (
                         <span className="requirement-tag more">+{job.requirements.length - 2}</span>
@@ -543,8 +601,12 @@ export default function NancyHRCRM() {
                     <div className="job-footer">
                       <span className="job-date">Posted: {job.posted}</span>
                       <div className="job-actions">
-                        <button className="job-btn"><Eye size={14} /> View</button>
-                        <button className="job-btn"><Edit size={14} /> Edit</button>
+                        <button className="job-btn">
+                          <Eye size={14} /> View
+                        </button>
+                        <button className="job-btn">
+                          <Edit size={14} /> Edit
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -579,8 +641,12 @@ export default function NancyHRCRM() {
                         <h4>{app.name}</h4>
                         <p className="applicant-job">Applied for: {app.job}</p>
                         <div className="applicant-contact">
-                          <span><Mail size={12} /> {app.email}</span>
-                          <span><Phone size={12} /> {app.phone}</span>
+                          <span>
+                            <Mail size={12} /> {app.email}
+                          </span>
+                          <span>
+                            <Phone size={12} /> {app.phone}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -600,7 +666,7 @@ export default function NancyHRCRM() {
                       </div>
                       <div className="detail-item">
                         <label>Status</label>
-                        <span 
+                        <span
                           className="status-tag"
                           style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
                         >
@@ -610,9 +676,15 @@ export default function NancyHRCRM() {
                     </div>
 
                     <div className="applicant-actions">
-                      <button className="app-btn view"><Eye size={14} /> Profile</button>
-                      <button className="app-btn resume"><FileText size={14} /> Resume</button>
-                      <button className="app-btn email"><Send size={14} /> Email</button>
+                      <button className="app-btn view">
+                        <Eye size={14} /> Profile
+                      </button>
+                      <button className="app-btn resume">
+                        <FileText size={14} /> Resume
+                      </button>
+                      <button className="app-btn email">
+                        <Send size={14} /> Email
+                      </button>
                     </div>
                   </div>
                 );
@@ -632,28 +704,36 @@ export default function NancyHRCRM() {
 
             <div className="attendance-summary">
               <div className="attendance-card">
-                <div className="att-icon green"><CheckCircle size={24} /></div>
+                <div className="att-icon green">
+                  <CheckCircle size={24} />
+                </div>
                 <div className="att-info">
                   <span className="att-value">96.5%</span>
                   <span className="att-label">Average Attendance</span>
                 </div>
               </div>
               <div className="attendance-card">
-                <div className="att-icon blue"><Calendar size={24} /></div>
+                <div className="att-icon blue">
+                  <Calendar size={24} />
+                </div>
                 <div className="att-info">
                   <span className="att-value">22</span>
                   <span className="att-label">Working Days</span>
                 </div>
               </div>
               <div className="attendance-card">
-                <div className="att-icon orange"><Clock size={24} /></div>
+                <div className="att-icon orange">
+                  <Clock size={24} />
+                </div>
                 <div className="att-info">
                   <span className="att-value">15</span>
                   <span className="att-label">Late Arrivals</span>
                 </div>
               </div>
               <div className="attendance-card">
-                <div className="att-icon red"><XCircle size={24} /></div>
+                <div className="att-icon red">
+                  <XCircle size={24} />
+                </div>
                 <div className="att-info">
                   <span className="att-value">8</span>
                   <span className="att-label">Absences</span>
@@ -688,10 +768,7 @@ export default function NancyHRCRM() {
                       <td>1</td>
                       <td>
                         <div className="attendance-bar">
-                          <div 
-                            className="att-fill" 
-                            style={{ width: `${emp.attendance}%` }}
-                          />
+                          <div className="att-fill" style={{ width: `${emp.attendance}%` }} />
                           <span>{emp.attendance}%</span>
                         </div>
                       </td>
@@ -724,20 +801,25 @@ export default function NancyHRCRM() {
                   </div>
 
                   <div className="perf-score">
-                    <div className="score-circle" style={{
-                      background: `conic-gradient(${emp.performance >= 90 ? '#10b981' : emp.performance >= 70 ? '#f59e0b' : '#ef4444'} ${emp.performance * 3.6}deg, var(--bg-tertiary) 0deg)`
-                    }}>
+                    <div
+                      className="score-circle"
+                      style={{
+                        background: `conic-gradient(${emp.performance >= 90 ? '#10b981' : emp.performance >= 70 ? '#f59e0b' : '#ef4444'} ${emp.performance * 3.6}deg, var(--bg-tertiary) 0deg)`,
+                      }}
+                    >
                       <div className="score-inner">
                         <span>{emp.performance}</span>
                       </div>
                     </div>
                     <div className="score-rating">
                       {[1, 2, 3, 4, 5].map(star => (
-                        <Star 
-                          key={star} 
-                          size={16} 
+                        <Star
+                          key={star}
+                          size={16}
                           fill={star <= Math.round(emp.performance / 20) ? '#f59e0b' : 'none'}
-                          stroke={star <= Math.round(emp.performance / 20) ? '#f59e0b' : 'currentColor'}
+                          stroke={
+                            star <= Math.round(emp.performance / 20) ? '#f59e0b' : 'currentColor'
+                          }
                         />
                       ))}
                     </div>
@@ -766,20 +848,23 @@ export default function NancyHRCRM() {
         )}
 
         {activeTab === 'features' && (
-          <AssistantFeatureMatrix 
+          <AssistantFeatureMatrix
             features={NANCY_FEATURES}
             title="Nancy's HR Management Capabilities"
             accentColor="#ec4899"
-            categories={['Workforce Management', 'Talent Acquisition', 'Performance', 'Analytics', 'Integrations']}
+            categories={[
+              'Workforce Management',
+              'Talent Acquisition',
+              'Performance',
+              'Analytics',
+              'Integrations',
+            ]}
           />
         )}
 
         {activeTab === 'post-job' && (
           <div className="post-job-view">
-            <JobPostComposer
-              onPublish={(data, platforms) => {}}
-              onSaveDraft={() => {}}
-            />
+            <JobPostComposer onPublish={(data, platforms) => {}} onSaveDraft={() => {}} />
           </div>
         )}
       </div>
@@ -790,17 +875,17 @@ export default function NancyHRCRM() {
             <button className="modal-close" onClick={() => setShowEmployeeModal(false)}>
               <XCircle size={24} />
             </button>
-            
+
             <div className="modal-header">
               <img src={selectedEmployee.avatar} alt={selectedEmployee.name} />
               <div className="modal-title">
                 <h3>{selectedEmployee.name}</h3>
                 <p>{selectedEmployee.position}</p>
-                <span 
+                <span
                   className="status-badge"
-                  style={{ 
+                  style={{
                     backgroundColor: `${getStatusColor(selectedEmployee.status)}20`,
-                    color: getStatusColor(selectedEmployee.status)
+                    color: getStatusColor(selectedEmployee.status),
                   }}
                 >
                   {selectedEmployee.status.replace('_', ' ')}

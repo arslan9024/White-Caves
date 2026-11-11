@@ -8,7 +8,9 @@ export interface LindaActionHandlersDeps {
   setFeatures: React.Dispatch<React.SetStateAction<any[]>>;
   setPlaybooks: React.Dispatch<React.SetStateAction<any[]>>;
   setTerminalLines: React.Dispatch<React.SetStateAction<string[]>>;
-  setActiveModalOutput: React.Dispatch<React.SetStateAction<{ title: string; output: string } | null>>;
+  setActiveModalOutput: React.Dispatch<
+    React.SetStateAction<{ title: string; output: string } | null>
+  >;
   setSessions: React.Dispatch<React.SetStateAction<LindaSessionItem[]>>;
   setCampaigns: React.Dispatch<React.SetStateAction<any[]>>;
   setQrCodeDataUrl: React.Dispatch<React.SetStateAction<string | null>>;
@@ -96,6 +98,9 @@ export function createLindaActionHandlers(deps: LindaActionHandlersDeps) {
     setIsQrLoading(true);
     let qrImgUrl: string | null = null;
     try {
+      // First ensure Linda backend is initialized so WhatsApp generates the QR
+      await apiClient.post('/linda/connect', {});
+
       const res = (await apiClient.get('/linda/qr')) as {
         success?: boolean;
         data?: { qr?: string; isConnected?: boolean };
@@ -112,10 +117,13 @@ export function createLindaActionHandlers(deps: LindaActionHandlersDeps) {
 
     if (!qrImgUrl) {
       try {
-        qrImgUrl = await QRCode.toDataURL(`whatsapp://connect?session=${session.id}&phone=${session.phone}`, {
-          width: 220,
-          margin: 1,
-        });
+        qrImgUrl = await QRCode.toDataURL(
+          `whatsapp://connect?session=${session.id}&phone=${session.phone}`,
+          {
+            width: 220,
+            margin: 1,
+          }
+        );
         setQrCodeDataUrl(qrImgUrl);
       } catch {
         // ignore
@@ -145,7 +153,11 @@ export function createLindaActionHandlers(deps: LindaActionHandlersDeps) {
         if (c.id !== campaignId) return c;
         const next = c.status === 'active' ? 'paused' : 'active';
         appendLog(`Campaign "${c.name}" switched to ${next.toUpperCase()}.`);
-        return { ...c, status: next, nextBatch: next === 'active' ? 'In 3 mins' : 'Paused by Admin' };
+        return {
+          ...c,
+          status: next,
+          nextBatch: next === 'active' ? 'In 3 mins' : 'Paused by Admin',
+        };
       })
     );
   };

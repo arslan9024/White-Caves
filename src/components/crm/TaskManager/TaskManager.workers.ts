@@ -50,7 +50,3 @@ export function executeTaskWorkbenchOffThread(
     }, 10);
   });
 }
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes

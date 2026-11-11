@@ -8,6 +8,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import express from 'express';
 import request from 'supertest';
+import ExcelJS from 'exceljs';
 
 // ── Hoisted mocks ────────────────────────────────────────────────────
 const { mockPrisma, mockLogger } = vi.hoisted(() => {
@@ -719,7 +720,7 @@ describe('Leads Routes — /api/leads', () => {
 });
 
 // ─── W18.1-P1-001: /api/leads/import/file ────────────────────────────────
-// Note: multer + xlsx run as real code (memoryStorage + real CSV parsing).
+// Note: multer + ExcelJS run as real code (memoryStorage + CSV/XLSX parsing).
 // Prisma calls are mocked via mockPrisma.
 describe('POST /api/leads/import/file (W18.1-P1-001)', () => {
   // CSV helpers
@@ -761,6 +762,30 @@ describe('POST /api/leads/import/file (W18.1-P1-001)', () => {
     expect(res.body.data.imported).toBe(2);
     expect(res.body.data.duplicates).toBe(0);
     expect(res.body.data.errors).toHaveLength(0);
+  });
+
+  it('imports valid XLSX rows', async () => {
+    (mockPrisma.lead as any).createMany.mockResolvedValueOnce({ count: 1 });
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Leads');
+    worksheet.addRow(['Name', 'Email']);
+    worksheet.addRow(['Ibrahim', 'ibrahim@test.com']);
+    const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
+
+    const res = await request(createApp('owner'))
+      .post('/api/leads/import/file')
+      .attach('file', buffer, {
+        filename: 'leads.xlsx',
+        contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.imported).toBe(1);
+    expect(mockPrisma.lead.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: [expect.objectContaining({ name: 'Ibrahim', email: 'ibrahim@test.com' })],
+      })
+    );
   });
 
   it('deduplicates by email — skips existing leads', async () => {

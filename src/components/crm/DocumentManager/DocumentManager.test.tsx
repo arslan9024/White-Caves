@@ -8,10 +8,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-<<<<<<< Updated upstream
 import { MemoryRouter } from 'react-router-dom';
-=======
->>>>>>> Stashed changes
 import { DocumentManagerView } from './DocumentManagerView';
 import { CANONICAL_DOCUMENTS } from './DocumentManager.data';
 import {
@@ -21,7 +18,6 @@ import {
 import { DocumentManagerFallback } from './DocumentManager.fallback';
 import { DocumentTelemetry } from './DocumentManager.telemetry';
 import { getDocumentI18n } from './DocumentManager.i18n';
-<<<<<<< Updated upstream
 import {
   saveDocumentsCache,
   loadDocumentsCache,
@@ -32,11 +28,6 @@ import { extractDocumentOcrFieldsOffThread } from './DocumentManager.workers';
 
 const renderWithRouter = (ui: React.ReactElement) => render(<MemoryRouter>{ui}</MemoryRouter>);
 
-=======
-import { saveDocumentsCache, loadDocumentsCache, getDocumentByTuringId, indexDocumentsInMemory } from './DocumentManager.cache';
-import { extractDocumentOcrFieldsOffThread } from './DocumentManager.workers';
-
->>>>>>> Stashed changes
 describe('DocumentManager Suite (12-Way Blueprint)', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -94,7 +85,9 @@ describe('DocumentManager Suite (12-Way Blueprint)', () => {
   });
 
   it('auto-opens detail modal when selectedDocId prop is provided (deep link)', () => {
-    renderWithRouter(<DocumentManagerView selectedDocId="DOC-004" initialDocuments={CANONICAL_DOCUMENTS} />);
+    renderWithRouter(
+      <DocumentManagerView selectedDocId="DOC-004" initialDocuments={CANONICAL_DOCUMENTS} />
+    );
 
     expect(screen.getByTestId('document-detail-modal')).toBeInTheDocument();
     expect(screen.getAllByText(/EJA-2026-88/i).length).toBeGreaterThan(0);

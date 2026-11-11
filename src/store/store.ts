@@ -24,7 +24,7 @@ import searchLeadsReducer from './slices/searchLeadsSlice';
 import crmViewReducer from './slices/crmViewSlice';
 import propertySearchReducer from '../redux/slices/propertySlice';
 import uiReducer from './slices/uiSlice';
-import leadsReducer from './slices/leadsSlice';
+import leadsReducer from './slices/leadsSlice.js';
 import dealsReducer from './slices/dealsSlice';
 import languageReducer from './slices/languageSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';

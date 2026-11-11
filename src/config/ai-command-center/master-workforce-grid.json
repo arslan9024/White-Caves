@@ -44,11 +44,7 @@
           "name": "AI Corinne VIP Desk",
           "title": "5-Star Concierge & Welcome Supervisor",
           "slot": 1,
-          "tasks": [
-            "VIP Arrival Briefings",
-            "Multi-Lingual Protocol",
-            "Chauffeur Coordination"
-          ],
+          "tasks": ["VIP Arrival Briefings", "Multi-Lingual Protocol", "Chauffeur Coordination"],
           "gender": "Female"
         },
         {
@@ -92,11 +88,7 @@
           "name": "AI FeedbackSentinel",
           "title": "Client NPS & Satisfaction Supervisor",
           "slot": 5,
-          "tasks": [
-            "Post-Viewing Surveys",
-            "Complaint SLA Tracking",
-            "Service Escalation Routing"
-          ],
+          "tasks": ["Post-Viewing Surveys", "Complaint SLA Tracking", "Service Escalation Routing"],
           "gender": "Female"
         },
         {
@@ -255,11 +247,7 @@
           "name": "AI PerformanceAudit",
           "title": "Marketing ROAS & Multi-Touch Attribution Supervisor",
           "slot": 8,
-          "tasks": [
-            "UTM Pipeline Mapping",
-            "ROAS Calculations",
-            "Marketing Spend Escrow Tracking"
-          ],
+          "tasks": ["UTM Pipeline Mapping", "ROAS Calculations", "Marketing Spend Escrow Tracking"],
           "gender": "Female"
         },
         {
@@ -533,19 +521,41 @@
     {
       "deptId": "sales_operations",
       "deptCode": "DEPT-05",
-      "deptName": "Sales, Services & Operations",
+      "deptName": "Sales, Services & Operations (Sales & Leasing Divisions)",
       "color": "#F97316",
       "manager": {
         "id": "mgr_clara",
         "name": "AI Clara",
-        "title": "Director of Sales & Deal Operations",
+        "title": "Director of Sales, Services & Operations",
         "avatar": "👔",
         "responsibilities": [
-          "Primary and secondary luxury real estate sales, client advisory services, and active deal closing operations.",
-          "Direct supervisory oversight of 9 operational squads",
+          "Overall executive directorship over Brokerage Sales Division & Residential/Commercial Leasing Division.",
+          "Direct supervisory oversight of Buying & Selling and Leasing Operations Managers (AI Nadia)",
           "Executive liaison with Managing Director & COO AI Zoe"
         ]
       },
+      "divisions": [
+        {
+          "divisionId": "sales_brokerage",
+          "name": "Buying & Selling Division (Resale & Offplan)",
+          "status": "YEAR_2_ROADMAP",
+          "manager": {
+            "id": "mgr_clara_sales",
+            "name": "AI Clara",
+            "title": "Sales Operations Division Manager"
+          }
+        },
+        {
+          "divisionId": "leasing_brokerage",
+          "name": "Leasing Properties Division (Phase 1 Active)",
+          "status": "ACTIVE_PHASE_1",
+          "manager": {
+            "id": "mgr_nadia_leasing",
+            "name": "AI Nadia",
+            "title": "Leasing Operations Division Manager"
+          }
+        }
+      ],
       "supervisors": [
         {
           "id": "ai-clara-sales",
@@ -1017,11 +1027,7 @@
           "name": "AI EventPressOffice",
           "title": "Press Conference & Launch Event Media Supervisor",
           "slot": 8,
-          "tasks": [
-            "Journalist Accreditation",
-            "Press Kit Distribution",
-            "Live Broadcast Feeds"
-          ],
+          "tasks": ["Journalist Accreditation", "Press Kit Distribution", "Live Broadcast Feeds"],
           "gender": "Female"
         },
         {
