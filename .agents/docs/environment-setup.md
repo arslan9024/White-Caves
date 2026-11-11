@@ -11,7 +11,7 @@
 
 | Tool               | Required Version             | Install                       |
 | ------------------ | ---------------------------- | ----------------------------- |
-| Node.js            | 22.x LTS (22.13+)            | https://nodejs.org            |
+| Node.js            | 22.x LTS (22.19+)            | https://nodejs.org            |
 | npm                | 10.x+ (bundled with Node 22) | Bundled with Node.js          |
 | Git                | Any recent                   | https://git-scm.com           |
 | VS Code            | Latest                       | https://code.visualstudio.com |

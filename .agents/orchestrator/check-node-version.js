@@ -3,13 +3,13 @@
 /**
  * Dev runtime guard for White Caves.
  *
- * PDF.js 6 and the application toolchain require Node 22.13+ or Node 24+.
+ * PDF.js 6 and Lighthouse require Node 22.19+ or Node 24+.
  * We fail fast with a clear message so users don't hit opaque runtime errors.
  */
 
 const required = {
   major: 22,
-  minor: 13,
+  minor: 19,
 };
 
 const currentRaw = process.versions.node || '';
@@ -28,7 +28,7 @@ if (isSupported) {
 console.error('');
 console.error('[DEV PRECHECK FAILED] Unsupported Node.js version for this toolchain.');
 console.error(`Current : v${currentRaw}`);
-console.error('Required: >=22.13.x or >=24.x');
+console.error('Required: >=22.19.x or >=24.x');
 console.error('');
 console.error(
   'Why this fails: PDF.js 6 and related dependencies require a supported Node.js runtime.'
