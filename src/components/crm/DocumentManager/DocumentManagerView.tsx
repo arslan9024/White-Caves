@@ -219,6 +219,7 @@ export const DocumentManagerView: FC<UseDocumentManagerProps> = props => {
               <DocumentCard
                 key={doc.id}
                 document={doc}
+                isHighlighted={highlightedDocId === doc.id || highlightedDocId === doc._id}
                 onInspect={target => {
                   if (props.onSelectDoc) {
                     props.onSelectDoc(target.id);
