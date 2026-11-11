@@ -3,7 +3,7 @@ import {
   buildRobotsTxt,
   buildSitemapXml,
   resolveDomain,
-} from '../../scripts/generate-seo-assets.js';
+} from '../../.agents/scripts/generate-seo-assets.js';
 
 describe('generate-seo-assets script helpers', () => {
   it('builds robots.txt with provided domain', () => {
