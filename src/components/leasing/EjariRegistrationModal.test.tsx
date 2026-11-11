@@ -11,7 +11,7 @@ const mockProperty = {
 };
 
 const mockLocalStorage = () => {
-  vi.mocked(global.localStorage.getItem).mockImplementation((key: string) =>
+  vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key: string) =>
     key === 'token' ? 'mock-jwt' : null
   );
 };
