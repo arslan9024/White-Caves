@@ -8,6 +8,7 @@ import {
   CORPORATE_DEPARTMENTS_12,
   type SupervisorDef,
 } from '../../../data/assistants108Registry.data';
+import { CANONICAL_108_DIVISIONS } from '../../../data/canonicalDivisions.data';
 import type {
   DepartmentDirectorNode,
   DivisionManagerNode,
@@ -31,32 +32,44 @@ export const CANONICAL_DIRECTORS_12: DepartmentDirectorNode[] = CORPORATE_DEPART
   })
 );
 
-export const DIVISION_TASK_DOMAINS: string[] = [
-  'Escrow Oversight & Trustee Compliance',
-  'DLD Statutory Registrations & NOC Gate',
-  'High-Net-Worth Deal Matching & Acquisitions',
-  'Conveyancing & Title Deed Verification',
-  'AML / CFT Risk Screening & Sanctions',
-  'UAE PASS & Digital Identity Onboarding',
-  'Tenancy Agreements & PDC Custody Tracking',
-  'IoT Telemetry & Facility Maintenance',
-  'Portfolio Yield Optimization & Financial Calcs',
-];
+export function buildCanonical9ManagersForDept(deptSlugOrId: string): DivisionManagerNode[] {
+  const matchedDirector = CANONICAL_DIRECTORS_12.find(
+    d => d.slug === deptSlugOrId || d._id === deptSlugOrId || d.fixedCode === deptSlugOrId
+  );
+  const deptCode = matchedDirector ? matchedDirector.fixedCode : 'DEPT-01';
+  const divisions = CANONICAL_108_DIVISIONS.filter(div => div.deptCode === deptCode);
 
-export function buildCanonical9ManagersForDept(deptId: string): DivisionManagerNode[] {
-  return DIVISION_TASK_DOMAINS.map((taskDomain, idx) => ({
-    _id: `mgr-${deptId}-${idx + 1}`,
-    parentDeptId: deptId,
+  if (divisions.length > 0) {
+    return divisions.map(div => ({
+      _id: `mgr-${deptSlugOrId}-${div.slot}`,
+      parentDeptId: deptSlugOrId,
+      slotNumber: div.slot,
+      fixedCode: `MGR-${String(div.slot).padStart(2, '0')}`,
+      title: div.title,
+      managerName: div.aiManager,
+      managerRole: `${div.humanRole} (Vacant Requisition)`,
+      slaResponseTime: '< 15 mins',
+      status: 'optimal' as const,
+      description: `Commands ${div.title} (${div.code}) under ${deptCode}. Authorized headcount: 12 Desks.`,
+      teamCount: 12,
+      headcount: 12,
+    }));
+  }
+
+  // Fallback if custom unassigned department
+  return Array.from({ length: 9 }, (_, idx) => ({
+    _id: `mgr-${deptSlugOrId}-${idx + 1}`,
+    parentDeptId: deptSlugOrId,
     slotNumber: idx + 1,
     fixedCode: `MGR-${String(idx + 1).padStart(2, '0')}`,
-    title: taskDomain,
-    managerName: `Manager ${idx + 1} (${taskDomain.split(' ')[0]})`,
-    managerRole: `Operational Division Lead #${idx + 1}`,
+    title: `Operational Division #${idx + 1}`,
+    managerName: `AI Manager ${idx + 1}`,
+    managerRole: `Operational Division Lead #${idx + 1} (Vacant)`,
     slaResponseTime: '< 15 mins',
     status: 'optimal' as const,
-    description: `Commands task group #${idx + 1} for ${deptId}. Enforces 1-12-108 Protocol SLA compliance.`,
-    teamCount: 2,
-    headcount: 4,
+    description: `Commands task group #${idx + 1} for ${deptSlugOrId}. Enforces 1-12-108 Protocol SLA compliance.`,
+    teamCount: 12,
+    headcount: 12,
   }));
 }
 

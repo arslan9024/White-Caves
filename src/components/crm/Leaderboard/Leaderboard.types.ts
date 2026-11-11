@@ -12,7 +12,8 @@ export type TierRole =
   | 'DIRECTOR' // L1
   | 'MANAGER' // L2
   | 'SUPERVISOR' // L3
-  | 'EMPLOYEE'; // L4
+  | 'TEAM_LEADER' // L4
+  | 'EMPLOYEE'; // L5
 
 export type PromotionStatus = 'IN_PROGRESS' | 'ELIGIBLE' | 'PROMOTED';
 
@@ -26,6 +27,8 @@ export interface PromotionCriteria {
   minMeritXp: number;
   minSlaRate: number; // percentage, e.g. 90
   endorsementRequired: boolean;
+  minDirectFollowers?: number;
+  maxSlotsInTargetTier?: number;
   title: string;
   description: string;
 }
@@ -59,6 +62,7 @@ export interface LeaderboardMember {
   nextTierProgressPercent: number;
   badges: string[];
   milestones: CareerMilestone[];
+  directFollowersCount?: number;
   isAiAgent?: boolean;
   rank?: number;
   allTimeXp?: number;
