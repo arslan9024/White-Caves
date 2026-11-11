@@ -11,19 +11,31 @@ import {
   SUPERVISORS_108,
 } from '../../../data/assistants108Registry.data';
 import { MASTER_35_AI_ASSISTANTS } from '../../../data/assistants35Registry.data';
+import { loadStoredDepartments } from '../DepartmentManager/DepartmentManagementWorkspace.storage';
 import type { AiAgentRecord } from './AiAssistantManager.types';
 
 export const AIAMS_STORAGE_KEY = 'wc_aiams_agents_v1';
 export const AIAMS_SYNC_EVENT = 'wc-aiams-agents-updated';
 
-export const AI_DEPARTMENTS_OPTIONS = [
-  { id: 'all', name: 'All 12 Corporate Departments' },
-  { id: 'executive_command', name: 'Floor 13 · Executive Command (MD & COO)' },
-  ...CORPORATE_DEPARTMENTS_12.map(d => ({
-    id: d.id,
-    name: `${d.code} · ${d.name}`,
-  })),
-];
+/**
+ * Returns the locked 12 departments from database storage or fallback
+ */
+export function getResolvedCorporateDepartmentsOptions() {
+  const storedDepts = typeof window !== 'undefined' ? loadStoredDepartments() : [];
+  return [
+    { id: 'all', name: 'All 12 Corporate Departments' },
+    { id: 'executive_command', name: 'Floor 13 · Executive Command (MD & COO)' },
+    ...CORPORATE_DEPARTMENTS_12.map((d, idx) => {
+      const match = storedDepts.find(sd => sd.slug === d.id || sd.order === idx + 1);
+      return {
+        id: d.id,
+        name: match ? `${match.code} · ${match.title}` : `${d.code} · ${d.name}`,
+      };
+    }),
+  ];
+}
+
+export const AI_DEPARTMENTS_OPTIONS = getResolvedCorporateDepartmentsOptions();
 
 export const AI_MODELS_LIST = [
   'gemini-1.5-pro',
