@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #808 Blueprint
-**Generated:** 2026-11-11T13:05:45.287Z
+# AEGIS Perpetual Ouroboros — Cycle #76 Blueprint
+**Generated:** 2026-11-11T13:06:00.202Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-08 — FinTech, Escrow Law No. 8 & UAE VAT Form 201
-- **Lead Researcher:** @Zoe (COO)
-- **Core Objective:** Automated 5% VAT Split, 9% Corporate Tax Reserve & Trust Accounting
+- **Domain:** DOM-06 — Bilingual Arabic (RTL) & Micro-Typography Geometry
+- **Lead Researcher:** @Invoice (Dept 10)
+- **Core Objective:** Dir="rtl" Font Metrics & Cairo/Tajawal Dual-Script Polish
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
