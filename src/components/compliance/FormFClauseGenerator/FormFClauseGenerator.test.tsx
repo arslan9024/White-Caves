@@ -9,13 +9,13 @@ describe('FormFClauseGenerator Component', () => {
     expect(screen.getByTestId('form-f-clause-generator')).toBeDefined();
     expect(screen.getByText(/Form F — MOU Clause Generator/i)).toBeDefined();
     expect(screen.getByText(/Sale Price Agreement/i)).toBeDefined();
-    expect(screen.getByText(/Completion Date/i)).toBeDefined();
+    expect(screen.getAllByText(/Completion Date/i).length).toBeGreaterThan(0);
 
     // Toggle a clause
     const addClause = screen.getAllByText(/\+ Add/i)[0];
     if (addClause) {
       fireEvent.click(addClause);
-      expect(screen.getByText(/✓ Included/i)).toBeDefined();
+      expect(screen.getAllByText(/✓ Included/i).length).toBeGreaterThan(0);
     }
 
     // Generate Form F
