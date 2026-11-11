@@ -76,7 +76,10 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = queryString(req.params.id);
+    if (!id) {
+      return res.status(400).json({ success: false, error: 'Task ID is required.' });
+    }
     const task = inMemoryTasks.find(
       t => t._id.toLowerCase() === id.toLowerCase() || t.taskCode.toLowerCase() === id.toLowerCase()
     );
@@ -139,7 +142,10 @@ router.post(
 router.post(
   '/:id/complete',
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = queryString(req.params.id);
+    if (!id) {
+      return res.status(400).json({ success: false, error: 'Task ID is required.' });
+    }
     const { awardedXp, outputs = {}, entityId } = req.body;
 
     const taskIndex = inMemoryTasks.findIndex(
