@@ -72,7 +72,7 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <div style={{ fontWeight: 700, color: isDark ? '#F1F5F9' : '#0F172A', fontSize: 13 }}>
-                    {conv.customerName}
+                    {conv.contactName}
                   </div>
                   <div style={{ fontSize: 11, color: isDark ? '#94A3B8' : '#64748B', fontFamily: 'monospace' }}>
                     {conv.phone} · {conv.cluster}
@@ -108,7 +108,7 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11 }}>
                 <span style={{ color: isDark ? '#38BDF8' : '#0284C7', fontWeight: 600 }}>
-                  🏠 Match: {conv.matchedUnit}
+                  🏠 Match: {conv.maryMatch || conv.unit}
                 </span>
                 <span style={{ color: isDark ? '#94A3B8' : '#64748B' }}>{conv.timestamp}</span>
               </div>
@@ -126,7 +126,7 @@ export const LindaConversationsAndPillarsPanel: React.FC<ConversationsAndPillars
                 }}
               >
                 <span style={{ color: isDark ? '#BBF7D0' : '#14532D', fontWeight: 600 }}>
-                  🤖 Suggested Reply: {conv.suggestedAction}
+                  🤖 Suggested: {conv.intent === 'BUYER_INQUIRY' ? 'Send Brochure & Pricing' : 'Acknowledge Query'}
                 </span>
                 <button
                   type="button"

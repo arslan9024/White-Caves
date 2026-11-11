@@ -111,7 +111,7 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = memo(({
           </thead>
           <tbody>
             {sessions.map(session => {
-              const isReady = session.status === 'READY';
+              const isReady = session.status === 'connected';
               return (
                 <tr
                   key={session.id}
@@ -146,14 +146,14 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = memo(({
                       }}
                     >
                       {isReady ? <CheckCircle2 size={11} /> : <AlertTriangle size={11} />}
-                      {session.status}
+                      {session.status.toUpperCase()}
                     </span>
                   </td>
                   <td style={{ padding: '10px', fontWeight: 600, color: isDark ? '#F8FAFC' : '#0F172A' }}>
                     {session.name}
                   </td>
                   <td style={{ padding: '10px', fontFamily: 'monospace', color: isDark ? '#CBD5E1' : '#334155' }}>
-                    {formatPhone(session.phoneNumber)}
+                    {formatPhone(session.phone)}
                   </td>
                   <td style={{ padding: '10px' }}>
                     <span
@@ -166,7 +166,7 @@ export const LindaSessionsPanel: React.FC<SessionsPanelProps> = memo(({
                         color: isDark ? '#93C5FD' : '#1D4ED8',
                       }}
                     >
-                      {session.role} :{session.port}
+                      {session.role}
                     </span>
                   </td>
                   <td style={{ padding: '10px', fontFamily: 'monospace', color: isDark ? '#86EFAC' : '#15803D' }}>

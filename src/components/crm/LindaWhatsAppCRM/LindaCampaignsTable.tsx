@@ -41,7 +41,7 @@ export const LindaCampaignsTable: React.FC<LindaCampaignsTableProps> = memo(({
 
       <div style={{ display: 'grid', gap: 10 }}>
         {campaigns.map(camp => {
-          const isActive = camp.status === 'RUNNING';
+          const isActive = camp.status === 'active';
           const pct = Math.round((camp.sent / camp.total) * 100);
 
           return (
