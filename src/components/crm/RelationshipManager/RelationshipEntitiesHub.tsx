@@ -16,7 +16,7 @@ import { ErmsBulkImporterModal } from './ErmsBulkImporterModal';
 
 const STORAGE_KEY = 'whitecaves_all_entities_store';
 
-function loadStoredEntities(): EntityNode[] {
+const loadStoredEntities = (): EntityNode[] => {
   if (typeof window === 'undefined') return CANONICAL_ALL_ENTITIES;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -26,12 +26,12 @@ function loadStoredEntities(): EntityNode[] {
     }
   } catch {}
   return CANONICAL_ALL_ENTITIES;
-}
+};
 
-function saveStoredEntities(entities: EntityNode[]) {
+const saveStoredEntities = (entities: EntityNode[]) => {
   if (typeof window === 'undefined') return;
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entities)); } catch {}
-}
+};
 
 export interface RelationshipEntitiesHubProps {
   selectedEntityId?: string | null;

@@ -3,6 +3,7 @@ import {
   CORPORATE_DEPARTMENTS_12,
   EXECUTIVE_COMMAND_1,
 } from '../../../data/assistants108Registry.data';
+import { MASTER_35_AI_ASSISTANTS } from '../../../data/assistants35Registry.data';
 
 export type AIActivityTab =
   | 'ai-command'
