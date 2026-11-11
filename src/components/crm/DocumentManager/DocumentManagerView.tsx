@@ -43,6 +43,7 @@ export const DocumentManagerView: FC<UseDocumentManagerProps> = props => {
     setError,
     selectedDocForModal,
     isDrawerOpen,
+    highlightedDocId,
     handleOpenDetailModal,
     handleCloseDetailModal,
     handleOpenUploadDrawer,
