@@ -6,10 +6,12 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import type { EmployeeNode } from './EmployeeManager.types';
 import { INITIAL_EMPLOYEES_SEED, PILLARS_7 } from './EmployeeManager.data';
 import { EmployeeTelemetry } from './EmployeeManager.telemetry';
 import { loadEmployeesCache, saveEmployeesCache } from './EmployeeManager.cache';
+import { useRecordHighlight } from '../../../hooks/useRecordHighlight';
 import {
   executeHireEmployeeWorkflow,
   executeUpdateEmployeeWorkflow,
@@ -36,6 +38,33 @@ export function useEmployeeManager() {
   // Drawer / modal states
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<EmployeeNode | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { highlightedId, triggerHighlight } = useRecordHighlight(4000);
+
+  // Synchronize drawer state bidirectionally with URL search parameters
+  useEffect(() => {
+    const drawerParam = searchParams.get('drawer');
+    const idParam = searchParams.get('id');
+
+    if (drawerParam === 'create') {
+      setEditingEmployee(null);
+      setIsDrawerOpen(true);
+    } else if (drawerParam === 'edit' && idParam) {
+      const match = employees.find(
+        e =>
+          e.id.toLowerCase() === idParam.toLowerCase() ||
+          e._id.toLowerCase() === idParam.toLowerCase() ||
+          e.employeeCode.toLowerCase() === idParam.toLowerCase()
+      );
+      if (match) {
+        setEditingEmployee(match);
+        setIsDrawerOpen(true);
+      }
+    } else if (!drawerParam && isDrawerOpen) {
+      setIsDrawerOpen(false);
+      setEditingEmployee(null);
+    }
+  }, [searchParams, employees]);
 
   const showStatus = useCallback((msg: string) => {
     setStatusToast(msg);
