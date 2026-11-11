@@ -225,12 +225,24 @@ export const EmployeeManagerView: React.FC<EmployeeManagerViewProps> = ({
                 No employee records found matching your filters.
               </div>
             ) : (
-              filteredEmployees.map(emp => (
-                <div
-                  key={emp._id}
-                  className={s.card}
-                  data-testid={`employee-card-${emp.employeeCode}`}
-                >
+              filteredEmployees.map(emp => {
+                const isHighlighted = highlightedEmpId === emp.id || highlightedEmpId === emp._id || highlightedEmpId === emp.employeeCode;
+                return (
+                  <div
+                    key={emp._id}
+                    id={`record-${emp.id || emp._id || emp.employeeCode}`}
+                    className={s.card}
+                    style={
+                      isHighlighted
+                        ? {
+                            border: '2px solid #EF4444',
+                            boxShadow: '0 0 25px rgba(239, 68, 68, 0.45)',
+                            transition: 'all 0.3s ease',
+                          }
+                        : undefined
+                    }
+                    data-testid={`employee-card-${emp.employeeCode}`}
+                  >
                   <div>
                     <div className={s.cardTop}>
                       <div className={s.cardIdentity}>
