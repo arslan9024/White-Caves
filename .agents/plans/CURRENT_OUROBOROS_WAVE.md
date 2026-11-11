@@ -1,12 +1,12 @@
-# AEGIS Perpetual Ouroboros — Cycle #756 Blueprint
-**Generated:** 2026-11-11T12:52:43.614Z
+# AEGIS Perpetual Ouroboros — Cycle #21 Blueprint
+**Generated:** 2026-11-11T12:53:00.965Z
 **Governance:** @Aurora (CTO), @Margaret (Strategic Planner), @Grace (Lead Engineer), @Zoe (COO)
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
-- **Domain:** DOM-06 — Bilingual Arabic (RTL) & Micro-Typography Geometry
-- **Lead Researcher:** @Invoice (Dept 10)
-- **Core Objective:** Dir="rtl" Font Metrics & Cairo/Tajawal Dual-Script Polish
+- **Domain:** DOM-01 — Dubai Luxury Discovery & Visual Hero Immersion
+- **Lead Researcher:** @Elena (CRO)
+- **Core Objective:** Adaptive Bitrate 4K Stream & TruCheck™ Verification
 
 ### Active Architectural Directives:
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
