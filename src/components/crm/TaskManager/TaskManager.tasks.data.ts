@@ -1464,6 +1464,8 @@ export function buildTaskFromDef(
   const actionVerb = `${firstWord}_${secondWord}`;
 
   const deptCode = canonicalDept?.code || `DEPT-${String(deptNum).padStart(2, '0')}`;
+  const divisionSlot = (index % 9) + 1;
+  const divisionCode = `${deptCode.replace('DEPT-', 'DIV-')}-${divisionSlot}`;
   const sourceActorId = 'user-001'; // Sovereign Managing Director / Operator default
   const targetObjectId = category === 'REGULATORY' ? 'permit-001' : category === 'FINANCE' ? 'invoice-001' : 'prop-001';
 
@@ -1487,6 +1489,7 @@ export function buildTaskFromDef(
     sourceActorId,
     targetObjectId,
     departmentCode: deptCode,
+    divisionCode,
     lineage,
     useCase,
     dueDate: '2026-11-30',
