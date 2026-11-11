@@ -105,7 +105,21 @@ export function useExecutiveAIVSCodeSidebarLogic(props?: UseExecutiveAIVSCodeSid
       color: dept.color,
       description: dept.description,
     }));
-    return [lindaAgent, maryAgent, ...deptManagers];
+
+    const specialistAgents = MASTER_35_AI_ASSISTANTS
+      .filter(ast => ast.id !== 'linda' && ast.id !== 'mary')
+      .map(ast => ({
+        id: ast.id,
+        name: ast.name,
+        title: ast.title,
+        avatar: ast.avatar,
+        deptName: ast.departmentName,
+        deptCode: ast.code,
+        color: ast.color || '#EF4444',
+        description: ast.description,
+      }));
+
+    return [lindaAgent, maryAgent, ...deptManagers, ...specialistAgents];
   }, []);
 
   const filteredManagers = useMemo(() => {
