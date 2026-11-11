@@ -1,7 +1,4 @@
 import React from 'react';
-import { CheckCircle, AlertCircle, Clock, Plus } from 'lucide-react';
-
-import React from 'react';
 import { CheckCircle, AlertCircle, Clock, Plus, Bot, ShieldAlert } from 'lucide-react';
 
 interface Task {
