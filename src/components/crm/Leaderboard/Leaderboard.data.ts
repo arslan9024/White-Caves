@@ -210,4 +210,8 @@ export const INITIAL_LEADERBOARD_DATA: LeaderboardMember[] = [
     nextTierProgressPercent: 100,
     badges: ['Top Broker Award', 'Centurion Closer', 'DAMAC Specialist'],
     directFollowersCount: 11,
-    milestones
+    milestones: [],
+  },
+];
+
+export const CANONICAL_LEADERBOARD_MEMBERS = INITIAL_LEADERBOARD_DATA;
