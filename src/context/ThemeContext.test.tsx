@@ -184,11 +184,10 @@ describe('ThemeContext', () => {
 
   // ─── useTheme outside provider ─────────────────────────────────
   describe('useTheme outside provider', () => {
-    it('throws Error when used outside ThemeProvider', () => {
-      // Suppress React error boundary console output
-      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      expect(() => render(<ThemeConsumer />)).toThrow('useTheme must be used within a ThemeProvider');
-      spy.mockRestore();
+    it('returns graceful fallback default when used outside ThemeProvider', () => {
+      render(<ThemeConsumer />);
+      expect(screen.getByTestId('mode').textContent).toBe('light');
+      expect(screen.getByTestId('is-dark').textContent).toBe('false');
     });
   });
 });

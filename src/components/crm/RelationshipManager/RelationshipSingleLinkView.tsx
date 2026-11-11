@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { CANONICAL_ERD_RELATIONS, CANONICAL_ERD_MODELS } from './RelationshipErd.data';
 import { CANONICAL_RELATIONSHIPS } from './RelationshipManager.data';
+import { ErmsRelationshipDossier } from './ErmsRelationshipDossier';
 import type { ERDRelation, RelationshipChain } from './RelationshipManager.types';
 
 export interface RelationshipSingleLinkViewProps {
@@ -186,18 +187,23 @@ export const RelationshipSingleLinkView: FC<RelationshipSingleLinkViewProps> = (
           </div>
         </div>
       ) : fullChain ? (
-        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white">{fullChain.name}</h2>
-            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400">
-              AED {fullChain.grossRevenueAED.toLocaleString()} Escrow
-            </span>
+        <div className="space-y-4">
+          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-white">{fullChain.name}</h2>
+              <span className="font-mono text-xs font-bold px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400">
+                AED {fullChain.grossRevenueAED.toLocaleString()} Escrow
+              </span>
+            </div>
+            <p className="text-xs text-slate-300">{fullChain.summary}</p>
+            <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-400">
+              Pipeline: {fullChain.dealNumber} · Nodes: {fullChain.nodes.length} · Edges:{' '}
+              {fullChain.edges.length} · Merit XP: +{fullChain.meritXPAwarded}
+            </div>
           </div>
-          <p className="text-xs text-slate-300">{fullChain.summary}</p>
-          <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-400">
-            Pipeline: {fullChain.dealNumber} · Nodes: {fullChain.nodes.length} · Edges:{' '}
-            {fullChain.edges.length} · Merit XP: +{fullChain.meritXPAwarded}
-          </div>
+
+          {/* Exportable Relationship Dossier */}
+          <ErmsRelationshipDossier chain={fullChain} />
         </div>
       ) : (
         <div className="p-8 rounded-xl bg-slate-900/40 border border-slate-800 text-center space-y-2">
