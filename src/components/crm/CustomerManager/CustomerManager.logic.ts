@@ -45,10 +45,34 @@ export function useCustomerManager({
     null
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { highlightedId, triggerHighlight } = useRecordHighlight(4000);
 
   useEffect(() => {
     CustomerTelemetry.track('MOUNT', { initialCount: customers.length });
   }, []);
+
+  // Synchronize drawer state with URL search parameters
+  useEffect(() => {
+    const drawerParam = searchParams.get('drawer');
+    const idParam = searchParams.get('id');
+
+    if (drawerParam === 'create') {
+      setIsDrawerOpen(true);
+    } else if (drawerParam === 'edit' && idParam) {
+      const match = customers.find(
+        c =>
+          c.id.toLowerCase() === idParam.toLowerCase() ||
+          c._id.toLowerCase() === idParam.toLowerCase() ||
+          c.customerCode.toLowerCase() === idParam.toLowerCase()
+      );
+      if (match) {
+        setSelectedCustomerForModal(match);
+      }
+    } else if (!drawerParam && isDrawerOpen) {
+      setIsDrawerOpen(false);
+    }
+  }, [searchParams, customers]);
 
   // Sync with selectedCustomerId deep link
   useEffect(() => {
