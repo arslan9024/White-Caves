@@ -79,13 +79,11 @@ export function useLindaOperationsCenter(): UseLindaOperationsCenterReturn {
 
   const [metrics, setMetrics] = useState<LindaMetricsState>({
     activeSessions: '4 / 5 Online',
-    messagesToday: '1,428',
-    deliveryRate: '99.4%',
-    optOutRate: '0.04%',
     rateLimit: '42 WPM (Gaussian)',
     uptime: '99.98% (14d 6h)',
     memory: '214 MB / 1024 MB',
-    cpu: '4.2%',
+    conversionVelocity: '94.2%',
+    antiBanSafetyScore: '99.8/100',
   });
 
   const [sessions, setSessions] = useState<LindaSessionItem[]>(INITIAL_LINDA_SESSIONS);
