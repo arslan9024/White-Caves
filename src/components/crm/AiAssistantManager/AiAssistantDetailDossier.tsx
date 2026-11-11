@@ -200,40 +200,34 @@ export const AiAssistantDetailDossier: FC<AiAssistantDetailDossierProps> = ({
           </div>
         </div>
 
-        {/* Live Operational Console for Specialized AI Agents */}
-        {agent.agentId.toLowerCase() === 'linda' && (
-          <div className="pt-4 border-t border-slate-800 space-y-4">
+        {/* Live Dynamic Operational Console for All AI Agents */}
+        <div className="pt-4 border-t border-slate-800 space-y-4" data-testid="ai-agent-live-operational-studio">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MessageSquare size={16} className="text-emerald-400" />
-              <span className="text-xs font-bold text-emerald-400 font-mono uppercase">
-                AI Linda · Live WhatsApp Simulation & Lead Sandbox
+              <Terminal size={16} className="text-red-400" />
+              <span className="text-xs font-bold text-red-400 font-mono uppercase">
+                {agent.name} · Operational Studio & Live Workspace Console
               </span>
             </div>
-            <LindaSandboxView />
-            <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-900/50 p-2">
-              <LindaWhatsAppCRM />
-            </div>
+            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/60">
+              Live Interactive Runtime · {agent.slaResponseTime} SLA
+            </span>
           </div>
-        )}
-
-        {agent.agentId.toLowerCase() === 'mary' && (
-          <div className="pt-4 border-t border-slate-800 space-y-4" data-testid="mary-live-operational-studio">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Database size={16} className="text-blue-400" />
-                <span className="text-xs font-bold text-blue-400 font-mono uppercase">
-                  AI Mary · 9,378+ Master Inventory Control Center (Live DAMAC Hills 2 Grid)
-                </span>
-              </div>
-              <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
-                Live Data Synchronized · P0 SLA
-              </span>
-            </div>
-            <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-950/90 shadow-2xl">
-              <MaryInventoryCRM />
-            </div>
+          <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-950/90 shadow-2xl">
+            <DynamicAssistantCRM
+              assistant={{
+                id: agent.agentId,
+                name: agent.name,
+                title: agent.role,
+                department: agent.department,
+                specialty: agent.specialty,
+                capabilities: agent.capabilities,
+                color: '#EF4444',
+                avatar: agent.avatar,
+              }}
+            />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
