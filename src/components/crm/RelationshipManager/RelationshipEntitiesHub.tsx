@@ -30,9 +30,7 @@ function loadStoredEntities(): EntityNode[] {
 
 function saveStoredEntities(entities: EntityNode[]) {
   if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(entities));
-  } catch {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entities)); } catch {}
 }
 
 export interface RelationshipEntitiesHubProps {

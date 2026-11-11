@@ -10,6 +10,7 @@ import {
   CORPORATE_DEPARTMENTS_12,
   SUPERVISORS_108,
 } from '../../../data/assistants108Registry.data';
+import { MASTER_35_AI_ASSISTANTS } from '../../../data/assistants35Registry.data';
 import type { AiAgentRecord } from './AiAssistantManager.types';
 
 export const AIAMS_STORAGE_KEY = 'wc_aiams_agents_v1';
@@ -165,7 +166,38 @@ function buildCanonicalAiAgentsSeed(): AiAgentRecord[] {
     avatar: sup.avatar,
   }));
 
-  return [zoeAgent, lindaAgent, maryAgent, ...managerAgents, ...supervisorAgents];
+  const coreAgentIds = new Set<string>([
+    zoeAgent.agentId.toLowerCase(),
+    lindaAgent.agentId.toLowerCase(),
+    maryAgent.agentId.toLowerCase(),
+    ...managerAgents.map(m => m.agentId.toLowerCase()),
+    ...supervisorAgents.map(s => s.agentId.toLowerCase()),
+  ]);
+
+  const specialist35Agents: AiAgentRecord[] = MASTER_35_AI_ASSISTANTS
+    .filter(ast => !coreAgentIds.has(ast.id.toLowerCase()))
+    .map(ast => ({
+      id: `ai-${ast.id}`,
+      agentId: ast.id,
+      code: ast.code,
+      name: ast.name,
+      role: ast.title,
+      departmentId: ast.departmentId,
+      department: ast.departmentName,
+      tier: 'SPECIALIST',
+      status: ast.status === 'optimal' ? 'OPTIMAL' : ast.status === 'standby' ? 'STANDBY' : 'ACTIVE',
+      model: 'gemini-1.5-flash',
+      specialty: ast.specialty,
+      systemPrompt: ast.description,
+      capabilities: ast.capabilities,
+      assignedTasks: ast.dataFlows?.inputs ? [`Process inputs: ${ast.dataFlows.inputs.join(', ')}`, `Publish outputs: ${ast.dataFlows.outputs.join(', ')}`] : [ast.description],
+      slaResponseTime: ast.slaResponseTime,
+      accuracyRate: ast.metrics.accuracyRate,
+      activeWorkload: ast.metrics.tasksCompletedToday,
+      avatar: ast.avatar,
+    }));
+
+  return [zoeAgent, lindaAgent, maryAgent, ...managerAgents, ...supervisorAgents, ...specialist35Agents];
 }
 
 export const INITIAL_AI_AGENTS_SEED: AiAgentRecord[] = buildCanonicalAiAgentsSeed();
