@@ -108,6 +108,11 @@ const competitorPricingRows = [
 ];
 
 test.describe('Wave 13 - Valuation and Market workflow coverage', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('wc_cookie_consent', 'rejected');
+    });
+  });
   test('valuation page loads, recalculates, overrides, and computes yield', async ({ page }) => {
     await page.route('**/api/valuations/**', async route => {
       const url = new URL(route.request().url());
@@ -265,14 +270,10 @@ test.describe('Wave 13 - Valuation and Market workflow coverage', () => {
         response.url().includes('/api/market/price-index') && response.request().method() === 'GET'
     );
 
-    await page.goto('/market', { waitUntil: 'domcontentloaded' });
+    await Promise.all([page.goto('/market', { waitUntil: 'domcontentloaded' }), waitForPriceIndex]);
     await page.waitForURL('**/market');
     const marketHeading = page.getByRole('heading', { name: 'Market Intelligence' });
-    const headingCount = await marketHeading.count().catch(() => 0);
-    test.skip(headingCount === 0, 'Market heading not rendered in current browser/runtime state.');
     await expect(marketHeading).toBeVisible();
-
-    await waitForPriceIndex;
 
     const priceIndexTab = page.getByRole('button', { name: 'Price Index' });
     if ((await priceIndexTab.count().catch(() => 0)) > 0) {

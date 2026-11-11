@@ -63,7 +63,7 @@
     "sqa:audit": "node .agents/scripts/sqa-runner.js",
     "qa:full": "node .agents/scripts/sqa-runner.js",
     "test:coverage": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vitest run --pool=forks --coverage",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test && playwright test --config playwright.henry.config.ts",
     "test:e2e:smoke": "playwright test src/e2e/dashboard.spec.ts",
     "test:e2e:accessibility": "playwright test src/e2e/accessibility.audit.spec.ts",
     "test:e2e:performance": "playwright test src/e2e/performance.layer5.spec.ts",

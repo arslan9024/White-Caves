@@ -30,7 +30,10 @@ test.describe('Mobile 375px viewport — responsive layout', () => {
         'Toggle user preferences and profile menu'
       );
 
-      if (width <= 900) {
+      const usesMobileNavigation = await page.evaluate(
+        () => matchMedia('(max-width: 900px)').matches
+      );
+      if (usesMobileNavigation) {
         await expect(page.locator('.public-navbar__menu-btn')).toBeVisible();
         await expect(page.locator('.public-navbar__desktop-nav')).toBeHidden();
       } else {

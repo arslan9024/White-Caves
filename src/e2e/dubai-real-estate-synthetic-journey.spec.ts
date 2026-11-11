@@ -14,8 +14,13 @@ test.describe('Dubai Real Estate Synthetic Journey E2E', () => {
     await page.waitForLoadState('domcontentloaded');
   });
 
-  test('Step 1: Displays Linda WhatsApp CRM Operations Center and Telemetry Grid', async ({ page }) => {
-    const lindaNav = page.locator('[data-testid="nav-linda-crm"], text=/Linda|WhatsApp/i').first();
+  test('Step 1: Displays Linda WhatsApp CRM Operations Center and Telemetry Grid', async ({
+    page,
+  }) => {
+    const lindaNav = page
+      .getByTestId('nav-linda-crm')
+      .or(page.getByText(/Linda|WhatsApp/i))
+      .first();
     if (await lindaNav.isVisible()) {
       await lindaNav.click();
       await page.waitForTimeout(500);
@@ -23,7 +28,9 @@ test.describe('Dubai Real Estate Synthetic Journey E2E', () => {
       const opsCenter = page.locator('[data-testid="linda-operations-center"]');
       if (await opsCenter.isVisible()) {
         await expect(opsCenter).toBeVisible();
-        await expect(page.locator('text=/Anti-Ban|Conversion Velocity|RSS/i').first()).toBeVisible();
+        await expect(
+          page.locator('text=/Anti-Ban|Conversion Velocity|RSS/i').first()
+        ).toBeVisible();
       }
     }
   });

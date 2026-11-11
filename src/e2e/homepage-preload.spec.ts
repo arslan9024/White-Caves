@@ -10,6 +10,25 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Homepage hero preload link (E2E)', () => {
   test.beforeEach(async ({ page }) => {
+    await page.route('**/api/homepage/data', route =>
+      route.fulfill({
+        json: {
+          success: true,
+          data: {
+            featuredProperties: [],
+            topAgents: [],
+            locationTrends: [],
+            marketStats: {
+              totalProperties: 0,
+              availableProperties: 0,
+              averagePrice: 0,
+              portfolioValue: 0,
+              activeAgents: 0,
+            },
+          },
+        },
+      })
+    );
     const consoleErrors: string[] = [];
 
     page.on('console', message => {

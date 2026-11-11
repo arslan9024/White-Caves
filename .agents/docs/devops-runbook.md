@@ -25,3 +25,9 @@
 - No reachable production backend origin has been verified. Do not configure a proxy to an assumed hostname.
 - The legacy Vercel API currently fails module loading. A successful frontend build does not verify API health or backend feature parity.
 - Before enabling production traffic, verify backend health, authentication/RBAC, and the required Express routes against the selected deployment.
+
+## 4. Browser Test Runtimes
+
+- `npm run test:e2e` runs the built-application Playwright suite, then the Henry scanner component smoke suite using `playwright.henry.config.ts`.
+- Henry's test-only module mount requires a real Vite module server on local port 4174; a production preview cannot serve its source imports. Both suites remain required by the combined command.
+- Set `VITE_API_URL=/api` when building the isolated same-origin frontend E2E environment. Frontend-only tests must mock their API contracts explicitly; this does not prove a deployed backend is healthy.
