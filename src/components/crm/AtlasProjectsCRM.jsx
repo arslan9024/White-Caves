@@ -6,6 +6,7 @@ import {
   AlertTriangle, ShieldCheck, DollarSign, Download, Percent
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
+import { EscrowMilestoneTracker } from './EscrowMilestoneTracker';
 import './AssistantDashboard.css';
 
 export const AtlasProjectsCRM = ({ moduleId, role, user }) => {
