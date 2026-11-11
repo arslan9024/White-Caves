@@ -69,7 +69,7 @@ export function syncCompletedTaskToErms(task: TaskNode): {
       ...currentRelations[existingIdx],
       actionTaskId: task.taskCode,
       actionVerb: task.actionVerb || currentRelations[existingIdx].actionVerb,
-      departmentCode: task.deptId || task.departmentCode || currentRelations[existingIdx].departmentCode,
+      departmentCode: (task as any).deptId || task.departmentCode || currentRelations[existingIdx].departmentCode,
       label: `${currentRelations[existingIdx].label} (Verified via ${task.taskCode})`,
     };
     currentRelations[existingIdx] = updatedRelation;
