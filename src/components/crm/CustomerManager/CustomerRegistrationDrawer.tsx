@@ -4,9 +4,11 @@
  * Single Purpose File Law: < 350 lines
  */
 
-import React, { FC, useState, CSSProperties } from 'react';
+import React, { FC, useState, useEffect, useMemo, CSSProperties } from 'react';
 import { X, UserPlus } from 'lucide-react';
 import { CustomerItem, CustomerType, LeadSource } from './CustomerManager.types';
+import { useDirtyStateGuard } from '../../../hooks/useDirtyStateGuard';
+import { UnsavedChangesModal, TaskActionBar } from '../../common/UnsavedChangesModal';
 
 const lbl: CSSProperties = {
   fontSize: '0.72rem',
@@ -36,6 +38,7 @@ export const CustomerRegistrationDrawer: FC<CustomerRegistrationDrawerProps> = (
   onClose,
   onSubmit,
 }) => {
+  const [initialSnapshot, setInitialSnapshot] = useState<string>('');
   const [fullName, setFullName] = useState('');
   const [customerCode, setCustomerCode] = useState('');
   const [email, setEmail] = useState('');
@@ -46,7 +49,92 @@ export const CustomerRegistrationDrawer: FC<CustomerRegistrationDrawerProps> = (
   const [assignedAgentName, setAssignedAgentName] = useState('Arslan Malik');
   const [source, setSource] = useState<LeadSource>('PROPERTY_FINDER');
 
+  useEffect(() => {
+    if (isOpen) {
+      setFullName('');
+      setCustomerCode('');
+      setEmail('');
+      setPhone('');
+      setCustomerType('LEAD');
+      setPreferredCommunity('DAMAC Hills 2');
+      setBudgetAED(150000);
+      setAssignedAgentName('Arslan Malik');
+      setSource('PROPERTY_FINDER');
+      setInitialSnapshot(
+        JSON.stringify({
+          fullName: '',
+          customerCode: '',
+          email: '',
+          phone: '',
+          customerType: 'LEAD',
+          preferredCommunity: 'DAMAC Hills 2',
+          budgetAED: 150000,
+          assignedAgentName: 'Arslan Malik',
+          source: 'PROPERTY_FINDER',
+        })
+      );
+    }
+  }, [isOpen]);
+
+  const isDirty = useMemo(() => {
+    if (!isOpen) return false;
+    const current = JSON.stringify({
+      fullName,
+      customerCode,
+      email,
+      phone,
+      customerType,
+      preferredCommunity,
+      budgetAED,
+      assignedAgentName,
+      source,
+    });
+    return Boolean(initialSnapshot && current !== initialSnapshot);
+  }, [
+    isOpen,
+    fullName,
+    customerCode,
+    email,
+    phone,
+    customerType,
+    preferredCommunity,
+    budgetAED,
+    assignedAgentName,
+    source,
+    initialSnapshot,
+  ]);
+
+  const { showPrompt, proceed, cancel, confirmExit } = useDirtyStateGuard({
+    isDirty,
+    onConfirmDiscard: onClose,
+  });
+
   if (!isOpen) return null;
+
+  const handleSaveData = (shouldClose: boolean) => {
+    if (!fullName.trim()) return;
+    onSubmit({
+      fullName,
+      customerCode: customerCode || `CUST-${Date.now().toString().slice(-4)}`,
+      email,
+      phone,
+      customerType,
+      preferredCommunity,
+      budgetAED,
+      assignedAgentName,
+      source,
+      status: 'ACTIVE',
+      lastContactDate: new Date().toISOString().slice(0, 10),
+    });
+    if (shouldClose) {
+      onClose();
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSaveData(true);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
