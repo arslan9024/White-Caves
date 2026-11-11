@@ -1,44 +1,75 @@
 /**
  * AIOrganogramTree.tsx
  *
- * White Caves Real Estate LLC — 1-12-108 Autonomous Command Grid Organogram Tree.
- * Hierarchical tree visualization:
- * Level 0: 1 Managing Director (Arslan Malik Bashir Ahmad) & AI Zoe (COO)
- * Level 1: 12 Corporate Department Managers & AI Leads
- * Level 2: 108 Department Supervisors (9 per department × 12 = 108) with live status badges.
+ * White Caves Real Estate LLC — 1-12-108 Bhakti Recursive Command Grid Organogram Tree.
+ * Single Source of Truth Hierarchy:
+ * Level 0: 1 Managing Director (Arslan Malik Bashir Ahmad) & Executive AI Zoe (COO)
+ * Level 1: 12 Corporate Department Directors (dynamically bound to confirmed/locked DB names)
+ * Level 2: 108 Division Managers (9 per Department × 12 = 108 Division Managers)
+ * Level 3 Capacity: 1,296 Operational Supervisors (12 per Division Manager)
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CORPORATE_DEPARTMENTS_12,
   SUPERVISORS_108,
   SupervisorDef,
 } from '../../../data/assistants108Registry.data';
+import { useCorporateDepartments } from '../../../context/CorporateDepartmentsContext';
 
-const ASSISTANTS_108_REGISTRY = CORPORATE_DEPARTMENTS_12.map(dept => ({
-  ...dept,
-  manager: 'Human Manager',
-  aiLead: dept.managerAi.name,
-  supervisors: SUPERVISORS_108.filter(s => s.departmentId === dept.id),
-}));
-
-export type DepartmentRegistryItem = (typeof ASSISTANTS_108_REGISTRY)[number];
+export interface DepartmentRegistryItem {
+  id: string;
+  name: string;
+  code: string;
+  color: string;
+  gradient: string;
+  icon: string;
+  description: string;
+  manager: string;
+  aiLead: string;
+  supervisors: SupervisorDef[];
+}
 
 export interface AIOrganogramTreeProps {
   onSelectAssistant?: (assistant: SupervisorDef) => void;
 }
 
 export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant }) => {
+  const { departments: dbDepartments } = useCorporateDepartments();
   const [selectedDeptId, setSelectedDeptId] = useState<string>('customer_experience');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [inspectedSupervisor, setInspectedSupervisor] = useState<SupervisorDef | null>(null);
   const [taskPrompt, setTaskPrompt] = useState<string>('');
   const [taskDispatched, setTaskDispatched] = useState<boolean>(false);
 
+  // Single Source of Truth: Merge locked database department names into canonical registry
+  const departmentsRegistry: DepartmentRegistryItem[] = useMemo(() => {
+    return CORPORATE_DEPARTMENTS_12.map((dept, idx) => {
+      // Find matching confirmed department from DB/context by slug or slot order
+      const matchedDbDept = dbDepartments.find(
+        d => d.slug === dept.id || d._id === `canonical-${dept.id}` || d.order === idx + 1
+      );
+
+      const resolvedName = matchedDbDept?.title || dept.name;
+      const resolvedCode = matchedDbDept?.code || dept.code;
+      const resolvedColor = matchedDbDept?.color || dept.color;
+
+      return {
+        ...dept,
+        name: resolvedName,
+        code: resolvedCode,
+        color: resolvedColor,
+        manager: matchedDbDept?.directorOrManagerId?.fullName || 'Human Director',
+        aiLead: dept.managerAi.name,
+        supervisors: SUPERVISORS_108.filter(s => s.departmentId === dept.id),
+      };
+    });
+  }, [dbDepartments]);
+
   const activeDept: DepartmentRegistryItem =
-    ASSISTANTS_108_REGISTRY.find((d: DepartmentRegistryItem) => d.id === selectedDeptId) ||
-    ASSISTANTS_108_REGISTRY[0];
+    departmentsRegistry.find((d: DepartmentRegistryItem) => d.id === selectedDeptId) ||
+    departmentsRegistry[0];
 
   const handleDispatchTask = (e: React.FormEvent) => {
     e.preventDefault();
