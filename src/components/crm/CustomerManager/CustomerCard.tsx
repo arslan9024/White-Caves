@@ -12,11 +12,12 @@ import { CustomerItem } from './CustomerManager.types';
 
 interface CustomerCardProps {
   customer: CustomerItem;
+  isHighlighted?: boolean;
   onInspect?: (cust: CustomerItem) => void;
   onSelect?: (cust: CustomerItem) => void;
 }
 
-export const CustomerCard: FC<CustomerCardProps> = ({ customer, onInspect, onSelect }) => {
+export const CustomerCard: FC<CustomerCardProps> = ({ customer, isHighlighted, onInspect, onSelect }) => {
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const handleInspect = () => {
@@ -54,26 +55,34 @@ export const CustomerCard: FC<CustomerCardProps> = ({ customer, onInspect, onSel
 
   return (
     <div
+      id={`record-${customer.id}`}
       data-testid={`customer-card-${customer.id}`}
       onClick={handleInspect}
       style={{
         cursor: 'pointer',
         background: isDark ? 'rgba(15, 23, 42, 0.75)' : '#FFFFFF',
-        border: `1px solid ${
-          customer.kycVerified
-            ? isDark
-              ? 'rgba(16, 185, 129, 0.35)'
-              : '#10B981'
-            : isDark
-            ? 'rgba(255, 255, 255, 0.08)'
-            : '#E2E8F0'
-        }`,
+        border: isHighlighted
+          ? '2px solid #EF4444'
+          : `1px solid ${
+              customer.kycVerified
+                ? isDark
+                  ? 'rgba(16, 185, 129, 0.35)'
+                  : '#10B981'
+                : isDark
+                ? 'rgba(255, 255, 255, 0.08)'
+                : '#E2E8F0'
+            }`,
         borderRadius: '12px',
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
         gap: '14px',
-        boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.25)' : '0 2px 10px rgba(0,0,0,0.04)',
+        boxShadow: isHighlighted
+          ? '0 0 25px rgba(239, 68, 68, 0.45)'
+          : isDark
+          ? '0 4px 20px rgba(0,0,0,0.25)'
+          : '0 2px 10px rgba(0,0,0,0.04)',
+        transition: 'all 0.3s ease',
       }}
     >
       {/* Top Header */}
