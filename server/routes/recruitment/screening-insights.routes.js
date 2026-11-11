@@ -7,6 +7,7 @@ import { ctx } from './recruitment.context.js';
 import { requireRecruitmentAccess } from './recruitment.access.js';
 import { computeScreeningMetrics } from './recruitment.metrics.js';
 import { ResumeParserService } from '../../services/ResumeParserService.js';
+import { normalizeCandidateScore } from '../../services/recruitmentRecordMapper.js';
 
 const router = express.Router();
 
@@ -18,20 +19,22 @@ router.get('/candidates/:candidate_id/screening-scores', async (req, res) => {
     const scores = await ctx.prisma.candidateScore.findMany({
       where: { candidate_id },
       include: { job: true },
-      orderBy: { created_at: 'desc' },
+      orderBy: { scored_at: 'desc' },
     });
 
     res.status(200).json({
       success: true,
       candidate_id,
       total_applications: scores.length,
-      scores: scores.map(score => ({
-        job: {
-          id: score.job.id,
-          title: score.job.title,
-          department: score.job.department,
-          location: score.job.location,
-        },
+      scores: scores.map(normalizeCandidateScore).map(score => ({
+        job: score.job
+          ? {
+              id: score.job.id,
+              title: score.job.title,
+              department: score.job.department,
+              location: score.job.location,
+            }
+          : null,
         score: {
           overall: score.overall_score,
           status: score.screening_status,
@@ -44,7 +47,7 @@ router.get('/candidates/:candidate_id/screening-scores', async (req, res) => {
           },
           feedback: score.feedback,
         },
-        scored_at: score.created_at,
+        scored_at: score.scored_at,
       })),
     });
   } catch (error) {
@@ -64,12 +67,6 @@ router.post('/candidates/:candidate_id/extract-resume', async (req, res) => {
     // Get candidate with latest resume
     const candidate = await ctx.prisma.candidate.findUnique({
       where: { id: candidate_id },
-      include: {
-        resumeUploads: {
-          orderBy: { created_at: 'desc' },
-          take: 1,
-        },
-      },
     });
 
     if (!candidate) {
@@ -78,34 +75,23 @@ router.post('/candidates/:candidate_id/extract-resume', async (req, res) => {
       });
     }
 
-    if (!candidate.resumeUploads || candidate.resumeUploads.length === 0) {
+    if (!candidate.resume_url) {
       return res.status(400).json({
         error: 'No resume found for this candidate',
       });
     }
 
-    const resumeUpload = candidate.resumeUploads[0];
-
     // Extract text from resume
-    const extracted = await ResumeParserService.extractTextFromResume(resumeUpload.file_path);
+    const extracted = await ResumeParserService.extractTextFromResume(candidate.resume_url);
 
     // Parse resume text to extract data
     const parsedData = ResumeParserService.parseResumeText(extracted.text);
 
     // Update candidate with parsed resume text
-    const updated = await ctx.prisma.candidate.update({
+    await ctx.prisma.candidate.update({
       where: { id: candidate_id },
       data: {
         resume_text: extracted.text,
-      },
-    });
-
-    // Update extraction status
-    await ctx.prisma.resumeUpload.update({
-      where: { id: resumeUpload.id },
-      data: {
-        extraction_status: 'completed',
-        extracted_data: JSON.stringify(parsedData),
       },
     });
 

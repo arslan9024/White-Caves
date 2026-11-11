@@ -15,8 +15,7 @@ export function requireRecruitmentAccess(level = 'read') {
       return next();
     }
 
-    const headerRole = req.headers['x-user-role'];
-    const userRole = (headerRole || req.user?.role || '').toString().trim().toLowerCase();
+    const userRole = (req.user?.role || '').toString().trim().toLowerCase();
 
     if (!userRole) {
       return res.status(401).json({
@@ -42,8 +41,7 @@ export function requireManagerReviewAccess() {
       return next();
     }
 
-    const headerRole = req.headers['x-user-role'];
-    const userRole = (headerRole || req.user?.role || '').toString().trim().toLowerCase();
+    const userRole = (req.user?.role || '').toString().trim().toLowerCase();
 
     if (!userRole) {
       return res.status(401).json({

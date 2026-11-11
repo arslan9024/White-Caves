@@ -6,6 +6,7 @@ import express from 'express';
 import { ctx } from './recruitment.context.js';
 import { logRecruitmentAudit } from './recruitment.context.js';
 import { requireManagerReviewAccess } from './recruitment.access.js';
+import { normalizeCandidateScore } from '../../services/recruitmentRecordMapper.js';
 
 const router = express.Router();
 
@@ -42,7 +43,7 @@ router.get('/jobs/:job_id/manager-shortlist', requireManagerReviewAccess(), asyn
 
     const applicationByCandidate = new Map(applications.map(app => [app.candidate_id, app]));
 
-    const shortlist = scores.map(score => {
+    const shortlist = scores.map(normalizeCandidateScore).map(score => {
       const application = applicationByCandidate.get(score.candidate_id);
       const recommendation =
         score.screening_status === 'strong_match'

@@ -50,6 +50,11 @@ router.post(
         variables,
         'offer_letter'
       );
+      if (!message) {
+        return res
+          .status(422)
+          .json({ error: 'Offer was not sent: no messaging recipient available' });
+      }
 
       await ctx.prisma.application.update({
         where: { id: application_id },

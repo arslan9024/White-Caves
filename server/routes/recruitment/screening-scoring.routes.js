@@ -27,30 +27,26 @@ router.post(
         });
       }
 
-      // Create resume upload record
-      const resumeUpload = await ctx.prisma.resumeUpload.create({
-        data: {
-          candidate_id,
-          file_path: req.file.path,
-          file_name: req.file.originalname,
-          file_size: req.file.size,
-          mime_type: req.file.mimetype,
-        },
-      });
-
       // Update candidate with resume URL
       await ctx.prisma.candidate.update({
         where: { id: candidate_id },
         data: {
           resume_url: req.file.path,
+          resume_text: null,
         },
       });
 
       res.status(201).json({
         success: true,
         message: 'Resume uploaded successfully',
-        resume: resumeUpload,
-        note: 'Resume text extraction is queued for processing. Check status with extraction_status field.',
+        resume: {
+          candidate_id,
+          file_path: req.file.path,
+          file_name: req.file.originalname,
+          file_size: req.file.size,
+          mime_type: req.file.mimetype,
+        },
+        note: 'Resume saved. Use the extract-resume endpoint to extract its text.',
       });
     } catch (error) {
       console.error('Error uploading resume:', error);

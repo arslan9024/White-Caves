@@ -11,6 +11,12 @@
 
 ## Canonical Screening Statuses
 
+Persistence uses the checked-in Prisma field names: `CandidateScore.scored_at`, `cultural_fit`, and `location_match`; API responses normalize factor aliases and derive the screening classification from score thresholds. Lead-score persistence uses snake_case fields and database failures return errors, not successful empty lists.
+
+Resume upload stores `Candidate.resume_url` and clears stale extracted text. Extraction reads that path and persists `resume_text`; no `ResumeUpload` model or automatic extraction queue is assumed. Interview scheduling uses `InterviewSchedule`; interview completion uses `Interview.completed_at`, with recruiter notes stored in supported `feedback`.
+
+The scoring service owns scoring-result notification. Batch results report its actual `message_sent` outcome without sending a second message. Offers without a messaging recipient return HTTP 422 and do not advance application status.
+
 The system now treats these values as canonical:
 
 - `strong_match`
@@ -41,7 +47,7 @@ Request body:
     "experience": 0.25,
     "education": 0.15,
     "cultural_fit": 0.15,
-    "location_match": 0.10
+    "location_match": 0.1
   }
 }
 ```

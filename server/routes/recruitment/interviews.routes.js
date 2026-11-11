@@ -4,6 +4,10 @@
  */
 import express from 'express';
 import { ctx } from './recruitment.context.js';
+import {
+  normalizeInterviewSchedule,
+  normalizeInterview,
+} from '../../services/recruitmentRecordMapper.js';
 
 const router = express.Router();
 
@@ -123,7 +127,7 @@ router.get('/interview/sessions/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
 
-    const session = await ctx.prisma.interviewSession.findUnique({
+    const record = await ctx.prisma.interviewSchedule.findUnique({
       where: { id: sessionId },
       include: {
         candidate: {
@@ -131,7 +135,7 @@ router.get('/interview/sessions/:sessionId', async (req, res) => {
             id: true,
             first_name: true,
             email: true,
-            phone_number: true,
+            phone: true,
             whatsapp_phone: true,
           },
         },
@@ -139,13 +143,13 @@ router.get('/interview/sessions/:sessionId', async (req, res) => {
           select: {
             id: true,
             title: true,
-            company: true,
+            department: true,
           },
         },
       },
     });
 
-    if (!session) {
+    if (!record) {
       return res.status(404).json({
         error: 'Interview session not found',
       });
@@ -153,7 +157,7 @@ router.get('/interview/sessions/:sessionId', async (req, res) => {
 
     res.json({
       success: true,
-      session,
+      session: normalizeInterviewSchedule(record),
     });
   } catch (error) {
     res.status(500).json({
@@ -169,30 +173,24 @@ router.get('/candidates/:candidateId/interviews', async (req, res) => {
     const { candidateId } = req.params;
 
     const interviews = await ctx.prisma.interview.findMany({
-      where: { candidateId },
+      where: { candidate_id: candidateId },
       include: {
         job: {
           select: {
             id: true,
             title: true,
-            company: true,
-          },
-        },
-        session: {
-          select: {
-            status: true,
-            createdAt: true,
+            department: true,
           },
         },
       },
-      orderBy: { scheduledAt: 'desc' },
+      orderBy: { scheduled_at: 'desc' },
     });
 
     res.json({
       success: true,
       candidateId,
       total: interviews.length,
-      interviews,
+      interviews: interviews.map(normalizeInterview),
     });
   } catch (error) {
     res.status(500).json({
@@ -227,16 +225,15 @@ router.patch('/interview/:interviewId/status', async (req, res) => {
       where: { id: interviewId },
       data: {
         status,
-        feedback,
-        notes,
-        completedAt: status === 'completed' ? new Date() : null,
+        feedback: [feedback, notes].filter(Boolean).join('\n') || undefined,
+        completed_at: status === 'completed' ? new Date() : null,
         updatedAt: new Date(),
       },
     });
 
     res.json({
       success: true,
-      interview: updated,
+      interview: normalizeInterview(updated),
     });
   } catch (error) {
     res.status(500).json({

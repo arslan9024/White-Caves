@@ -16,6 +16,7 @@ import offersRouter from './offers.routes.js';
 import interviewsRouter from './interviews.routes.js';
 import leadScoringRouter from './lead-scoring.routes.js';
 import leadsRouter from './leads.routes.js';
+import { requireRecruitmentAccess, requireManagerReviewAccess } from './recruitment.access.js';
 
 export { __setRecruitmentTestDeps, __resetRecruitmentTestDeps } from './recruitment.context.js';
 export { requireRecruitmentAccess, requireManagerReviewAccess } from './recruitment.access.js';
@@ -29,6 +30,18 @@ export {
 } from './recruitment.metrics.js';
 
 const router = express.Router();
+const readAccess = requireRecruitmentAccess('read');
+const writeAccess = requireRecruitmentAccess('write');
+const managerAccess = requireManagerReviewAccess();
+
+router.use((req, res, next) => {
+  if (req.method === 'POST' && /^\/applications\/[^/]+\/manager-review\/?$/.test(req.path)) {
+    return managerAccess(req, res, next);
+  }
+  return ['GET', 'HEAD', 'OPTIONS'].includes(req.method)
+    ? readAccess(req, res, next)
+    : writeAccess(req, res, next);
+});
 
 router.use(candidatesRouter);
 router.use(jobsRouter);

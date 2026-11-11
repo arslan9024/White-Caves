@@ -112,26 +112,13 @@ router.post('/jobs/:jobId/batch-score-and-notify', async (req, res) => {
 
         results.scored++;
 
-        // Get candidate details
-        const candidate = await ctx.prisma.candidate.findUnique({
-          where: { id: candidateId },
-        });
-
-        // Send WhatsApp message
-        if (candidate?.whatsapp_phone || candidate?.phone_number) {
-          try {
-            await ctx.scoringService.sendScoringResultViaMeta(candidate, job, scoreRecord);
-            results.messaged++;
-          } catch (msgError) {
-            console.warn('Failed to send message for candidate:', candidateId);
-          }
-        }
+        if (scoreRecord.message_sent === true) results.messaged++;
 
         results.candidates.push({
           candidate_id: candidateId,
           score: scoreRecord.overall_score,
           status: scoreRecord.screening_status,
-          message_sent: candidate?.whatsapp_phone ? true : false,
+          message_sent: scoreRecord.message_sent === true,
         });
       } catch (error) {
         results.failed++;
