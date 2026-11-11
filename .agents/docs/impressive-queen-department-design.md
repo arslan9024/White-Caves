@@ -62,16 +62,25 @@ The **Impressive Queen Department Design** represents the finalized, immutable 1
 
 ---
 
-## 4. Bhakti Recursive Multiplier Formula & Enterprise Headcount
+## 4. Bhakti Recursive Multiplier Formula & Dynamic Promotion Law
 
-$$\text{Leader (1 MD)} \xrightarrow{\times 12} \text{Tier 1: 12 Directors} \xrightarrow{\times 9} \text{Tier 2: 108 Managers} \xrightarrow{\times 12} \text{Tier 3: 1,296 Supervisors} \xrightarrow{\times 9} \text{Tier 4: 11,664 Team Leaders}$$
+$$\text{Leader (1 MD)} \xrightarrow{\times 12} \text{Tier 1: 12 Directors} \xrightarrow{\times 9} \text{Tier 2: 108 Managers} \xrightarrow{\times 12} \text{Tier 3: 1,296 Supervisors (Capacity)}$$
 
-* **Tier 0:** 1 Managing Director (Penthouse L5 Sovereign)
-* **Tier 1:** 12 Corporate Directors (1 per Department)
-* **Tier 2:** 108 Division Managers (9 per Department)
-* **Tier 3:** 1,296 Operational Supervisors (12 per Manager)
-* **Tier 4:** 11,664 Frontline Team Leaders (9 per Supervisor)
-* **Total Authorized Enterprise Capacity:** **13,081 Seats**
+$$\mathbf{\text{Tier 4: Frontline Team Leaders}} \quad \xrightarrow{\text{Dynamic Merit Formula}} \quad \text{Promoted on-demand from Active Field Agents}$$
+
+### The Universal Dynamic Hiring & Promotion Law (Bhakti Law B4)
+1. **No Static 11,664 Bloat:** Team Leaders are never instantiated as static ghost records or fixed static headcount. 
+2. **On-Demand Dynamic Promotion Threshold:** An Entry-Level Agent / Broker / Specialist is dynamically promoted to **Team Leader** when:
+   - **Mentees/Direct Followers:** Actively commanding $\ge 3$ active direct mentees/agents.
+   - **Merit Points:** Accumulating $\ge 1,000\text{ Merit XP}$ in the LMS/EMS ledger (`AEG-037`).
+   - **Performance Consistency:** Maintaining a 90-day minimum SLA compliance of $\ge 98.5\%$.
+3. **Supervisor Leadership Span:** Each Operational Supervisor can dynamically unlock up to a maximum of **9 Team Leaders** as their operational unit expands.
+4. **Authorized Enterprise Coordinates:**
+   - **Tier 0:** 1 Managing Director (Penthouse L5 Sovereign)
+   - **Tier 1:** 12 Corporate Directors (1 per Department)
+   - **Tier 2:** 108 Division Managers (9 per Department)
+   - **Tier 3:** 1,296 Operational Supervisors / Desks (12 per Division Manager max capacity)
+   - **Tier 4:** Dynamic Frontline Team Leaders (spawned & promoted dynamically based on operational load and merit score)
 
 ---
 
