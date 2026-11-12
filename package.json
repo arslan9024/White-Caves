@@ -9,7 +9,7 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "npm run dev:precheck && concurrently --names \"CLIENT,SERVER\" --prefix-colors \"cyan,green\" \"npm run dev:client\" \"npm run dev:server\"",
+    "dev": "npm run dev:precheck && concurrently --kill-others-on-fail --names \"CLIENT,SERVER\" --prefix-colors \"cyan,green\" \"npm run dev:client\" \"npm run dev:server\"",
     "aegis:ouroboros": "node .agents/orchestrator/aegis-perpetual-ouroboros.js",
     "aegis:ouroboros:once": "node .agents/orchestrator/aegis-perpetual-ouroboros.js --once",
     "aegis:crucible:infinite": "node .agents/orchestrator/aegis-perpetual-ouroboros.js",
@@ -43,7 +43,7 @@
     "server": "nodemon --watch server --watch prisma --ext ts,js,json --exec tsx server/index.ts",
     "client": "vite",
     "dev:client": "vite",
-    "dev:server": "powershell -ExecutionPolicy Bypass -File .agents/scripts/start-dev-server-safe.ps1 -Port 5001",
+    "dev:server": "powershell -ExecutionPolicy Bypass -File .agents/scripts/start-dev-server-safe.ps1",
     "tunnel:quick": "powershell -ExecutionPolicy Bypass -File scripts/start-tunnel.ps1 -Mode quick",
     "tunnel:named": "powershell -ExecutionPolicy Bypass -File scripts/start-tunnel.ps1 -Mode named",
     "serve:bridge": "concurrently --kill-others --names \"BACKEND,TUNNEL\" --prefix-colors \"green,cyan\" \"powershell -ExecutionPolicy Bypass -File scripts/server-watchdog.ps1\" \"npm run tunnel:named\"",
