@@ -20,6 +20,9 @@
 
 ### Access Control
 
+- In `RECRUITMENT_AUTH_MODE=enforced`, every recruitment route requires a verified upstream `req.user` role. Client-supplied role and identity headers are never authorization or audit identity sources.
+- Reads use the recruitment read-role gate; mutations use the write-role gate. Manager-review mutations retain their dedicated manager-role gate.
+- Upstream authentication must populate `req.user` before mounting the router. A missing verified identity fails closed with HTTP 401.
 - HR users: full access to candidate records and score details
 - Hiring managers: role-scoped access to jobs and shortlisted candidates
 - Executive dashboards: aggregate metrics only, no raw resume text by default

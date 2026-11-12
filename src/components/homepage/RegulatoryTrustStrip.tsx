@@ -47,7 +47,7 @@ export const RegulatoryTrustStrip: FC = () => {
           <DldTrakheesiModal />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full lg:flex-1">
           {credentials.map((cred, idx) => {
             const Icon = cred.icon;
             return (

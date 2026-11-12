@@ -10,6 +10,7 @@ describe('WhatsAppConciergePill Component', () => {
       screen.getByRole('button', { name: /Open luxury property WhatsApp concierge/i })
     ).toBeInTheDocument();
     expect(screen.getByText('VIP Concierge')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /VIP Concierge/ })).toBeInTheDocument();
   });
 
   it('opens concierge menu on button click and shows options', () => {

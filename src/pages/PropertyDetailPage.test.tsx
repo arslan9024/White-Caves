@@ -28,8 +28,10 @@ vi.mock('../components/Footer', () => ({
 
 vi.mock('../shared/components/property', () => ({
   PropertyImageSlider: ({ images, title }: { images: string[]; title: string }) => (
-    <div data-testid="image-slider" data-count={images?.length ?? 0}>
-      {title}
+    <div data-testid="image-slider" data-count={images.length}>
+      {images.map(src => (
+        <img key={src} src={src} alt={title} />
+      ))}
     </div>
   ),
   PropertyDetailModal: () => null,
@@ -347,11 +349,14 @@ describe('PropertyDetailPage', () => {
   // ── Not Found ──────────────────────────────────────────────────
 
   describe('Not Found', () => {
-    it('should gracefully render page structure for non-existent property id', async () => {
+    it('should show a not-found message and a link back to listings', async () => {
       renderPage('nonexistent-id');
       await waitFor(() => {
-        expect(screen.getByRole('main')).toBeInTheDocument();
-        expect(screen.getByText('Properties')).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Property Not Found' })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /Back to Listings/i })).toHaveAttribute(
+          'href',
+          '/properties'
+        );
       });
     });
   });
@@ -375,10 +380,7 @@ describe('PropertyDetailPage', () => {
       await waitFor(() => {
         const image = screen.getAllByRole('img')[0];
         expect(image).toBeInTheDocument();
-        expect(image).toHaveAttribute(
-          'src',
-          expect.stringContaining('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9')
-        );
+        expect(image).toHaveAttribute('src', 'img1.jpg');
       });
     });
   });

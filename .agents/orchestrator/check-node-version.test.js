@@ -9,13 +9,15 @@ const packageJson = JSON.parse(
 );
 
 test('package engine excludes unsupported Node 23', () => {
-  assert.equal(packageJson.engines.node, '^22.13.0 || >=24');
+  assert.equal(packageJson.engines.node, '^22.19.0 || >=24');
 });
 
 for (const [version, expected] of [
   ['20.19.0', 1],
   ['22.12.0', 1],
-  ['22.13.0', 0],
+  ['22.13.0', 1],
+  ['22.18.0', 1],
+  ['22.19.0', 0],
   ['22.99.0', 0],
   ['23.5.0', 1],
   ['24.0.0', 0],

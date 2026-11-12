@@ -113,7 +113,7 @@ export const WhatsAppConciergePill: FC = () => {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(prev => !prev)}
         className="flex items-center gap-2.5 bg-gradient-to-r from-red-600 to-red-500 text-white py-3 px-4 rounded-full shadow-2xl shadow-red-500/30 border border-red-400/30 hover:brightness-110 transition-all"
-        aria-label="Open luxury property WhatsApp concierge"
+        aria-label="Open luxury property WhatsApp concierge — VIP Concierge"
       >
         <div className="relative">
           <PhoneCall className="w-5 h-5" />

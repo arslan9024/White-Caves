@@ -3,19 +3,20 @@ import { ResumeParserService } from './ResumeParserService.js';
 import MessageTemplateService from './MessageTemplateService.js';
 import { WhatsAppMessage, WhatsAppContact } from '../lib/database.js';
 import { SCORE_THRESHOLDS, SCREENING_STATUS } from '../constants/ScoreLevels.js';
+import { normalizeCandidateScore } from './recruitmentRecordMapper.js';
 
 const prisma = new PrismaClient();
 
 /**
  * Candidate Scoring Service - Phase 1B
- * 
+ *
  * Implements a 5-factor scoring algorithm for resume screening:
  * 1. Skills Match (0-100) - Percentage of job-required skills found
  * 2. Experience Level (0-100) - Years of experience vs. job requirement
  * 3. Education Fit (0-100) - Degree type and field alignment
  * 4. Cultural Fit (0-100) - Company values indicators from resume
  * 5. Location Match (0-100) - Geographic alignment with job location
- * 
+ *
  * Overall Score = Weighted average of the 5 factors
  * Weights can be adjusted per job or using defaults
  */
@@ -23,11 +24,11 @@ const prisma = new PrismaClient();
 export class CandidateScoringService {
   // Default weights for the 5-factor model (can be customized per job)
   static DEFAULT_WEIGHTS = {
-    skills: 0.35,           // 35% - Most important for technical roles
-    experience: 0.25,       // 25%
-    education: 0.15,        // 15%
-    cultural_fit: 0.15,     // 15%
-    location_match: 0.10    // 10%
+    skills: 0.35, // 35% - Most important for technical roles
+    experience: 0.25, // 25%
+    education: 0.15, // 15%
+    cultural_fit: 0.15, // 15%
+    location_match: 0.1, // 10%
   };
 
   // Skill proficiency levels (used in experience calculations)
@@ -35,7 +36,7 @@ export class CandidateScoringService {
     expert: { min_years: 5, weight: 1.0 },
     senior: { min_years: 3, weight: 0.85 },
     mid: { min_years: 1, weight: 0.7 },
-    junior: { min_years: 0, weight: 0.5 }
+    junior: { min_years: 0, weight: 0.5 },
   };
 
   /**
@@ -47,11 +48,11 @@ export class CandidateScoringService {
       // Fetch candidate and job details
       const candidate = await prisma.candidate.findUnique({
         where: { id: candidateId },
-        include: { applications: true }
+        include: { applications: true },
       });
 
       const job = await prisma.job.findUnique({
-        where: { id: jobId }
+        where: { id: jobId },
       });
 
       if (!candidate || !job) {
@@ -70,15 +71,12 @@ export class CandidateScoringService {
 
       // Calculate weighted overall score
       const overallScore = Math.round(
-        (skillsScore * finalWeights.skills) +
-        (experienceScore * finalWeights.experience) +
-        (educationScore * finalWeights.education) +
-        (culturalScore * finalWeights.cultural_fit) +
-        (locationScore * finalWeights.location_match)
+        skillsScore * finalWeights.skills +
+          experienceScore * finalWeights.experience +
+          educationScore * finalWeights.education +
+          culturalScore * finalWeights.cultural_fit +
+          locationScore * finalWeights.location_match
       );
-
-      // Determine screening status based on score
-      const screeningStatus = this.determineScreeningStatus(overallScore);
 
       // Create scoring record in database
       const scoreRecord = await prisma.candidateScore.create({
@@ -89,31 +87,37 @@ export class CandidateScoringService {
           skills_score: skillsScore,
           experience_score: experienceScore,
           education_score: educationScore,
-          cultural_fit_score: culturalScore,
-          location_match_score: locationScore,
+          cultural_fit: culturalScore,
+          location_match: locationScore,
           scoring_method: 'rule_based_v1',
-          screening_status: screeningStatus,
           feedback: this.generateFeedback({
             skills: skillsScore,
             experience: experienceScore,
             education: educationScore,
             cultural_fit: culturalScore,
-            location_match: locationScore
-          })
-        }
+            location_match: locationScore,
+          }),
+        },
       });
 
       // Trigger WhatsApp message if candidate has phone number
-      if (candidate.phone_number || candidate.whatsapp_phone) {
+      let messageSent = false;
+      if (candidate.phone || candidate.whatsapp_phone) {
         try {
-          await this.sendScoringResultViaMeta(candidate, job, scoreRecord);
+          messageSent = Boolean(
+            await this.sendScoringResultViaMeta(
+              candidate,
+              job,
+              normalizeCandidateScore(scoreRecord)
+            )
+          );
         } catch (whatsappError) {
           console.warn('Failed to send WhatsApp message:', whatsappError.message);
           // Don't fail the scoring if WhatsApp fails
         }
       }
 
-      return scoreRecord;
+      return { ...normalizeCandidateScore(scoreRecord), message_sent: messageSent };
     } catch (error) {
       console.error('Error scoring candidate:', error);
       throw error;
@@ -125,7 +129,7 @@ export class CandidateScoringService {
    */
   static async sendTemplateMessageViaMeta(candidate, templateId, variables, messageType = 'text') {
     try {
-      const phone = candidate.whatsapp_phone || candidate.phone_number;
+      const phone = candidate.whatsapp_phone || candidate.phone;
       if (!phone) return null;
 
       const formattedPhone = this.formatPhoneForWhatsApp(phone);
@@ -141,7 +145,7 @@ export class CandidateScoringService {
           name: candidate.first_name || candidate.email,
           lastMessageAt: new Date(),
           unreadCount: 0,
-          conversationStatus: 'active'
+          conversationStatus: 'active',
         });
       } else {
         contact.lastMessageAt = new Date();
@@ -156,7 +160,7 @@ export class CandidateScoringService {
         messageType,
         content: messageBody,
         status: 'sent',
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       return message;
@@ -183,11 +187,10 @@ export class CandidateScoringService {
         cultural_fit_score: Math.round(scoreRecord.cultural_fit_score),
         location_match_score: Math.round(scoreRecord.location_match_score),
         feedback: scoreRecord.feedback || 'Great potential!',
-        next_action: MessageTemplateService.renderScreeningResult(
-          candidate,
-          job,
-          scoreRecord
-        ).split('🎯 *Next Steps:*\n')[1]?.split('\n\nIf you have any questions')[0] || 'We will contact you soon.'
+        next_action:
+          MessageTemplateService.renderScreeningResult(candidate, job, scoreRecord)
+            .split('🎯 *Next Steps:*\n')[1]
+            ?.split('\n\nIf you have any questions')[0] || 'We will contact you soon.',
       };
 
       const message = await this.sendTemplateMessageViaMeta(
@@ -197,7 +200,7 @@ export class CandidateScoringService {
         'text'
       );
 
-      const phone = candidate.whatsapp_phone || candidate.phone_number;
+      const phone = candidate.whatsapp_phone || candidate.phone;
       const formattedPhone = this.formatPhoneForWhatsApp(phone);
       console.log(`✅ Screening result sent to ${formattedPhone} (Message ID: ${message?._id})`);
 
@@ -240,9 +243,7 @@ export class CandidateScoringService {
   static calculateSkillsScore(candidate, job) {
     try {
       // Parse candidate resume to extract skills
-      const resumeData = ResumeParserService.parseResumeText(
-        candidate.resume_text || ''
-      );
+      const resumeData = ResumeParserService.parseResumeText(candidate.resume_text || '');
       const candidateSkills = resumeData.skills.map(s => s.toLowerCase());
 
       // Parse job required skills
@@ -275,9 +276,7 @@ export class CandidateScoringService {
   static calculateExperienceScore(candidate, job) {
     try {
       // Extract experience from resume
-      const resumeData = ResumeParserService.parseResumeText(
-        candidate.resume_text || ''
-      );
+      const resumeData = ResumeParserService.parseResumeText(candidate.resume_text || '');
       const experiences = resumeData.experience || [];
 
       // Calculate total years of relevant experience
@@ -325,9 +324,7 @@ export class CandidateScoringService {
   static calculateEducationScore(candidate, job) {
     try {
       // Extract education from resume
-      const resumeData = ResumeParserService.parseResumeText(
-        candidate.resume_text || ''
-      );
+      const resumeData = ResumeParserService.parseResumeText(candidate.resume_text || '');
       const educations = resumeData.education || [];
 
       if (educations.length === 0) {
@@ -338,12 +335,12 @@ export class CandidateScoringService {
 
       // Degree hierarchy
       const degreeValues = {
-        'phd': 100,
-        'master': 90,
-        'bachelor': 80,
-        'associate': 60,
-        'diploma': 50,
-        'certificate': 40
+        phd: 100,
+        master: 90,
+        bachelor: 80,
+        associate: 60,
+        diploma: 50,
+        certificate: 40,
       };
 
       educations.forEach(edu => {
@@ -364,11 +361,17 @@ export class CandidateScoringService {
 
         let fieldBonus = 0;
         if (
-          fieldText.includes('computer') || fieldText.includes('software') ||
-          fieldText.includes('information') || fieldText.includes('engineering')
+          fieldText.includes('computer') ||
+          fieldText.includes('software') ||
+          fieldText.includes('information') ||
+          fieldText.includes('engineering')
         ) {
-          if (jobDepartment.includes('tech') || jobTitle.includes('developer') ||
-              jobTitle.includes('engineer') || jobTitle.includes('programmer')) {
+          if (
+            jobDepartment.includes('tech') ||
+            jobTitle.includes('developer') ||
+            jobTitle.includes('engineer') ||
+            jobTitle.includes('programmer')
+          ) {
             fieldBonus = 10;
           }
         }
@@ -396,9 +399,22 @@ export class CandidateScoringService {
 
       // Positive indicators
       const positiveIndicators = [
-        'leadership', 'team', 'collaboration', 'innovation', 'problem-solving',
-        'initiative', 'mentor', 'volunteer', 'community', 'agile', 'startup',
-        'fast-paced', 'growth', 'learning', 'creative', 'dynamic'
+        'leadership',
+        'team',
+        'collaboration',
+        'innovation',
+        'problem-solving',
+        'initiative',
+        'mentor',
+        'volunteer',
+        'community',
+        'agile',
+        'startup',
+        'fast-paced',
+        'growth',
+        'learning',
+        'creative',
+        'dynamic',
       ];
 
       const positiveMatches = positiveIndicators.filter(indicator =>
@@ -412,8 +428,8 @@ export class CandidateScoringService {
       const descriptionKeywords = jobDescription.match(/\b\w+\b/g) || [];
 
       if (descriptionKeywords.length > 0) {
-        const alignmentScore = descriptionKeywords.filter(keyword =>
-          resumeText.includes(keyword) && keyword.length > 4
+        const alignmentScore = descriptionKeywords.filter(
+          keyword => resumeText.includes(keyword) && keyword.length > 4
         ).length;
 
         culturalScore += Math.min(alignmentScore * 2, 15); // Max +15
@@ -421,9 +437,7 @@ export class CandidateScoringService {
 
       // Negative indicators that might reduce score
       const redFlags = ['fired', 'terminated', 'lawsuit', 'scandal'];
-      const redFlagMatches = redFlags.filter(flag =>
-        resumeText.includes(flag)
-      ).length;
+      const redFlagMatches = redFlags.filter(flag => resumeText.includes(flag)).length;
 
       culturalScore -= redFlagMatches * 10;
 
@@ -564,9 +578,9 @@ export class CandidateScoringService {
         include: {
           applications: {
             include: { candidate: true },
-            where: { status: { in: ['applied', 'screening'] } }
-          }
-        }
+            where: { status: { in: ['applied', 'screening'] } },
+          },
+        },
       });
 
       if (!job) {
@@ -577,11 +591,7 @@ export class CandidateScoringService {
 
       // Score each candidate
       for (const application of job.applications) {
-        const score = await this.scoreCandidateForJob(
-          application.candidate_id,
-          jobId,
-          weights
-        );
+        const score = await this.scoreCandidateForJob(application.candidate_id, jobId, weights);
         scores.push(score);
       }
 
@@ -604,14 +614,14 @@ export class CandidateScoringService {
       const topCandidates = await prisma.candidateScore.findMany({
         where: {
           job_id: jobId,
-          overall_score: { gte: threshold }
+          overall_score: { gte: threshold },
         },
         include: {
           candidate: true,
-          job: true
+          job: true,
         },
         orderBy: { overall_score: 'desc' },
-        take: limit
+        take: limit,
       });
 
       return topCandidates;
@@ -637,8 +647,8 @@ export class CandidateScoringService {
       await prisma.job.update({
         where: { id: jobId },
         data: {
-          scoring_weights: JSON.stringify(weights)
-        }
+          scoring_weights: JSON.stringify(weights),
+        },
       });
 
       return weights;

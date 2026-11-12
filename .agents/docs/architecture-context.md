@@ -93,7 +93,7 @@ Mounted in backend at `/api/integrations`:
 | **Animation**        | Framer Motion                                                                                  |
 | **Charts**           | Recharts                                                                                       |
 | **Maps**             | Leaflet + React-Leaflet                                                                        |
-| **Backend**          | Node.js 22.13+ + Express 5 (ESM modules, TypeScript)                                           |
+| **Backend**          | Node.js 22.19+ + Express 5 (ESM modules, TypeScript)                                           |
 | **Database**         | MongoDB via Prisma 6 ORM                                                                       |
 | **Auth**             | JWT + bcryptjs + Firebase Auth (social/phone) + WebAuthn biometric passkeys                    |
 | **Payments**         | Stripe SDK                                                                                     |
@@ -195,7 +195,7 @@ Mounted in backend at `/api/integrations`:
 │   ├── types/                    ← Shared TypeScript types
 │   └── utils/                    ← safeStorage, authFetch, logger, etc.
 │
-├── server/                       ← Express.js API (Node.js 22.13+, ESM, TypeScript)
+├── server/                       ← Express.js API (Node.js 22.19+, ESM, TypeScript)
 │   ├── index.ts                  ← Entry point — all middleware + route mounts
 │   ├── database.ts               ← Prisma client singleton + MongoDB connection
 │   ├── routes/                   ← 60+ route files (one per domain)

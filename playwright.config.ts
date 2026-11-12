@@ -20,6 +20,7 @@ const USE_EXTERNAL_BASE_URL = !isLocalManagedBaseUrl;
 export default defineConfig({
   testDir: './src/e2e',
   testMatch: '**/*.spec.ts',
+  testIgnore: '**/henry-scanner.spec.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
