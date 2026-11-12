@@ -5,6 +5,7 @@
  */
 import styled, { keyframes } from 'styled-components';
 import { colors } from '../../../styles/theme/colors';
+import Button from '../../ui/Button/Button';
 
 const pulse = keyframes`
   0%, 100% { opacity: 1; }
@@ -45,13 +46,13 @@ export const BannerMessage = styled.p`
   font-weight: 500;
 `;
 
-export const DismissButton = styled.button`
+export const DismissButton = styled(Button)`
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  min-width: 44px;
+  min-height: 44px;
   border: none;
   border-radius: 4px;
   background: transparent;

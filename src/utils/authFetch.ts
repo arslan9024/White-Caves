@@ -13,6 +13,8 @@
 import { safeStorage } from './safeStorage';
 import { createLogger } from './logger';
 import { HttpError } from './HttpError';
+import { getApiUrl } from '../config/constants';
+import { fetchWithRetry } from '../services/http/fetchWithRetry';
 
 const log = createLogger('authFetch');
 const CSRF_HEADER_NAME = 'x-csrf-token';
@@ -78,14 +80,18 @@ function withCsrfHeader(headers: Headers, input: RequestInfo | URL, method: stri
   const isMutationMethod = !['GET', 'HEAD', 'OPTIONS'].includes(upperMethod);
   if (!isMutationMethod || headers.has(CSRF_HEADER_NAME)) return;
 
-  const inputUrl = typeof input === 'string' ? input : input instanceof URL ? input.pathname : '';
-  const isAuthMutation = inputUrl.startsWith('/api/auth/');
+  const isAuthMutation = requestPath(input).startsWith('/api/auth/');
   if (!isAuthMutation) return;
 
   const csrfToken = getCookieValue(CSRF_COOKIE_NAME);
   if (csrfToken) {
     headers.set(CSRF_HEADER_NAME, csrfToken);
   }
+}
+
+function requestPath(input: RequestInfo | URL): string {
+  const value = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+  return new URL(value, 'https://relative.invalid').pathname;
 }
 
 async function attemptSessionRefresh(): Promise<boolean> {
@@ -99,7 +105,7 @@ async function attemptSessionRefresh(): Promise<boolean> {
       headers.set('Content-Type', 'application/json');
 
       try {
-        const response = await fetch(AUTH_REFRESH_ENDPOINT, {
+        const response = await fetchWithRetry(getApiUrl('auth/refresh'), {
           method: 'POST',
           credentials: 'include',
           headers,
@@ -139,10 +145,16 @@ export async function authFetch(
   input: RequestInfo | URL,
   init?: RequestInit & { timeout?: number }
 ): Promise<Response> {
-  const requestMethod = init?.method ?? 'GET';
+  const requestMethod = init?.method ?? (input instanceof Request ? input.method : 'GET');
+  const requestInput =
+    typeof input === 'string' && (input === '/api' || input.startsWith('/api/'))
+      ? getApiUrl(input.slice(4))
+      : input;
   const runRequest = async (): Promise<Response> => {
     const token = safeStorage.get('token');
-    const headers = new Headers(init?.headers);
+    const headers = new Headers(
+      init?.headers ?? (input instanceof Request ? input.headers : undefined)
+    );
 
     if (token && !headers.has('Authorization')) {
       headers.set('Authorization', `Bearer ${token}`);
@@ -160,19 +172,22 @@ export async function authFetch(
     const controller = new AbortController();
     const timeoutId = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : null;
     // Respect caller-supplied signal (e.g. from AbortController in useEffect)
-    const signal = init?.signal
-      ? mergeAbortSignals(init.signal, controller.signal)
-      : controller.signal;
+    const merged = init?.signal ? mergeAbortSignals(init.signal, controller.signal) : undefined;
+    const signal = merged?.signal ?? controller.signal;
 
     try {
-      return await fetch(input, {
-        ...init,
-        headers,
-        signal,
-        credentials: init?.credentials ?? 'include',
-      });
+      return await fetchWithRetry(
+        requestInput instanceof Request ? requestInput.clone() : requestInput,
+        {
+          ...init,
+          headers,
+          signal,
+          credentials: init?.credentials ?? 'include',
+        }
+      );
     } finally {
       if (timeoutId) clearTimeout(timeoutId);
+      merged?.cleanup();
     }
   };
 
@@ -180,20 +195,17 @@ export async function authFetch(
 
   // ── Centralized HTTP-status handling ───────────────────────────────
   if (response.status === 401) {
-    const normalizedUrl =
-      typeof input === 'string' ? input : input instanceof URL ? input.pathname : '';
-    const isRefreshRequest = normalizedUrl.startsWith(AUTH_REFRESH_ENDPOINT);
+    const isRefreshRequest = requestPath(input) === AUTH_REFRESH_ENDPOINT;
     if (!isRefreshRequest) {
       const refreshed = await attemptSessionRefresh();
       if (refreshed) {
         response = await runRequest();
-        if (response.status !== 401) {
-          return response;
-        }
       }
     }
-    handleUnauthorized();
-    throw new HttpError('Session expired — please sign in again', 401, response.statusText);
+    if (response.status === 401) {
+      handleUnauthorized();
+      throw new HttpError('Session expired — please sign in again', 401, response.statusText);
+    }
   }
 
   if (response.status === 403) {
@@ -201,9 +213,7 @@ export async function authFetch(
   }
 
   if (response.status >= 500) {
-    log.error(
-      `Server error ${response.status} for ${typeof input === 'string' ? input : 'request'}`
-    );
+    log.error(`Authenticated API request failed with HTTP ${response.status}`);
     throw new HttpError(
       `Server error (${response.status}) — please try again later`,
       response.status,
@@ -216,33 +226,28 @@ export async function authFetch(
 
 /**
  * Merge two AbortSignals so aborting either one aborts the request.
- * Uses AbortSignal.any() where available, falls back to event listener.
+ * The caller disposes listeners after completion, including retry backoff.
  */
-function mergeAbortSignals(a: AbortSignal, b: AbortSignal): AbortSignal {
+function mergeAbortSignals(
+  a: AbortSignal,
+  b: AbortSignal
+): { signal: AbortSignal; cleanup: () => void } {
   const controller = new AbortController();
   const onAbort = () => controller.abort();
 
-  const isAbortSignalLike = (signal: unknown): signal is AbortSignal => {
-    return Boolean(
-      signal &&
-        typeof signal === 'object' &&
-        'aborted' in signal &&
-        typeof (signal as AbortSignal).addEventListener === 'function'
-    );
-  };
-
-  const signals = [a, b].filter(isAbortSignalLike);
+  const signals = [a, b];
+  const cleanup = () => signals.forEach(signal => signal.removeEventListener('abort', onAbort));
 
   if (signals.some(signal => signal.aborted)) {
     controller.abort();
-    return controller.signal;
+    return { signal: controller.signal, cleanup };
   }
 
   signals.forEach(signal => {
     signal.addEventListener('abort', onAbort, { once: true });
   });
 
-  return controller.signal;
+  return { signal: controller.signal, cleanup };
 }
 
 /**

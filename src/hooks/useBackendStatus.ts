@@ -1,21 +1,9 @@
-/**
- * useBackendStatus — Polls the backend health endpoint and reports
- * 'online' | 'degraded' | 'offline' so UI (e.g. BackendStatusBanner) can
- * react to Cloudflare-tunnel / local-backend outages.
- *
- * - 'online'   → /api/health responded 2xx
- * - 'degraded' → server reachable but unhealthy (e.g. tunnel 502/503/504)
- * - 'offline'  → network error or 5s timeout (never throws to the component)
- *
- * URL resolution reuses getApiUrl() (src/config/constants.ts), which handles
- * a VITE_API_URL that may or may not already end with /api.
- */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getApiUrl } from '../config/constants';
 import { fetchWithRetry } from '../services/http/fetchWithRetry';
 import logger from '../utils/logger';
 
-export type BackendHealthStatus = 'online' | 'degraded' | 'offline';
+export type BackendHealthStatus = 'checking' | 'online' | 'degraded' | 'offline';
 
 export interface BackendStatusState {
   status: BackendHealthStatus;
@@ -23,68 +11,56 @@ export interface BackendStatusState {
 }
 
 export interface UseBackendStatusOptions {
-  /** Poll cadence in ms. Default: 30 000. */
   pollIntervalMs?: number;
-  /** Per-request abort timeout in ms. Default: 5 000. */
   requestTimeoutMs?: number;
 }
 
-const DEFAULT_POLL_INTERVAL_MS = 30_000;
-const DEFAULT_REQUEST_TIMEOUT_MS = 5_000;
-
 export function useBackendStatus(options?: UseBackendStatusOptions): BackendStatusState {
-  const pollIntervalMs = options?.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
-  const requestTimeoutMs = options?.requestTimeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS;
-
-  // Optimistic initial state: no banner flash before the first check lands.
-  const [state, setState] = useState<BackendStatusState>({
-    status: 'online',
-    lastChecked: null,
-  });
-
-  const mountedRef = useRef<boolean>(true);
-  const controllerRef = useRef<AbortController | null>(null);
-
-  const checkHealth = useCallback(async (): Promise<void> => {
-    controllerRef.current?.abort();
-    const controller = new AbortController();
-    controllerRef.current = controller;
-    const timeoutId = setTimeout(() => controller.abort(), requestTimeoutMs);
-
-    try {
-      const response = await fetchWithRetry(
-        getApiUrl('health'),
-        { signal: controller.signal, headers: { Accept: 'application/json' } },
-        { retries: 0 }
-      );
-      if (!mountedRef.current) return;
-      setState({
-        status: response.ok ? 'online' : 'degraded',
-        lastChecked: new Date(),
-      });
-    } catch (error) {
-      logger.warn('useBackendStatus: health check failed — backend offline', error);
-      if (mountedRef.current) {
-        setState({ status: 'offline', lastChecked: new Date() });
-      }
-    } finally {
-      clearTimeout(timeoutId);
-    }
-  }, [requestTimeoutMs]);
+  const pollIntervalMs = options?.pollIntervalMs ?? 30_000;
+  const requestTimeoutMs = options?.requestTimeoutMs ?? 5_000;
+  const [state, setState] = useState<BackendStatusState>({ status: 'checking', lastChecked: null });
 
   useEffect(() => {
-    mountedRef.current = true;
-    void checkHealth();
-    const intervalId = setInterval(() => {
-      void checkHealth();
-    }, pollIntervalMs);
+    let active = true;
+    let controller: AbortController | undefined;
+    let nextCheck: ReturnType<typeof setTimeout>;
 
-    return () => {
-      mountedRef.current = false;
-      clearInterval(intervalId);
-      controllerRef.current?.abort();
+    const check = async (): Promise<void> => {
+      controller = new AbortController();
+      const timeout = setTimeout(() => controller?.abort(), requestTimeoutMs);
+      let status: BackendHealthStatus = 'offline';
+      try {
+        const response = await fetchWithRetry(
+          getApiUrl('health'),
+          { signal: controller.signal, headers: { Accept: 'application/json' }, cache: 'no-store' },
+          { retries: 0 }
+        );
+        const payload: unknown = response.ok ? await response.json() : null;
+        const valid =
+          typeof payload === 'object' &&
+          payload !== null &&
+          'status' in payload &&
+          (payload.status === 'OK' || payload.status === 'healthy');
+        status = response.ok && valid ? 'online' : 'degraded';
+      } catch {
+        if (active) logger.warn('useBackendStatus: health request failed');
+      } finally {
+        clearTimeout(timeout);
+        if (active) {
+          setState({ status, lastChecked: new Date() });
+          nextCheck = setTimeout(() => {
+            void check();
+          }, pollIntervalMs);
+        }
+      }
     };
-  }, [checkHealth, pollIntervalMs]);
+    void check();
+    return () => {
+      active = false;
+      clearTimeout(nextCheck);
+      controller?.abort();
+    };
+  }, [pollIntervalMs, requestTimeoutMs]);
 
   return state;
 }

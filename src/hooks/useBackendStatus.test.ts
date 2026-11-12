@@ -7,7 +7,7 @@ const healthResponse = (status: number): Response =>
     ok: status >= 200 && status < 300,
     status,
     statusText: `HTTP ${status}`,
-    json: async () => ({}),
+    json: async () => ({ status: 'OK' }),
   }) as unknown as Response;
 
 describe('useBackendStatus', () => {
@@ -100,5 +100,23 @@ describe('useBackendStatus', () => {
 
     await vi.advanceTimersByTimeAsync(20_000);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('starts in checking state and rejects a successful non-health response', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ message: 'not the API' }),
+      })
+    );
+    const { result, unmount } = renderHook(() => useBackendStatus());
+    expect(result.current.status).toBe('checking');
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(result.current.status).toBe('degraded');
+    unmount();
   });
 });

@@ -138,22 +138,19 @@ export function getDefaultRules(): TuringAuditRule[] {
     },
     {
       id: 'TURING-RULE-005',
-      name: 'Single Data Layer Law',
+      name: 'Explicit Data Ownership Law',
       description:
-        'One designated ORM (currently Mongoose) owns the data layer. No new file may introduce the non-designated ORM; existing Prisma files are frozen pending the Wave H unification ADR.',
+        'Each collection has one explicit write owner. Preserve existing Prisma and Mongoose consumers until an approved ADR defines migration, parity tests and rollback. Never introduce a third ORM or parallel writes for one collection.',
       check: ctx => {
         const text = ctx.promptText.toLowerCase();
-        const addsPrisma =
-          (text.includes('new prisma model') ||
-            text.includes('add prisma schema') ||
-            text.includes('prismaclient') ||
-            text.includes("from '@prisma/client'")) &&
-          (text.includes('create') || text.includes('new file') || text.includes('add'));
-        if (addsPrisma && !text.includes('migrate off') && !text.includes('wave h')) {
+        const changesOwnership =
+          text.includes('introduce third orm') ||
+          text.includes('dual write with prisma and mongoose');
+        if (changesOwnership && !text.includes('approved adr')) {
           return {
             valid: false,
             message:
-              'Violation [TURING-RULE-005]: New Prisma usage is frozen. Mongoose is the designated ORM until the Wave H unification ADR. Existing Prisma files may only be modified to migrate off.',
+              'Violation [TURING-RULE-005]: Changing data ownership requires an approved ADR with parity tests and rollback. No ORM winner has been selected.',
           };
         }
         return { valid: true };

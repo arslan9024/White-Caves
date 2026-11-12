@@ -1,6 +1,6 @@
 /**
  * DynamicPricingEngine.js
- * 
+ *
  * Replaces flat-rate commission (2-3% property sales, 5% leasing, 8% management)
  * with intelligent pricing based on multiple factors:
  * - Property rarity & market value
@@ -9,7 +9,7 @@
  * - Market seasonality
  * - Competitive positioning
  * - Volume & loyalty benefits
- * 
+ *
  * Expected gain: +150% revenue on premium properties (AED 10-15M/year additional)
  */
 
@@ -20,41 +20,41 @@ class DynamicPricingEngine {
         STANDARD: 1.0, // Base rate 100%
         PREMIUM: 1.25, // 25% premium
         ULTRA_PREMIUM: 1.5, // 50% premium
-        ULTRA_RARE: 2.0 // 100% premium (ultra-rare properties command premium rate)
+        ULTRA_RARE: 2.0, // 100% premium (ultra-rare properties command premium rate)
       },
       clientTierDiscount: {
         BASIC: 0, // No discount
         ESSENTIAL: 0.05, // 5% loyalty discount
         PREMIUM: 0.1, // 10% loyalty discount
         ULTRA_PREMIUM: 0.15, // 15% loyalty discount
-        CORPORATE: 0.2 // 20% loyalty discount
+        CORPORATE: 0.2, // 20% loyalty discount
       },
       transactionComplexity: {
         SIMPLE: 1.0, // Standard property, straightforward
         MODERATE: 1.15, // Off-plan, developer coordination, multiple stakeholders
         COMPLEX: 1.3, // International buyer, corporate entity, financing issues
-        HIGHLY_COMPLEX: 1.5 // All of above combined
+        HIGHLY_COMPLEX: 1.5, // All of above combined
       },
       seasonalityMultiplier: {
-        'Q1': 0.9, // January-March: Low season, offer incentive (10% discount)
-        'Q2': 0.95, // April-June: Moderate season, 5% discount
-        'Q3': 1.15, // July-September: Peak season, 15% premium
-        'Q4': 1.2 // October-December: Peak holiday season, 20% premium
+        Q1: 0.9, // January-March: Low season, offer incentive (10% discount)
+        Q2: 0.95, // April-June: Moderate season, 5% discount
+        Q3: 1.15, // July-September: Peak season, 15% premium
+        Q4: 1.2, // October-December: Peak holiday season, 20% premium
       },
       volumeBonus: {
         // Cumulative bonus for clients doing multiple transactions
-        'SINGLE': 0, // No bonus
+        SINGLE: 0, // No bonus
         '2-3': 0.05, // 5% bonus for 2-3 deals in last 12 months
         '4-6': 0.1, // 10% bonus
         '7-9': 0.15, // 15% bonus
-        '10+': 0.2 // 20% bonus for high-volume clients
+        '10+': 0.2, // 20% bonus for high-volume clients
       },
       marketCondition: {
         // Adjustment based on real-time market conditions
         BUYER_MARKET: 0.95, // Many properties, fewer buyers - offer incentive
         BALANCED: 1.0, // Normal market conditions
-        SELLER_MARKET: 1.15 // Few properties, many buyers - charge premium
-      }
+        SELLER_MARKET: 1.15, // Few properties, many buyers - charge premium
+      },
     };
 
     // Base rates (replacement for hardcoded 2-3%, 5%, 8%)
@@ -62,48 +62,48 @@ class DynamicPricingEngine {
       PROPERTY_SALE: {
         baseline: 0.025, // 2.5% instead of flat 2-3%
         min: 0.015, // Minimum 1.5% even with max discounts
-        max: 0.05 // Maximum 5% even with all premiums
+        max: 0.05, // Maximum 5% even with all premiums
       },
       LEASING: {
         baseline: 0.05, // 5% of annual rent
         min: 0.03, // Minimum 3%
-        max: 0.08 // Maximum 8%
+        max: 0.08, // Maximum 8%
       },
       PROPERTY_MANAGEMENT: {
         baseline: 0.08, // 8% of monthly rent
         min: 0.05, // Minimum 5%
-        max: 0.12 // Maximum 12%
+        max: 0.12, // Maximum 12%
       },
       CONSULTATION: {
         baseline: 5000, // AED 5,000 base fee
         min: 3000, // Minimum AED 3,000
-        max: 15000 // Maximum AED 15,000
+        max: 15000, // Maximum AED 15,000
       },
       DOCUMENTATION: {
         baseline: 2000, // AED 2,000 base fee
         min: 1500, // Minimum AED 1,500
-        max: 5000 // Maximum AED 5,000
-      }
+        max: 5000, // Maximum AED 5,000
+      },
     };
   }
 
   /**
    * Calculate dynamic price for a service
-   * 
+   *
    * @param {Object} serviceConfig - Service configuration
    * @param {String} serviceConfig.serviceType - Type: PROPERTY_SALE, LEASING, etc.
    * @param {Object} clientData - Client information
-   * @param {String} clientData.tier - Client tier (BASIC, ESSENTIAL, etc.)
-   * @param {Number} clientData.transactionCount - Number of previous transactions
-   * @param {Number} clientData.totalValue - Total value of transactions (AED)
+   * @param {String} [clientData.tier] - Client tier (BASIC, ESSENTIAL, etc.)
+   * @param {Number} [clientData.transactionCount] - Number of previous transactions
+   * @param {Number} [clientData.totalValue] - Total value of transactions (AED)
    * @param {Object} propertyData - Property information
-   * @param {Number} propertyData.value - Property value (AED)
-   * @param {String} propertyData.rarity - Property rarity level
-   * @param {String} propertyData.type - Property type
+   * @param {Number} [propertyData.value] - Property value (AED)
+   * @param {String} [propertyData.rarity] - Property rarity level
+   * @param {String} [propertyData.type] - Property type
    * @param {Object} contextData - Additional context
-   * @param {String} contextData.complexity - Transaction complexity level
-   * @param {String} contextData.marketCondition - Current market condition
-   * 
+   * @param {String} [contextData.complexity] - Transaction complexity level
+   * @param {String} [contextData.marketCondition] - Current market condition
+   *
    * @returns {Object} Pricing calculation with breakdown
    */
   calculatePrice(serviceConfig, clientData, propertyData, contextData = {}) {
@@ -125,7 +125,7 @@ class DynamicPricingEngine {
       breakdownFactors.push({
         factor: `Property Rarity (${propertyData.rarity})`,
         multiplier: rarityMultiplier,
-        impact: (rarityMultiplier - 1) * 100 // As percentage
+        impact: (rarityMultiplier - 1) * 100, // As percentage
       });
     }
 
@@ -137,18 +137,19 @@ class DynamicPricingEngine {
       breakdownFactors.push({
         factor: `Client Tier Discount (${clientData.tier})`,
         multiplier: tierMultiplier,
-        impact: -discount * 100 // Negative because it's a discount
+        impact: -discount * 100, // Negative because it's a discount
       });
     }
 
     // 3. Transaction Complexity
     if (contextData && contextData.complexity) {
-      const complexityMultiplier = this.pricingFactors.transactionComplexity[contextData.complexity] || 1.0;
+      const complexityMultiplier =
+        this.pricingFactors.transactionComplexity[contextData.complexity] || 1.0;
       multiplier *= complexityMultiplier;
       breakdownFactors.push({
         factor: `Transaction Complexity (${contextData.complexity})`,
         multiplier: complexityMultiplier,
-        impact: (complexityMultiplier - 1) * 100
+        impact: (complexityMultiplier - 1) * 100,
       });
     }
 
@@ -159,7 +160,7 @@ class DynamicPricingEngine {
     breakdownFactors.push({
       factor: `Seasonality (${quarter})`,
       multiplier: seasonalMultiplier,
-      impact: (seasonalMultiplier - 1) * 100
+      impact: (seasonalMultiplier - 1) * 100,
     });
 
     // 5. Volume Bonus (loyalty for repeat clients)
@@ -171,18 +172,19 @@ class DynamicPricingEngine {
       breakdownFactors.push({
         factor: `Volume Bonus (${clientData.transactionCount} transactions)`,
         multiplier: volumeMultiplier,
-        impact: -volumeBonus * 100
+        impact: -volumeBonus * 100,
       });
     }
 
     // 6. Market Condition
     if (contextData && contextData.marketCondition) {
-      const marketMultiplier = this.pricingFactors.marketCondition[contextData.marketCondition] || 1.0;
+      const marketMultiplier =
+        this.pricingFactors.marketCondition[contextData.marketCondition] || 1.0;
       multiplier *= marketMultiplier;
       breakdownFactors.push({
         factor: `Market Condition (${contextData.marketCondition})`,
         multiplier: marketMultiplier,
-        impact: (marketMultiplier - 1) * 100
+        impact: (marketMultiplier - 1) * 100,
       });
     }
 
@@ -195,14 +197,14 @@ class DynamicPricingEngine {
       breakdownFactors.push({
         factor: 'Minimum Rate Cap Applied',
         multiplier: baseRate.min / (baseRate.baseline * multiplier),
-        impact: 0
+        impact: 0,
       });
     } else if (rate > baseRate.max) {
       rate = baseRate.max;
       breakdownFactors.push({
         factor: 'Maximum Rate Cap Applied',
         multiplier: baseRate.max / (baseRate.baseline * multiplier),
-        impact: 0
+        impact: 0,
       });
     }
 
@@ -234,7 +236,7 @@ class DynamicPricingEngine {
       calculationBasis,
       breakdown: {
         factors: breakdownFactors,
-        totalImpact: ((multiplier - 1) * 100).toFixed(2) + '%'
+        totalImpact: ((multiplier - 1) * 100).toFixed(2) + '%',
       },
       priceAdjustmentReason: this._generatePriceReason(breakdownFactors),
       metadata: {
@@ -243,8 +245,8 @@ class DynamicPricingEngine {
         complexity: contextData?.complexity || 'SIMPLE',
         season: quarter,
         marketCondition: contextData?.marketCondition || 'BALANCED',
-        calculatedAt: new Date()
-      }
+        calculatedAt: new Date(),
+      },
     };
   }
 
@@ -276,7 +278,7 @@ class DynamicPricingEngine {
       percentageChange: percentageChange.toFixed(2) + '%',
       isIncrease: difference > 0,
       reason: newCalculation.priceAdjustmentReason,
-      breakdown: newCalculation.breakdown
+      breakdown: newCalculation.breakdown,
     };
   }
 
@@ -321,7 +323,7 @@ class DynamicPricingEngine {
       LEASING: 0.05, // 5%
       PROPERTY_MANAGEMENT: 0.08, // 8%
       CONSULTATION: 5000,
-      DOCUMENTATION: 2000
+      DOCUMENTATION: 2000,
     };
     return oldRates[serviceType] || 0.025;
   }
@@ -359,24 +361,20 @@ class DynamicPricingEngine {
       minRate: 0.015,
       maxRate: 0.05,
       standardDeviation: 0.005,
-      mostCommonFactors: [
-        'Property Rarity',
-        'Client Tier Discount',
-        'Transaction Complexity'
-      ],
-      averageAdjustment: '+15%'
+      mostCommonFactors: ['Property Rarity', 'Client Tier Discount', 'Transaction Complexity'],
+      averageAdjustment: '+15%',
     };
   }
 }
 
 /**
  * ContextPreservationEngine.js
- * 
+ *
  * Maintains conversation context across AI assistant switches
  * - Prevents "I already told you" repetition
  * - Enables seamless hand-offs
  * - Preserves relationship continuity
- * 
+ *
  * Expected gain: +20% customer satisfaction, -10% repeat explanations
  */
 
@@ -400,7 +398,7 @@ class ContextPreservationEngine {
         propertyType: clientData.preferredPropertyType || [],
         locations: clientData.preferredLocations || [],
         language: clientData.preferredLanguage || 'ENGLISH',
-        communicationChannels: clientData.preferredChannels || ['EMAIL', 'WHATSAPP']
+        communicationChannels: clientData.preferredChannels || ['EMAIL', 'WHATSAPP'],
       },
       conversationHistory: [],
       contextSummary: '',
@@ -412,8 +410,8 @@ class ContextPreservationEngine {
         complexity: 'SIMPLE',
         priority: 'NORMAL',
         keywords: [],
-        intents: []
-      }
+        intents: [],
+      },
     };
 
     this.conversationContexts.set(conversationId, context);
@@ -437,7 +435,7 @@ class ContextPreservationEngine {
       content: message.content,
       intent: this._detectIntent(message.content),
       sentiment: this._detectSentiment(message.content),
-      attachments: message.attachments || []
+      attachments: message.attachments || [],
     };
 
     context.conversationHistory.push(messageRecord);
@@ -468,7 +466,7 @@ class ContextPreservationEngine {
       context.previousAssistants.push({
         assistantId: context.currentAssistant,
         duration: Date.now() - context.lastAssistantChange || 0,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     }
 
@@ -481,7 +479,7 @@ class ContextPreservationEngine {
     return {
       success: true,
       handoffData: handoffSummary,
-      contextForNewAssistant: this._prepareContextForAssistant(context, newAssistantId)
+      contextForNewAssistant: this._prepareContextForAssistant(context, newAssistantId),
     };
   }
 
@@ -507,7 +505,7 @@ class ContextPreservationEngine {
       complexity: context.metadata.complexity,
       priority: context.metadata.priority,
       suggestions: this._generateSuggestionsForAssistant(context, assistantId),
-      warnings: this._getContextWarnings(context)
+      warnings: this._getContextWarnings(context),
     };
   }
 
@@ -516,7 +514,7 @@ class ContextPreservationEngine {
    */
   _generateContextSummary(context) {
     const messages = context.conversationHistory.slice(-20); // Last 20 messages
-    
+
     let summary = `Client: ${context.clientName} (${context.clientTier} tier)\n`;
     summary += `Budget: ${context.clientBudget ? 'AED ' + context.clientBudget : 'Not specified'}\n`;
     summary += `Preferences: ${context.clientPreferences.propertyType.join(', ') || 'Not specified'}\n`;
@@ -550,7 +548,7 @@ class ContextPreservationEngine {
       clientSentiment: this._getAverageSentiment(context.conversationHistory),
       urgency: context.metadata.priority,
       contextPreserved: true,
-      suggestedGreeting: this._generateGreeting(context, newAssistantId)
+      suggestedGreeting: this._generateGreeting(context, newAssistantId),
     };
   }
 
@@ -559,30 +557,31 @@ class ContextPreservationEngine {
    */
   _prepareContextForAssistant(context, assistantId) {
     const recentMessages = context.conversationHistory.slice(-10);
-    
+
     return {
       conversationState: {
         clientName: context.clientName,
         clientTier: context.clientTier,
         stage: this._determineConversationStage(context),
-        progress: context.conversationHistory.length // Number of exchanges
+        progress: context.conversationHistory.length, // Number of exchanges
       },
       clientData: {
         budget: context.clientBudget,
         preferences: context.clientPreferences,
-        previousAssistants: context.previousAssistants.map(a => a.assistantId)
+        previousAssistants: context.previousAssistants.map(a => a.assistantId),
       },
       immediateContext: {
-        lastClientMessage: context.conversationHistory.filter(m => m.sender === 'CLIENT').pop()?.content,
+        lastClientMessage: context.conversationHistory.filter(m => m.sender === 'CLIENT').pop()
+          ?.content,
         conversationTopic: this._identifyMainTopic(context),
         pendingActions: this._extractPendingActions(context),
-        blockers: this._identifyBlockers(context)
+        blockers: this._identifyBlockers(context),
       },
       recentHistory: recentMessages.map(m => ({
         speaker: m.senderName,
         message: m.content,
-        intent: m.intent
-      }))
+        intent: m.intent,
+      })),
     };
   }
 
@@ -591,14 +590,14 @@ class ContextPreservationEngine {
    */
   _detectIntent(content) {
     const intents = {
-      'SEARCH': ['find', 'search', 'looking for', 'show me'],
-      'SCHEDULE': ['schedule', 'meeting', 'viewing', 'appointment', 'when', 'time'],
-      'PRICING': ['price', 'cost', 'fee', 'commission', 'calculate', 'how much'],
-      'DOCUMENTATION': ['document', 'contract', 'sign', 'agreement', 'paper'],
-      'NEGOTIATION': ['negotiate', 'offer', 'bid', 'reduce', 'discount'],
-      'COMPLAINT': ['problem', 'issue', 'wrong', 'not happy', 'complaint'],
-      'QUESTION': ['why', 'how', 'what', 'when', 'where', 'who'],
-      'APPROVAL': ['yes', 'approved', 'agree', 'proceed', 'okay', 'ok']
+      SEARCH: ['find', 'search', 'looking for', 'show me'],
+      SCHEDULE: ['schedule', 'meeting', 'viewing', 'appointment', 'when', 'time'],
+      PRICING: ['price', 'cost', 'fee', 'commission', 'calculate', 'how much'],
+      DOCUMENTATION: ['document', 'contract', 'sign', 'agreement', 'paper'],
+      NEGOTIATION: ['negotiate', 'offer', 'bid', 'reduce', 'discount'],
+      COMPLAINT: ['problem', 'issue', 'wrong', 'not happy', 'complaint'],
+      QUESTION: ['why', 'how', 'what', 'when', 'where', 'who'],
+      APPROVAL: ['yes', 'approved', 'agree', 'proceed', 'okay', 'ok'],
     };
 
     const lowerContent = content.toLowerCase();
@@ -616,7 +615,15 @@ class ContextPreservationEngine {
    * Detect sentiment from message
    */
   _detectSentiment(content) {
-    const positiveWords = ['great', 'perfect', 'excellent', 'happy', 'satisfied', 'amazing', 'wonderful'];
+    const positiveWords = [
+      'great',
+      'perfect',
+      'excellent',
+      'happy',
+      'satisfied',
+      'amazing',
+      'wonderful',
+    ];
     const negativeWords = ['bad', 'poor', 'angry', 'unhappy', 'problem', 'issue', 'complaint'];
 
     const lowerContent = content.toLowerCase();
@@ -722,12 +729,19 @@ class ContextPreservationEngine {
       .filter(m => m.sentiment === 'NEGATIVE');
 
     if (negativeSentiments.length > 0) {
-      warnings.push(`Client has expressed ${negativeSentiments.length} negative sentiment(s) - handle carefully`);
+      warnings.push(
+        `Client has expressed ${negativeSentiments.length} negative sentiment(s) - handle carefully`
+      );
     }
 
     // Check for blockers
     const recentMessages = context.conversationHistory.slice(-5);
-    if (recentMessages.some(m => m.content.toLowerCase().includes('can\'t') || m.content.toLowerCase().includes('problem'))) {
+    if (
+      recentMessages.some(
+        m =>
+          m.content.toLowerCase().includes("can't") || m.content.toLowerCase().includes('problem')
+      )
+    ) {
       warnings.push('Potential blocker identified - resolve before proceeding');
     }
 
@@ -739,12 +753,12 @@ class ContextPreservationEngine {
    */
   _determineConversationStage(context) {
     const intents = context.metadata.intents;
-    
+
     if (intents.includes('SEARCH')) return 'DISCOVERY';
     if (intents.includes('SCHEDULE')) return 'ENGAGEMENT';
     if (intents.includes('PRICING') || intents.includes('NEGOTIATION')) return 'CONSIDERATION';
     if (intents.includes('DOCUMENTATION') || intents.includes('APPROVAL')) return 'DECISION';
-    
+
     return 'INITIAL';
   }
 
@@ -797,7 +811,7 @@ class ContextPreservationEngine {
     const blockers = [];
     const allMessages = context.conversationHistory.map(m => m.content.toLowerCase()).join(' ');
 
-    if (allMessages.includes('not available') || allMessages.includes('can\'t')) {
+    if (allMessages.includes('not available') || allMessages.includes("can't")) {
       blockers.push('Availability or capability constraint');
     }
     if (allMessages.includes('budget')) {
@@ -831,11 +845,11 @@ class ContextPreservationEngine {
     const previousAssistant = context.currentAssistant;
 
     const greetings = {
-      'MARY': `Hi ${clientName}! I'm Mary from our Inventory team. ${previousAssistant} mentioned you're looking for properties - I have some great options to show you!`,
-      'THEODORA': `Hi ${clientName}! I'm Theodora from Finance. Let me work up the best payment options for you based on what we discussed.`,
-      'LINDA': `Hi ${clientName}! I'm Linda. Let's get that viewing scheduled for you right away!`,
-      'CLARA': `Hi ${clientName}! I'm Clara from our Sales team. I have all the details from our conversation - let's move forward!`,
-      'SOPHIA': `Hi ${clientName}! I'm Sophia, managing your deal timeline. Let's make sure everything stays on track!`
+      MARY: `Hi ${clientName}! I'm Mary from our Inventory team. ${previousAssistant} mentioned you're looking for properties - I have some great options to show you!`,
+      THEODORA: `Hi ${clientName}! I'm Theodora from Finance. Let me work up the best payment options for you based on what we discussed.`,
+      LINDA: `Hi ${clientName}! I'm Linda. Let's get that viewing scheduled for you right away!`,
+      CLARA: `Hi ${clientName}! I'm Clara from our Sales team. I have all the details from our conversation - let's move forward!`,
+      SOPHIA: `Hi ${clientName}! I'm Sophia, managing your deal timeline. Let's make sure everything stays on track!`,
     };
 
     return greetings[newAssistantId] || `Hi ${clientName}! Connecting you with our specialist...`;
@@ -879,7 +893,7 @@ class ContextPreservationEngine {
       activeContexts: totalContexts,
       totalMessages,
       averageMessagesPerContext: avgMessagesPerContext,
-      retentionPeriodDays: this.retentionPeriod / (24 * 60 * 60 * 1000)
+      retentionPeriodDays: this.retentionPeriod / (24 * 60 * 60 * 1000),
     };
   }
 }

@@ -18,6 +18,9 @@ RUN npm ci --legacy-peer-deps
 # Copy entire codebase
 COPY . .
 
+# Enforce the same runtime floor as local development and CI.
+RUN npm run dev:precheck
+
 # Build frontend (Vite)
 RUN npm run build
 

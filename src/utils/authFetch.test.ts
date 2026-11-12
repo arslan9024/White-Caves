@@ -71,7 +71,7 @@ describe('authFetch', () => {
     // Mock window.location
     Object.defineProperty(window, 'location', {
       writable: true,
-      value: { pathname: '/dashboard', href: '/dashboard' },
+      value: { pathname: '/dashboard', href: '/dashboard', search: '', hash: '' },
     });
   });
 
@@ -247,7 +247,7 @@ describe('authFetch', () => {
       expect(mockRemove).toHaveBeenCalledWith('userRole');
     });
 
-    it('redirects to /signin on 401 when not already on /signin', async () => {
+    it('redirects to sign-in with the protected return URL on 401', async () => {
       mockGet.mockReturnValue('old-token');
       mockFetch
         .mockResolvedValueOnce(mockResponse(401, 'Unauthorized'))
@@ -255,7 +255,7 @@ describe('authFetch', () => {
 
       await expect(authFetch('/api/test')).rejects.toThrow();
 
-      expect(window.location.href).toBe('/signin');
+      expect(window.location.href).toBe('/signin?from=%2Fdashboard');
     });
 
     it('does NOT redirect when already on /signin (avoids reload loop)', async () => {
@@ -348,7 +348,7 @@ describe('authFetch', () => {
 
     it('throws HttpError for 502 Bad Gateway', async () => {
       mockGet.mockReturnValue(null);
-      mockFetch.mockResolvedValueOnce(mockResponse(502, 'Bad Gateway'));
+      mockFetch.mockResolvedValue(mockResponse(502, 'Bad Gateway'));
 
       try {
         await authFetch('/api/test');
@@ -361,7 +361,7 @@ describe('authFetch', () => {
 
     it('throws HttpError for 503 Service Unavailable', async () => {
       mockGet.mockReturnValue(null);
-      mockFetch.mockResolvedValueOnce(mockResponse(503, 'Service Unavailable'));
+      mockFetch.mockResolvedValue(mockResponse(503, 'Service Unavailable'));
 
       try {
         await authFetch('/api/test');

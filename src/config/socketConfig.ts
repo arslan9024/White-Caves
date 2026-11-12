@@ -20,11 +20,14 @@ export function resolveSocketUrl(): string {
 
   if (raw) {
     try {
-      return new URL(raw).origin;
+      const base = typeof window !== 'undefined' ? window.location.origin : LOCAL_API_ORIGIN;
+      const parsed = new URL(raw, base);
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        throw new Error('Unsupported socket origin protocol');
+      }
+      return parsed.origin;
     } catch {
-      logger.warn(
-        `[socketConfig] VITE_API_URL is not a valid URL ("${raw}"); falling back to window origin.`
-      );
+      logger.warn('[socketConfig] VITE_API_URL is invalid; falling back to browser origin.');
     }
   }
 

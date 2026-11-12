@@ -1,7 +1,9 @@
 import { ERROR_MESSAGES } from '@/constants';
 import { HttpError } from './HttpError';
+import { fetchWithRetry } from '../services/http/fetchWithRetry';
+import { getApiUrl } from '../config/constants';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = getApiUrl('');
 const CSRF_COOKIE_NAME = 'csrf_token';
 const CSRF_HEADER_NAME = 'x-csrf-token';
 const REFRESH_ENDPOINT = '/auth/refresh';
@@ -135,7 +137,7 @@ class ApiClient {
     }
 
     try {
-      const response = await fetch(url, config);
+      const response = await fetchWithRetry(url, config);
 
       const contentType = response.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
