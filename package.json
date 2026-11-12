@@ -208,6 +208,7 @@
     "orchestrator:tracker-sync:strict": "powershell -ExecutionPolicy Bypass -File .agents/orchestrator/tracker-sync-check.ps1 -Strict",
     "orchestrator:premium-efficiency": "powershell -ExecutionPolicy Bypass -File .agents/orchestrator/premium-efficiency-report.ps1",
     "orchestrator:premium-efficiency:brief": "powershell -ExecutionPolicy Bypass -File .agents/orchestrator/premium-efficiency-report.ps1 -Brief",
+    "git:safe": "node .agents/orchestrator/git-safe.js",
     "orchestrator:session:end": "powershell -ExecutionPolicy Bypass -File .agents/orchestrator/session-end.ps1",
     "orchestrator:session:end:dry": "powershell -ExecutionPolicy Bypass -File .agents/orchestrator/session-end.ps1 -DryRun",
     "orchestrator:session:end:nopush": "powershell -ExecutionPolicy Bypass -File .agents/orchestrator/session-end.ps1 -SkipPush",

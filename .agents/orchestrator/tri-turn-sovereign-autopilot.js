@@ -1986,6 +1986,11 @@ function createCycleId(cycleNumber) {
 }
 
 function validateOptions(options) {
+  if (options.gitWorkflow || options.gitPush || options.autoMerge) {
+    throw new Error(
+      'Automatic Git writes disabled: use npm run git:safe -- check and a reviewed PR.'
+    );
+  }
   const normalized = options.turns.map(t => (t === 'docs' ? 'docs-governance' : t));
   const must = DEFAULT_TURNS.join(',');
   const got = normalized.join(',');

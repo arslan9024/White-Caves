@@ -6,6 +6,8 @@
   [string]$CommitMessage = "docs(tracker): sync latest live orchestrator row"
 )
 
+throw "Legacy automatic Git workflow disabled: use npm run git:safe -- check and review changes manually."
+
 $ErrorActionPreference = "Stop"
 
 $root = Resolve-Path $WorkspaceRoot

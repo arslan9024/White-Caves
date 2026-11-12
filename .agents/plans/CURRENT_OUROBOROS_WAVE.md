@@ -92,6 +92,36 @@ Daily budgets, chat recovery, and broad oversized-file decomposition remain defe
 - Earlier validation entries describe the first batch; this follow-up supersedes
   its auth structure failure and untested-startup statements.
 
+## Follow-up: shared-checkout Git safety
+
+Approved scope: preserve the four remote-saved safety commits, create a named
+repair branch, quarantine the confirmed unsafe Git entry points, add an explicit
+branch preflight helper, and submit one PR. No main push, merge, branch deletion,
+force-push, workspace relocation, or secret changes. Validate in temporary Git
+repositories and run focused regression/quality checks before publishing.
+
+- A concurrent E2E/accessibility commit (`2853a4fe7`) appeared on this shared
+  branch during verification. Publication paused; the user explicitly approved
+  including that fifth inherited commit in the same PR. No history was rewritten.
+- Added `git:safe` assessment, explicit metadata branch creation, and conservative
+  local/remote integration checks. No staging, commits, pushes, or deletion are
+  performed by the helper. Shared-folder concurrency still requires one writer.
+- Quarantined six legacy entrypoints; disabled restart pull/push and optional
+  tri-turn Git writes. Existing tri-turn module import fails because its
+  `tri-turn-progress.js` dependency is missing; the new validation guard is
+  tested in isolation without repairing unrelated legacy dependencies.
+- `npm exec -- vitest run server\__tests__\git-workflow-safety.test.ts server\__tests__\automation-safety.test.ts`:
+  passed, 39 tests across two files, including real temporary Git repositories.
+- `npm exec -- eslint .agents\orchestrator\git-safe.js server\__tests__\git-workflow-safety.test.ts .agents\orchestrator\aegis-cycle.js .agents\orchestrator\tri-turn-sovereign-autopilot.js --max-warnings 0 --no-warn-ignored`:
+  passed (existing `.eslintignore` migration warning remains).
+- `npm exec -- tsc --noEmit --skipLibCheck --strict --allowJs --target ES2022 --module ESNext --moduleResolution Bundler --types node,vitest/globals server\__tests__\git-workflow-safety.test.ts`:
+  passed. Node syntax checks on changed JavaScript and `git diff --check` passed.
+- `npm run typecheck`, `npm run lint`, and `npm run build`: all passed (exit 0).
+  Existing ESLint ignore-file and large build-chunk warnings remain.
+- `npm exec -- vitest run src\components\homepage\CurrencyUnitBar.test.tsx`:
+  passed, 4 tests for the additionally approved accessibility commit. Browser
+  E2E/multi-browser checks were not rerun in this Git-tooling repair.
+
 ## Historical generated blueprint (unverified)
 
 Cycle #948
@@ -100,11 +130,13 @@ Cycle #948
 **Target Acceleration:** >= 5.0% System Velocity, Zero-Credit Wastage
 
 ### 🔬 Active Research & Intelligence Domain:
+
 - **Domain:** DOM-08 — FinTech, Escrow Law No. 8 & UAE VAT Form 201
 - **Lead Researcher:** @Zoe (COO)
 - **Core Objective:** Automated 5% VAT Split, 9% Corporate Tax Reserve & Trust Accounting
 
 ### Active Architectural Directives:
+
 1. **Context Triad Guarantee:** Strictly maintain Theme, Language, Currency in local state slices (AEG-003/041).
 2. **Deterministic Deduplication:** Auto-prune duplicate logic and ghost folders across root and src/.
 3. **Department Matrix Cohesion:** Directives synchronized across all 12 Technical Departments.

@@ -12,6 +12,8 @@
     This protocol is optimized for high-velocity prototyping and continuous delivery to the main branch.
 #>
 
+throw "Legacy automatic Git workflow disabled: use npm run git:safe -- check and review changes manually."
+
 Write-Host "🚀 Starting AEGIS Rapid Sprint Protocol" -ForegroundColor Cyan
 
 Write-Host "[1/4] Syncing Repository..." -ForegroundColor Yellow

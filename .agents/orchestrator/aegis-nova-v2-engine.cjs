@@ -1,3 +1,8 @@
+console.error(
+    'Legacy automatic Git workflow disabled: use npm run git:safe -- check and review changes manually.'
+);
+process.exit(1);
+
 const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');
