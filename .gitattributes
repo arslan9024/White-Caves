@@ -3,6 +3,9 @@
 # Prettier and Linux CI all agree. Windows-native scripts keep CRLF.
 * text=auto eol=lf
 
+# Pasted asset dumps — leave byte-for-byte untouched
+attached_assets/** -text
+
 # Windows scripts that require CRLF
 *.ps1 text eol=crlf
 *.bat text eol=crlf
