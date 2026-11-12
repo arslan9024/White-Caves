@@ -14,6 +14,9 @@ server/*
 !server/shared/
 !server/models/
 !server/utils/
+!server/serverless/
+!server/middleware/
+!server/config/
 scripts/
 /docs/
 *.md
