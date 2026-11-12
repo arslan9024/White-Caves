@@ -1,7 +1,15 @@
 import React, { lazy, Suspense, memo, useMemo, Component } from 'react';
-import { 
-  Bot, RefreshCw, LayoutDashboard, Zap, CheckCircle2, 
-  Activity, ArrowUpRight, ShieldCheck, Cpu, Terminal
+import {
+  Bot,
+  RefreshCw,
+  LayoutDashboard,
+  Zap,
+  CheckCircle2,
+  Activity,
+  ArrowUpRight,
+  ShieldCheck,
+  Cpu,
+  Terminal,
 } from 'lucide-react';
 import './DynamicAssistantCRM.css';
 
@@ -10,7 +18,7 @@ const ASSISTANT_LOADERS = {
   linda: () => import('./LindaWhatsAppCRM'),
   mary: () => import('./MaryInventoryCRM_NEW'),
   clara: () => import('./ClaraLeadsCRM'),
-  nina: () => import('./NinaWhatsAppBotCRM_NEW'),
+  nina: () => import('./NinaWhatsAppBotCRM'),
   nancy: () => import('./NancyHRCRM'),
   sophia: () => import('./SophiaSalesCRM'),
   daisy: () => import('./DaisyLeasingCRM'),
@@ -31,7 +39,7 @@ const ASSISTANT_LOADERS = {
   juno: () => import('./JunoCommunity'),
   kairos: () => import('./KairosLuxuryCRM'),
   maven: () => import('./MavenInvestmentCRM'),
-  'hero-section': () => import('./HeroSectionCRM')
+  'hero-section': () => import('./HeroSectionCRM'),
 };
 
 // Memoized cache of instantiated lazy components
@@ -74,8 +82,8 @@ class AssistantErrorBoundary extends Component {
           <Cpu size={40} className="error-icon" />
           <h3>Dynamic Assistant View Standby</h3>
           <p>The specialized view encountered a temporary issue. Fallback telemetry active.</p>
-          <button 
-            className="retry-btn" 
+          <button
+            className="retry-btn"
             onClick={() => this.setState({ hasError: false, error: null })}
           >
             <RefreshCw size={16} /> Reload Assistant Console
@@ -100,13 +108,15 @@ const LoadingSpinner = memo(() => (
  */
 const UniversalAssistantWorkspace = memo(({ assistant, content }) => {
   const capabilities = useMemo(() => {
-    return assistant?.capabilities || [
-      'autonomous_orchestration',
-      'realtime_market_telemetry',
-      'dubai_rera_compliance_gate',
-      'predictive_deal_intelligence',
-      'executive_reporting'
-    ];
+    return (
+      assistant?.capabilities || [
+        'autonomous_orchestration',
+        'realtime_market_telemetry',
+        'dubai_rera_compliance_gate',
+        'predictive_deal_intelligence',
+        'executive_reporting',
+      ]
+    );
   }, [assistant]);
 
   return (
@@ -114,11 +124,13 @@ const UniversalAssistantWorkspace = memo(({ assistant, content }) => {
       {/* Header Banner */}
       <div className="workspace-header">
         <div className="assistant-profile">
-          <div 
+          <div
             className="assistant-avatar-badge"
-            style={{ 
-              backgroundColor: assistant?.color ? `${assistant.color}20` : 'rgba(212, 175, 55, 0.15)',
-              borderColor: assistant?.color || 'var(--caves-gold, #d4af37)'
+            style={{
+              backgroundColor: assistant?.color
+                ? `${assistant.color}20`
+                : 'rgba(212, 175, 55, 0.15)',
+              borderColor: assistant?.color || 'var(--caves-gold, #d4af37)',
             }}
           >
             <Bot size={32} style={{ color: assistant?.color || '#d4af37' }} />
@@ -146,21 +158,27 @@ const UniversalAssistantWorkspace = memo(({ assistant, content }) => {
       {/* Metrics Row */}
       <div className="workspace-metrics-grid">
         <div className="metric-box">
-          <div className="metric-icon"><Zap size={20} /></div>
+          <div className="metric-icon">
+            <Zap size={20} />
+          </div>
           <div className="metric-data">
             <span className="metric-val">99.8%</span>
             <span className="metric-lbl">Task Accuracy</span>
           </div>
         </div>
         <div className="metric-box">
-          <div className="metric-icon"><LayoutDashboard size={20} /></div>
+          <div className="metric-icon">
+            <LayoutDashboard size={20} />
+          </div>
           <div className="metric-data">
             <span className="metric-val">{capabilities.length}</span>
             <span className="metric-lbl">Active Skills</span>
           </div>
         </div>
         <div className="metric-box">
-          <div className="metric-icon"><Activity size={20} /></div>
+          <div className="metric-icon">
+            <Activity size={20} />
+          </div>
           <div className="metric-data">
             <span className="metric-val">&lt; 8ms</span>
             <span className="metric-lbl">Query Latency</span>
@@ -177,7 +195,9 @@ const UniversalAssistantWorkspace = memo(({ assistant, content }) => {
         <div className="capabilities-grid">
           {capabilities.map((cap, idx) => (
             <div key={idx} className="capability-card">
-              <div className="cap-check"><CheckCircle2 size={18} /></div>
+              <div className="cap-check">
+                <CheckCircle2 size={18} />
+              </div>
               <div className="cap-content">
                 <span className="cap-title">{String(cap).replace(/_/g, ' ').toUpperCase()}</span>
                 <span className="cap-sub">Verified operational endpoint</span>
@@ -198,11 +218,19 @@ const UniversalAssistantWorkspace = memo(({ assistant, content }) => {
           <span className="console-indicator">Realtime Heartbeat OK</span>
         </div>
         <div className="console-output">
-          <p className="console-line info">[SYS_INIT] DynamicAssistantCRM unified runtime mounted for: {assistant?.name}</p>
-          <p className="console-line success">[AEGIS_V4] 300% Acceleration Protocol active: O(n) Map/Set indexing enforced</p>
-          <p className="console-line success">[ZERO_BACKLOG] Blocker scan: 0 critical defects. Pipeline clean.</p>
+          <p className="console-line info">
+            [SYS_INIT] DynamicAssistantCRM unified runtime mounted for: {assistant?.name}
+          </p>
+          <p className="console-line success">
+            [AEGIS_V4] 300% Acceleration Protocol active: O(n) Map/Set indexing enforced
+          </p>
+          <p className="console-line success">
+            [ZERO_BACKLOG] Blocker scan: 0 critical defects. Pipeline clean.
+          </p>
           {content?.component && (
-            <p className="console-line info">[VIEW_TARGET] Active component route: {content.component}</p>
+            <p className="console-line info">
+              [VIEW_TARGET] Active component route: {content.component}
+            </p>
           )}
         </div>
       </div>

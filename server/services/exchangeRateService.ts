@@ -4,7 +4,6 @@
  * Provides real-time currency conversion with 4-hour TTL caching for AED, USD, EUR, GBP, INR.
  */
 
-import axios from 'axios';
 import logger from '../utils/logger.js';
 import { SupportedCurrency, CURRENCIES } from './currencyService.js';
 
@@ -16,9 +15,9 @@ export interface RateCache {
 
 const STATIC_AED_RATES: Record<SupportedCurrency, number> = {
   AED: 1,
-  USD: 1 / 3.6725,  // 0.2723 USD per AED
-  EUR: 1 / 3.9841,  // 0.2510 EUR per AED
-  GBP: 1 / 4.6189,  // 0.2165 GBP per AED
+  USD: 1 / 3.6725, // 0.2723 USD per AED
+  EUR: 1 / 3.9841, // 0.2510 EUR per AED
+  GBP: 1 / 4.6189, // 0.2165 GBP per AED
   INR: 1 / 0.04376, // 22.852 INR per AED
 };
 
@@ -38,18 +37,21 @@ export async function getExchangeRates(forceRefresh = false): Promise<RateCache>
   const apiKey = process.env.EXCHANGE_RATE_API_KEY;
   if (apiKey) {
     try {
-      const response = await axios.get<{ conversion_rates?: Record<string, number> }>(
-        `https://v6.exchangerate-api.com/v6/${apiKey}/latest/AED`,
-        { timeout: 5000 }
-      );
+      const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/AED`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!response.ok) {
+        throw new Error(`Exchange rate API responded ${response.status}`);
+      }
+      const data = (await response.json()) as { conversion_rates?: Record<string, number> };
 
-      if (response.data?.conversion_rates) {
+      if (data?.conversion_rates) {
         const liveRates: Record<SupportedCurrency, number> = {
           AED: 1,
-          USD: response.data.conversion_rates.USD || STATIC_AED_RATES.USD,
-          EUR: response.data.conversion_rates.EUR || STATIC_AED_RATES.EUR,
-          GBP: response.data.conversion_rates.GBP || STATIC_AED_RATES.GBP,
-          INR: response.data.conversion_rates.INR || STATIC_AED_RATES.INR,
+          USD: data.conversion_rates.USD || STATIC_AED_RATES.USD,
+          EUR: data.conversion_rates.EUR || STATIC_AED_RATES.EUR,
+          GBP: data.conversion_rates.GBP || STATIC_AED_RATES.GBP,
+          INR: data.conversion_rates.INR || STATIC_AED_RATES.INR,
         };
 
         rateCache = {
@@ -66,9 +68,12 @@ export async function getExchangeRates(forceRefresh = false): Promise<RateCache>
         return rateCache;
       }
     } catch (error) {
-      logger.warn('[ExchangeRateService] Failed to fetch live exchange rates, falling back to static rates', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
+      logger.warn(
+        '[ExchangeRateService] Failed to fetch live exchange rates, falling back to static rates',
+        {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        }
+      );
     }
   }
 
@@ -97,7 +102,7 @@ export async function convertCurrency(
 
   // Convert from `from` currency to base AED, then AED to `to` currency
   const fromRateInAED = rates[from]; // 1 AED = X `from`
-  const toRateInAED = rates[to];     // 1 AED = Y `to`
+  const toRateInAED = rates[to]; // 1 AED = Y `to`
 
   const amountInAED = amount / fromRateInAED;
   const convertedAmount = amountInAED * toRateInAED;
