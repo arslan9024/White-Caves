@@ -1,7 +1,7 @@
 {
   "folders": [
     {
-      "name": "White-Caves (Root)",
+      "name": "White-Caves (Core Platform)",
       "path": "."
     }
   ],
@@ -10,14 +10,33 @@
     "typescript.suggest.autoImports": true,
     "typescript.updateImportsOnFileMove.enabled": "always",
     "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "never"
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[prisma]": {
+      "editor.defaultFormatter": "Prisma.prisma"
     },
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
+    "files.eol": "\n",
     "files.exclude": {
       "**/.git": true,
       "**/.svn": true,
@@ -62,7 +81,9 @@
         "source": "PowerShell",
         "icon": "terminal-powershell"
       }
-    }
+    },
+    "git.autofetch": true,
+    "git.confirmSync": false
   },
   "extensions": {
     "recommendations": [
@@ -70,6 +91,8 @@
       "esbenp.prettier-vscode",
       "prisma.prisma",
       "vitest.explorer",
+      "ms-playwright.playwright",
+      "bradlc.vscode-tailwindcss",
       "ms-vscode.powershell",
       "github.copilot",
       "github.copilot-chat"
