@@ -6,6 +6,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
+import type {} from '../types/express.js';
 import jwt from 'jsonwebtoken';
 import { AppError } from './errorHandler.js';
 import { JWT_SECRET } from '../config/env.js';

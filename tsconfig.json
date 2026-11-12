@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": true,
     "checkJs": false,
     "skipLibCheck": true,
@@ -25,53 +21,21 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@/components/*": [
-        "src/components/*"
-      ],
-      "@/shared/*": [
-        "src/components/shared/*"
-      ],
-      "@/layouts/*": [
-        "src/layouts/*"
-      ],
-      "@/context/*": [
-        "src/context/*"
-      ],
-      "@/locales/*": [
-        "src/locales/*"
-      ],
-      "@/mocks/*": [
-        "src/mocks/*"
-      ],
-      "@/store/*": [
-        "src/store/*"
-      ],
-      "@/hooks/*": [
-        "src/hooks/*"
-      ],
-      "@/server/*": [
-        "server/*"
-      ],
-      "@/lib/*": [
-        "src/lib/*"
-      ]
+      "@/*": ["src/*"],
+      "@/components/*": ["src/components/*"],
+      "@/shared/*": ["src/components/shared/*"],
+      "@/layouts/*": ["src/layouts/*"],
+      "@/context/*": ["src/context/*"],
+      "@/locales/*": ["src/locales/*"],
+      "@/mocks/*": ["src/mocks/*"],
+      "@/store/*": ["src/store/*"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/server/*": ["server/*"],
+      "@/lib/*": ["src/lib/*"]
     },
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "incremental": true
   },
-  "include": [
-    "app",
-    "next-env.d.ts",
-    "src",
-    ".next/types/**/*.ts"
-  ],
+  "include": ["src"],
   "exclude": [
     "server/**",
     "src/**/*.backup.ts",

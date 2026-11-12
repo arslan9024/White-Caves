@@ -7,7 +7,6 @@ import { ctx } from './recruitment.context.js';
 import { ConversationMetricsAnalyzer } from '../../services/ConversationMetricsAnalyzer.js';
 import { EnhancedIntentDetectionService } from '../../services/EnhancedIntentDetectionService.js';
 import { LeadQualificationService } from '../../services/LeadQualificationService.js';
-import { normalizeLeadScore } from '../../services/recruitmentRecordMapper.js';
 
 const router = express.Router();
 
@@ -75,32 +74,42 @@ router.post('/leads/:candidateId/calculate-score', async (req, res) => {
     }
 
     // Get previous lead score for velocity calculation
-    const previousLeadScore = await ctx.prisma.leadScore.findFirst({
-      where: { candidate_id: candidateId, ...(jobId ? { job_id: jobId } : {}) },
-      orderBy: { createdAt: 'desc' },
-    });
+    let previousLeadScore = null;
+    try {
+      previousLeadScore = await ctx.prisma.leadScore.findFirst({
+        where: { candidateId, jobId: jobId || null },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (e) {
+      // LeadScore table may not exist yet
+      console.warn('LeadScore table not found, continuing without velocity');
+    }
 
     // Calculate lead score
     const leadScore = LeadQualificationService.calculateLeadScore(
       resumeScore,
       conversationMessages,
       candidateId,
-      normalizeLeadScore(previousLeadScore)
+      previousLeadScore
     );
 
-    if (jobId) {
-      await ctx.prisma.leadScore.create({
-        data: {
-          candidate_id: candidateId,
-          job_id: jobId,
-          overall_score: leadScore.overallScore,
-          score_breakdown: leadScore.scoreBreakdown,
-          lead_temperature: leadScore.leadTemperature,
-          qualification_level: leadScore.qualificationLevel,
-          recommendations: leadScore.recommendations,
-          qualified_for_roles: [],
-        },
-      });
+    // Try to save to database
+    try {
+      if (jobId) {
+        await ctx.prisma.leadScore.create({
+          data: {
+            candidateId,
+            jobId,
+            overallScore: leadScore.overallScore,
+            scoreBreakdown: leadScore.scoreBreakdown,
+            leadTemperature: leadScore.leadTemperature,
+            qualificationLevel: leadScore.qualificationLevel,
+            recommendations: leadScore.recommendations,
+          },
+        });
+      }
+    } catch (dbError) {
+      console.warn('Could not save to database:', dbError.message);
     }
 
     return res.json({

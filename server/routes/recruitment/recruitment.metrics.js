@@ -3,10 +3,8 @@
  * Extracted from recruitment.js (Single Purpose File decomposition)
  */
 const OFFER_PIPELINE_STATUSES = ['offer', 'offer_approved', 'offer_accepted'];
-import { normalizeCandidateScore } from '../../services/recruitmentRecordMapper.js';
 
 export function computeScreeningMetrics(scores = [], options = {}) {
-  scores = scores.map(normalizeCandidateScore);
   const includeLegacyAliases = options.includeLegacyAliases === true;
 
   const withOptionalLegacyAliases = metrics => {

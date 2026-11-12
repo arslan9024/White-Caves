@@ -8,6 +8,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import React from 'react';
+import './App.test.mocks';
 
 // ─── Mock modules before import ─────────────────────────────────────────
 
@@ -29,16 +30,6 @@ vi.mock('./utils/safeStorage', () => ({
 
 vi.mock('./utils/authFetch', () => ({
   authFetch: (...args: any[]) => mockAuthFetch(...args),
-}));
-
-// Mock logger
-vi.mock('./utils/logger', () => ({
-  createLogger: () => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-  }),
 }));
 
 // Mock ThemeProvider
@@ -126,10 +117,6 @@ vi.mock('./pages/auth/PendingApprovalPage', () => ({
 
 vi.mock('./pages/auth/UAEPassSuccessPage', () => ({
   default: () => <div data-testid="uaepass-page">UAE Pass</div>,
-}));
-
-vi.mock('./pages/UnifiedDashboardPage', () => ({
-  default: () => <div data-testid="dashboard-page">Dashboard</div>,
 }));
 
 vi.mock('./pages/buyer/MortgageCalculatorPage', () => ({
@@ -475,7 +462,8 @@ describe('App', () => {
       renderAtRoute('/signin');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('profile-page')).toBeInTheDocument();
+      expect(screen.getByTestId('modern-dashboard-page')).toBeInTheDocument();
+      expect(window.location.pathname).toBe('/dashboard/profile');
     });
   });
 
@@ -485,7 +473,8 @@ describe('App', () => {
       renderAtRoute('/signup');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('profile-page')).toBeInTheDocument();
+      expect(screen.getByTestId('modern-dashboard-page')).toBeInTheDocument();
+      expect(window.location.pathname).toBe('/dashboard/profile');
     });
   });
 
@@ -518,13 +507,14 @@ describe('App', () => {
     });
   });
 
-  it('renders ProfilePage at /profile when logged in', async () => {
+  it('routes authenticated /profile access into the dashboard profile workspace', async () => {
     mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
     await act(async () => {
       renderAtRoute('/profile');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('profile-page')).toBeInTheDocument();
+      expect(screen.getByTestId('modern-dashboard-page')).toBeInTheDocument();
+      expect(window.location.pathname).toBe('/dashboard/profile');
     });
   });
 
@@ -563,7 +553,7 @@ describe('App', () => {
 
   it('removes token if auth check fails', async () => {
     mockSafeStorage.get.mockReturnValue('bad-token');
-    mockAuthFetch.mockResolvedValue({ ok: false });
+    mockAuthFetch.mockResolvedValue({ ok: false, status: 401 });
     await act(async () => {
       renderAtRoute('/');
     });
@@ -581,7 +571,7 @@ describe('App', () => {
       renderAtRoute('/lion/dashboard');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('crm-hub-page')).toBeInTheDocument();
+      expect(screen.getByTestId('modern-dashboard-page')).toBeInTheDocument();
     });
   });
 
@@ -592,7 +582,7 @@ describe('App', () => {
       renderAtRoute('/modern-dashboard');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('crm-hub-page')).toBeInTheDocument();
+      expect(screen.getByTestId('modern-dashboard-page')).toBeInTheDocument();
     });
   });
 
@@ -603,7 +593,7 @@ describe('App', () => {
       renderAtRoute('/crm');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('crm-hub-page')).toBeInTheDocument();
+      expect(screen.getByTestId('modern-dashboard-page')).toBeInTheDocument();
     });
   });
 
@@ -628,16 +618,16 @@ describe('App', () => {
     });
     // ProtectedRoute uses server role as fallback, so dashboard renders
     await waitFor(() => {
-      expect(screen.getByTestId('crm-hub-page')).toBeInTheDocument();
+      expect(screen.getByTestId('modern-dashboard-page')).toBeInTheDocument();
     });
   });
 
-  it('redirects landlord from /dashboard to /landlord-portal', async () => {
+  it('redirects landlord from the CRM entry to /landlord-portal', async () => {
     mockReduxState.currentUser = { id: '1', role: 'landlord', email: 'landlord@test.com' };
     mockSafeStorage.getJSON.mockReturnValue(null);
 
     await act(async () => {
-      renderAtRoute('/dashboard');
+      renderAtRoute('/dashboard2');
     });
 
     await waitFor(() => {
@@ -645,12 +635,12 @@ describe('App', () => {
     });
   });
 
-  it('redirects tenant from /dashboard to /tenant-portal using server role as source of truth', async () => {
+  it('redirects tenant from the CRM entry using server role as source of truth', async () => {
     mockReduxState.currentUser = { id: '1', role: 'tenant', email: 'tenant@test.com' };
     mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true } as any);
 
     await act(async () => {
-      renderAtRoute('/dashboard');
+      renderAtRoute('/dashboard2');
     });
 
     await waitFor(() => {

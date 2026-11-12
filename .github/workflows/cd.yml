@@ -1,253 +1,77 @@
-name: Continuous Deployment
+name: Deployment Verification
 
 on:
-  workflow_run:
-    workflows: ["Continuous Integration"]
-    branches: [main]
-    types: [completed]
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Existing deployment to verify (this workflow does not deploy)
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
 
 permissions:
-  contents: write
-
-env:
-  DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+  contents: read
 
 concurrency:
-  group: cd-${{ github.event.workflow_run.head_sha || github.sha }}
+  group: verify-${{ github.event.deployment.id || inputs.environment }}
   cancel-in-progress: true
 
 jobs:
-  deploy-staging:
+  verify:
+    if: github.event_name == 'workflow_dispatch' || github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
-    timeout-minutes: 45
-    
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+          ref: ${{ github.event.deployment.sha || github.sha }}
+      - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build application
-        run: npm run build
-      
-      - name: Run tests before deploy
-        run: npm run test:forks
-      
-      - name: Build Docker image
-        run: docker build -f Dockerfile.prod -t white-caves:staging-${{ env.DEPLOY_SHA }} .
-      
-      - name: Deploy to staging
+          cache: npm
+      - run: npm ci
+      - name: Resolve deployment under verification
         env:
-          DEPLOY_KEY: ${{ secrets.STAGING_DEPLOY_KEY }}
-          DEPLOY_HOST: ${{ secrets.STAGING_DEPLOY_HOST }}
-          DEPLOY_USER: ${{ secrets.STAGING_DEPLOY_USER }}
-          DEPLOY_COMMAND: ${{ secrets.STAGING_DEPLOY_COMMAND }}
-        run: |
-          if [ -z "$DEPLOY_KEY" ] || [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ]; then
-            echo "⚠️ STAGING_DEPLOY credentials not configured in repository secrets. Skipping remote SSH step."
-            exit 0
-          fi
-          mkdir -p ~/.ssh
-          echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
-          if [ -n "$DEPLOY_COMMAND" ]; then
-            ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "$DEPLOY_COMMAND"
-          else
-            echo "ℹ️ No custom STAGING_DEPLOY_COMMAND specified."
-          fi
-
-      - name: Verify staging runtime endpoints
-        env:
-          RUNTIME_URL: ${{ secrets.STAGING_URL }}
-        run: |
-          if [ -z "$RUNTIME_URL" ]; then
-            echo "ℹ️ STAGING_URL secret not configured. Skipping runtime endpoint verification."
-            exit 0
-          fi
-          npm run verify:runtime -- --url="$RUNTIME_URL" --timeout=15000 --retries=6 --retry-delay=5000
-      
-      - name: Notify deployment
-        if: always()
-        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
-        continue-on-error: true
-        with:
-          status: ${{ job.status }}
-          text: 'Staging deployment: ${{ job.status }}'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-
-  smoke-tests:
-    runs-on: ubuntu-24.04
-    needs: deploy-staging
-    if: success()
-    timeout-minutes: 35
-    
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Install Playwright
-        run: npx playwright install --with-deps
-      
-      - name: Run smoke tests
-        run: |
-          if [ -z "$TEST_BASE_URL" ]; then
-            echo "ℹ️ STAGING_URL not set; running local smoke tests."
-          fi
-          npm run test:e2e:smoke
-        env:
-          TEST_BASE_URL: ${{ secrets.STAGING_URL }}
-      
-      - name: Upload smoke test report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: smoke-tests-report
-          path: playwright-report/
-          retention-days: 7
-
-  deploy-production:
-    runs-on: ubuntu-latest
-    needs: smoke-tests
-    if: success()
-    timeout-minutes: 50
-    
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build application
-        run: npm run build
-      
-      - name: Run final tests
-        run: npm run test:forks
-      
-      - name: Build production Docker image
-        run: docker build -f Dockerfile.prod -t white-caves:latest -t white-caves:${{ env.DEPLOY_SHA }} .
-      
-      - name: Deploy to production
-        env:
-          DEPLOY_KEY: ${{ secrets.PROD_DEPLOY_KEY }}
-          DEPLOY_HOST: ${{ secrets.PROD_DEPLOY_HOST }}
-          DEPLOY_USER: ${{ secrets.PROD_DEPLOY_USER }}
-          DEPLOY_COMMAND: ${{ secrets.PROD_DEPLOY_COMMAND }}
-        run: |
-          if [ -z "$DEPLOY_KEY" ] || [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ]; then
-            echo "⚠️ PROD_DEPLOY credentials not configured in repository secrets. Skipping remote SSH step."
-            exit 0
-          fi
-          mkdir -p ~/.ssh
-          echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
-          if [ -n "$DEPLOY_COMMAND" ]; then
-            ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "$DEPLOY_COMMAND"
-          else
-            echo "ℹ️ No custom PROD_DEPLOY_COMMAND specified."
-          fi
-
-      - name: Verify production runtime endpoints
-        env:
-          RUNTIME_URL: ${{ secrets.PROD_URL }}
-        run: |
-          if [ -z "$RUNTIME_URL" ]; then
-            echo "ℹ️ PROD_URL secret not configured. Skipping runtime endpoint verification."
-            exit 0
-          fi
-          npm run verify:runtime -- --url="$RUNTIME_URL" --timeout=15000 --retries=6 --retry-delay=5000
-      
-      - name: Create release
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}-${{ github.run_attempt }}
-          name: Release v${{ github.run_number }}
-          body: |
-            Automated production deployment
-            Commit: ${{ env.DEPLOY_SHA }}
-            Branch: ${{ github.ref }}
-          draft: false
-          prerelease: false
-      
-      - name: Notify success
-        if: success()
-        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
-        continue-on-error: true
-        with:
-          status: success
-          text: |
-            ✅ *Production Deployment Successful*
-            Version: v${{ github.run_number }}
-            Commit: ${{ env.DEPLOY_SHA }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-      
-      - name: Notify failure
-        if: failure()
-        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
-        continue-on-error: true
-        with:
-          status: failure
-          text: |
-            ❌ *Production Deployment Failed*
-            Commit: ${{ env.DEPLOY_SHA }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-
-  monitoring:
-    runs-on: ubuntu-latest
-    needs: deploy-production
-    if: success()
-    timeout-minutes: 20
-    
-    steps:
-      - name: Check production health
-        env:
+          EVENT_URL: ${{ github.event.deployment_status.environment_url }}
+          STAGING_URL: ${{ secrets.STAGING_URL }}
           PROD_URL: ${{ secrets.PROD_URL }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
-          if [ -z "$PROD_URL" ]; then
-            echo "ℹ️ PROD_URL not configured. Skipping remote health curl check."
-            exit 0
-          fi
-          echo "Checking production health at $PROD_URL/api/health..."
-          curl -f "$PROD_URL/api/health" || exit 1
-      
-      - name: Notify monitoring
-        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
-        continue-on-error: true
+          node --input-type=module <<'JS'
+          import { appendFileSync } from 'node:fs';
+          const configured = [process.env.STAGING_URL, process.env.PROD_URL].filter(Boolean);
+          const raw = process.env.EVENT_URL || (
+            process.env.ENVIRONMENT === 'production' ? process.env.PROD_URL : process.env.STAGING_URL
+          );
+          if (!raw) throw new Error('Configure STAGING_URL or PROD_URL before verification');
+          const url = new URL(raw);
+          if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash)
+            throw new Error('Deployment URL must be an HTTPS URL without credentials or query');
+          const approved = new Set(['https://whitecaves.com', 'https://www.whitecaves.com',
+            'https://white-caves.vercel.app', ...configured.map(value => new URL(value).origin)]);
+          if (!approved.has(url.origin)) throw new Error('Deployment origin is not approved');
+          appendFileSync(process.env.GITHUB_ENV, `TEST_BASE_URL=${url.origin}\n`);
+          JS
+      - name: Verify runtime endpoints
+        run: npm run verify:runtime -- --url="$TEST_BASE_URL" --timeout=15000 --retries=6 --retry-delay=5000
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify deployed smoke journeys
+        run: npm run test:e2e:smoke -- --project=chromium
+      - name: Upload smoke report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          status: ${{ job.status }}
-          text: 'Production monitoring: ${{ job.status }}'
+          name: deployment-verification-report
+          path: playwright-report/
+          if-no-files-found: ignore
+      - name: Record verification result
+        if: always()
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          RESULT: ${{ job.status }}
+        run: |
+          echo "Deployment verification: $RESULT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Hosting is managed by the Vercel Git integration; no deployment or release was created by this workflow." >> "$GITHUB_STEP_SUMMARY"

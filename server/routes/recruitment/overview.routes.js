@@ -21,8 +21,8 @@ router.get('/overview', requireRecruitmentAccess('read'), async (req, res) => {
         include: { _count: { select: { applications: true } } },
       }),
       ctx.prisma.application.findMany({ orderBy: { applied_at: 'desc' } }),
-      ctx.prisma.candidateScore.findMany({ orderBy: { scored_at: 'desc' } }),
-      ctx.prisma.recruitmentMetric.findMany({ orderBy: { metric_date: 'desc' }, take: 12 }),
+      ctx.prisma.candidateScore.findMany({ orderBy: { created_at: 'desc' } }),
+      ctx.prisma.recruitmentMetric.findMany({ orderBy: { metric_date: 'asc' }, take: 12 }),
     ]);
 
     const overview = buildRecruitmentOverview(jobs, applications, scores);
@@ -45,7 +45,7 @@ router.get('/overview', requireRecruitmentAccess('read'), async (req, res) => {
 router.get('/overview/export', requireRecruitmentAccess('read'), async (req, res) => {
   try {
     const recruitmentMetrics = await ctx.prisma.recruitmentMetric.findMany({
-      orderBy: { metric_date: 'desc' },
+      orderBy: { metric_date: 'asc' },
       take: 12,
     });
 

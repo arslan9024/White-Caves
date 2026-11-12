@@ -13,7 +13,11 @@ const skillsRoot = path.join(rootDir, '.agents', 'skills');
 const aegisEngRoot = path.join(rootDir, '.agents', 'aegis-engineering');
 
 function slugify(name) {
-  return name.replace(/^@/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  return name
+    .replace(/^@/, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 }
 
 // ── Department Slug Map ──
@@ -29,7 +33,7 @@ const deptSlugMap = {
   9: 'dept-09-typography-layout-assets',
   10: 'dept-10-localization-i18n-rtl',
   11: 'dept-11-machine-vision-ocr',
-  12: 'dept-12-sqa-e2e-testing'
+  12: 'dept-12-sqa-e2e-testing',
 };
 
 // ── Department Skill Slugs ──
@@ -45,7 +49,7 @@ const deptSkillSlug = {
   9: 'aegis-dept-09-design-assets',
   10: 'aegis-dept-10-i18n-rtl',
   11: 'aegis-dept-11-vision-ocr',
-  12: 'aegis-dept-12-sqa-testing'
+  12: 'aegis-dept-12-sqa-testing',
 };
 
 // ── Department Capabilities ──
@@ -58,7 +62,7 @@ const deptCapabilities = {
     'orchestration:context-memory-optimization',
     'orchestration:agent-output-verification',
     'orchestration:compilation-flow-control',
-    'orchestration:human-escalation-hooks'
+    'orchestration:human-escalation-hooks',
   ],
   2: [
     'frontend:atomic-component-architecture',
@@ -68,7 +72,7 @@ const deptCapabilities = {
     'frontend:css-grid-flexbox-layout',
     'frontend:dark-mode-theming',
     'frontend:aria-accessibility-audit',
-    'frontend:performance-render-profiling'
+    'frontend:performance-render-profiling',
   ],
   3: [
     'mobile:cross-platform-build-config',
@@ -78,7 +82,7 @@ const deptCapabilities = {
     'mobile:sensor-protocol-binding',
     'mobile:battery-consumption-profiling',
     'mobile:gpu-rendering-optimization',
-    'mobile:thread-isolation-management'
+    'mobile:thread-isolation-management',
   ],
   4: [
     'backend:express-route-architecture',
@@ -88,7 +92,7 @@ const deptCapabilities = {
     'backend:pricing-calculation-engine',
     'backend:async-queue-management',
     'backend:microservice-networking',
-    'backend:memory-leak-detection'
+    'backend:memory-leak-detection',
   ],
   5: [
     'database:prisma-schema-design',
@@ -98,7 +102,7 @@ const deptCapabilities = {
     'database:nosql-document-stores',
     'database:spatial-entity-mapping',
     'database:concurrency-control',
-    'database:migration-management'
+    'database:migration-management',
   ],
   6: [
     'api:gateway-routing-design',
@@ -108,7 +112,7 @@ const deptCapabilities = {
     'api:container-orchestration',
     'api:webhook-lifecycle-management',
     'api:cross-service-alignment',
-    'api:websocket-stream-processing'
+    'api:websocket-stream-processing',
   ],
   7: [
     'security:defense-protocol-architecture',
@@ -118,7 +122,7 @@ const deptCapabilities = {
     'security:dependency-vulnerability-scan',
     'security:cryptographic-auth-proofs',
     'security:intrusion-detection-systems',
-    'security:process-boundary-defense'
+    'security:process-boundary-defense',
   ],
   8: [
     'devops:ci-cd-pipeline-engineering',
@@ -128,7 +132,7 @@ const deptCapabilities = {
     'devops:secret-disclosure-prevention',
     'devops:network-topology-optimization',
     'devops:static-code-style-enforcement',
-    'devops:zero-downtime-rollback'
+    'devops:zero-downtime-rollback',
   ],
   9: [
     'design:brand-token-architecture',
@@ -138,7 +142,7 @@ const deptCapabilities = {
     'design:high-contrast-palette-design',
     'design:pixel-primitive-engineering',
     'design:responsive-dimension-modeling',
-    'design:font-rendering-optimization'
+    'design:font-rendering-optimization',
   ],
   10: [
     'i18n:translation-framework-architecture',
@@ -148,7 +152,7 @@ const deptCapabilities = {
     'i18n:geographic-endpoint-routing',
     'i18n:hardcoded-string-extraction',
     'i18n:data-policy-compliance',
-    'i18n:text-expansion-guard'
+    'i18n:text-expansion-guard',
   ],
   11: [
     'vision:ocr-tesseract-integration',
@@ -158,7 +162,7 @@ const deptCapabilities = {
     'vision:object-identification-matrix',
     'vision:byte-mapping-optimization',
     'vision:bounding-box-coordinate-calc',
-    'vision:nlp-field-compilation'
+    'vision:nlp-field-compilation',
   ],
   12: [
     'testing:quality-gate-architecture',
@@ -168,15 +172,20 @@ const deptCapabilities = {
     'testing:api-contract-validation',
     'testing:visual-regression-detection',
     'testing:async-crash-profiling',
-    'testing:fuzz-injection-pipelines'
-  ]
+    'testing:fuzz-injection-pipelines',
+  ],
 };
 
 // ── Department Coding Instructions ──
 const deptCodingInstructions = {
   1: {
     techStack: 'Antigravity IDE, VS Code, Node.js, TypeScript',
-    keyFiles: ['.agents/aegis.agent.json', '.agents/aegis-engineering/', 'scripts/orchestrator/', 'AGENTS.md'],
+    keyFiles: [
+      '.agents/aegis.agent.json',
+      '.agents/aegis-engineering/',
+      'scripts/orchestrator/',
+      'AGENTS.md',
+    ],
     rules: [
       'All agent orchestration configs MUST live under .agents/ directory',
       'Prompt context boundaries must be enforced — never exceed 15,000 tokens per task',
@@ -184,14 +193,14 @@ const deptCodingInstructions = {
       'Race conditions between parallel agents must be prevented via file-level locking',
       'Human escalation hooks must be triggered for any P0/P1 compilation failure',
       'Token preservation: batch related child slices into single parent prompts',
-      'Context memory arrays must be structured for O(1) lookup by file path'
+      'Context memory arrays must be structured for O(1) lookup by file path',
     ],
     procedures: [
       { name: 'Agent Output Verification', cmd: 'npx tsc --noEmit --skipLibCheck' },
       { name: 'Orchestrator Health Check', cmd: 'npm run aegis:health' },
       { name: 'Context Validation', cmd: 'npm run aegis:context:validate' },
-      { name: 'Plans Validation', cmd: 'npm run plans:validate' }
-    ]
+      { name: 'Plans Validation', cmd: 'npm run plans:validate' },
+    ],
   },
   2: {
     techStack: 'React 18+, TypeScript, Tailwind CSS, Framer Motion, Radix UI',
@@ -204,18 +213,23 @@ const deptCodingInstructions = {
       'ARIA attributes required on every interactive element (buttons, links, modals)',
       'Component files MUST NOT exceed 350 lines — split into sub-components',
       'Tailwind classes only — no inline styles or external CSS files',
-      'Every component must be responsive: mobile-first with sm/md/lg/xl breakpoints'
+      'Every component must be responsive: mobile-first with sm/md/lg/xl breakpoints',
     ],
     procedures: [
       { name: 'Component Render Test', cmd: 'npx vitest run src/components/' },
       { name: 'Accessibility Audit', cmd: 'npx axe-core --tags wcag2a,wcag2aa' },
       { name: 'TypeScript Check', cmd: 'npx tsc --noEmit --skipLibCheck' },
-      { name: 'Storybook Build', cmd: 'npm run storybook:build' }
-    ]
+      { name: 'Storybook Build', cmd: 'npm run storybook:build' },
+    ],
   },
   3: {
     techStack: 'React Native / PWA, TypeScript, Capacitor, Expo',
-    keyFiles: ['src/components/', 'src/hooks/', 'src/utils/registerServiceWorker.ts', 'src/utils/offlineCRDT.ts'],
+    keyFiles: [
+      'src/components/',
+      'src/hooks/',
+      'src/utils/registerServiceWorker.ts',
+      'src/utils/offlineCRDT.ts',
+    ],
     rules: [
       'PWA service worker must be registered via registerServiceWorker.ts',
       'Offline-first: all critical data must be cached in IndexedDB via offlineCRDT.ts',
@@ -224,17 +238,26 @@ const deptCodingInstructions = {
       'GPS/camera access must request permissions gracefully with fallback UI',
       'Battery-conscious: reduce background sync intervals on low battery',
       'GPU-accelerated animations only — use transform/opacity, never top/left',
-      'Main thread must never be blocked — use Web Workers for heavy computation'
+      'Main thread must never be blocked — use Web Workers for heavy computation',
     ],
     procedures: [
       { name: 'PWA Lighthouse Audit', cmd: 'npx lighthouse --preset=desktop --output=json' },
-      { name: 'Service Worker Test', cmd: 'npx vitest run src/utils/registerServiceWorker.test.ts' },
-      { name: 'Mobile Viewport Test', cmd: 'npx playwright test --project=mobile-chrome' }
-    ]
+      {
+        name: 'Service Worker Test',
+        cmd: 'npx vitest run src/utils/registerServiceWorker.test.ts',
+      },
+      { name: 'Mobile Viewport Test', cmd: 'npx playwright test --project=mobile-chrome' },
+    ],
   },
   4: {
-    techStack: 'Node.js 20+, Express.js, TypeScript, Prisma, MongoDB',
-    keyFiles: ['server/', 'server/routes/', 'server/controllers/', 'server/middleware/', 'server/services/'],
+    techStack: 'Node.js 22.19+, Express.js, TypeScript, Prisma, MongoDB',
+    keyFiles: [
+      'server/',
+      'server/routes/',
+      'server/controllers/',
+      'server/middleware/',
+      'server/services/',
+    ],
     rules: [
       'All routes must use Express Router with typed request/response handlers',
       'Business logic MUST live in services/ — controllers are thin wrappers only',
@@ -243,17 +266,22 @@ const deptCodingInstructions = {
       'Error handling: use centralized HttpError class (src/utils/HttpError.ts)',
       'Rate limiting: all public endpoints must have express-rate-limit configured',
       'Response compression: enable gzip for all JSON responses > 1KB',
-      'Logging: structured JSON logs via src/utils/logger.ts — no console.log in production'
+      'Logging: structured JSON logs via src/utils/logger.ts — no console.log in production',
     ],
     procedures: [
       { name: 'API Integration Tests', cmd: 'npx vitest run server/' },
       { name: 'TypeScript Backend Check', cmd: 'npx tsc --noEmit --project server/tsconfig.json' },
-      { name: 'Route Security Scan', cmd: 'npm run security:scan' }
-    ]
+      { name: 'Route Security Scan', cmd: 'npm run security:scan' },
+    ],
   },
   5: {
     techStack: 'Prisma ORM, MongoDB, TypeScript, Redis',
-    keyFiles: ['prisma/schema.prisma', 'prisma/seed.ts', 'server/services/', 'src/utils/cacheUtils.js'],
+    keyFiles: [
+      'prisma/schema.prisma',
+      'prisma/seed.ts',
+      'server/services/',
+      'src/utils/cacheUtils.js',
+    ],
     rules: [
       'All schema changes must go through Prisma migrations — never modify DB directly',
       'Query performance: all lookups must use indexed fields — target sub-10ms execution',
@@ -262,18 +290,23 @@ const deptCodingInstructions = {
       'Transaction isolation: use Prisma.$transaction() for multi-document writes',
       'Data privacy: PII fields must be encrypted at rest and masked in logs',
       'Cache strategy: use Redis for frequently accessed data with 5-minute TTL',
-      'Seed data must be idempotent — re-runnable without duplicating records'
+      'Seed data must be idempotent — re-runnable without duplicating records',
     ],
     procedures: [
       { name: 'Prisma Generate', cmd: 'npx prisma generate' },
       { name: 'Prisma DB Push', cmd: 'npx prisma db push' },
       { name: 'Schema Validation', cmd: 'npx prisma validate' },
-      { name: 'Seed Database', cmd: 'npx prisma db seed' }
-    ]
+      { name: 'Seed Database', cmd: 'npx prisma db seed' },
+    ],
   },
   6: {
     techStack: 'Express.js, REST, WebSocket (socket.io), TypeScript, Zod',
-    keyFiles: ['server/routes/', 'server/middleware/', 'server/services/', 'src/utils/apiClient.ts'],
+    keyFiles: [
+      'server/routes/',
+      'server/middleware/',
+      'server/services/',
+      'src/utils/apiClient.ts',
+    ],
     rules: [
       'API versioning: all public endpoints must be under /api/v1/ prefix',
       'Request/response contracts must be defined with Zod schemas',
@@ -282,17 +315,23 @@ const deptCodingInstructions = {
       'WebSocket: rooms must be scoped per-tenant — no cross-tenant data leaks',
       'Rate limiting: tier-based — 100/min for standard, 1000/min for premium',
       'CORS: whitelist only known origins — never use wildcard in production',
-      'Payload compression: responses > 1KB must use gzip encoding'
+      'Payload compression: responses > 1KB must use gzip encoding',
     ],
     procedures: [
       { name: 'API Contract Tests', cmd: 'npx vitest run server/routes/' },
       { name: 'WebSocket Load Test', cmd: 'npm run test:ws:load' },
-      { name: 'OpenAPI Spec Validation', cmd: 'npx swagger-cli validate openapi.yaml' }
-    ]
+      { name: 'OpenAPI Spec Validation', cmd: 'npx swagger-cli validate openapi.yaml' },
+    ],
   },
   7: {
     techStack: 'TypeScript, bcrypt, jsonwebtoken, helmet, csurf, express-rate-limit',
-    keyFiles: ['server/middleware/auth.ts', 'src/utils/permissions.ts', 'src/utils/safeRedirect.ts', 'src/utils/piiMasker.ts', 'src/utils/loadSecrets.ts'],
+    keyFiles: [
+      'server/middleware/auth.ts',
+      'src/utils/permissions.ts',
+      'src/utils/safeRedirect.ts',
+      'src/utils/piiMasker.ts',
+      'src/utils/loadSecrets.ts',
+    ],
     rules: [
       'All authentication must use JWT with RS256 signing — never HS256 in production',
       'RBAC enforcement: every route must check permissions via src/utils/permissions.ts',
@@ -302,14 +341,14 @@ const deptCodingInstructions = {
       'Password hashing: bcrypt with minimum 12 salt rounds',
       'PII masking: all logs must run through src/utils/piiMasker.ts before output',
       'Dependency scanning: npm audit must pass with 0 high/critical vulnerabilities',
-      'Safe redirects: all redirect URLs must pass src/utils/safeRedirect.ts validation'
+      'Safe redirects: all redirect URLs must pass src/utils/safeRedirect.ts validation',
     ],
     procedures: [
       { name: 'Security Audit', cmd: 'npm audit --production' },
       { name: 'Permission Tests', cmd: 'npx vitest run src/utils/permissions.test.ts' },
       { name: 'PII Masker Tests', cmd: 'npx vitest run src/utils/piiMasker.test.ts' },
-      { name: 'Safe Redirect Tests', cmd: 'npx vitest run src/utils/safeRedirect.test.ts' }
-    ]
+      { name: 'Safe Redirect Tests', cmd: 'npx vitest run src/utils/safeRedirect.test.ts' },
+    ],
   },
   8: {
     techStack: 'Git, GitHub Actions, Docker, Vercel, TypeScript, Husky, lint-staged',
@@ -322,15 +361,18 @@ const deptCodingInstructions = {
       'Zero dangling branches: delete feature branches after merge',
       'Docker: multi-stage builds — dev dependencies excluded from production image',
       'Rollback: automated revert if post-deploy health check fails within 5 minutes',
-      'Secrets: GitHub Secrets for all tokens — never hardcode in CI configs'
+      'Secrets: GitHub Secrets for all tokens — never hardcode in CI configs',
     ],
     procedures: [
       { name: 'TypeScript Pre-flight', cmd: 'npx tsc --noEmit --skipLibCheck' },
       { name: 'Full Test Suite', cmd: 'npx vitest run' },
       { name: 'Lint Check', cmd: 'npx eslint --max-warnings 0 .' },
       { name: 'PR Unblock', cmd: 'node scripts/orchestrator/aegis-unblock-pr.js <pr_number>' },
-      { name: 'Branch Cleanup', cmd: 'git remote prune origin && git branch --merged main | grep -v main | xargs git branch -d' }
-    ]
+      {
+        name: 'Branch Cleanup',
+        cmd: 'git remote prune origin && git branch --merged main | grep -v main | xargs git branch -d',
+      },
+    ],
   },
   9: {
     techStack: 'Figma, CSS Custom Properties, Tailwind CSS, SVG, WebP, WOFF2',
@@ -343,13 +385,13 @@ const deptCodingInstructions = {
       'Fonts: WOFF2 with font-display:swap — no layout shift on load',
       'Typography scale: fluid clamp() values — min 14px, preferred 1rem, max 18px',
       'Dark mode: all components must render correctly in both light and dark themes',
-      'Floating elements: position must be calculated relative to viewport center'
+      'Floating elements: position must be calculated relative to viewport center',
     ],
     procedures: [
       { name: 'Image Optimization', cmd: 'npx sharp-cli --webp --quality 80 public/assets/' },
       { name: 'CSS Variable Audit', cmd: 'grep -r "hardcoded hex" src/components/' },
-      { name: 'Font Subsetting', cmd: 'npx glyphhanger --whitelist=U+0000-00FF --subset=*.woff2' }
-    ]
+      { name: 'Font Subsetting', cmd: 'npx glyphhanger --whitelist=U+0000-00FF --subset=*.woff2' },
+    ],
   },
   10: {
     techStack: 'react-i18next, TypeScript, CSS Logical Properties, dir=rtl',
@@ -363,13 +405,16 @@ const deptCodingInstructions = {
       'dir attribute: must be set dynamically on <html> based on active language',
       'Date/number formatting: use Intl.DateTimeFormat and Intl.NumberFormat',
       'Form validation messages must be translated — not English-only error strings',
-      'Text expansion: Arabic/French strings can be 30% longer — test button overflow'
+      'Text expansion: Arabic/French strings can be 30% longer — test button overflow',
     ],
     procedures: [
-      { name: 'Missing Translation Scan', cmd: 'npx i18next-scanner --config i18next-scanner.config.js' },
+      {
+        name: 'Missing Translation Scan',
+        cmd: 'npx i18next-scanner --config i18next-scanner.config.js',
+      },
       { name: 'RTL Layout Test', cmd: 'npx playwright test --project=rtl-chrome' },
-      { name: 'Translation Key Audit', cmd: 'npm run i18n:audit' }
-    ]
+      { name: 'Translation Key Audit', cmd: 'npm run i18n:audit' },
+    ],
   },
   11: {
     techStack: 'Tesseract.js, Sharp, Multer, TypeScript, PDF-parse, Canvas API',
@@ -382,17 +427,26 @@ const deptCodingInstructions = {
       'Memory safety: stream large files — never buffer entire upload in memory',
       'Supported formats: JPEG, PNG, WebP, PDF, TIFF — reject all others',
       'Bounding box coordinates: use normalized 0-1 range for resolution independence',
-      'Error handling: corrupted files must return 422 with clear error message'
+      'Error handling: corrupted files must return 422 with clear error message',
     ],
     procedures: [
-      { name: 'Image Optimization Tests', cmd: 'npx vitest run src/utils/imageOptimization.test.ts' },
+      {
+        name: 'Image Optimization Tests',
+        cmd: 'npx vitest run src/utils/imageOptimization.test.ts',
+      },
       { name: 'Upload Stress Test', cmd: 'npm run test:upload:stress' },
-      { name: 'OCR Accuracy Test', cmd: 'npm run test:ocr:accuracy' }
-    ]
+      { name: 'OCR Accuracy Test', cmd: 'npm run test:ocr:accuracy' },
+    ],
   },
   12: {
     techStack: 'Vitest, Playwright, TypeScript, Testing Library, MSW (Mock Service Worker)',
-    keyFiles: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'e2e/', 'vitest.config.ts', 'playwright.config.ts'],
+    keyFiles: [
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
+      'e2e/',
+      'vitest.config.ts',
+      'playwright.config.ts',
+    ],
     rules: [
       'Test coverage: minimum 80% on all business-critical paths',
       'Unit tests: use Vitest + Testing Library for component/util tests',
@@ -402,16 +456,16 @@ const deptCodingInstructions = {
       'Visual regression: screenshot comparison for critical UI components',
       'Pre-merge gate: all tests must pass before PR merge is allowed',
       'Fuzz testing: run input fuzzing on form fields and search endpoints quarterly',
-      'Test data: use deterministic fixtures — never Math.random() in test setup'
+      'Test data: use deterministic fixtures — never Math.random() in test setup',
     ],
     procedures: [
       { name: 'Full Test Suite', cmd: 'npx vitest run' },
       { name: 'E2E Tests', cmd: 'npx playwright test' },
       { name: 'Coverage Report', cmd: 'npx vitest run --coverage' },
       { name: 'Auth Flow Tests', cmd: 'npx vitest run src/pages/auth/' },
-      { name: 'Component Tests', cmd: 'npx vitest run src/components/' }
-    ]
-  }
+      { name: 'Component Tests', cmd: 'npx vitest run src/components/' },
+    ],
+  },
 };
 
 // ──────────────────────────────────────────────────
@@ -427,7 +481,7 @@ for (const dept of matrix.departments) {
   const instructions = deptCodingInstructions[deptId];
   const skillSlug = deptSkillSlug[deptId];
 
-  dept.team.forEach(function(member, index) {
+  dept.team.forEach(function (member, index) {
     const nodeNum = index + 1;
     const agentSlug = slugify(member.agent);
     const isDirector = nodeNum === 1;
@@ -450,18 +504,20 @@ for (const dept of matrix.departments) {
         nodeNumber: nodeNum,
         reportingTo: isDirector
           ? 'AEGIS Level 0 Orchestrator → Arslan Malik (Level 5 Sovereign)'
-          : dept.team[0].agent + ' (Department Director)'
+          : dept.team[0].agent + ' (Department Director)',
       },
       contextVariables: {
         systemRole: member.responsibility,
-        approvalAuthority: isDirector ? 'SOVEREIGN_DEPARTMENT_AUTHORITY' : 'NODE_EXECUTION_AUTHORITY',
+        approvalAuthority: isDirector
+          ? 'SOVEREIGN_DEPARTMENT_AUTHORITY'
+          : 'NODE_EXECUTION_AUTHORITY',
         techStack: instructions.techStack,
         maxFileLines: 350,
         singlePurposeFileLaw: true,
         typeScriptStrict: true,
         zeroBacklogLaw: true,
         continuousDeduplication: true,
-        tokenCeiling: 15000
+        tokenCeiling: 15000,
       },
       capabilities: [caps[index] || caps[0]].concat(
         isDirector ? ['department:team-coordination', 'department:quality-gate-authority'] : []
@@ -469,12 +525,12 @@ for (const dept of matrix.departments) {
       codingInstructions: {
         keyFiles: instructions.keyFiles,
         rules: instructions.rules,
-        primaryProcedures: instructions.procedures.map(function(p) {
+        primaryProcedures: instructions.procedures.map(function (p) {
           return { name: p.name, command: p.cmd };
-        })
+        }),
       },
       attachedSkill: '.agents/skills/' + skillSlug,
-      tools: ['read_file', 'edit_file', 'write_file', 'run_command', 'search_web']
+      tools: ['read_file', 'edit_file', 'write_file', 'run_command', 'search_web'],
     };
 
     const nodeFile = 'node-' + String(nodeNum).padStart(2, '0') + '-' + agentSlug + '.agent.json';
@@ -500,7 +556,7 @@ for (const dept of matrix.departments) {
       departmentId: deptId,
       departmentSlug: deptSlug,
       nodeNumber: 1,
-      reportingTo: 'AEGIS Level 0 Orchestrator → Arslan Malik (Level 5 Sovereign)'
+      reportingTo: 'AEGIS Level 0 Orchestrator → Arslan Malik (Level 5 Sovereign)',
     },
     contextVariables: {
       systemRole: dirNode.responsibility,
@@ -509,32 +565,36 @@ for (const dept of matrix.departments) {
       maxFileLines: 350,
       zeroBacklogLaw: true,
       continuousDeduplication: true,
-      tokenCeiling: 15000
+      tokenCeiling: 15000,
     },
     capabilities: caps.concat([
       'department:team-coordination',
       'department:quality-gate-authority',
-      'department:pr-review-authority'
+      'department:pr-review-authority',
     ]),
     codingInstructions: {
       keyFiles: instructions.keyFiles,
       rules: instructions.rules,
-      primaryProcedures: instructions.procedures.map(function(p) {
+      primaryProcedures: instructions.procedures.map(function (p) {
         return { name: p.name, command: p.cmd };
-      })
+      }),
     },
     attachedSkill: '.agents/skills/' + skillSlug,
-    subordinateNodes: dept.team.slice(1).map(function(m, i) {
+    subordinateNodes: dept.team.slice(1).map(function (m, i) {
       return {
         node: i + 2,
         agent: m.agent,
         role: m.role,
-        file: 'node-' + String(i + 2).padStart(2, '0') + '-' + slugify(m.agent) + '.agent.json'
+        file: 'node-' + String(i + 2).padStart(2, '0') + '-' + slugify(m.agent) + '.agent.json',
       };
     }),
-    tools: ['read_file', 'edit_file', 'write_file', 'run_command', 'search_web']
+    tools: ['read_file', 'edit_file', 'write_file', 'run_command', 'search_web'],
   };
-  fs.writeFileSync(path.join(deptDir, 'director.agent.json'), JSON.stringify(directorJson, null, 2), 'utf8');
+  fs.writeFileSync(
+    path.join(deptDir, 'director.agent.json'),
+    JSON.stringify(directorJson, null, 2),
+    'utf8'
+  );
 
   console.log('Dept ' + deptId + ': Enhanced ' + dept.team.length + ' agent configs + director');
 }
@@ -552,53 +612,96 @@ for (const dept of matrix.departments) {
   fs.mkdirSync(skillDir, { recursive: true });
 
   // Build node roster table
-  var rosterRows = dept.team.map(function(m, i) {
-    var label = i === 0 ? ' *(Director)*' : '';
-    return '| ' + (i + 1) + ' | `' + m.agent + '`' + label + ' | ' + m.role + ' | ' + m.responsibility + ' |';
-  }).join('\n');
+  var rosterRows = dept.team
+    .map(function (m, i) {
+      var label = i === 0 ? ' *(Director)*' : '';
+      return (
+        '| ' +
+        (i + 1) +
+        ' | `' +
+        m.agent +
+        '`' +
+        label +
+        ' | ' +
+        m.role +
+        ' | ' +
+        m.responsibility +
+        ' |'
+      );
+    })
+    .join('\n');
 
   // Build rules list
-  var rulesList = instructions.rules.map(function(r, i) {
-    return (i + 1) + '. ' + r;
-  }).join('\n');
+  var rulesList = instructions.rules
+    .map(function (r, i) {
+      return i + 1 + '. ' + r;
+    })
+    .join('\n');
 
   // Build procedures
-  var procBlocks = instructions.procedures.map(function(p) {
-    return '### ' + p.name + '\n```bash\n' + p.cmd + '\n```';
-  }).join('\n\n');
+  var procBlocks = instructions.procedures
+    .map(function (p) {
+      return '### ' + p.name + '\n```bash\n' + p.cmd + '\n```';
+    })
+    .join('\n\n');
 
-  var skillContent = '---\n'
-    + 'name: ' + skillSlug + '\n'
-    + 'description: "Coding standards, operational procedures, and engineering rules for AEGIS Department ' + deptId + ': ' + dept.name + '"\n'
-    + '---\n\n'
-    + '# Department ' + deptId + ': ' + dept.name + '\n\n'
-    + '> **Framework:** White Caves Engineering Matrix V2 (1-12-108 Software Core)  \n'
-    + '> **Protocol:** Bhakti 1-12-108  \n'
-    + '> **Director:** `' + dept.team[0].agent + '` — ' + dept.team[0].role + '  \n'
-    + '> **Tech Stack:** ' + instructions.techStack + '  \n\n'
-    + '---\n\n'
-    + '## 9-Node Engineering Roster\n\n'
-    + '| # | Agent | Role | Responsibility |\n'
-    + '| :--- | :--- | :--- | :--- |\n'
-    + rosterRows + '\n\n'
-    + '---\n\n'
-    + '## Key Codebase Files & Directories\n\n'
-    + instructions.keyFiles.map(function(f) { return '- `' + f + '`'; }).join('\n') + '\n\n'
-    + '---\n\n'
-    + '## Mandatory Coding Rules\n\n'
-    + rulesList + '\n\n'
-    + '---\n\n'
-    + '## Standard Operating Procedures\n\n'
-    + procBlocks + '\n\n'
-    + '---\n\n'
-    + '## Aegis V4.1 Governance (All Departments)\n\n'
-    + '1. **Single Purpose File Law:** Every source file must have a single responsibility and remain under 350 lines.\n'
-    + '2. **Canonical 5-Way File Standard:** View (`.view.tsx`), Logic (`.logic.ts`), Styles (`.styles.ts`), Data (`.data.ts`), Config (`.config.ts`).\n'
-    + '3. **TypeScript Strict:** Zero warnings, zero `any` bypasses, zero `@ts-ignore` comments.\n'
-    + '4. **Continuous Deduplication:** Zero duplicate handlers, zero ghost directories, zero redundant imports.\n'
-    + '5. **Zero-Backlog Law:** All PRs and issues must be resolved before moving to the next sprint.\n'
-    + '6. **Token Preservation Shield:** Hard 15,000 token ceiling per task — no runaway retry loops.\n'
-    + '7. **Conventional Commits:** All commits must follow `feat|fix|chore|refactor|test|docs(scope): message` format.\n';
+  var skillContent =
+    '---\n' +
+    'name: ' +
+    skillSlug +
+    '\n' +
+    'description: "Coding standards, operational procedures, and engineering rules for AEGIS Department ' +
+    deptId +
+    ': ' +
+    dept.name +
+    '"\n' +
+    '---\n\n' +
+    '# Department ' +
+    deptId +
+    ': ' +
+    dept.name +
+    '\n\n' +
+    '> **Framework:** White Caves Engineering Matrix V2 (1-12-108 Software Core)  \n' +
+    '> **Protocol:** Bhakti 1-12-108  \n' +
+    '> **Director:** `' +
+    dept.team[0].agent +
+    '` — ' +
+    dept.team[0].role +
+    '  \n' +
+    '> **Tech Stack:** ' +
+    instructions.techStack +
+    '  \n\n' +
+    '---\n\n' +
+    '## 9-Node Engineering Roster\n\n' +
+    '| # | Agent | Role | Responsibility |\n' +
+    '| :--- | :--- | :--- | :--- |\n' +
+    rosterRows +
+    '\n\n' +
+    '---\n\n' +
+    '## Key Codebase Files & Directories\n\n' +
+    instructions.keyFiles
+      .map(function (f) {
+        return '- `' + f + '`';
+      })
+      .join('\n') +
+    '\n\n' +
+    '---\n\n' +
+    '## Mandatory Coding Rules\n\n' +
+    rulesList +
+    '\n\n' +
+    '---\n\n' +
+    '## Standard Operating Procedures\n\n' +
+    procBlocks +
+    '\n\n' +
+    '---\n\n' +
+    '## Aegis V4.1 Governance (All Departments)\n\n' +
+    '1. **Single Purpose File Law:** Every source file must have a single responsibility and remain under 350 lines.\n' +
+    '2. **Canonical 5-Way File Standard:** View (`.view.tsx`), Logic (`.logic.ts`), Styles (`.styles.ts`), Data (`.data.ts`), Config (`.config.ts`).\n' +
+    '3. **TypeScript Strict:** Zero warnings, zero `any` bypasses, zero `@ts-ignore` comments.\n' +
+    '4. **Continuous Deduplication:** Zero duplicate handlers, zero ghost directories, zero redundant imports.\n' +
+    '5. **Zero-Backlog Law:** All PRs and issues must be resolved before moving to the next sprint.\n' +
+    '6. **Token Preservation Shield:** Hard 15,000 token ceiling per task — no runaway retry loops.\n' +
+    '7. **Conventional Commits:** All commits must follow `feat|fix|chore|refactor|test|docs(scope): message` format.\n';
 
   fs.writeFileSync(path.join(skillDir, 'SKILL.md'), skillContent, 'utf8');
   console.log('Generated: .agents/skills/' + skillSlug + '/SKILL.md');
@@ -616,47 +719,91 @@ for (const dept of matrix.departments) {
   const skillSlug = deptSkillSlug[deptId];
   const instructions = deptCodingInstructions[deptId];
 
-  var nodeRows2 = dept.team.map(function(m, i) {
-    var dirLabel = i === 0 ? ' *(Director)*' : '';
-    var nodeFile = 'node-' + String(i + 1).padStart(2, '0') + '-' + slugify(m.agent) + '.agent.json';
-    return '| ' + (i + 1) + ' | **' + m.agent + '**' + dirLabel + ' | ' + m.role + ' | ' + m.responsibility + ' | [`config`](./' + nodeFile + ') |';
-  }).join('\n');
+  var nodeRows2 = dept.team
+    .map(function (m, i) {
+      var dirLabel = i === 0 ? ' *(Director)*' : '';
+      var nodeFile =
+        'node-' + String(i + 1).padStart(2, '0') + '-' + slugify(m.agent) + '.agent.json';
+      return (
+        '| ' +
+        (i + 1) +
+        ' | **' +
+        m.agent +
+        '**' +
+        dirLabel +
+        ' | ' +
+        m.role +
+        ' | ' +
+        m.responsibility +
+        ' | [`config`](./' +
+        nodeFile +
+        ') |'
+      );
+    })
+    .join('\n');
 
-  var rulesList2 = instructions.rules.map(function(r, i) {
-    return (i + 1) + '. ' + r;
-  }).join('\n');
+  var rulesList2 = instructions.rules
+    .map(function (r, i) {
+      return i + 1 + '. ' + r;
+    })
+    .join('\n');
 
-  var procList = instructions.procedures.map(function(p) {
-    return '- **' + p.name + ':** `' + p.cmd + '`';
-  }).join('\n');
+  var procList = instructions.procedures
+    .map(function (p) {
+      return '- **' + p.name + ':** `' + p.cmd + '`';
+    })
+    .join('\n');
 
-  var readme = '# Department ' + deptId + ': ' + dept.name + '\n\n'
-    + '> **Framework:** White Caves Engineering Matrix V2 (1-12-108 Software Core)  \n'
-    + '> **Protocol:** Bhakti 1-12-108  \n'
-    + '> **Director:** `' + dept.team[0].agent + '` — ' + dept.team[0].role + '  \n'
-    + '> **Tech Stack:** ' + instructions.techStack + '  \n'
-    + '> **Skill Reference:** [`.agents/skills/' + skillSlug + '/SKILL.md`](../../skills/' + skillSlug + '/SKILL.md)  \n\n'
-    + '---\n\n'
-    + '## 9-Node Engineering Roster\n\n'
-    + '| # | Agent | Role | Responsibility | Config |\n'
-    + '| :--- | :--- | :--- | :--- | :--- |\n'
-    + nodeRows2 + '\n\n'
-    + '---\n\n'
-    + '## Key Codebase Ownership\n\n'
-    + instructions.keyFiles.map(function(f) { return '- `' + f + '`'; }).join('\n') + '\n\n'
-    + '---\n\n'
-    + '## Mandatory Coding Rules\n\n'
-    + rulesList2 + '\n\n'
-    + '---\n\n'
-    + '## Operational Procedures\n\n'
-    + procList + '\n\n'
-    + '---\n\n'
-    + '## Governance\n\n'
-    + '- Single Purpose File Law (< 350 lines)\n'
-    + '- TypeScript Strict (zero warnings)\n'
-    + '- Zero Backlog Law\n'
-    + '- Continuous Deduplication\n'
-    + '- Conventional Commits\n';
+  var readme =
+    '# Department ' +
+    deptId +
+    ': ' +
+    dept.name +
+    '\n\n' +
+    '> **Framework:** White Caves Engineering Matrix V2 (1-12-108 Software Core)  \n' +
+    '> **Protocol:** Bhakti 1-12-108  \n' +
+    '> **Director:** `' +
+    dept.team[0].agent +
+    '` — ' +
+    dept.team[0].role +
+    '  \n' +
+    '> **Tech Stack:** ' +
+    instructions.techStack +
+    '  \n' +
+    '> **Skill Reference:** [`.agents/skills/' +
+    skillSlug +
+    '/SKILL.md`](../../skills/' +
+    skillSlug +
+    '/SKILL.md)  \n\n' +
+    '---\n\n' +
+    '## 9-Node Engineering Roster\n\n' +
+    '| # | Agent | Role | Responsibility | Config |\n' +
+    '| :--- | :--- | :--- | :--- | :--- |\n' +
+    nodeRows2 +
+    '\n\n' +
+    '---\n\n' +
+    '## Key Codebase Ownership\n\n' +
+    instructions.keyFiles
+      .map(function (f) {
+        return '- `' + f + '`';
+      })
+      .join('\n') +
+    '\n\n' +
+    '---\n\n' +
+    '## Mandatory Coding Rules\n\n' +
+    rulesList2 +
+    '\n\n' +
+    '---\n\n' +
+    '## Operational Procedures\n\n' +
+    procList +
+    '\n\n' +
+    '---\n\n' +
+    '## Governance\n\n' +
+    '- Single Purpose File Law (< 350 lines)\n' +
+    '- TypeScript Strict (zero warnings)\n' +
+    '- Zero Backlog Law\n' +
+    '- Continuous Deduplication\n' +
+    '- Conventional Commits\n';
 
   fs.writeFileSync(path.join(deptDir, 'README.md'), readme, 'utf8');
 }
@@ -666,4 +813,3 @@ console.log('\n=== ALL 108 AGENTS + 12 DEPARTMENT SKILLS GENERATED ===');
 console.log('Total agent configs: 108 enhanced .agent.json files');
 console.log('Total director configs: 12 director.agent.json files');
 console.log('Total department skills: 12 SKILL.md files');
-

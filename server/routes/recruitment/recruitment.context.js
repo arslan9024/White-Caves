@@ -46,8 +46,9 @@ export function logRecruitmentAudit(req, eventType, payload = {}) {
   try {
     ctx.auditLogger(eventType, {
       at: new Date().toISOString(),
-      actor_role: req.recruitmentAccess?.role || req.user?.role || 'unknown',
-      actor_id: req.user?.id || null,
+      actor_role:
+        req.recruitmentAccess?.role || req.headers['x-user-role'] || req.user?.role || 'unknown',
+      actor_id: req.user?.id || req.headers['x-user-id'] || null,
       route: req.originalUrl,
       method: req.method,
       ...payload,

@@ -6,7 +6,7 @@
 
 import { Router } from 'express';
 import authMiddleware from '../middleware/auth.js';
-import { requireDoubleSubmitCsrf } from '../middleware/csrf.js';
+import { issueCsrfToken, requireDoubleSubmitCsrf } from '../middleware/csrf.js';
 import rateLimiters from '../middleware/rateLimiter.js';
 
 import {
@@ -39,16 +39,16 @@ import {
   webauthnDeleteCredentialHandler,
 } from '../controllers/auth/index.js';
 
-const {
-  authLimiter,
-  registerLimiter,
-  passwordLimiter,
-  strictLimiter,
-} = rateLimiters;
+const { authLimiter, registerLimiter, passwordLimiter, strictLimiter } = rateLimiters;
 
 const router = Router();
 
 // ─── Authentication & Session ──────────────────────────────────────────────
+router.get('/csrf', (_req, res) => {
+  issueCsrfToken(res);
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendStatus(204);
+});
 router.post('/login', authLimiter, requireDoubleSubmitCsrf, loginHandler);
 router.post('/register', registerLimiter, registerHandler);
 router.post('/logout', authMiddleware, requireDoubleSubmitCsrf, logoutHandler);
@@ -58,16 +58,16 @@ router.post('/refresh', requireDoubleSubmitCsrf, refreshHandler);
 router.get('/profile', authMiddleware, getProfileHandler);
 router.patch('/profile', authMiddleware, patchProfileHandler);
 
-  // ─── Two-Factor Authentication ─────────────────────────────────────────────
-  router.post('/verify-2fa', strictLimiter, verify2faHandler);
-  router.post('/2fa/setup', authMiddleware, setup2faHandler);
-  router.post('/2fa/enable', authMiddleware, enable2faHandler);
-  router.post('/2fa/disable', authMiddleware, disable2faHandler);
-  router.get('/2fa/status', authMiddleware, status2faHandler);
+// ─── Two-Factor Authentication ─────────────────────────────────────────────
+router.post('/verify-2fa', strictLimiter, verify2faHandler);
+router.post('/2fa/setup', authMiddleware, setup2faHandler);
+router.post('/2fa/enable', authMiddleware, enable2faHandler);
+router.post('/2fa/disable', authMiddleware, disable2faHandler);
+router.get('/2fa/status', authMiddleware, status2faHandler);
 
-  // ─── Firebase & Social Auth ────────────────────────────────────────────────
-  router.post('/firebase-sync', firebaseSyncHandler);
-  router.post('/complete-social-registration', authMiddleware, completeSocialRegistrationHandler);
+// ─── Firebase & Social Auth ────────────────────────────────────────────────
+router.post('/firebase-sync', firebaseSyncHandler);
+router.post('/complete-social-registration', authMiddleware, completeSocialRegistrationHandler);
 
 // ─── Password Reset & Management ───────────────────────────────────────────
 router.post('/forgot-password/request', passwordLimiter, forgotPasswordRequestHandler);
@@ -90,6 +90,10 @@ router.post('/webauthn/quick-login/verify', webauthnAuthenticateVerifyHandler);
 router.post('/webauthn/register/verify', authMiddleware, webauthnRegisterVerifyHandler);
 router.post('/webauthn/authenticate/options', webauthnAuthenticateOptionsHandler);
 router.post('/webauthn/authenticate/verify', webauthnAuthenticateVerifyHandler);
-router.delete('/webauthn/credentials/:userId/:credentialId', authMiddleware, webauthnDeleteCredentialHandler);
+router.delete(
+  '/webauthn/credentials/:userId/:credentialId',
+  authMiddleware,
+  webauthnDeleteCredentialHandler
+);
 
 export default router;

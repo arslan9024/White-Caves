@@ -128,7 +128,11 @@ vi.mock('../middleware/auth.js', () => ({
 import authRoutes from './auth.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
-function createApp(role: string | null = 'owner', userId: string | null = 'user-1') {
+function createApp(
+  role: string | null = 'owner',
+  userId: string | null = 'user-1',
+  autoCsrf = true
+) {
   const app = express();
   app.set('trust proxy', 1);
   app.use(express.json());
@@ -143,6 +147,11 @@ function createApp(role: string | null = 'owner', userId: string | null = 'user-
           cookies[part.slice(0, eqIdx).trim()] = decodeURIComponent(part.slice(eqIdx + 1).trim());
         }
       });
+    }
+    // Non-CSRF tests model the frontend's GET /csrf bootstrap before mutations.
+    if (autoCsrf && !cookies.csrf_token) {
+      cookies.csrf_token = 'auth-test-csrf-token';
+      req.headers['x-csrf-token'] = 'auth-test-csrf-token';
     }
     req.cookies = cookies;
     next();
@@ -165,6 +174,19 @@ function createApp(role: string | null = 'owner', userId: string | null = 'user-
 describe('Auth Routes — /api/auth', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  describe('GET /api/auth/csrf', () => {
+    it('issues a readable, non-cacheable CSRF cookie for the frontend origin', async () => {
+      const res = await request(createApp()).get('/api/auth/csrf');
+      const setCookie = res.headers['set-cookie'] as string[] | undefined;
+
+      expect(res.status).toBe(204);
+      expect(res.headers['cache-control']).toBe('no-store');
+      expect(
+        setCookie?.some(cookie => cookie.startsWith('csrf_token=') && cookie.includes('Path=/'))
+      ).toBe(true);
+    });
   });
 
   // ── POST /login ──────────────────────────────────────────────────
@@ -1375,7 +1397,7 @@ describe('Auth Routes — /api/auth', () => {
     const csrfToken = 'csrf-token-logout';
 
     it('returns 403 when CSRF token is missing', async () => {
-      const res = await request(createApp('owner')).post('/api/auth/logout');
+      const res = await request(createApp('owner', 'user-1', false)).post('/api/auth/logout');
       expect(res.status).toBe(403);
       expect(res.body.error).toMatch(/csrf token is required/i);
     });
@@ -1829,7 +1851,7 @@ describe('Auth Routes — /api/auth', () => {
       mockBcrypt.compare.mockResolvedValue(true);
     });
     it('returns 403 when CSRF token is missing', async () => {
-      const res = await request(createApp()).post('/api/auth/refresh');
+      const res = await request(createApp('owner', 'user-1', false)).post('/api/auth/refresh');
       expect(res.status).toBe(403);
       expect(res.body.error).toMatch(/csrf token is required/i);
     });

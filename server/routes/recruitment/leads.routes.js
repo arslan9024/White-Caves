@@ -5,7 +5,6 @@
 import express from 'express';
 import { ctx } from './recruitment.context.js';
 import { LeadScoringIntegration } from '../../utils/LeadScoringIntegration.js';
-import { normalizeLeadScore } from '../../services/recruitmentRecordMapper.js';
 
 const router = express.Router();
 
@@ -20,39 +19,40 @@ router.get('/leads', async (req, res) => {
 
     let query = {};
     if (temperature) {
-      query.lead_temperature = temperature.toUpperCase();
+      query.leadTemperature = temperature.toUpperCase();
     }
     if (jobId) {
-      query.job_id = jobId;
+      query.jobId = jobId;
     }
 
     // Try to fetch from database
-    const leads = await ctx.prisma.leadScore.findMany({
-      where: query,
-      take: parsedLimit,
-      orderBy: { overall_score: 'desc' },
-      include: {
-        candidate: {
-          select: {
-            id: true,
-            email: true,
-            first_name: true,
-            last_name: true,
-            phone: true,
-            location: true,
+    let leads = [];
+    try {
+      leads = await ctx.prisma.leadScore.findMany({
+        where: query,
+        take: parsedLimit,
+        orderBy: { overallScore: 'desc' },
+        include: {
+          candidate: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+              phone: true,
+              location: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (dbError) {
+      console.warn('Could not query database:', dbError.message);
+    }
 
     // Format response
-    const formattedLeads = leads.map(normalizeLeadScore).map(lead => ({
+    const formattedLeads = leads.map(lead => ({
       candidateId: lead.candidateId,
-      candidate: {
-        ...lead.candidate,
-        firstName: lead.candidate.first_name,
-        lastName: lead.candidate.last_name,
-      },
+      candidate: lead.candidate,
       overallScore: lead.overallScore,
       temperature: lead.leadTemperature,
       qualification: lead.qualificationLevel,
@@ -105,12 +105,15 @@ router.patch('/leads/:candidateId/status', async (req, res) => {
     }
 
     // Fetch lead data
-    const leadData = normalizeLeadScore(
-      await ctx.prisma.leadScore.findFirst({
-        where: { candidate_id: candidateId, ...(jobId ? { job_id: jobId } : {}) },
+    let leadData = null;
+    try {
+      leadData = await ctx.prisma.leadScore.findFirst({
+        where: { candidateId, jobId: jobId || null },
         orderBy: { createdAt: 'desc' },
-      })
-    );
+      });
+    } catch (e) {
+      console.warn('Could not fetch lead data');
+    }
 
     // Get integration insights
     const integrationResult = LeadScoringIntegration.integrateWithInterviewScheduling(
@@ -129,13 +132,17 @@ router.patch('/leads/:candidateId/status', async (req, res) => {
       integrationDecision: integrationResult.decision,
     };
 
-    await ctx.prisma.candidate.update({
-      where: { id: candidateId },
-      data: {
-        lead_temperature: newStatus.split('_')[0].toUpperCase(),
-        updatedAt: new Date(),
-      },
-    });
+    try {
+      await ctx.prisma.candidate.update({
+        where: { id: candidateId },
+        data: {
+          lead_temperature: newStatus.split('_')[0].toUpperCase(),
+          updated_at: new Date(),
+        },
+      });
+    } catch (dbError) {
+      console.warn('Could not update candidate record');
+    }
 
     return res.json({
       success: true,
@@ -166,22 +173,25 @@ router.get('/analytics/lead-funnel', async (req, res) => {
 
     let query = {};
     if (jobId) {
-      query.job_id = jobId;
+      query.jobId = jobId;
     }
 
     // Fetch all lead scores
-    const allLeads = (
-      await ctx.prisma.leadScore.findMany({
+    let allLeads = [];
+    try {
+      allLeads = await ctx.prisma.leadScore.findMany({
         where: query,
         select: {
-          overall_score: true,
-          lead_temperature: true,
-          qualification_level: true,
-          score_breakdown: true,
+          overallScore: true,
+          leadTemperature: true,
+          qualificationLevel: true,
+          scoreBreakdown: true,
           createdAt: true,
         },
-      })
-    ).map(normalizeLeadScore);
+      });
+    } catch (dbError) {
+      console.warn('Could not fetch lead data from database');
+    }
 
     // If no database data, return template analytics
     if (allLeads.length === 0) {

@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { apiClient } from './apiClient';
 
+vi.mock('../config/constants', () => ({
+  getApiUrl: (path: string) =>
+    `https://api.example.test/api/${path.replace(/^\/+/, '')}`.replace(/\/$/, ''),
+}));
+
 // Cast fetch to mock for testing
 const mockFetch = vi.fn();
 
@@ -47,13 +52,14 @@ describe('ApiClient', () => {
     const result = await apiClient.get('/test');
 
     expect(mockFetch).toHaveBeenCalledWith(
-      '/api/test',
+      'https://api.example.test/api/test',
       expect.objectContaining({ method: 'GET', credentials: 'include' })
     );
     expect(result).toEqual({ success: true });
   });
 
   it('should include credentials for auth cookie flows by default', async () => {
+    document.cookie = 'csrf_token=test-csrf-token; path=/';
     mockFetch.mockResolvedValueOnce({
       ok: true,
       headers: new Headers({ 'content-type': 'application/json' }),
@@ -63,7 +69,27 @@ describe('ApiClient', () => {
     await apiClient.post('/auth/firebase-sync', { firebaseUid: 'uid-1' });
 
     const callArgs = mockFetch.mock.calls[0];
+    expect(callArgs[0]).toBe('/api/auth/firebase-sync');
     expect(callArgs[1].credentials).toBe('include');
+  });
+
+  it('bootstraps a readable CSRF cookie before the first auth mutation', async () => {
+    mockFetch.mockImplementation(async input => {
+      if (input === '/api/auth/csrf') {
+        document.cookie = 'csrf_token=bootstrapped-csrf; path=/';
+        return new Response(null, { status: 204 });
+      }
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    });
+
+    await apiClient.post('/auth/login', { email: 'agent@example.test' });
+
+    expect(mockFetch.mock.calls[0][0]).toBe('/api/auth/csrf');
+    expect(mockFetch.mock.calls[1][0]).toBe('/api/auth/login');
+    expect(mockFetch.mock.calls[1][1].headers['x-csrf-token']).toBe('bootstrapped-csrf');
   });
 
   it('should attach csrf header for auth mutations when csrf cookie exists', async () => {
@@ -77,6 +103,7 @@ describe('ApiClient', () => {
     await apiClient.post('/auth/logout', {});
 
     const callArgs = mockFetch.mock.calls[0];
+    expect(callArgs[0]).toBe('/api/auth/logout');
     expect(callArgs[1].headers['x-csrf-token']).toBe('test-csrf-token');
   });
 
@@ -90,7 +117,7 @@ describe('ApiClient', () => {
     const result = await apiClient.post('/users', { name: 'Test' });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      '/api/users',
+      'https://api.example.test/api/users',
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify({ name: 'Test' }),

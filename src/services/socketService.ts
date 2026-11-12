@@ -15,6 +15,7 @@
  */
 
 import { io, Socket } from 'socket.io-client';
+import { resolveSocketUrl } from '../config/socketConfig';
 
 // ─── Event Payload Types (mirror server/services/socketServer.ts) ─────────────
 
@@ -117,10 +118,7 @@ class SocketService {
 
     this.setStatus('connecting');
 
-    const serverUrl =
-      typeof window !== 'undefined'
-        ? window.location.origin
-        : (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:3001';
+    const serverUrl = resolveSocketUrl();
 
     this.socket = io(serverUrl, {
       auth: { token },

@@ -10,7 +10,7 @@
 - **Backend:** Express 5 + TypeScript + Prisma + MongoDB
 - **Tests:** Vitest + Testing Library + Playwright (multi-browser)
 - **Lint/Format:** ESLint 9 flat config + Prettier
-- **Node:** >= 20.x
+- **Node:** >= 22.19.0 (use the latest supported 22.x or 24.x release)
 
 Always align implementations with these concrete technologies and existing scripts in `package.json`.
 

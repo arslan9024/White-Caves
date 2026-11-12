@@ -1,0 +1,26 @@
+# Line-ending policy (one-time normalization: git add --renormalize .)
+# Repo stores LF; working tree checks out LF so agent-written files,
+# Prettier and Linux CI all agree. Windows-native scripts keep CRLF.
+* text=auto eol=lf
+
+# Pasted asset dumps — leave byte-for-byte untouched
+attached_assets/** -text
+
+# Windows scripts that require CRLF
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary assets — never convert
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary

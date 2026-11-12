@@ -55,4 +55,56 @@ describe('cors config helpers', () => {
       )
     ).toBe(true);
   });
+
+  it('allows the Vercel production alias and named tunnel origins statically', () => {
+    expect(isCorsOriginAllowed('https://white-caves.vercel.app', [], null, 'production')).toBe(
+      true
+    );
+    expect(isCorsOriginAllowed('https://api.whitecaves.com', [], null, 'production')).toBe(true);
+  });
+
+  it('requires explicit configuration for Cloudflare quick tunnel origins', () => {
+    expect(
+      isCorsOriginAllowed('https://brave-fox-random.trycloudflare.com', [], null, 'production')
+    ).toBe(false);
+    expect(
+      isCorsOriginAllowed(
+        'https://brave-fox-random.trycloudflare.com',
+        ['https://brave-fox-random.trycloudflare.com'],
+        null,
+        'production'
+      )
+    ).toBe(true);
+    expect(
+      isCorsOriginAllowed('http://brave-fox-random.trycloudflare.com', [], null, 'production')
+    ).toBe(false);
+  });
+
+  it('does not trust an account suffix as proof of preview ownership', () => {
+    expect(
+      isCorsOriginAllowed(
+        'https://white-caves-git-main-arslan-maliks-projects.vercel.app',
+        [],
+        null,
+        'production'
+      )
+    ).toBe(false);
+    expect(
+      isCorsOriginAllowed(
+        'https://white-caves-git-main-arslan-maliks-projects.vercel.app',
+        ['https://white-caves-git-main-arslan-maliks-projects.vercel.app'],
+        null,
+        'production'
+      )
+    ).toBe(true);
+    expect(isCorsOriginAllowed('https://evil.vercel.app', [], null, 'production')).toBe(false);
+    expect(
+      isCorsOriginAllowed(
+        'https://evil-arslan-maliks-projects.vercel.app.evil.com',
+        [],
+        null,
+        'production'
+      )
+    ).toBe(false);
+  });
 });

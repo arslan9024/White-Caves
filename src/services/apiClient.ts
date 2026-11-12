@@ -109,13 +109,23 @@ class APIClient {
       }
 
       if (response.status === 429) {
-        window.dispatchEvent(new CustomEvent('add_toast', {
-          detail: { type: 'warning', title: 'Too Many Requests', description: 'Rate limit exceeded. Please try again later.' }
-        }));
+        window.dispatchEvent(
+          new CustomEvent('add_toast', {
+            detail: {
+              type: 'warning',
+              title: 'Too Many Requests',
+              description: 'Rate limit exceeded. Please try again later.',
+            },
+          })
+        );
         throw this.createErrorResponse('Too many requests', 429);
       }
 
-      if (response.status >= 500 && attempt <= API_CONFIG.RETRY.maxAttempts) {
+      if (
+        ['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase()) &&
+        response.status >= 500 &&
+        attempt <= API_CONFIG.RETRY.maxAttempts
+      ) {
         const delay =
           API_CONFIG.RETRY.delayMs * Math.pow(API_CONFIG.RETRY.backoffMultiplier, attempt - 1);
         await new Promise(resolve => setTimeout(resolve, delay));
@@ -146,7 +156,10 @@ class APIClient {
         throw this.createErrorResponse(API_ERRORS.NETWORK_ERROR, 408);
       }
 
-      if (attempt <= API_CONFIG.RETRY.maxAttempts) {
+      if (
+        ['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase()) &&
+        attempt <= API_CONFIG.RETRY.maxAttempts
+      ) {
         const delay =
           API_CONFIG.RETRY.delayMs * Math.pow(API_CONFIG.RETRY.backoffMultiplier, attempt - 1);
         await new Promise(resolve => setTimeout(resolve, delay));

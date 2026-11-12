@@ -182,3 +182,5 @@ secrets/
 sessions/
 .linda-sessions/
 
+.vercel
+.env*

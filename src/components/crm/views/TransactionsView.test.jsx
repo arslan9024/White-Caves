@@ -1,10 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import axios from 'axios';
 import TransactionsView from './TransactionsView';
-
-vi.mock('axios');
 
 vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }) => <>{children}</>,
@@ -36,15 +33,37 @@ const mockStatsPayload = {
   },
 };
 
+const jsonResponse = (payload, status = 200) => ({
+  ok: status >= 200 && status < 300,
+  status,
+  json: async () => payload,
+});
+
+const routeDefaultGets = (url, init = {}) => {
+  const method = (init.method || 'GET').toUpperCase();
+  if (method === 'GET' && String(url).startsWith('/api/transactions?')) {
+    return Promise.resolve(jsonResponse(mockTransactionsPayload));
+  }
+  if (method === 'GET' && url === '/api/transactions/stats') {
+    return Promise.resolve(jsonResponse(mockStatsPayload));
+  }
+  return Promise.reject(new Error(`Unhandled ${method} ${url}`));
+};
+
+let fetchMock;
+
 const setupDefaultGets = () => {
-  axios.get.mockImplementation(url => {
-    if (String(url).startsWith('/api/transactions?')) {
-      return Promise.resolve({ data: mockTransactionsPayload });
+  fetchMock = vi.fn(routeDefaultGets);
+  vi.stubGlobal('fetch', fetchMock);
+};
+
+const mockPost = handler => {
+  fetchMock.mockImplementation((url, init = {}) => {
+    const method = (init.method || 'GET').toUpperCase();
+    if (method === 'POST') {
+      return handler(url, init);
     }
-    if (url === '/api/transactions/stats') {
-      return Promise.resolve({ data: mockStatsPayload });
-    }
-    return Promise.reject(new Error(`Unhandled GET ${url}`));
+    return routeDefaultGets(url, init);
   });
 };
 
@@ -55,6 +74,7 @@ describe('TransactionsView — alert elimination', () => {
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
@@ -66,7 +86,7 @@ describe('TransactionsView — alert elimination', () => {
   });
 
   it('shows error banner when saving a transaction fails', async () => {
-    axios.post.mockImplementation((url) => {
+    mockPost(url => {
       if (url === '/api/transactions') {
         return Promise.reject(new Error('save failed'));
       }
@@ -85,9 +105,9 @@ describe('TransactionsView — alert elimination', () => {
   });
 
   it('shows success banner when CSV import succeeds', async () => {
-    axios.post.mockImplementation((url) => {
+    mockPost(url => {
       if (url === '/api/transactions/import') {
-        return Promise.resolve({ data: { success: true, imported: 12 } });
+        return Promise.resolve(jsonResponse({ success: true, imported: 12 }));
       }
       return Promise.reject(new Error(`Unhandled POST ${url}`));
     });
@@ -104,7 +124,7 @@ describe('TransactionsView — alert elimination', () => {
   });
 
   it('shows error banner when CSV import fails', async () => {
-    axios.post.mockImplementation((url) => {
+    mockPost(url => {
       if (url === '/api/transactions/import') {
         return Promise.reject(new Error('import failed'));
       }
@@ -124,7 +144,7 @@ describe('TransactionsView — alert elimination', () => {
 
   it('never calls window.alert()', async () => {
     const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-    axios.post.mockImplementation((url) => {
+    mockPost(url => {
       if (url === '/api/transactions/import') {
         return Promise.reject(new Error('import failed'));
       }

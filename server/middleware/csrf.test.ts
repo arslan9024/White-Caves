@@ -13,7 +13,7 @@ vi.mock('./errorHandler.js', () => ({
   },
 }));
 
-import { requireDoubleSubmitCsrf, CSRF_COOKIE_NAME } from './csrf.js';
+import { requireDoubleSubmitCsrf, CSRF_COOKIE_NAME, issueCsrfToken } from './csrf.js';
 
 describe('CSRF Protection Middleware — Wave 43 (W43-006)', () => {
   beforeEach(() => {
@@ -46,6 +46,18 @@ describe('CSRF Protection Middleware — Wave 43 (W43-006)', () => {
         statusCode: 403,
         code: 'CSRF_TOKEN_MISSING',
       })
+    );
+  });
+
+  it('sets the readable CSRF cookie on the frontend origin path', () => {
+    const res = { cookie: vi.fn() } as unknown as Response;
+
+    issueCsrfToken(res);
+
+    expect(res.cookie).toHaveBeenCalledWith(
+      CSRF_COOKIE_NAME,
+      expect.any(String),
+      expect.objectContaining({ httpOnly: false, path: '/' })
     );
   });
 });
