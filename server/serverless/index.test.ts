@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/env.js';
 
 const database = vi.hoisted(() => ({
-  property: { findMany: vi.fn(), count: vi.fn(), findUnique: vi.fn() },
+  property: { findMany: vi.fn(), count: vi.fn(), findFirst: vi.fn() },
   $runCommandRaw: vi.fn(),
 }));
 const inventory = vi.hoisted(() => ({
@@ -49,7 +49,9 @@ describe('serverless API composition', () => {
   });
 
   it('keeps property pagination and result envelopes', async () => {
-    const result = await request(app).get('/api/properties?page=2&pageSize=5');
+    const result = await request(app)
+      .get('/api/properties?page=2&pageSize=5')
+      .set('Authorization', inventoryAuthorization('agent'));
     expect(result.status).toBe(200);
     expect(result.body).toMatchObject({
       success: true,
@@ -57,21 +59,49 @@ describe('serverless API composition', () => {
       pagination: { page: 2, pageSize: 5, total: 1 },
     });
     expect(database.property.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ skip: 5, take: 5 })
+      expect.objectContaining({ skip: 5, take: 5, where: { userId: 'test-user' } })
     );
+    expect(database.property.count).toHaveBeenCalledWith({ where: { userId: 'test-user' } });
   });
 
   it('rejects repeated query parameters before reaching the database', async () => {
-    const result = await request(app).get('/api/properties?search=one&search=two');
+    const result = await request(app)
+      .get('/api/properties?search=one&search=two')
+      .set('Authorization', inventoryAuthorization());
     expect(result.status).toBe(400);
     expect(database.property.findMany).not.toHaveBeenCalled();
   });
 
   it('does not expose raw database errors', async () => {
     database.property.findMany.mockRejectedValue(new Error('private database diagnostic'));
-    const result = await request(app).get('/api/properties');
+    const result = await request(app)
+      .get('/api/properties')
+      .set('Authorization', inventoryAuthorization());
     expect(result.status).toBe(500);
     expect(result.body).toEqual({ success: false, error: 'Internal server error' });
+  });
+
+  it('rejects anonymous property listing and detail access before the database', async () => {
+    const listing = await request(app).get('/api/properties');
+    const detail = await request(app).get('/api/properties/property-1');
+
+    expect(listing.status).toBe(401);
+    expect(detail.status).toBe(401);
+    expect(database.property.findMany).not.toHaveBeenCalled();
+    expect(database.property.findFirst).not.toHaveBeenCalled();
+  });
+
+  it('applies the authenticated ownership scope to property detail lookups', async () => {
+    database.property.findFirst.mockResolvedValue({ id: 'property-1', userId: 'test-user' });
+
+    const result = await request(app)
+      .get('/api/properties/property-1')
+      .set('Authorization', inventoryAuthorization('agent'));
+
+    expect(result.status).toBe(200);
+    expect(database.property.findFirst).toHaveBeenCalledWith({
+      where: { id: 'property-1', userId: 'test-user' },
+    });
   });
 
   it('mounts inventory details at startup without a preceding statistics request', async () => {

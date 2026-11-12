@@ -54,12 +54,18 @@ the service account can read your user profile.
 1. Vercel → Project → Settings → Environment Variables
 2. Set `VITE_API_URL` to the tunnel origin (`https://api.whitecaves.com`, or the
    printed `https://*.trycloudflare.com` URL in quick mode)
-3. **Redeploy** — Vite bakes env vars at build time.
+3. Set the server-only `BACKEND_API_ORIGIN` to the same tunnel origin. The
+   Vercel `/api/auth/*` route proxies authentication requests server-to-server;
+   refresh and CSRF cookies therefore remain same-origin with the frontend.
+4. **Redeploy** — Vite bakes `VITE_API_URL` at build time.
 
 Production frontend origins are explicitly allowed. Add exact frontend preview
-origins to backend `CORS_ORIGIN`; arbitrary `trycloudflare.com` and account-suffix
-Vercel origins are **not** trusted. CORS is not authentication. The API tunnel
-address is a request destination, not the browser's frontend origin.
+origins to backend `CORS_ORIGIN` when the browser calls the backend directly;
+arbitrary `trycloudflare.com` and account-suffix Vercel origins are **not**
+trusted. CORS is not authentication. The API tunnel address is a request
+destination, not the browser's frontend origin. Authentication uses the
+same-origin Vercel proxy and does not require adding the Vercel frontend origin
+to CORS for that proxied flow.
 
 The frontend CSP permits HTTPS and WebSocket connections to `api.whitecaves.com`.
 A different tunnel hostname also requires an explicit CSP change before use.

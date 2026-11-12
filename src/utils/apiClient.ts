@@ -2,9 +2,9 @@ import { ERROR_MESSAGES } from '@/constants';
 import { HttpError } from './HttpError';
 import { fetchWithRetry } from '../services/http/fetchWithRetry';
 import { getApiUrl } from '../config/constants';
+import { ensureCsrfToken } from './csrfToken';
 
 const API_BASE_URL = getApiUrl('');
-const CSRF_COOKIE_NAME = 'csrf_token';
 const CSRF_HEADER_NAME = 'x-csrf-token';
 const REFRESH_ENDPOINT = '/auth/refresh';
 
@@ -28,43 +28,28 @@ class ApiClient {
     this.refreshInFlight = null;
   }
 
-  private getCookieValue(name: string): string | null {
-    if (typeof document === 'undefined') return null;
-
-    const cookies = document.cookie ? document.cookie.split(';') : [];
-    for (const cookie of cookies) {
-      const [key, ...valueParts] = cookie.trim().split('=');
-      if (key === name) {
-        return decodeURIComponent(valueParts.join('='));
-      }
-    }
-
-    return null;
-  }
-
   private isMutationMethod(method?: string): boolean {
     const normalized = (method || 'GET').toUpperCase();
     return !['GET', 'HEAD', 'OPTIONS'].includes(normalized);
   }
 
   private shouldAttachCsrf(endpoint: string, method?: string): boolean {
-    return endpoint.startsWith('/auth/') && this.isMutationMethod(method);
+    return (
+      (endpoint.startsWith('/auth/') || endpoint.startsWith('/api/auth/')) &&
+      this.isMutationMethod(method)
+    );
   }
 
   private async refreshAccessToken(): Promise<boolean> {
     if (!this.refreshInFlight) {
       this.refreshInFlight = (async () => {
-        const csrfToken = this.getCookieValue(CSRF_COOKIE_NAME);
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
         };
 
-        if (csrfToken) {
-          headers[CSRF_HEADER_NAME] = csrfToken;
-        }
-
         try {
-          const response = await fetch(`${this.baseURL}${REFRESH_ENDPOINT}`, {
+          headers[CSRF_HEADER_NAME] = await ensureCsrfToken();
+          const response = await fetch(`/api${REFRESH_ENDPOINT}`, {
             method: 'POST',
             credentials: 'include',
             headers,
@@ -98,7 +83,9 @@ class ApiClient {
   }
 
   async request(endpoint: string, options: RequestOptions = {}): Promise<unknown> {
-    const url = `${this.baseURL}${endpoint}`;
+    const isAuthEndpoint = endpoint.startsWith('/auth/') || endpoint.startsWith('/api/auth/');
+    const authPath = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
+    const url = isAuthEndpoint ? authPath : `${this.baseURL}${endpoint}`;
     const timeout = options.timeout ?? 30000;
 
     const controller = new AbortController();
@@ -129,14 +116,14 @@ class ApiClient {
       },
     };
 
-    if (this.shouldAttachCsrf(endpoint, config.method)) {
-      const csrfToken = this.getCookieValue(CSRF_COOKIE_NAME);
-      if (csrfToken && config.headers) {
-        (config.headers as Record<string, string>)[CSRF_HEADER_NAME] = csrfToken;
-      }
-    }
-
     try {
+      if (this.shouldAttachCsrf(endpoint, config.method) && config.headers) {
+        const headers = config.headers as Record<string, string>;
+        if (!headers[CSRF_HEADER_NAME]) {
+          headers[CSRF_HEADER_NAME] = await ensureCsrfToken();
+        }
+      }
+
       const response = await fetchWithRetry(url, config);
 
       const contentType = response.headers.get('content-type');
@@ -150,7 +137,11 @@ class ApiClient {
       }
 
       if (!response.ok) {
-        if (response.status === 401 && !options.skipRefresh && endpoint !== REFRESH_ENDPOINT) {
+        if (
+          response.status === 401 &&
+          !options.skipRefresh &&
+          !endpoint.endsWith(REFRESH_ENDPOINT)
+        ) {
           const refreshed = await this.refreshAccessToken();
           if (refreshed) {
             return this.request(endpoint, { ...options, skipRefresh: true });

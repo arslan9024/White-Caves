@@ -8,6 +8,7 @@ import { mountRecommendations } from '../server/serverless/recommendations.js';
 import { mountBookings } from '../server/serverless/bookings.js';
 import { mountChatbot } from '../server/serverless/chatbot.js';
 import { mountUnsupported } from '../server/serverless/unsupported.js';
+import { createAuthProxy } from '../server/serverless/authProxy.js';
 import { AppError, errorHandler } from '../server/middleware/errorHandler.js';
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use('/api/auth', createAuthProxy(process.env.BACKEND_API_ORIGIN));
 mountHealthProperties(app);
 mountInventory(app);
 mountPricing(app);

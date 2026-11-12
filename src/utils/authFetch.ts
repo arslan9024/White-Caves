@@ -15,6 +15,7 @@ import { createLogger } from './logger';
 import { HttpError } from './HttpError';
 import { getApiUrl } from '../config/constants';
 import { fetchWithRetry } from '../services/http/fetchWithRetry';
+import { ensureCsrfToken, readCsrfCookie } from './csrfToken';
 
 const log = createLogger('authFetch');
 const CSRF_HEADER_NAME = 'x-csrf-token';
@@ -64,6 +65,7 @@ function handleUnauthorized(): void {
 }
 
 function getCookieValue(name: string): string | null {
+  if (name === CSRF_COOKIE_NAME) return readCsrfCookie();
   if (typeof document === 'undefined') return null;
   const entries = document.cookie ? document.cookie.split(';') : [];
   for (const entry of entries) {
@@ -94,18 +96,26 @@ function requestPath(input: RequestInfo | URL): string {
   return new URL(value, 'https://relative.invalid').pathname;
 }
 
+function routeAuthInputToSameOrigin(input: RequestInfo | URL): RequestInfo | URL {
+  if (typeof window === 'undefined') return input;
+  if (typeof input === 'string' && input.startsWith('/')) return input;
+
+  const url = input instanceof Request ? new URL(input.url) : new URL(input.toString());
+  if (url.origin === window.location.origin) return input;
+
+  const sameOriginUrl = new URL(`${url.pathname}${url.search}`, window.location.origin);
+  return input instanceof Request ? new Request(sameOriginUrl, input.clone()) : sameOriginUrl;
+}
+
 async function attemptSessionRefresh(): Promise<boolean> {
   if (!refreshInFlight) {
     refreshInFlight = (async () => {
-      const csrfToken = getCookieValue(CSRF_COOKIE_NAME);
       const headers = new Headers();
-      if (csrfToken) {
-        headers.set(CSRF_HEADER_NAME, csrfToken);
-      }
       headers.set('Content-Type', 'application/json');
 
       try {
-        const response = await fetchWithRetry(getApiUrl('auth/refresh'), {
+        headers.set(CSRF_HEADER_NAME, await ensureCsrfToken());
+        const response = await fetchWithRetry('/api/auth/refresh', {
           method: 'POST',
           credentials: 'include',
           headers,
@@ -146,8 +156,10 @@ export async function authFetch(
   init?: RequestInit & { timeout?: number }
 ): Promise<Response> {
   const requestMethod = init?.method ?? (input instanceof Request ? input.method : 'GET');
-  const requestInput =
-    typeof input === 'string' && (input === '/api' || input.startsWith('/api/'))
+  const isAuthEndpoint = requestPath(input).startsWith('/api/auth/');
+  const requestInput = isAuthEndpoint
+    ? routeAuthInputToSameOrigin(input)
+    : typeof input === 'string' && (input === '/api' || input.startsWith('/api/'))
       ? getApiUrl(input.slice(4))
       : input;
   const runRequest = async (): Promise<Response> => {
@@ -160,6 +172,12 @@ export async function authFetch(
       headers.set('Authorization', `Bearer ${token}`);
     }
 
+    const isAuthMutation =
+      !['GET', 'HEAD', 'OPTIONS'].includes(requestMethod.toUpperCase()) &&
+      requestPath(input).startsWith('/api/auth/');
+    if (isAuthMutation && !headers.has(CSRF_HEADER_NAME)) {
+      headers.set(CSRF_HEADER_NAME, await ensureCsrfToken());
+    }
     withCsrfHeader(headers, input, requestMethod);
 
     // Ensure JSON content-type for requests with a body (skip FormData — browser sets multipart boundary)
@@ -180,6 +198,7 @@ export async function authFetch(
         requestInput instanceof Request ? requestInput.clone() : requestInput,
         {
           ...init,
+          method: requestMethod,
           headers,
           signal,
           credentials: init?.credentials ?? 'include',

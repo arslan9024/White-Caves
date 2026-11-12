@@ -29,8 +29,7 @@ export function useAppRuntime() {
     dispatch(setLoading(true));
     const checkAuth = async () => {
       try {
-        const token = safeStorage.get('token');
-        if (token) {
+        if (safeStorage.get('token')) {
           const response = await authFetch('/api/auth/profile', { signal: controller.signal });
           if (controller.signal.aborted) return;
           if (response.ok) {
@@ -38,7 +37,6 @@ export function useAppRuntime() {
             finalizeAuthenticatedSession({
               dispatch,
               user: result.data,
-              token,
               provider: 'bootstrap',
             });
           } else if (response.status === 401 || response.status === 403) {

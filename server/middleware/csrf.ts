@@ -10,7 +10,7 @@ const CSRF_COOKIE_OPTIONS = {
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'strict' as const,
   maxAge: 7 * 24 * 60 * 60 * 1000,
-  path: '/api/auth',
+  path: '/',
 };
 
 export const issueCsrfToken = (res: Response): string => {
@@ -20,7 +20,7 @@ export const issueCsrfToken = (res: Response): string => {
 };
 
 export const clearCsrfToken = (res: Response): void => {
-  res.clearCookie(CSRF_COOKIE_NAME, { path: '/api/auth' });
+  res.clearCookie(CSRF_COOKIE_NAME, { path: '/' });
 };
 
 export const requireDoubleSubmitCsrf = (req: Request, _res: Response, next: NextFunction): void => {

@@ -5,7 +5,7 @@
   "description": "White Caves Real Estate - Dubai's Premier Luxury Property Platform",
   "homepage": ".",
   "engines": {
-    "node": "^22.13.0 || >=24",
+    "node": "^22.19.0 || >=24",
     "npm": ">=10.0.0"
   },
   "scripts": {

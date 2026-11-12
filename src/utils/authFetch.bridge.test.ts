@@ -41,7 +41,7 @@ describe('bridge-aware authenticated clients', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
-  it('preserves Request methods and CSRF headers without replaying writes', async () => {
+  it('routes Request auth calls through the same origin and preserves CSRF headers', async () => {
     document.cookie = 'csrf_token=test-csrf; path=/';
     const fetch = vi
       .spyOn(globalThis, 'fetch')
@@ -55,11 +55,33 @@ describe('bridge-aware authenticated clients', () => {
       )
     ).rejects.toMatchObject({ status: 503 });
     expect(fetch).toHaveBeenCalledTimes(1);
+    const requestUrl = new URL((fetch.mock.calls[0][0] as Request).url);
+    expect(requestUrl.origin).toBe(window.location.origin);
+    expect(requestUrl.pathname).toBe('/api/auth/test');
     const headers = new Headers(fetch.mock.calls[0][1]?.headers);
     expect(headers.get('x-csrf-token')).toBe('test-csrf');
   });
 
-  it('refreshes on the configured backend and still enforces a retried 403', async () => {
+  it('bootstraps CSRF before the first same-origin auth mutation', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch').mockImplementation(async input => {
+      if (input === '/api/auth/csrf') {
+        document.cookie = 'csrf_token=bootstrapped-csrf; path=/';
+        return new Response(null, { status: 204 });
+      }
+      return new Response('{}');
+    });
+
+    await authFetch('/api/auth/login', { method: 'POST', body: '{}' });
+
+    expect(fetch.mock.calls[0][0]).toBe('/api/auth/csrf');
+    expect(fetch.mock.calls[1][0]).toBe('/api/auth/login');
+    expect(new Headers(fetch.mock.calls[1][1]?.headers).get('x-csrf-token')).toBe(
+      'bootstrapped-csrf'
+    );
+  });
+
+  it('refreshes through the same origin and still enforces a retried 403', async () => {
+    document.cookie = 'csrf_token=refresh-csrf; path=/';
     const fetch = vi
       .spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(new Response('{}', { status: 401 }))
@@ -68,7 +90,7 @@ describe('bridge-aware authenticated clients', () => {
       )
       .mockResolvedValueOnce(new Response('{}', { status: 403 }));
     await expect(authFetch('/api/private')).rejects.toMatchObject({ status: 403 });
-    expect(fetch.mock.calls[1][0]).toBe('https://api.example.test/api/auth/refresh');
+    expect(fetch.mock.calls[1][0]).toBe('/api/auth/refresh');
     expect(fetch).toHaveBeenCalledTimes(3);
   });
 
