@@ -4,3 +4,4 @@
 - [ ] **Unit Testing**: Run targeted unit tests (`npx vitest`) and ensure 100% pass rate for modified modules.
 - [ ] **Documentation Update**: Verify all API and component changes are documented in `.agents/` and respective READMEs.
 - [ ] **Deployment Prep**: Perform build verification (`tsc --noEmit`, linting) and check release readiness.
+- [ ] **Wave 55 post-merge CI remediation**: Synchronize the package lockfile, carry forward validated accessibility/E2E fixes, and verify CI before merging.
