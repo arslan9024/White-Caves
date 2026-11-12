@@ -5,7 +5,7 @@
   "description": "White Caves Real Estate - Dubai's Premier Luxury Property Platform",
   "homepage": ".",
   "engines": {
-    "node": "^22.13.0 || >=24",
+    "node": "^22.19.0 || >=24",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -46,7 +46,7 @@
     "dev:server": "powershell -ExecutionPolicy Bypass -File .agents/scripts/start-dev-server-safe.ps1 -Port 5001",
     "tunnel:quick": "powershell -ExecutionPolicy Bypass -File scripts/start-tunnel.ps1 -Mode quick",
     "tunnel:named": "powershell -ExecutionPolicy Bypass -File scripts/start-tunnel.ps1 -Mode named",
-    "serve:bridge": "concurrently --names \"SERVER,TUNNEL,WATCHDOG\" --prefix-colors \"green,cyan,yellow\" \"npm run dev:server\" \"npm run tunnel:named\" \"powershell -ExecutionPolicy Bypass -File scripts/server-watchdog.ps1\"",
+    "serve:bridge": "concurrently --kill-others --names \"BACKEND,TUNNEL\" --prefix-colors \"green,cyan\" \"powershell -ExecutionPolicy Bypass -File scripts/server-watchdog.ps1\" \"npm run tunnel:named\"",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build",
     "lhci:run": "lhci autorun",
     "preview": "vite preview",
@@ -372,7 +372,7 @@
     "@axe-core/playwright": "^4.11.1",
     "@eslint/js": "^9.39.1",
     "@faker-js/faker": "^10.3.0",
-    "@lhci/cli": "^0.15.1",
+    "@lhci/cli": "^0.16.1",
     "@originjs/vite-plugin-federation": "^1.4.1",
     "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.4.1",

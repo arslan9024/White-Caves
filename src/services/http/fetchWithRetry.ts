@@ -1,45 +1,29 @@
-/**
- * fetchWithRetry — Resilient fetch wrapper for the White Caves frontend.
- * =======================================================================
- * WHEN TO USE: The production frontend reaches the local backend through a
- * Cloudflare tunnel. While the local backend restarts or the tunnel
- * reconnects, Cloudflare briefly answers with HTTP 502/503/504. This wrapper
- * absorbs those transient gateway errors (and raw network failures) with
- * exponential backoff instead of surfacing them to the user.
- *
- * RETRY POLICY:
- * - Retries ONLY on network errors (fetch rejection) and HTTP 502/503/504.
- * - Any other status (200, 400, 401, 404, 500, …) is returned immediately.
- * - AbortError is never retried — caller-initiated cancellation is honored.
- * - Defaults: retries=3, backoffMs=1000 → waits of 1s, 2s, 4s.
- * - After exhausting retries: the last gateway-error Response is returned;
- *   a persistent network error is re-thrown.
- */
-import logger from '../../utils/logger';
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('fetchWithRetry');
 
 export interface FetchWithRetryOptions {
-  /** Maximum retry attempts after the initial request. Default: 3. */
   retries?: number;
-  /** Base backoff delay in ms, doubled on every retry. Default: 1000. */
   backoffMs?: number;
 }
 
-/** Gateway statuses emitted by the Cloudflare tunnel during backend restarts. */
-const RETRYABLE_STATUSES: ReadonlySet<number> = new Set([502, 503, 504]);
+const RETRYABLE_STATUSES = new Set([502, 503, 504]);
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
-const wait = (ms: number): Promise<void> =>
-  new Promise(resolve => {
-    setTimeout(resolve, ms);
+function wait(ms: number, signal?: AbortSignal | null): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const abort = (): void => {
+      clearTimeout(timer);
+      signal?.removeEventListener('abort', abort);
+      reject(new DOMException('Request cancelled', 'AbortError'));
+    };
+    const timer = setTimeout(() => {
+      signal?.removeEventListener('abort', abort);
+      resolve();
+    }, ms);
+    signal?.addEventListener('abort', abort, { once: true });
+    if (signal?.aborted) abort();
   });
-
-const describeTarget = (input: RequestInfo | URL): string => {
-  if (typeof input === 'string') return input;
-  if (input instanceof URL) return input.toString();
-  return input.url;
-};
-
-const isAbortError = (error: unknown): boolean =>
-  error instanceof Error && error.name === 'AbortError';
+}
 
 export async function fetchWithRetry(
   input: RequestInfo | URL,
@@ -48,33 +32,38 @@ export async function fetchWithRetry(
 ): Promise<Response> {
   const retries = options?.retries ?? 3;
   const backoffMs = options?.backoffMs ?? 1000;
-  const target = describeTarget(input);
+  if (
+    !Number.isInteger(retries) ||
+    retries < 0 ||
+    retries > 10 ||
+    !Number.isFinite(backoffMs) ||
+    backoffMs < 0 ||
+    backoffMs > 60_000
+  ) {
+    logger.error('fetchWithRetry: invalid retry configuration');
+    throw new RangeError('Invalid retry configuration');
+  }
+  const request = typeof Request !== 'undefined' && input instanceof Request ? input : undefined;
+  const method = (init?.method ?? request?.method ?? 'GET').toUpperCase();
+  const signal = init?.signal ?? request?.signal;
+  // Never replay writes or a Request body after an ambiguous network failure.
+  const limit = SAFE_METHODS.has(method) && !init?.body && !request?.body ? retries : 0;
 
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt <= retries; attempt += 1) {
-    const delayMs = backoffMs * 2 ** attempt;
+  for (let attempt = 0; ; attempt += 1) {
+    signal?.throwIfAborted();
     try {
       const response = await fetch(input, init);
-      if (!RETRYABLE_STATUSES.has(response.status) || attempt === retries) {
-        return response;
-      }
-      logger.warn(
-        `fetchWithRetry: ${target} responded ${response.status} — retrying in ${delayMs}ms (attempt ${attempt + 1}/${retries})`
-      );
+      if (!RETRYABLE_STATUSES.has(response.status) || attempt === limit) return response;
+      logger.warn(`fetchWithRetry: gateway ${response.status}; retry ${attempt + 1}/${limit}`);
+      await response.body?.cancel();
     } catch (error) {
-      if (isAbortError(error)) throw error;
-      lastError = error;
-      if (attempt === retries) break;
-      logger.warn(
-        `fetchWithRetry: network error for ${target} — retrying in ${delayMs}ms (attempt ${attempt + 1}/${retries})`,
-        error
-      );
+      if (signal?.aborted || (error instanceof Error && error.name === 'AbortError')) throw error;
+      if (attempt === limit) {
+        logger.error('fetchWithRetry: request failed; no further retries');
+        throw error;
+      }
+      logger.warn(`fetchWithRetry: network failure; retry ${attempt + 1}/${limit}`);
     }
-    await wait(delayMs);
+    await wait(Math.min(backoffMs * 2 ** attempt, 60_000), signal);
   }
-
-  logger.error(`fetchWithRetry: exhausted ${retries} retries for ${target}`, lastError);
-  if (lastError instanceof Error) throw lastError;
-  throw new Error(`fetchWithRetry: request to ${target} failed after ${retries} retries`);
 }

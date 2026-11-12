@@ -10,6 +10,11 @@ Companion to the Seven-Category Architecture Standard
 `scripts/validate-structure.mjs` and the Turing audit rules
 (`.agents/aegis/core-loop/turingRules.ts`).
 
+The mechanical gate covers dependencies, naming, frozen-directory paths and
+per-file size regressions. Presentation purity, single responsibility and
+appropriate primitive reuse additionally require code review; a green count
+ratchet alone does not establish architectural compliance.
+
 ## 1. Single purpose per view file
 
 - **Exactly one exported component per view file.** Helper subcomponents either

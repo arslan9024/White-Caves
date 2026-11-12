@@ -92,4 +92,41 @@ describe('fetchWithRetry', () => {
     const response = await pending;
     expect(response.status).toBe(502);
   });
+
+  it.each(['POST', 'PATCH', 'PUT', 'DELETE'])('never retries %s writes', async method => {
+    const fetchMock = vi.fn().mockResolvedValue(mockResponse(503));
+    vi.stubGlobal('fetch', fetchMock);
+    expect((await fetchWithRetry('/api/bookings', { method })).status).toBe(503);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not retry a write after an ambiguous network failure', async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new TypeError('Network failure'));
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchWithRetry('/api/bookings', { method: 'POST' })).rejects.toThrow();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('cancels during backoff without issuing another request', async () => {
+    vi.useFakeTimers();
+    const controller = new AbortController();
+    const fetchMock = vi.fn().mockResolvedValue(mockResponse(503));
+    vi.stubGlobal('fetch', fetchMock);
+    const pending = fetchWithRetry('/api/health', { signal: controller.signal });
+    const rejected = expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    await vi.advanceTimersByTimeAsync(0);
+    controller.abort();
+    await rejected;
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects invalid retry counts before fetching', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(fetchWithRetry('/api/health', undefined, { retries: -1 })).rejects.toThrow(
+      RangeError
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });

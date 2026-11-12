@@ -11,27 +11,32 @@ import {
 } from '../../components/crm/CustomerManager/CustomerManager.types';
 import { RelationshipChain } from '../../components/crm/RelationshipManager/RelationshipManager.types';
 import { DocumentItem } from '../../components/crm/DocumentManager/DocumentManager.types';
+import { getApiUrl } from '../../config/constants';
+import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
 
-const BASE_URL = '/api/v1';
+const BASE_URL = getApiUrl('v1');
+const log = createLogger('v1ApiClient');
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T | null> {
   try {
-    const res = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        ...(options?.headers || {}),
-      },
+    const headers = new Headers(options?.headers);
+    if (!headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+    if (!headers.has('Accept')) headers.set('Accept', 'application/json');
+    const res = await authFetch(url, {
       ...options,
+      headers,
     });
     if (!res.ok) {
-      console.warn(`[v1ApiClient] HTTP ${res.status} for ${url}`);
+      log.warn('V1 API request failed', { status: res.status });
       return null;
     }
     const data = await res.json();
     return data.data ?? data;
   } catch (err) {
-    console.warn(`[v1ApiClient] Network/Fetch error for ${url}:`, err);
+    log.warn('V1 API request failed', {
+      errorType: err instanceof Error ? err.name : 'UnknownError',
+    });
     return null;
   }
 }

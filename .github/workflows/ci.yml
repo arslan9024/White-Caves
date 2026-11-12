@@ -34,6 +34,9 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Verify supported runtime
+        run: npm run dev:precheck
+
       - name: Planning & Dedup Governance Gate
         run: npm run plans:validate
 
@@ -100,28 +103,28 @@ jobs:
   accessibility:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      
+
       - name: Build application
         run: npm run build
-      
+
       - name: Run accessibility audit tests
         run: npm run test:e2e:accessibility
-      
+
       - name: Upload accessibility report
         uses: actions/upload-artifact@v4
         if: always()
@@ -153,28 +156,28 @@ jobs:
   performance:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      
+
       - name: Build application
         run: npm run build
-      
+
       - name: Run performance baseline tests
         run: npm run test:e2e:performance
-      
+
       - name: Upload performance report
         uses: actions/upload-artifact@v4
         if: always()
@@ -186,28 +189,27 @@ jobs:
   build-check:
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Type check
         run: npm run typecheck
 
       - name: Type check Express server
         run: npm run typecheck:server
-      
+
       - name: Build check
         run: npm run build
-
 
   lighthouse:
     name: Lighthouse CI

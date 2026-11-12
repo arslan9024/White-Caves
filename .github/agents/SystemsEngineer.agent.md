@@ -8,7 +8,7 @@ tools: [codebase, read_file, create_file, replace_string_in_file, run_in_termina
 
 **Named after:** Ruchi Sanghvi (Facebook's 1st Female Engineer)  
 **Department:** Backend & API  
-**Stack:** Node.js 20+, Express 5, Prisma 6, MongoDB Atlas
+**Stack:** Node.js 22.19+, Express 5, Prisma 6, MongoDB Atlas
 
 ## Mission
 

@@ -24,7 +24,7 @@ describe('v1ApiClient REST Suite', () => {
   });
 
   it('handles network error gracefully and returns null', async () => {
-    vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network down'));
+    vi.spyOn(global, 'fetch').mockRejectedValue(new Error('Network down'));
 
     const result = await v1DealsApi.getAll();
     expect(result).toBeNull();

@@ -13,6 +13,9 @@
 import { safeStorage } from './safeStorage';
 import { createLogger } from './logger';
 import { HttpError } from './HttpError';
+import { getApiUrl } from '../config/constants';
+import { fetchWithRetry } from '../services/http/fetchWithRetry';
+import { ensureCsrfToken, readCsrfCookie } from './csrfToken';
 
 const log = createLogger('authFetch');
 const CSRF_HEADER_NAME = 'x-csrf-token';
@@ -62,6 +65,7 @@ function handleUnauthorized(): void {
 }
 
 function getCookieValue(name: string): string | null {
+  if (name === CSRF_COOKIE_NAME) return readCsrfCookie();
   if (typeof document === 'undefined') return null;
   const entries = document.cookie ? document.cookie.split(';') : [];
   for (const entry of entries) {
@@ -78,8 +82,7 @@ function withCsrfHeader(headers: Headers, input: RequestInfo | URL, method: stri
   const isMutationMethod = !['GET', 'HEAD', 'OPTIONS'].includes(upperMethod);
   if (!isMutationMethod || headers.has(CSRF_HEADER_NAME)) return;
 
-  const inputUrl = typeof input === 'string' ? input : input instanceof URL ? input.pathname : '';
-  const isAuthMutation = inputUrl.startsWith('/api/auth/');
+  const isAuthMutation = requestPath(input).startsWith('/api/auth/');
   if (!isAuthMutation) return;
 
   const csrfToken = getCookieValue(CSRF_COOKIE_NAME);
@@ -88,18 +91,31 @@ function withCsrfHeader(headers: Headers, input: RequestInfo | URL, method: stri
   }
 }
 
+function requestPath(input: RequestInfo | URL): string {
+  const value = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+  return new URL(value, 'https://relative.invalid').pathname;
+}
+
+function routeAuthInputToSameOrigin(input: RequestInfo | URL): RequestInfo | URL {
+  if (typeof window === 'undefined') return input;
+  if (typeof input === 'string' && input.startsWith('/')) return input;
+
+  const url = input instanceof Request ? new URL(input.url) : new URL(input.toString());
+  if (url.origin === window.location.origin) return input;
+
+  const sameOriginUrl = new URL(`${url.pathname}${url.search}`, window.location.origin);
+  return input instanceof Request ? new Request(sameOriginUrl, input.clone()) : sameOriginUrl;
+}
+
 async function attemptSessionRefresh(): Promise<boolean> {
   if (!refreshInFlight) {
     refreshInFlight = (async () => {
-      const csrfToken = getCookieValue(CSRF_COOKIE_NAME);
       const headers = new Headers();
-      if (csrfToken) {
-        headers.set(CSRF_HEADER_NAME, csrfToken);
-      }
       headers.set('Content-Type', 'application/json');
 
       try {
-        const response = await fetch(AUTH_REFRESH_ENDPOINT, {
+        headers.set(CSRF_HEADER_NAME, await ensureCsrfToken());
+        const response = await fetchWithRetry('/api/auth/refresh', {
           method: 'POST',
           credentials: 'include',
           headers,
@@ -139,15 +155,29 @@ export async function authFetch(
   input: RequestInfo | URL,
   init?: RequestInit & { timeout?: number }
 ): Promise<Response> {
-  const requestMethod = init?.method ?? 'GET';
+  const requestMethod = init?.method ?? (input instanceof Request ? input.method : 'GET');
+  const isAuthEndpoint = requestPath(input).startsWith('/api/auth/');
+  const requestInput = isAuthEndpoint
+    ? routeAuthInputToSameOrigin(input)
+    : typeof input === 'string' && (input === '/api' || input.startsWith('/api/'))
+      ? getApiUrl(input.slice(4))
+      : input;
   const runRequest = async (): Promise<Response> => {
     const token = safeStorage.get('token');
-    const headers = new Headers(init?.headers);
+    const headers = new Headers(
+      init?.headers ?? (input instanceof Request ? input.headers : undefined)
+    );
 
     if (token && !headers.has('Authorization')) {
       headers.set('Authorization', `Bearer ${token}`);
     }
 
+    const isAuthMutation =
+      !['GET', 'HEAD', 'OPTIONS'].includes(requestMethod.toUpperCase()) &&
+      requestPath(input).startsWith('/api/auth/');
+    if (isAuthMutation && !headers.has(CSRF_HEADER_NAME)) {
+      headers.set(CSRF_HEADER_NAME, await ensureCsrfToken());
+    }
     withCsrfHeader(headers, input, requestMethod);
 
     // Ensure JSON content-type for requests with a body (skip FormData — browser sets multipart boundary)
@@ -160,19 +190,23 @@ export async function authFetch(
     const controller = new AbortController();
     const timeoutId = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : null;
     // Respect caller-supplied signal (e.g. from AbortController in useEffect)
-    const signal = init?.signal
-      ? mergeAbortSignals(init.signal, controller.signal)
-      : controller.signal;
+    const merged = init?.signal ? mergeAbortSignals(init.signal, controller.signal) : undefined;
+    const signal = merged?.signal ?? controller.signal;
 
     try {
-      return await fetch(input, {
-        ...init,
-        headers,
-        signal,
-        credentials: init?.credentials ?? 'include',
-      });
+      return await fetchWithRetry(
+        requestInput instanceof Request ? requestInput.clone() : requestInput,
+        {
+          ...init,
+          method: requestMethod,
+          headers,
+          signal,
+          credentials: init?.credentials ?? 'include',
+        }
+      );
     } finally {
       if (timeoutId) clearTimeout(timeoutId);
+      merged?.cleanup();
     }
   };
 
@@ -180,20 +214,17 @@ export async function authFetch(
 
   // ── Centralized HTTP-status handling ───────────────────────────────
   if (response.status === 401) {
-    const normalizedUrl =
-      typeof input === 'string' ? input : input instanceof URL ? input.pathname : '';
-    const isRefreshRequest = normalizedUrl.startsWith(AUTH_REFRESH_ENDPOINT);
+    const isRefreshRequest = requestPath(input) === AUTH_REFRESH_ENDPOINT;
     if (!isRefreshRequest) {
       const refreshed = await attemptSessionRefresh();
       if (refreshed) {
         response = await runRequest();
-        if (response.status !== 401) {
-          return response;
-        }
       }
     }
-    handleUnauthorized();
-    throw new HttpError('Session expired — please sign in again', 401, response.statusText);
+    if (response.status === 401) {
+      handleUnauthorized();
+      throw new HttpError('Session expired — please sign in again', 401, response.statusText);
+    }
   }
 
   if (response.status === 403) {
@@ -201,9 +232,7 @@ export async function authFetch(
   }
 
   if (response.status >= 500) {
-    log.error(
-      `Server error ${response.status} for ${typeof input === 'string' ? input : 'request'}`
-    );
+    log.error(`Authenticated API request failed with HTTP ${response.status}`);
     throw new HttpError(
       `Server error (${response.status}) — please try again later`,
       response.status,
@@ -216,33 +245,28 @@ export async function authFetch(
 
 /**
  * Merge two AbortSignals so aborting either one aborts the request.
- * Uses AbortSignal.any() where available, falls back to event listener.
+ * The caller disposes listeners after completion, including retry backoff.
  */
-function mergeAbortSignals(a: AbortSignal, b: AbortSignal): AbortSignal {
+function mergeAbortSignals(
+  a: AbortSignal,
+  b: AbortSignal
+): { signal: AbortSignal; cleanup: () => void } {
   const controller = new AbortController();
   const onAbort = () => controller.abort();
 
-  const isAbortSignalLike = (signal: unknown): signal is AbortSignal => {
-    return Boolean(
-      signal &&
-        typeof signal === 'object' &&
-        'aborted' in signal &&
-        typeof (signal as AbortSignal).addEventListener === 'function'
-    );
-  };
-
-  const signals = [a, b].filter(isAbortSignalLike);
+  const signals = [a, b];
+  const cleanup = () => signals.forEach(signal => signal.removeEventListener('abort', onAbort));
 
   if (signals.some(signal => signal.aborted)) {
     controller.abort();
-    return controller.signal;
+    return { signal: controller.signal, cleanup };
   }
 
   signals.forEach(signal => {
     signal.addEventListener('abort', onAbort, { once: true });
   });
 
-  return controller.signal;
+  return { signal: controller.signal, cleanup };
 }
 
 /**

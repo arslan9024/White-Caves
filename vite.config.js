@@ -44,24 +44,23 @@ export default defineConfig(async ({ command }) => {
           // Let the plugin generate the SW using Workbox (generateSW strategy)
           strategies: 'generateSW',
           workbox: {
-              // Increase cache limit to accommodate large generated assets like stats.html
-              maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-  
-              // Precache all static assets produced by the Vite build
-              globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
-              // Navigation fallback: serve offline.html when network is unreachable
-              navigateFallback: '/offline.html',
-              // Don't apply the navigation fallback for API and asset requests
-              navigateFallbackDenylist: [/^\/api\//, /^\/favicon/, /^\/manifest/],
-              // API responses can contain account-specific data; never persist or replay them offline.
-              runtimeCaching: [
-                {
-                  // Private originals, OAuth codes and review mutations must never enter caches or replay queues.
-                  urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
-                  method: 'GET',
-                  handler: 'NetworkOnly',
-                },
+            // Increase cache limit to accommodate large generated assets like stats.html
+            maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
 
+            // Precache all static assets produced by the Vite build
+            globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+            // Navigation fallback: serve offline.html when network is unreachable
+            navigateFallback: '/offline.html',
+            // Don't apply the navigation fallback for API and asset requests
+            navigateFallbackDenylist: [/^\/api\//, /^\/favicon/, /^\/manifest/],
+            // API responses can contain account-specific data; never persist or replay them offline.
+            runtimeCaching: [
+              {
+                // Private originals, OAuth codes and review mutations must never enter caches or replay queues.
+                urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
+                method: 'GET',
+                handler: 'NetworkOnly',
+              },
 
               {
                 urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
@@ -171,7 +170,7 @@ export default defineConfig(async ({ command }) => {
   }
 
   return {
-    envDir: fs.existsSync("./secrets/.env") ? "./secrets" : ".",
+    envDir: fs.existsSync('./secrets/.env') ? './secrets' : '.',
     plugins,
     base: '/',
     server: {
@@ -180,13 +179,27 @@ export default defineConfig(async ({ command }) => {
       strictPort: false,
       allowedHosts: true,
       watch: {
-        ignored: ['**/logs/**', '**/.git/**', '**/secrets/**', '**/.agents/**', '**/.cache/**', '**/temp/**', '**/coverage/**', '**/*.log'],
+        ignored: [
+          '**/logs/**',
+          '**/.git/**',
+          '**/secrets/**',
+          '**/.agents/**',
+          '**/.cache/**',
+          '**/temp/**',
+          '**/coverage/**',
+          '**/*.log',
+        ],
       },
       proxy: {
+        '/socket.io': {
+          target: 'http://127.0.0.1:5001',
+          changeOrigin: true,
+          ws: true,
+        },
         '/api': {
           target: 'http://127.0.0.1:5001',
           changeOrigin: true,
-          configure: (proxy) => {
+          configure: proxy => {
             const origEmit = proxy.emit.bind(proxy);
             proxy.emit = (event, ...args) => {
               if (event === 'error') {
@@ -196,7 +209,7 @@ export default defineConfig(async ({ command }) => {
                   (err.code === 'ECONNREFUSED' ||
                     err.name === 'AggregateError' ||
                     (Array.isArray(err.errors) &&
-                      err.errors.some((e) => e && e.code === 'ECONNREFUSED')));
+                      err.errors.some(e => e && e.code === 'ECONNREFUSED')));
                 if (isConnRefused) {
                   if (res && typeof res.writeHead === 'function' && !res.headersSent) {
                     res.writeHead(503, { 'Content-Type': 'application/json' });
@@ -234,7 +247,7 @@ export default defineConfig(async ({ command }) => {
         '@mocks': path.resolve(__dirname, 'src/mocks'),
         '@store': path.resolve(__dirname, 'src/store'),
         '@hooks': path.resolve(__dirname, 'src/hooks'),
-        '@server': path.resolve(__dirname, 'server')
+        '@server': path.resolve(__dirname, 'server'),
       },
     },
     build: {
