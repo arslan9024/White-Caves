@@ -1,7 +1,7 @@
 # White Caves — Local Development Environment Setup Guide
 
 > **Document**: `LOCAL-DEV-ENVIRONMENT-SETUP.md`
-> **Version**: `1.0.0`
+> **Version**: `1.1.0`
 > **Last Updated**: `2026-11-13`
 > **Author**: AEGIS Sovereign Orchestrator
 > **Purpose**: Complete disaster recovery guide to rebuild the White Caves local development environment from scratch on a new laptop or after a system wipe.
@@ -12,30 +12,31 @@
 
 ### Software Requirements
 
-| Tool                         | Version                    | Purpose                                       |
-| :--------------------------- | :------------------------- | :-------------------------------------------- |
-| **Node.js**                  | `v22 LTS`                  | Runtime for both Frontend and Server          |
-| **Git**                      | Latest                     | Version control                               |
-| **VS Code / Antigravity**    | Latest                     | IDE with multi-root workspace support         |
-| **Cloudflare `cloudflared`** | Latest                     | Tunnel to expose local server to the internet |
-| **MongoDB**                  | `7.x` or **MongoDB Atlas** | Database engine                               |
-| **Docker** (optional)        | Latest                     | Containerized MongoDB or production builds    |
+| Tool | Version | Purpose |
+| :--- | :--- | :--- |
+| **Node.js** | `v22 LTS` | Runtime for Frontend, Server, and AEGIS toolchains |
+| **Git** | Latest | Version control |
+| **VS Code / Antigravity** | Latest | IDE with multi-root workspace support |
+| **Cloudflare `cloudflared`** | Latest | Tunnel to expose local server to the internet |
+| **MongoDB** | `7.x` or **MongoDB Atlas** | Database engine |
+| **Docker** (optional) | Latest | Containerized MongoDB or production builds |
 
 ### GitHub Repositories
 
-| Repository               | URL                                                      | Purpose                                                                    |
-| :----------------------- | :------------------------------------------------------- | :------------------------------------------------------------------------- |
-| **White-Caves-Frontend** | `https://github.com/arslan9024/White-Caves-Frontend.git` | React/Vite/Tailwind CRM frontend, deployed to **Vercel**                   |
-| **White-Caves-Server**   | `https://github.com/arslan9024/White-Caves-Server.git`   | Express/Prisma/WebSocket backend, runs on **Laptop via Cloudflare Tunnel** |
+| Repository | URL | Purpose |
+| :--- | :--- | :--- |
+| **White-Caves-Frontend** | `https://github.com/arslan9024/White-Caves-Frontend.git` | React/Vite/Tailwind CRM frontend, deployed to **Vercel** |
+| **White-Caves-Server** | `https://github.com/arslan9024/White-Caves-Server.git` | Express/Prisma/WebSocket backend, runs on **Laptop via Cloudflare Tunnel** |
+| **Aegis-Sterling** | `https://github.com/arslan9024/Aegis-Sterling.git` | Sovereign AI Orchestrator Core, multi-agent squads, protocol matrices, and knowledge base |
 
 ### Accounts & Services
 
-| Service           | Purpose                                           |
-| :---------------- | :------------------------------------------------ |
-| **Vercel**        | Frontend hosting & automatic deployments on push  |
-| **Cloudflare**    | DNS management + Tunnel for laptop-hosted backend |
-| **MongoDB Atlas** | Cloud-hosted MongoDB (or run locally)             |
-| **GitHub**        | Source code hosting, CI/CD via GitHub Actions     |
+| Service | Purpose |
+| :--- | :--- |
+| **Vercel** | Frontend hosting & automatic deployments on push |
+| **Cloudflare** | DNS management + Tunnel for laptop-hosted backend |
+| **MongoDB Atlas** | Cloud-hosted MongoDB (or run locally) |
+| **GitHub** | Source code hosting, CI/CD via GitHub Actions |
 
 ---
 
@@ -49,7 +50,7 @@ C:\Users\<USERNAME>\Documents\antigravity\
 │   ├── White-Caves-Frontend\              <-- 🌐 [Git Repo A] -> Vercel
 │   │   ├── src\                           <-- React components, pages, Redux store
 │   │   ├── public\                        <-- Static assets, favicon, manifest
-│   │   ├── .agents\                       <-- AEGIS orchestrator, skills, docs
+│   │   ├── .agents\                       <-- AEGIS runtime configs, skills, docs
 │   │   ├── .github\                       <-- GitHub Actions workflows
 │   │   ├── vite.config.js                 <-- Vite build configuration
 │   │   ├── vercel.json                    <-- Vercel deployment settings
@@ -84,7 +85,17 @@ C:\Users\<USERNAME>\Documents\antigravity\
 │   │   ├── tsconfig.json                  <-- Server TypeScript configuration
 │   │   └── package.json                   <-- Backend-only dependencies
 │   │
-│   ├── White-Caves-Mobile\                <-- 📱 [Git Repo C] Future Mobile App
+│   ├── Aegis-Sterling\                    <-- 🛡️ [Git Repo C] -> AEGIS AI Orchestrator Core
+│   │   ├── core\                          <-- Autonomous agent loop & runtime engine
+│   │   ├── engines\                       <-- Specialized intelligence engines
+│   │   ├── extensions\                    <-- Copilot, IDE & tooling extensions
+│   │   ├── knowledge\                     <-- Vector corpora, real estate rules, DLD/RERA SOPs
+│   │   ├── projects\                      <-- Multi-wave tracking & delivery manifests
+│   │   ├── shared\                        <-- Shared contracts, types & utilities
+│   │   ├── squads\                        <-- Departmental multi-agent workforce definitions
+│   │   └── README.md                      <-- Aegis-Sterling sovereign architecture docs
+│   │
+│   ├── White-Caves-Mobile\                <-- 📱 [Git Repo D] Future Mobile App (React Native/Flutter)
 │   │
 │   ├── secrets\                           <-- 🔐 Central Secrets Vault (Git-Ignored)
 │   │   ├── .env                           <-- Master environment variables
@@ -98,7 +109,7 @@ C:\Users\<USERNAME>\Documents\antigravity\
 │   │   └── README.md                      <-- Secrets documentation
 │   │
 │   ├── .gitignore                         <-- 🛡️ Protects secrets/ from any accidental commit
-│   └── White-Caves.code-workspace         <-- 🚀 Master multi-root workspace file
+│   └── White-Caves.code-workspace         <-- 🚀 Master multi-root workspace file (joins all repos)
 │
 └── silly-borg\                            <-- ⚡ Independent project (separate)
 ```
@@ -148,11 +159,14 @@ New-Item -ItemType Directory -Path "C:\Users\$env:USERNAME\Documents\antigravity
 ```powershell
 cd "C:\Users\$env:USERNAME\Documents\antigravity\White-Caves"
 
-# Clone Frontend
+# 1. Clone Frontend
 git clone https://github.com/arslan9024/White-Caves-Frontend.git
 
-# Clone Backend Server
+# 2. Clone Backend Server
 git clone https://github.com/arslan9024/White-Caves-Server.git
+
+# 3. Clone Aegis-Sterling (AI Orchestrator)
+git clone https://github.com/arslan9024/Aegis-Sterling.git
 ```
 
 ### Step 5: Install Dependencies
@@ -205,12 +219,11 @@ coverage/
 ### Step 8: Open the Multi-Root Workspace
 
 Double-click or open via IDE:
-
 ```
 C:\Users\<USERNAME>\Documents\antigravity\White-Caves\White-Caves.code-workspace
 ```
 
-This loads both **🌐 Frontend** and **⚙️ Server** side-by-side in your editor.
+This loads **🌐 Frontend**, **⚙️ Server**, **🛡️ Aegis-Sterling**, and **📱 Mobile** side-by-side in your editor.
 
 ---
 
@@ -265,6 +278,11 @@ VITE_API_URL=https://api.yourdomain.com
 │  └───────────────────┘  │
 │                         │
 │  ┌───────────────────┐  │
+│  │ Aegis-Sterling     │  │     Local Sovereign AI Engine
+│  │ Orchestrator Mesh │  │
+│  └───────────────────┘  │
+│                         │
+│  ┌───────────────────┐  │
 │  │ MongoDB            │  │     (Local Docker or MongoDB Atlas Cloud)
 │  │ localhost:27017    │  │
 │  └───────────────────┘  │
@@ -284,15 +302,16 @@ VITE_API_URL=https://api.yourdomain.com
 
 ## 6. Key Architecture Decisions (Reference)
 
-| Decision                   | Choice                                             | Rationale                                                                                                                                       |
-| :------------------------- | :------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Monorepo vs Multi-Repo** | Multi-Repo                                         | Frontend deploys to Vercel; Backend runs on laptop. Separate repos = zero merge conflicts, independent CI/CD, faster builds.                    |
-| **ORM**                    | Prisma (Primary)                                   | 180+ controllers already using Prisma. Auto-generated TypeScript types. Mongoose is deprecated and marked for removal.                          |
-| **Database**               | MongoDB                                            | Schema defined in `prisma/schema.prisma` with `provider = "mongodb"`.                                                                           |
-| **Backend Hosting**        | Laptop + Cloudflare Tunnel                         | Zero cloud hosting cost. WhatsApp bots, WebSockets, and long-running cron jobs need persistent processes that Vercel serverless cannot support. |
-| **Frontend Hosting**       | Vercel                                             | Automatic deploys on `git push`, global CDN, zero-config for Vite/React.                                                                        |
-| **Secrets Management**     | Central `secrets/` folder at root                  | Single source of truth shared by Frontend and Server. Git-ignored at every level.                                                               |
-| **Workspace**              | VS Code / Antigravity Multi-Root `.code-workspace` | All repos visible in one editor window with independent Git tracking per folder.                                                                |
+| Decision | Choice | Rationale |
+| :--- | :--- | :--- |
+| **Monorepo vs Multi-Repo** | Multi-Repo | Frontend deploys to Vercel; Backend runs on laptop; Aegis-Sterling governs AI mesh. Separate repos = zero merge conflicts, independent CI/CD, faster builds. |
+| **ORM** | Prisma (Primary) | 180+ controllers already using Prisma. Auto-generated TypeScript types. Mongoose is deprecated and marked for removal. |
+| **Database** | MongoDB | Schema defined in `prisma/schema.prisma` with `provider = "mongodb"`. |
+| **Backend Hosting** | Laptop + Cloudflare Tunnel | Zero cloud hosting cost. WhatsApp bots, WebSockets, and long-running cron jobs need persistent processes that Vercel serverless cannot support. |
+| **Frontend Hosting** | Vercel | Automatic deploys on `git push`, global CDN, zero-config for Vite/React. |
+| **AI Orchestration** | Aegis-Sterling Repo | Independent repository for autonomous agent mesh, prompt matrix, and real estate knowledge bases. |
+| **Secrets Management** | Central `secrets/` folder at root | Single source of truth shared by Frontend and Server. Git-ignored at every level. |
+| **Workspace** | VS Code / Antigravity Multi-Root `.code-workspace` | All repos visible in one editor window with independent Git tracking per folder. |
 
 ---
 
@@ -303,11 +322,12 @@ VITE_API_URL=https://api.yourdomain.com
 - [ ] Create master folder structure (`White-Caves/`)
 - [ ] Clone `White-Caves-Frontend` from GitHub
 - [ ] Clone `White-Caves-Server` from GitHub
-- [ ] Run `npm install` in both repos
+- [ ] Clone `Aegis-Sterling` from GitHub
+- [ ] Run `npm install` in Frontend and Server repos
 - [ ] Run `npx prisma generate` in Server repo
 - [ ] Restore `secrets/` folder from secure backup
 - [ ] Create root `.gitignore`
-- [ ] Copy `White-Caves.code-workspace` or recreate it
+- [ ] Open `White-Caves.code-workspace`
 - [ ] Verify Frontend dev server starts (`npm run dev`)
 - [ ] Verify Backend server starts (`npm run dev`)
 - [ ] Verify Cloudflare Tunnel connects (`npm run tunnel:start`)
