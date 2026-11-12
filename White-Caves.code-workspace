@@ -1,18 +1,78 @@
 {
-	"folders": [
-		{
-			"path": "/root"
-		},
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"github.copilot.enable": {
-			"plaintext": true,
-			"markdown": true,
-			"scminput": true
-		},
-		"standard.enable": false
-	}
+  "folders": [
+    {
+      "name": "White-Caves (Root)",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.suggest.autoImports": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "node_modules": false,
+      "dist": false,
+      "build": false
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/.git": true,
+      "**/coverage": true,
+      "**/.gemini": true,
+      "package-lock.json": true
+    },
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/node_modules/**": true,
+      "**/dist/**": true,
+      "**/build/**": true,
+      "**/.gemini/**": true
+    },
+    "github.copilot.enable": {
+      "plaintext": true,
+      "markdown": true,
+      "scminput": true
+    },
+    "github.copilot.chat.agent.autoFix": true,
+    "github.copilot.chat.alternateGeminiModelFPrompt.enabled": true,
+    "github.copilot.chat.alternateGptPrompt.enabled": true,
+    "github.copilot.chat.newWorkspace.useContext7": true,
+    "standard.enable": false,
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.profiles.windows": {
+      "PowerShell": {
+        "source": "PowerShell",
+        "icon": "terminal-powershell"
+      }
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "prisma.prisma",
+      "vitest.explorer",
+      "ms-vscode.powershell",
+      "github.copilot",
+      "github.copilot-chat"
+    ]
+  }
 }
