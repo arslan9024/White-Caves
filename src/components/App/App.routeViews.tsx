@@ -2,6 +2,7 @@ import { Suspense, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { UnifiedWorkspaceLayout } from '../../layouts/UnifiedWorkspaceLayout';
 import PortalLayout from '../../components/portal/PortalLayout';
+import type { PortalType } from '../../components/portal/PortalNavbar';
 import SuspenseLoader from '../../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../../components/RouteErrorBoundary';
 import { isCreatorSuperUserEmail } from '../../utils/superUserAccess';
@@ -46,7 +47,7 @@ export function createRouteRenderers(user: ReturnType<typeof useAppRuntime>['use
   const renderProtectedPortalPage = (
     page: ReactNode,
     section: string,
-    portalType: 'landlord' | 'tenant',
+    portalType: PortalType,
     allowedRoles: string[]
   ): ReactNode => (
     <ProtectedRoute allowedRoles={allowedRoles}>

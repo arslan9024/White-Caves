@@ -12,6 +12,8 @@ import { PricingToolsPage } from './App.pages';
 import { RentalManagementPage } from './App.pages';
 import { LandlordPortalPage } from './App.pages';
 import { TenantPortalPage } from './App.pages';
+import { BuyerPortalPage } from './App.pages';
+import { SellerPortalPage } from './App.pages';
 import { TenantScreeningPage } from './App.pages';
 import { ContractManagementPage } from './App.pages';
 import { SalesPipelinePage } from './App.pages';
@@ -43,7 +45,7 @@ import { MarketIntelligencePage } from './App.pages';
 export const portalRoutes: Array<{
   path: string;
   section: string;
-  portalType: 'landlord' | 'tenant';
+  portalType: 'landlord' | 'tenant' | 'buyer' | 'seller';
   page: ReactNode;
   allowedRoles: string[];
 }> = [
@@ -60,6 +62,20 @@ export const portalRoutes: Array<{
     portalType: 'tenant',
     page: <TenantPortalPage />,
     allowedRoles: ['tenant'],
+  },
+  {
+    path: '/buyer-portal',
+    section: 'Buyer Portal',
+    portalType: 'buyer',
+    page: <BuyerPortalPage />,
+    allowedRoles: ['buyer'],
+  },
+  {
+    path: '/seller-portal',
+    section: 'Seller Portal',
+    portalType: 'seller',
+    page: <SellerPortalPage />,
+    allowedRoles: ['seller'],
   },
 ];
 export const ownerWhatsAppRoutes: Array<{ path: string; section: string; page: ReactNode }> = [

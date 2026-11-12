@@ -23,7 +23,7 @@ import { auth } from '../../config/firebase';
 import { signOut } from 'firebase/auth';
 import { safeStorage } from '../../utils/safeStorage';
 
-export type PortalType = 'landlord' | 'tenant';
+export type PortalType = 'landlord' | 'tenant' | 'buyer' | 'seller';
 
 interface PortalNavbarProps {
   /** Which portal this navbar belongs to — controls badge label */
@@ -36,8 +36,12 @@ const getPortalLabel = (portalType: PortalType): string => {
       return 'Landlord Portal';
     case 'tenant':
       return 'Tenant Portal';
+    case 'buyer':
+      return 'Buyer Portal';
+    case 'seller':
+      return 'Seller Portal';
     default:
-      return 'Portal';
+      return 'Client Portal';
   }
 };
 
@@ -47,6 +51,10 @@ const getPortalColor = (portalType: PortalType): string => {
       return '#C41E3A';
     case 'tenant':
       return '#0f766e';
+    case 'buyer':
+      return '#2563eb';
+    case 'seller':
+      return '#d97706';
     default:
       return '#0f766e';
   }

@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 850" width="100%" height="100%" style="background:#0b0f19; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="goldRedGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EF4444" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="clientGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+    <linearGradient id="staffGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b91c1c" />
+      <stop offset="100%" stop-color="#7f1d1d" />
+    </linearGradient>
+
+    <!-- Filters / Glow -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+
+    <!-- Markers -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8" />
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#ef4444" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#10b981" />
+    </marker>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1100" height="850" fill="url(#bgGrad)" />
+
+  <!-- Grid Pattern Overlay -->
+  <g opacity="0.05">
+    <path d="M 0,50 H 1100 M 0,100 H 1100 M 0,150 H 1100 M 0,200 H 1100 M 0,250 H 1100 M 0,300 H 1100 M 0,350 H 1100 M 0,400 H 1100 M 0,450 H 1100 M 0,500 H 1100 M 0,550 H 1100 M 0,600 H 1100 M 0,650 H 1100 M 0,700 H 1100 M 0,750 H 1100 M 0,800 H 1100" stroke="#ffffff" stroke-width="1" />
+    <path d="M 50,0 V 850 M 100,0 V 850 M 150,0 V 850 M 200,0 V 850 M 250,0 V 850 M 300,0 V 850 M 350,0 V 850 M 400,0 V 850 M 450,0 V 850 M 500,0 V 850 M 550,0 V 850 M 600,0 V 850 M 650,0 V 850 M 700,0 V 850 M 750,0 V 850 M 800,0 V 850 M 850,0 V 850 M 900,0 V 850 M 950,0 V 850 M 1000,0 V 850 M 1050,0 V 850" stroke="#ffffff" stroke-width="1" />
+  </g>
+
+  <!-- Title Header -->
+  <g transform="translate(60, 45)">
+    <rect x="-10" y="-8" width="5" height="42" fill="#EF4444" rx="2" />
+    <text x="8" y="16" fill="#F8FAFC" font-size="22" font-weight="700" letter-spacing="0.5">WHITE CAVES REAL ESTATE LLC — AEGIS V5.0</text>
+    <text x="8" y="36" fill="#94A3B8" font-size="13" font-weight="400">Public Website to App Transition &amp; Dual-Track RBAC Mesh Architecture (TURING-SEPARATION-010)</text>
+  </g>
+
+  <!-- ==================== LEVEL 1: PUBLIC SHOWCASE ==================== -->
+  <g transform="translate(60, 110)" filter="url(#shadow)">
+    <rect width="980" height="110" rx="12" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.5" />
+    <rect x="0" y="0" width="980" height="6" rx="3" fill="url(#goldRedGrad)" />
+    
+    <text x="30" y="38" fill="#F1F5F9" font-size="16" font-weight="700">🌐 1. PUBLIC MARKETING WEBSITE</text>
+    <text x="30" y="58" fill="#64748B" font-size="12">Domain: whitecaves.ae (High Performance Showcase, Luxury Branding, Off-Plan Catalog, Market Insights)</text>
+
+    <!-- 3 Entry Points -->
+    <g transform="translate(30, 70)">
+      <rect width="280" height="28" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <text x="140" y="18" fill="#38BDF8" font-size="11" font-weight="600" text-anchor="middle">A. "Client Portal / Sign In" CTA</text>
+    </g>
+    <g transform="translate(350, 70)">
+      <rect width="280" height="28" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <text x="140" y="18" fill="#F59E0B" font-size="11" font-weight="600" text-anchor="middle">B. Contextual: "Make Offer" / "Valuation"</text>
+    </g>
+    <g transform="translate(670, 70)">
+      <rect width="280" height="28" rx="6" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <text x="140" y="18" fill="#10B981" font-size="11" font-weight="600" text-anchor="middle">C. Broker Deep-Link (WhatsApp/Email)</text>
+    </g>
+  </g>
+
+  <!-- Connectors from Level 1 to Gateway -->
+  <path d="M 230,220 V 270" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)" />
+  <path d="M 550,220 V 270" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)" />
+  <path d="M 870,220 V 270" stroke="#10b981" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow)" />
+
+  <!-- ==================== LEVEL 2: AUTH & RESOLUTION GATEWAY ==================== -->
+  <g transform="translate(260, 275)" filter="url(#shadow)">
+    <rect width="580" height="120" rx="14" fill="#1e1b4b" stroke="#6366f1" stroke-width="2" />
+    <rect x="0" y="0" width="580" height="5" rx="2" fill="#818cf8" />
+
+    <text x="290" y="32" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle">🔐 2. UNIVERSAL AUTH &amp; ROLE RESOLUTION GATEWAY</text>
+    <text x="290" y="52" fill="#c7d2fe" font-size="12" text-anchor="middle">Routes: /signin | /signup | /select-role (JWT Token &amp; OAuth Multi-Provider)</text>
+
+    <!-- Sub-badges -->
+    <g transform="translate(40, 70)">
+      <rect width="140" height="30" rx="6" fill="#312e81" stroke="#4f46e5" stroke-width="1"/>
+      <text x="70" y="19" fill="#e0e7ff" font-size="11" text-anchor="middle">Email &amp; Password</text>
+    </g>
+    <g transform="translate(220, 70)">
+      <rect width="140" height="30" rx="6" fill="#312e81" stroke="#4f46e5" stroke-width="1"/>
+      <text x="70" y="19" fill="#e0e7ff" font-size="11" text-anchor="middle">Mobile OTP / SMS</text>
+    </g>
+    <g transform="translate(400, 70)">
+      <rect width="140" height="30" rx="6" fill="#312e81" stroke="#4f46e5" stroke-width="1"/>
+      <text x="70" y="19" fill="#e0e7ff" font-size="11" text-anchor="middle">Google SSO / Apple</text>
+    </g>
+  </g>
+
+  <!-- Forking Lines to Client vs Staff -->
+  <path d="M 400,395 V 450 H 260 V 480" stroke="#38bdf8" stroke-width="2.5" fill="none" marker-end="url(#arrow)" />
+  <path d="M 700,395 V 450 H 840 V 480" stroke="#ef4444" stroke-width="2.5" fill="none" marker-end="url(#arrow-red)" />
+
+  <text x="260" y="440" fill="#38bdf8" font-size="12" font-weight="700" text-anchor="middle">RANK 3 (CLIENT ACTORS)</text>
+  <text x="840" y="440" fill="#ef4444" font-size="12" font-weight="700" text-anchor="middle">RANK 2 (INTERNAL STAFF)</text>
+
+  <!-- ==================== LEVEL 3A: CLIENT PORTAL MESH (RANK 3) ==================== -->
+  <g transform="translate(60, 485)" filter="url(#shadow)">
+    <rect width="470" height="320" rx="14" fill="url(#cardGrad)" stroke="#0284c7" stroke-width="2" />
+    <rect x="0" y="0" width="470" height="6" rx="3" fill="#0284c7" />
+
+    <text x="25" y="35" fill="#38bdf8" font-size="16" font-weight="700">👤 CLIENT EXPERIENCE PORTALS (Dept 08)</text>
+    <text x="25" y="55" fill="#94a3b8" font-size="11">Clean, isolated self-service experience using PortalLayout &amp; PortalNavbar</text>
+
+    <!-- 4 Portals -->
+    <!-- Landlord -->
+    <g transform="translate(20, 75)">
+      <rect width="205" height="100" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+      <text x="15" y="24" fill="#f8fafc" font-size="13" font-weight="700">🏢 Landlord Portal</text>
+      <text x="15" y="42" fill="#38bdf8" font-size="11">Route: /landlord-portal</text>
+      <text x="15" y="62" fill="#94a3b8" font-size="10">• Properties &amp; Units Owned</text>
+      <text x="15" y="78" fill="#94a3b8" font-size="10">• Rent Inflow &amp; Maintenance</text>
+      <text x="15" y="92" fill="#94a3b8" font-size="10">• Ejari Registration Copies</text>
+    </g>
+
+    <!-- Tenant -->
+    <g transform="translate(245, 75)">
+      <rect width="205" height="100" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+      <text x="15" y="24" fill="#f8fafc" font-size="13" font-weight="700">🔑 Tenant Portal</text>
+      <text x="15" y="42" fill="#10b981" font-size="11">Route: /tenant-portal</text>
+      <text x="15" y="62" fill="#94a3b8" font-size="10">• Active Lease Contract</text>
+      <text x="15" y="78" fill="#94a3b8" font-size="10">• Rent Payments &amp; Cheques</text>
+      <text x="15" y="92" fill="#94a3b8" font-size="10">• Maintenance Work Orders</text>
+    </g>
+
+    <!-- Buyer -->
+    <g transform="translate(20, 190)">
+      <rect width="205" height="105" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+      <text x="15" y="24" fill="#f8fafc" font-size="13" font-weight="700">🏠 Buyer Portal</text>
+      <text x="15" y="42" fill="#6366f1" font-size="11">Route: /buyer-portal</text>
+      <text x="15" y="62" fill="#94a3b8" font-size="10">• Favorite Saved Listings</text>
+      <text x="15" y="78" fill="#94a3b8" font-size="10">• Form B &amp; MOU Documents</text>
+      <text x="15" y="94" fill="#94a3b8" font-size="10">• Title Deed Tracking</text>
+    </g>
+
+    <!-- Seller -->
+    <g transform="translate(245, 190)">
+      <rect width="205" height="105" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+      <text x="15" y="24" fill="#f8fafc" font-size="13" font-weight="700">💰 Seller Portal</text>
+      <text x="15" y="42" fill="#f59e0b" font-size="11">Route: /seller-portal</text>
+      <text x="15" y="62" fill="#94a3b8" font-size="10">• Valuation &amp; Pricing Tools</text>
+      <text x="15" y="78" fill="#94a3b8" font-size="10">• Form A Listing Agreements</text>
+      <text x="15" y="94" fill="#94a3b8" font-size="10">• Offers &amp; Transfer Escrow</text>
+    </g>
+  </g>
+
+  <!-- ==================== LEVEL 3B: STAFF OPERATING MESH (RANK 2) ==================== -->
+  <g transform="translate(570, 485)" filter="url(#shadow)">
+    <rect width="470" height="320" rx="14" fill="url(#cardGrad)" stroke="#ef4444" stroke-width="2" />
+    <rect x="0" y="0" width="470" height="6" rx="3" fill="#ef4444" />
+
+    <text x="25" y="35" fill="#f87171" font-size="16" font-weight="700">🛡️ AEGIS 13-FLOOR OPERATING MESH</text>
+    <text x="25" y="55" fill="#94a3b8" font-size="11">Internal Staff, Brokers &amp; Executives (/dashboard) with Level 5 RBAC</text>
+
+    <!-- Floor Cards -->
+    <g transform="translate(20, 75)">
+      <rect width="430" height="42" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1" />
+      <text x="15" y="26" fill="#f1f5f9" font-size="12" font-weight="600">Floors 1 &amp; 2: Luxury Sales &amp; Strategic Off-Plan</text>
+      <text x="350" y="26" fill="#ef4444" font-size="11" font-weight="700">@Hunter / @Daisy</text>
+    </g>
+    <g transform="translate(20, 125)">
+      <rect width="430" height="42" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1" />
+      <text x="15" y="26" fill="#f1f5f9" font-size="12" font-weight="600">Floor 4: Residential Leasing &amp; Tenant Screening</text>
+      <text x="350" y="26" fill="#38bdf8" font-size="11" font-weight="700">@Mary</text>
+    </g>
+    <g transform="translate(20, 175)">
+      <rect width="430" height="42" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1" />
+      <text x="15" y="26" fill="#f1f5f9" font-size="12" font-weight="600">Floor 6: Revenue, Commission Splits &amp; VAT/Tax</text>
+      <text x="350" y="26" fill="#f59e0b" font-size="11" font-weight="700">@Vesta</text>
+    </g>
+    <g transform="translate(20, 225)">
+      <rect width="430" height="42" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1" />
+      <text x="15" y="26" fill="#f1f5f9" font-size="12" font-weight="600">Floors 10 &amp; 11: RERA Compliance &amp; Conveyancing</text>
+      <text x="350" y="26" fill="#10b981" font-size="11" font-weight="700">@Echo / @Mira</text>
+    </g>
+    <g transform="translate(20, 275)">
+      <rect width="430" height="35" rx="6" fill="#1e1b4b" stroke="#6366f1" stroke-width="1" />
+      <text x="215" y="22" fill="#c7d2fe" font-size="11" font-weight="700" text-anchor="middle">Floor 13: Executive Council &amp; Sovereign Control Cockpit</text>
+    </g>
+  </g>
+
+  <!-- Footer Indicator -->
+  <g transform="translate(60, 825)">
+    <text x="0" y="0" fill="#475569" font-size="11">White Caves AEGIS Architecture Standard • Zero Cross-Contamination Law • Single-Purpose File &amp; Deduplication Compliant</text>
+  </g>
+</svg>

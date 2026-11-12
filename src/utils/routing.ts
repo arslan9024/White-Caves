@@ -65,9 +65,11 @@ export function getPostLoginRoute(
   }
 
   if (rank === 3) {
+    if (profileCompleted === false) return '/profile';
     if (resolved === 'landlord') return '/landlord-portal';
     if (resolved === 'tenant') return '/tenant-portal';
-    if (profileCompleted === false) return '/profile';
+    if (resolved === 'buyer') return '/buyer-portal';
+    if (resolved === 'seller') return '/seller-portal';
     return '/dashboard';
   }
 

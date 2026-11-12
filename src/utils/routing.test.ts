@@ -21,10 +21,11 @@ describe('getPostLoginRoute', () => {
     expect(getPostLoginRoute('buyer', null, { status: 'pending' })).toBe('/pending-approval');
   });
 
-  it('routes customer roles to the correct portal or dashboard fallback', () => {
+  it('routes customer roles to the correct portal', () => {
     expect(getPostLoginRoute('tenant')).toBe('/tenant-portal');
     expect(getPostLoginRoute('landlord')).toBe('/landlord-portal');
-    expect(getPostLoginRoute('buyer')).toBe('/dashboard');
+    expect(getPostLoginRoute('buyer')).toBe('/buyer-portal');
+    expect(getPostLoginRoute('seller')).toBe('/seller-portal');
   });
 
   it('routes CRM customer roles with incomplete profile to /profile', () => {

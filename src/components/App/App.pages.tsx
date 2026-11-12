@@ -27,6 +27,8 @@ export const PricingToolsPage = lazy(() => import('../../pages/seller/PricingToo
 export const RentalManagementPage = lazy(() => import('../../pages/landlord/RentalManagementPage'));
 export const LandlordPortalPage = lazy(() => import('../../pages/landlord/LandlordPortalPage'));
 export const TenantPortalPage = lazy(() => import('../../pages/tenant/TenantPortalPage'));
+export const BuyerPortalPage = lazy(() => import('../../pages/buyer/BuyerPortalPage'));
+export const SellerPortalPage = lazy(() => import('../../pages/seller/SellerPortalPage'));
 export const TenantScreeningPage = lazy(
   () => import('../../pages/leasing-agent/TenantScreeningPage')
 );
