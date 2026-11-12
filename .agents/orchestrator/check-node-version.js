@@ -3,7 +3,7 @@
 /**
  * Dev runtime guard for White Caves.
  *
- * PDF.js 6 and the application toolchain require Node 22.13+ or Node 24+.
+ * PDF.js 6 and the application toolchain require Node >=22.13 (or >=24).
  * We fail fast with a clear message so users don't hit opaque runtime errors.
  */
 

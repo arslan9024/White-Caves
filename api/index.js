@@ -22,17 +22,19 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000,http:
   .split(',')
   .map(s => s.trim());
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (server-to-server, health checks)
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS: origin ${origin} not allowed`));
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (server-to-server, health checks)
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin ${origin} not allowed`));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // ─── Health ──────────────────────────────────────────────────────────────
@@ -51,7 +53,9 @@ app.get('/api/system/health', async (_req, res) => {
   try {
     await getPrismaClient().$runCommandRaw({ ping: 1 });
     dbConnected = true;
-  } catch { /* db unreachable */ }
+  } catch {
+    /* db unreachable */
+  }
 
   res.json({
     server: { status: 'healthy', environment: 'production', platform: 'vercel' },
@@ -72,9 +76,16 @@ app.get('/api/system/health', async (_req, res) => {
 app.get('/api/properties', async (req, res) => {
   try {
     const {
-      type, status, area, minPrice, maxPrice,
-      search, page = '1', pageSize = '20',
-      sortBy = 'createdAt', sortOrder = 'desc',
+      type,
+      status,
+      area,
+      minPrice,
+      maxPrice,
+      search,
+      page = '1',
+      pageSize = '20',
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
     } = req.query;
 
     const limit = Math.min(100, Math.max(1, parseInt(pageSize) || 20));
@@ -98,14 +109,24 @@ app.get('/api/properties', async (req, res) => {
     }
 
     const [properties, total] = await Promise.all([
-      getPrismaClient().property.findMany({ where, skip, take: limit, orderBy: { [sortBy]: sortOrder } }),
+      getPrismaClient().property.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { [sortBy]: sortOrder },
+      }),
       getPrismaClient().property.count({ where }),
     ]);
 
     res.json({
       success: true,
       properties,
-      pagination: { page: parseInt(page) || 1, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
+      pagination: {
+        page: parseInt(page) || 1,
+        pageSize: limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
     console.error('Properties API error:', error);
@@ -135,7 +156,7 @@ import InventoryProperty from '../server/models/InventoryProperty.js';
 app.get('/api/inventory/query', async (req, res) => {
   try {
     await connectDB();
-    
+
     // Build filters from query parameters
     const filters = {
       constructionStage: req.query.constructionStage,
@@ -159,7 +180,7 @@ app.get('/api/inventory/query', async (req, res) => {
       viewType: req.query.viewType,
       page: req.query.page ? parseInt(req.query.page) : 1,
       limit: req.query.limit ? parseInt(req.query.limit) : 20,
-      sortBy: req.query.sortBy || 'createdAt'
+      sortBy: req.query.sortBy || 'createdAt',
     };
 
     // Remove null values
@@ -178,7 +199,7 @@ app.get('/api/inventory/query', async (req, res) => {
 app.get('/api/inventory/:id', async (req, res) => {
   try {
     await connectDB();
-    
+
     const property = await InventoryProperty.findById(req.params.id)
       .populate('owners', 'name phone email company')
       .populate('primaryOwner', 'name phone email company');
@@ -197,7 +218,7 @@ app.get('/api/inventory/:id', async (req, res) => {
 app.get('/api/inventory/by-pnumber/:pNumber', async (req, res) => {
   try {
     await connectDB();
-    
+
     const property = await InventoryProperty.findByPNumber(req.params.pNumber);
 
     if (!property) {
@@ -214,7 +235,7 @@ app.get('/api/inventory/by-pnumber/:pNumber', async (req, res) => {
 app.put('/api/inventory/:id/status', async (req, res) => {
   try {
     await connectDB();
-    
+
     const statusUpdate = req.body;
     const updatedBy = req.user?.id || req.query.updatedBy || 'system';
 
@@ -227,10 +248,10 @@ app.put('/api/inventory/:id/status', async (req, res) => {
     // TODO: Emit status change event to PropertyStatusEventService
     // This will trigger updates in Linda, Nina, and other systems
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       data: result,
-      message: 'Property status updated and events published'
+      message: 'Property status updated and events published',
     });
   } catch (error) {
     console.error('Status update error:', error);
@@ -241,16 +262,16 @@ app.put('/api/inventory/:id/status', async (req, res) => {
 app.get('/api/inventory/statistics', async (req, res) => {
   try {
     await connectDB();
-    
+
     const stats = await InventoryProperty.getStatusBreakdown();
     const areaStats = await InventoryProperty.getAreaStats();
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       data: {
         statusBreakdown: stats[0],
-        areaStatistics: areaStats
-      }
+        areaStatistics: areaStats,
+      },
     });
   } catch (error) {
     console.error('Statistics error:', error);
@@ -267,10 +288,19 @@ app.get('/api/inventory/statistics', async (req, res) => {
 import DynamicPricingEngine from '../src/services/DynamicPricingEngine.js';
 import LeadScoringEngine from '../src/services/LeadScoringEngine.js';
 import ServiceRecommendationEngine from '../src/services/ServiceRecommendationEngine.js';
-import AIOrchestrationEngine from '../src/services/LeadScoringEngine.js'; // Appended to file
-import AITaskRouterService from '../src/services/LeadScoringEngine.js'; // Appended to file
-import ContextPreservationEngine from '../src/services/DynamicPricingEngine.js'; // Appended to file
 import ServiceBooking from '../server/models/ServiceBooking.js';
+
+// Honest 501 envelope for features that exist only in the full backend
+// (server/index.ts) and are not deployed on Vercel serverless.
+const notImplemented = (feature, backendRoute) => (_req, res) => {
+  res.status(501).json({
+    success: false,
+    error: 'NOT_IMPLEMENTED_ON_SERVERLESS',
+    feature,
+    backendRoute,
+    message: `${feature} requires the full White Caves backend. Point VITE_API_URL at the full API deployment (${backendRoute}).`,
+  });
+};
 
 // ============================================================
 // DYNAMIC PRICING API
@@ -290,7 +320,7 @@ app.post('/api/services/pricing/calculate', async (req, res) => {
     res.json({
       success: true,
       pricing,
-      message: `Dynamic pricing calculated: ${pricing.finalRate * 100}% with ${pricing.metadata.propertyRarity} property multiplier`
+      message: `Dynamic pricing calculated: ${pricing.finalRate * 100}% with ${pricing.metadata.propertyRarity} property multiplier`,
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -312,7 +342,7 @@ app.post('/api/services/pricing/compare', async (req, res) => {
       success: true,
       comparison,
       savings: comparison.isIncrease ? 'Premium applied' : 'Loyalty discount applied',
-      transparencyNote: 'Client sees exact breakdown of pricing factors'
+      transparencyNote: 'Client sees exact breakdown of pricing factors',
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -338,7 +368,7 @@ app.post('/api/leads/:leadId/score', async (req, res) => {
       grade: scoreResult.scoreGrade,
       conversionProbability: scoreResult.conversionProbability,
       recommendedAction: scoreResult.recommendedAction,
-      breakdown: scoreResult.components
+      breakdown: scoreResult.components,
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -353,7 +383,7 @@ app.get('/api/leads/scoring/analytics', async (req, res) => {
       success: true,
       message: 'Lead scoring engaged on all leads',
       expectedConversionImprovement: '8% → 20% (+150%)',
-      analyticsEndpoint: 'Tracking all lead scores in real-time'
+      analyticsEndpoint: 'Tracking all lead scores in real-time',
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -372,17 +402,16 @@ app.post('/api/customers/:customerId/recommendations', async (req, res) => {
     // In real implementation, fetch customer from DB
     const customerData = req.body;
 
-    const recommendations = ServiceRecommendationEngine.getRecommendations(
-      customerData,
-      { limit: limit || 5 }
-    );
+    const recommendations = ServiceRecommendationEngine.getRecommendations(customerData, {
+      limit: limit || 5,
+    });
 
     res.json({
       success: true,
       customerId,
       recommendations: recommendations.recommendations,
       estimatedRevenue: recommendations.estimatedAdditionalRevenue,
-      message: `${recommendations.recommendations.length} service recommendations for ${customerData.tier} tier customer`
+      message: `${recommendations.recommendations.length} service recommendations for ${customerData.tier} tier customer`,
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -404,7 +433,7 @@ app.post('/api/recommendations/:recId/outcome', async (req, res) => {
     res.json({
       success: true,
       message: `Recommendation ${accepted ? 'accepted' : 'declined'}`,
-      outcome
+      outcome,
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -428,8 +457,8 @@ app.post('/api/services/book', async (req, res) => {
       message: `Service booking created: ${booking.serviceName}`,
       tracking: {
         url: `/api/services/${booking.serviceBookingId}/status`,
-        realTimeUpdates: 'Available via WebSocket or polling'
-      }
+        realTimeUpdates: 'Available via WebSocket or polling',
+      },
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -456,7 +485,7 @@ app.get('/api/services/:bookingId/status', async (req, res) => {
       milestones: booking.progress.milestones,
       blockers: booking.progress.blockers,
       estimatedCompletion: booking.progress.estimatedCompletionDate,
-      nextAction: booking.progress.notes[booking.progress.notes.length - 1]?.text || 'In progress'
+      nextAction: booking.progress.notes[booking.progress.notes.length - 1]?.text || 'In progress',
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -478,8 +507,8 @@ app.get('/api/customers/:customerId/services', async (req, res) => {
         bookingId: b.serviceBookingId,
         name: b.serviceName,
         stage: b.progress.stage,
-        completion: b.progress.completionPercentage
-      }))
+        completion: b.progress.completionPercentage,
+      })),
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -490,145 +519,39 @@ app.get('/api/customers/:customerId/services', async (req, res) => {
 // AI ORCHESTRATION API (600% IMPROVEMENT)
 // ============================================================
 
-app.post('/api/ai/orchestrate', async (req, res) => {
-  try {
-    const { taskDescription, context } = req.body;
-
-    const result = await AIOrchestrationEngine.orchestrateTask(taskDescription, context);
-
-    res.json({
-      success: result.success,
-      orchestrationId: result.orchestrationId,
-      taskCategory: result.taskCategory,
-      assistantsUsed: result.assistantsUsed,
-      elapsedTime: result.elapsedTime + 'ms',
-      results: result.results,
-      nextStep: result.recommendedNextStep,
-      speedGain: '6x faster than sequential'
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
+app.post('/api/ai/orchestrate', notImplemented('AI orchestration', '/api/orchestrator'));
 
 // ============================================================
 // AI TASK ROUTING API (600% IMPROVEMENT)
 // ============================================================
 
-app.post('/api/ai/route-task', async (req, res) => {
-  try {
-    const { taskType, context } = req.body;
+app.post('/api/ai/route-task', notImplemented('AI task routing', '/api/orchestrator'));
 
-    const routing = AITaskRouterService.getOptimalAssistant(taskType, context);
-
-    res.json({
-      success: true,
-      recommendedAssistant: routing.recommendedAssistant,
-      confidence: routing.confidence,
-      estimatedTime: routing.estimatedProcessingTime,
-      alternatives: routing.alternativeAssistants,
-      reasoning: `${routing.recommendedAssistant} is ${routing.confidence} likely to succeed at ${taskType}`
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-app.get('/api/ai/routing-analytics', (req, res) => {
-  try {
-    const { taskType } = req.query;
-
-    const analytics = AITaskRouterService.getRoutingAnalytics(taskType);
-
-    res.json({
-      success: true,
-      analytics,
-      improvement: 'Routing decisions becoming 30% faster through AI learning'
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
+app.get('/api/ai/routing-analytics', notImplemented('AI routing analytics', '/api/orchestrator'));
 
 // ============================================================
 // CONTEXT PRESERVATION API (600% IMPROVEMENT)
 // ============================================================
 
-app.post('/api/conversations/:conversationId/context', async (req, res) => {
-  try {
-    const { conversationId } = req.params;
-    const { clientData } = req.body;
+app.post(
+  '/api/conversations/:conversationId/context',
+  notImplemented('Conversation context', '/api/assistants')
+);
 
-    const context = ContextPreservationEngine.initializeContext(conversationId, clientData);
+app.post(
+  '/api/conversations/:conversationId/message',
+  notImplemented('Conversation messaging', '/api/assistants')
+);
 
-    res.json({
-      success: true,
-      conversationId,
-      context,
-      message: 'Context initialized - conversation maintained across assistant switches'
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
+app.post(
+  '/api/conversations/:conversationId/switch-assistant',
+  notImplemented('Assistant handoff', '/api/assistants')
+);
 
-app.post('/api/conversations/:conversationId/message', async (req, res) => {
-  try {
-    const { conversationId } = req.params;
-    const { message } = req.body;
-
-    const result = ContextPreservationEngine.addMessage(conversationId, message);
-
-    res.json({
-      success: result.success,
-      conversationId,
-      messageId: result.messageId,
-      contextMaintained: true
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-app.post('/api/conversations/:conversationId/switch-assistant', async (req, res) => {
-  try {
-    const { conversationId } = req.params;
-    const { newAssistantId, reason } = req.body;
-
-    const handoff = ContextPreservationEngine.switchAssistant(
-      conversationId,
-      newAssistantId,
-      reason
-    );
-
-    res.json({
-      success: handoff.success,
-      handoffData: handoff.handoffData,
-      contextForNewAssistant: handoff.contextForNewAssistant,
-      seamlessHandoff: true
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-app.get('/api/conversations/:conversationId/context', async (req, res) => {
-  try {
-    const { conversationId } = req.params;
-    const { assistantId } = req.query;
-
-    const context = ContextPreservationEngine.getContextForAssistant(conversationId, assistantId);
-
-    res.json({
-      success: true,
-      conversationId,
-      context,
-      message: 'Full context available for seamless handoff'
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
+app.get(
+  '/api/conversations/:conversationId/context',
+  notImplemented('Conversation context', '/api/assistants')
+);
 
 // ============================================================
 // ANALYTICS & IMPROVEMENTS DASHBOARD
@@ -646,14 +569,14 @@ app.get('/api/improvements/dashboard', async (req, res) => {
             'Lead Scoring: 8% → 20% conversion (+150%)',
             'Service Recommendations: +30% upsell adoption',
             'Workflow Automation: 60 → 10 days (-83%)',
-            'Real-time Tracking: 100% customer visibility'
+            'Real-time Tracking: 100% customer visibility',
           ],
           metrics: {
             conversionImprovement: '+150%',
             revenueGain: '+200%',
             speedGain: '6x faster',
-            efficiencyGain: '80% less manual work'
-          }
+            efficiencyGain: '80% less manual work',
+          },
         },
         aiCommandCenter: {
           title: '600% AI Command Center Improvement',
@@ -664,16 +587,16 @@ app.get('/api/improvements/dashboard', async (req, res) => {
             'Learning & Optimization: Continuous improvement loop',
             'Proactive Monitoring: 24/7 opportunity detection',
             'Context Preservation: No repetition between assistants',
-            'Autonomous Escalation: Know when to ask for help'
+            'Autonomous Escalation: Know when to ask for help',
           ],
           metrics: {
             volumeGain: '6x more leads processed',
             speedGain: '75% faster processes',
             accuracyGain: '70% → 95%',
             costGain: '6x efficiency (fewer agents needed)',
-            satisfactionGain: '4.0 → 4.8 NPS'
-          }
-        }
+            satisfactionGain: '4.0 → 4.8 NPS',
+          },
+        },
       },
       activeServices: [
         'DynamicPricingEngine',
@@ -682,14 +605,14 @@ app.get('/api/improvements/dashboard', async (req, res) => {
         'AIOrchestrationEngine',
         'AITaskRouterService',
         'ContextPreservationEngine',
-        'ServiceBookingTracking'
+        'ServiceBookingTracking',
       ],
       implementationStatus: {
         coreEngines: 'COMPLETE ✓',
         apiIntegration: 'COMPLETE ✓',
         testing: 'IN_PROGRESS',
-        deployment: 'READY'
-      }
+        deployment: 'READY',
+      },
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -698,12 +621,22 @@ app.get('/api/improvements/dashboard', async (req, res) => {
 
 app.post('/api/chatbot/test', async (req, res) => {
   const { message, context } = req.body;
-  
+
   const isArabic = /[\u0600-\u06FF]/.test(message);
   const language = isArabic ? 'ar' : 'en';
-  
+
   const intents = {
-    property_inquiry: ['property', 'apartment', 'villa', 'rent', 'buy', 'شقة', 'فيلا', 'إيجار', 'شراء'],
+    property_inquiry: [
+      'property',
+      'apartment',
+      'villa',
+      'rent',
+      'buy',
+      'شقة',
+      'فيلا',
+      'إيجار',
+      'شراء',
+    ],
     viewing_request: ['view', 'visit', 'see', 'tour', 'معاينة', 'زيارة'],
     price_inquiry: ['price', 'cost', 'how much', 'سعر', 'كم'],
     agent_request: ['agent', 'contact', 'call', 'وكيل', 'اتصل'],
@@ -713,16 +646,56 @@ app.post('/api/chatbot/test', async (req, res) => {
   let detected = 'general_inquiry';
   let confidence = 60;
   for (const [intent, kws] of Object.entries(intents)) {
-    if (kws.some(k => lower.includes(k))) { detected = intent; confidence = 85; break; }
+    if (kws.some(k => lower.includes(k))) {
+      detected = intent;
+      confidence = 85;
+      break;
+    }
   }
 
   const responses = new Map([
-    ['property_inquiry', { en: "I'd be happy to help you find the perfect property. What type are you looking for?", ar: "يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار؟" }],
-    ['viewing_request', { en: "I can schedule a viewing for you. When would be convenient?", ar: "يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب؟" }],
-    ['price_inquiry', { en: "Our properties range from affordable to luxury. What's your budget?", ar: "تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. ما ميزانيتك؟" }],
-    ['agent_request', { en: "I'll connect you with an experienced agent right away.", ar: "سأقوم بتوصيلك بأحد وكلائنا فوراً." }],
-    ['greeting', { en: "Hello! Welcome to White Caves Real Estate. How can I assist you?", ar: "مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك؟" }],
-    ['general_inquiry', { en: "Thank you for your message. How can I help with your real estate needs?", ar: "شكراً لرسالتك. كيف يمكنني مساعدتك؟" }],
+    [
+      'property_inquiry',
+      {
+        en: "I'd be happy to help you find the perfect property. What type are you looking for?",
+        ar: 'يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار؟',
+      },
+    ],
+    [
+      'viewing_request',
+      {
+        en: 'I can schedule a viewing for you. When would be convenient?',
+        ar: 'يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب؟',
+      },
+    ],
+    [
+      'price_inquiry',
+      {
+        en: "Our properties range from affordable to luxury. What's your budget?",
+        ar: 'تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. ما ميزانيتك؟',
+      },
+    ],
+    [
+      'agent_request',
+      {
+        en: "I'll connect you with an experienced agent right away.",
+        ar: 'سأقوم بتوصيلك بأحد وكلائنا فوراً.',
+      },
+    ],
+    [
+      'greeting',
+      {
+        en: 'Hello! Welcome to White Caves Real Estate. How can I assist you?',
+        ar: 'مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك؟',
+      },
+    ],
+    [
+      'general_inquiry',
+      {
+        en: 'Thank you for your message. How can I help with your real estate needs?',
+        ar: 'شكراً لرسالتك. كيف يمكنني مساعدتك؟',
+      },
+    ],
   ]);
   const entry = responses.get(detected);
   const responseText = entry ? (lang === 'ar' ? entry.ar : entry.en) : '';
@@ -737,114 +710,30 @@ app.post('/api/chatbot/test', async (req, res) => {
 });
 
 // --- LANDLORD API ENDPOINTS ---
-app.get('/api/landlord/properties', (req, res) => {
-  res.json({
-    success: true,
-    properties: [
-      { id: 1, name: 'Marina View 2BR', location: 'Dubai Marina', status: 'Occupied', rent: 'AED 95,000/yr', tenant: 'Ahmed Al-Rashid', leaseEnd: 'Dec 2024', paymentStatus: 'Paid' },
-      { id: 2, name: 'Downtown Studio', location: 'Downtown Dubai', status: 'Occupied', rent: 'AED 65,000/yr', tenant: 'Sarah Johnson', leaseEnd: 'Jun 2024', paymentStatus: 'Due Soon' },
-      { id: 3, name: 'JBR 3BR Apartment', location: 'JBR', status: 'Available', rent: 'AED 180,000/yr', tenant: '-', leaseEnd: '-', paymentStatus: '-' },
-      { id: 4, name: 'Business Bay Office', location: 'Business Bay', status: 'Occupied', rent: 'AED 250,000/yr', tenant: 'Tech Solutions LLC', leaseEnd: 'Mar 2025', paymentStatus: 'Paid' }
-    ]
-  });
-});
+// Real implementations live in server/routes (landlordPortalRoutes) and
+// require the full backend; mock payloads were removed to avoid fake data.
+app.get('/api/landlord/properties', notImplemented('Landlord properties', '/api/landlord'));
 
-app.get('/api/landlord/maintenance', (req, res) => {
-  res.json({
-    success: true,
-    requests: [
-      { id: 1, property: 'Marina View 2BR', issue: 'AC maintenance required', priority: 'Medium', date: 'Today', status: 'Pending' },
-      { id: 2, property: 'Downtown Studio', issue: 'Water heater replacement', priority: 'High', date: 'Yesterday', status: 'In Progress' },
-      { id: 3, property: 'Business Bay Office', issue: 'Parking access card issue', priority: 'Low', date: '3 days ago', status: 'Resolved' }
-    ]
-  });
-});
+app.get('/api/landlord/maintenance', notImplemented('Landlord maintenance', '/api/landlord'));
 
-app.get('/api/landlord/finances', (req, res) => {
-  res.json({
-    success: true,
-    finances: {
-      totalIncome: 'AED 590,000',
-      collected: 'AED 495,000',
-      pending: 'AED 95,000',
-      expenses: 'AED 45,000',
-      netIncome: 'AED 450,000'
-    }
-  });
-});
+app.get('/api/landlord/finances', notImplemented('Landlord finances', '/api/landlord'));
 
-app.get('/api/landlord/stats', (req, res) => {
-  res.json({
-    success: true,
-    stats: {
-      totalProperties: 6,
-      occupied: 5,
-      available: 1,
-      monthlyIncome: 'AED 125K'
-    }
-  });
-});
+app.get('/api/landlord/stats', notImplemented('Landlord stats', '/api/landlord'));
 
 // --- WHATSAPP API ENDPOINTS ---
-app.get('/api/whatsapp/session', (req, res) => {
-  res.json({ success: true, session: { status: 'active', connected: true, qr: null } });
-});
-app.post('/api/whatsapp/connect', (req, res) => {
-  res.json({ success: true, message: 'WhatsApp connect simulated.', qr: 'mock-qr-code-123' });
-});
-app.post('/api/whatsapp/disconnect', (req, res) => {
-  res.json({ success: true, message: 'WhatsApp disconnect simulated.' });
-});
-app.get('/api/whatsapp/qr/refresh', (req, res) => {
-  res.json({ success: true, qr: 'mock-qr-code-refreshed-' + Date.now() });
-});
-app.get('/api/whatsapp/contacts', (req, res) => {
-  res.json({
-    success: true,
-    contacts: [
-      { id: 1, name: 'Ahmed Hassan', phone: '+971501234567', lastMessage: 'I am interested in the villa at Palm Jumeirah', time: '2 min ago', unread: 2 },
-      { id: 2, name: 'Sarah Johnson', phone: '+971502345678', lastMessage: 'Can we schedule a viewing tomorrow?', time: '15 min ago', unread: 1 },
-      { id: 3, name: 'Mohammed Ali', phone: '+971503456789', lastMessage: 'Thank you for the information!', time: '1 hr ago', unread: 0 },
-      { id: 4, name: 'Emily Chen', phone: '+971504567890', lastMessage: 'What is the price for the Downtown apartment?', time: '2 hrs ago', unread: 3 },
-      { id: 5, name: 'Khalid Rahman', phone: '+971505678901', lastMessage: 'Please send me more details', time: 'Yesterday', unread: 0 }
-    ]
-  });
-});
-app.get('/api/whatsapp/messages/:contactId', (req, res) => {
-  res.json({
-    success: true,
-    messages: [
-      { id: 1, content: 'Hello! I am interested in the Palm Jumeirah villa', direction: 'incoming', time: '10:30 AM', status: 'read' },
-      { id: 2, content: 'Thank you for your interest! The 5-bedroom villa is priced at AED 15,000,000. Would you like to schedule a viewing?', direction: 'outgoing', time: '10:32 AM', status: 'read' },
-      { id: 3, content: 'Yes, that would be great. Is tomorrow afternoon available?', direction: 'incoming', time: '10:35 AM', status: 'read' },
-      { id: 4, content: 'Let me check our schedule. One moment please.', direction: 'outgoing', time: '10:36 AM', status: 'delivered' }
-    ]
-  });
-});
-app.post('/api/whatsapp/send-message', (req, res) => {
-  const { contactId, message } = req.body;
-  res.json({ success: true, messageId: 'msg-' + Date.now(), message, status: 'sent' });
-});
-app.get('/api/whatsapp/stats', (req, res) => {
-  res.json({
-    success: true,
-    stats: {
-      totalMessages: 156,
-      unread: 8,
-      todayMessages: 24,
-      responseRate: '94%'
-    }
-  });
-});
-app.get('/api/bots', (req, res) => {
-  res.json({ success: true, bots: [{ id: 'nina', name: 'Nina Bot', status: 'active' }] });
-});
-app.get('/api/flows', (req, res) => {
-  res.json({ success: true, flows: [{ id: 'default', name: 'Default Flow', steps: 3 }] });
-});
-app.get('/api/sessions', (req, res) => {
-  res.json({ success: true, sessions: [{ id: 'mock-session', user: 'test', status: 'active' }] });
-});
+// Persistent WhatsApp sessions require the always-on backend (server/index.ts);
+// simulated session/contact/message mocks were removed to avoid fake data.
+app.get('/api/whatsapp/session', notImplemented('WhatsApp session', '/api/whatsapp'));
+app.post('/api/whatsapp/connect', notImplemented('WhatsApp connect', '/api/whatsapp'));
+app.post('/api/whatsapp/disconnect', notImplemented('WhatsApp disconnect', '/api/whatsapp'));
+app.get('/api/whatsapp/qr/refresh', notImplemented('WhatsApp QR refresh', '/api/whatsapp'));
+app.get('/api/whatsapp/contacts', notImplemented('WhatsApp contacts', '/api/whatsapp'));
+app.get('/api/whatsapp/messages/:contactId', notImplemented('WhatsApp messages', '/api/whatsapp'));
+app.post('/api/whatsapp/send-message', notImplemented('WhatsApp send message', '/api/whatsapp'));
+app.get('/api/whatsapp/stats', notImplemented('WhatsApp stats', '/api/whatsapp'));
+app.get('/api/bots', notImplemented('Bot registry', '/api/whatsapp-engine'));
+app.get('/api/flows', notImplemented('Bot flows', '/api/whatsapp-engine'));
+app.get('/api/sessions', notImplemented('Bot sessions', '/api/whatsapp-engine'));
 
 // ============================================================
 // PROPERTY SOURCING API (Phase 2A)
@@ -855,7 +744,7 @@ app.get('/api/sourcing/opportunities', async (req, res) => {
   try {
     await connectDB();
     const { status, area, minConfidence, sortBy = 'createdAt', page = 1, limit = 10 } = req.query;
-    
+
     const filter = {};
     if (status) filter.verificationStatus = status;
     if (area) filter['propertyDetails.location'] = { $regex: area, $options: 'i' };
@@ -870,17 +759,22 @@ app.get('/api/sourcing/opportunities', async (req, res) => {
         confidenceScore: 92,
         verificationStatus: 'initial_detection',
         completenessPercentage: 85,
-        createdAt: new Date()
+        createdAt: new Date(),
       },
       {
         opportunityId: 'opp-002',
         ownerInfo: { name: 'Fatima Mohammed', phone: '+971502345678', type: 'property_manager' },
-        propertyDetails: { type: 'apartment', location: 'Downtown Dubai', bedrooms: 2, price: 3500 },
+        propertyDetails: {
+          type: 'apartment',
+          location: 'Downtown Dubai',
+          bedrooms: 2,
+          price: 3500,
+        },
         confidenceScore: 78,
         verificationStatus: 'waiting_for_photos',
         completenessPercentage: 65,
-        createdAt: new Date()
-      }
+        createdAt: new Date(),
+      },
     ];
 
     res.json({
@@ -888,7 +782,7 @@ app.get('/api/sourcing/opportunities', async (req, res) => {
       count: opportunities.length,
       page: parseInt(page),
       limit: parseInt(limit),
-      opportunities
+      opportunities,
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -899,7 +793,7 @@ app.get('/api/sourcing/opportunities', async (req, res) => {
 app.post('/api/sourcing/analyze-conversation', async (req, res) => {
   try {
     const { conversationData, chatId } = req.body;
-    
+
     if (!conversationData) {
       return res.status(400).json({ error: 'conversationData is required' });
     }
@@ -917,17 +811,18 @@ app.post('/api/sourcing/analyze-conversation', async (req, res) => {
         bathrooms: 3,
         price: 5000,
         furnishing: 'unfurnished',
-        features: ['swimming pool', 'garden', 'parking']
+        features: ['swimming pool', 'garden', 'parking'],
       },
       ownerInfo: {
         name: 'Ahmed Al-Mazrouei',
         phone: '+971501234567',
         type: 'direct_owner',
-        verified: false
+        verified: false,
       },
       matchedKeywords: ['villa', 'dubai marina', 'rent', 'bedrooms', 'available'],
       suggestedAction: 'create_opportunity',
-      autoReply: 'Thank you for sharing! We are very interested in this property. Could you please share more details about the available date and any furnished options?'
+      autoReply:
+        'Thank you for sharing! We are very interested in this property. Could you please share more details about the available date and any furnished options?',
     };
 
     res.json(analysisResult);
@@ -942,10 +837,19 @@ app.put('/api/sourcing/opportunities/:id/verify', async (req, res) => {
     const { id } = req.params;
     const { newStatus, photosCount, notes } = req.body;
 
-    const validStatuses = ['initial_detection', 'waiting_for_photos', 'partially_verified', 'fully_verified', 'archived', 'listed'];
-    
+    const validStatuses = [
+      'initial_detection',
+      'waiting_for_photos',
+      'partially_verified',
+      'fully_verified',
+      'archived',
+      'listed',
+    ];
+
     if (!validStatuses.includes(newStatus)) {
-      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+      return res
+        .status(400)
+        .json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
     }
 
     // Mock update response
@@ -955,7 +859,7 @@ app.put('/api/sourcing/opportunities/:id/verify', async (req, res) => {
       photosCount: photosCount || 0,
       verificationNotes: notes,
       lastUpdated: new Date(),
-      message: `Opportunity ${id} updated to status: ${newStatus}`
+      message: `Opportunity ${id} updated to status: ${newStatus}`,
     };
 
     res.json({ success: true, opportunity: updatedOpportunity });
@@ -981,7 +885,7 @@ app.post('/api/sourcing/opportunities/:id/add-to-inventory', async (req, res) =>
       location: additionalData?.location,
       status: 'active',
       createdAt: new Date(),
-      message: `Property created from opportunity ${id} and added to Mary inventory`
+      message: `Property created from opportunity ${id} and added to Mary inventory`,
     };
 
     res.status(201).json({ success: true, property: newProperty });
@@ -1003,32 +907,32 @@ app.get('/api/sourcing/statistics', async (req, res) => {
         newThisWeek: 12,
         verified: 23,
         inProcess: 18,
-        archived: 6
+        archived: 6,
       },
       byStatus: {
         initial_detection: 8,
         waiting_for_photos: 7,
         partially_verified: 5,
         fully_verified: 23,
-        listed: 4
+        listed: 4,
       },
       metrics: {
         averageConfidenceScore: 82.5,
         completenessPercentage: 74,
         verificationRate: '49%',
-        conversionRate: '9%'
+        conversionRate: '9%',
       },
       topAreas: [
         { area: 'Dubai Marina', count: 12, confidence: 85 },
         { area: 'Downtown Dubai', count: 8, confidence: 79 },
-        { area: 'Palm Jumeirah', count: 7, confidence: 88 }
+        { area: 'Palm Jumeirah', count: 7, confidence: 88 },
       ],
       ownerMetrics: {
         totalOwners: 24,
         activeOwners: 18,
         preferredOwners: 6,
-        averagePropertiesPerOwner: 2
-      }
+        averagePropertiesPerOwner: 2,
+      },
     };
 
     res.json({ success: true, statistics: stats });
@@ -1046,20 +950,32 @@ app.get('/api/owners', async (req, res) => {
     const owners = [
       {
         relationshipId: 'rel-001',
-        ownerProfile: { name: 'Ahmed Al-Mazrouei', email: 'ahmed@email.com', reliabilityScore: 8.5 },
-        sourceInfo: { whatsappNumber: '+971501234567', discoveredVia: 'whatsapp', firstContactDate: new Date() },
+        ownerProfile: {
+          name: 'Ahmed Al-Mazrouei',
+          email: 'ahmed@email.com',
+          reliabilityScore: 8.5,
+        },
+        sourceInfo: {
+          whatsappNumber: '+971501234567',
+          discoveredVia: 'whatsapp',
+          firstContactDate: new Date(),
+        },
         properties: ['prop-001', 'prop-002'],
         engagementStatus: 'active',
-        metrics: { totalProperties: 2, closedDeals: 1, successScore: 8 }
+        metrics: { totalProperties: 2, closedDeals: 1, successScore: 8 },
       },
       {
         relationshipId: 'rel-002',
         ownerProfile: { name: 'Fatima Mohammed', email: 'fatima@email.com', reliabilityScore: 7.5 },
-        sourceInfo: { whatsappNumber: '+971502345678', discoveredVia: 'whatsapp', firstContactDate: new Date() },
+        sourceInfo: {
+          whatsappNumber: '+971502345678',
+          discoveredVia: 'whatsapp',
+          firstContactDate: new Date(),
+        },
         properties: ['prop-003'],
         engagementStatus: 'prospect',
-        metrics: { totalProperties: 1, closedDeals: 0, successScore: 0 }
-      }
+        metrics: { totalProperties: 1, closedDeals: 0, successScore: 0 },
+      },
     ];
 
     res.json({
@@ -1067,7 +983,7 @@ app.get('/api/owners', async (req, res) => {
       count: owners.length,
       page: parseInt(page),
       limit: parseInt(limit),
-      owners
+      owners,
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -1087,18 +1003,18 @@ app.get('/api/owners/:id', async (req, res) => {
         email: 'ahmed@email.com',
         phone: '+971501234567',
         verificationStatus: 'verified',
-        reliabilityScore: 8.5
+        reliabilityScore: 8.5,
       },
       sourceInfo: {
         whatsappNumber: '+971501234567',
         discoveredVia: 'whatsapp',
         firstContactDate: '2025-12-01',
-        source: 'Linda WhatsApp conversations'
+        source: 'Linda WhatsApp conversations',
       },
       interactionHistory: [
         { date: '2026-01-15', type: 'message', content: 'Inquiry about villa rental' },
         { date: '2026-01-14', type: 'call', content: 'Discussed property details' },
-        { date: '2026-01-13', type: 'message', content: 'Sent property photos' }
+        { date: '2026-01-13', type: 'message', content: 'Sent property photos' },
       ],
       properties: [
         {
@@ -1106,15 +1022,15 @@ app.get('/api/owners/:id', async (req, res) => {
           type: 'villa',
           location: 'Dubai Marina',
           price: 5000,
-          status: 'listed'
+          status: 'listed',
         },
         {
           propertyId: 'prop-002',
           type: 'apartment',
           location: 'Downtown Dubai',
           price: 3500,
-          status: 'in_process'
-        }
+          status: 'in_process',
+        },
       ],
       engagementStatus: 'active',
       metrics: {
@@ -1122,9 +1038,9 @@ app.get('/api/owners/:id', async (req, res) => {
         closedDeals: 1,
         averageDaysToClose: 14,
         successScore: 8,
-        preferredContact: 'whatsapp'
+        preferredContact: 'whatsapp',
       },
-      nextAction: 'Schedule viewing for palm jumeirah property'
+      nextAction: 'Schedule viewing for palm jumeirah property',
     };
 
     res.json({ success: true, owner: ownerProfile });

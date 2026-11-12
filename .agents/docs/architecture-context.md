@@ -247,13 +247,20 @@ Mounted in backend at `/api/integrations`:
 │
 ├── cypress/ playwright/          ← E2E test suites
 ├── k8s/ helm/                    ← Kubernetes manifests + Helm chart
-├── scripts/                      ← SEO generation, deployment verification, PDF generation
-├── docker-compose.yml / .dev / .prod
-├── Dockerfile / Dockerfile.frontend / Dockerfile.prod
+├── scripts/                      ← Tunnel bridge, structure validator, SEO generation, deployment verification
+├── Dockerfile.prod               ← Backend container packaging (future always-on host)
 ├── nginx.conf / nginx.prod.conf
 ├── vercel.json
 └── package.json
 ```
+
+> **Deployment reality (Wave 53):** Vercel builds the Vite frontend plus the thin
+> serverless API (`api/index.js`). The full backend (`server/index.ts` — auth,
+> CRM, Socket.io, cron schedulers, WhatsApp engine) runs as a long-lived local
+> process bridged to production via Cloudflare Tunnel
+> (`.agents/docs/CLOUDFLARE_TUNNEL_SETUP.md`). The Next.js tree, compose files
+> and extra Dockerfiles were removed in Wave 53; only `Dockerfile.prod` remains
+> as deploy packaging for the future always-on host.
 
 ---
 

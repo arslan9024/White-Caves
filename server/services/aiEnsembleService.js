@@ -4,8 +4,6 @@
  * All providers use OpenAI-compatible SDK format for consistency
  */
 
-import axios from 'axios';
-
 const PROVIDERS = {
   groq: {
     name: 'Groq',
@@ -14,7 +12,7 @@ const PROVIDERS = {
     envKey: 'GROQ_API_KEY',
     priority: 1,
     maxTokens: 8192,
-    description: 'Ultra-fast inference with Llama 3.1'
+    description: 'Ultra-fast inference with Llama 3.1',
   },
   google: {
     name: 'Google AI',
@@ -23,7 +21,7 @@ const PROVIDERS = {
     envKey: 'GOOGLE_AI_KEY',
     priority: 2,
     maxTokens: 8192,
-    description: 'Gemini 2.0 Flash - 1M tokens/day free'
+    description: 'Gemini 2.0 Flash - 1M tokens/day free',
   },
   openrouter: {
     name: 'OpenRouter',
@@ -32,7 +30,7 @@ const PROVIDERS = {
     envKey: 'OPENROUTER_API_KEY',
     priority: 3,
     maxTokens: 4096,
-    description: '200+ models with free tier'
+    description: '200+ models with free tier',
   },
   huggingface: {
     name: 'HuggingFace',
@@ -41,8 +39,8 @@ const PROVIDERS = {
     envKey: 'HF_TOKEN',
     priority: 4,
     maxTokens: 4096,
-    description: 'Open source models'
-  }
+    description: 'Open source models',
+  },
 };
 
 class AIEnsembleService {
@@ -61,7 +59,7 @@ class AIEnsembleService {
           available: true,
           lastError: null,
           successCount: 0,
-          failureCount: 0
+          failureCount: 0,
         };
         console.log(`✅ AI Provider initialized: ${config.name}`);
       } else {
@@ -81,8 +79,8 @@ class AIEnsembleService {
         description: provider.description,
         stats: {
           success: provider.successCount,
-          failure: provider.failureCount
-        }
+          failure: provider.failureCount,
+        },
       }));
   }
 
@@ -95,45 +93,50 @@ class AIEnsembleService {
     const { maxTokens = provider.maxTokens, temperature = 0.7 } = options;
 
     try {
-      const response = await axios.post(
-        `${provider.baseUrl}/chat/completions`,
-        {
+      const response = await fetch(`${provider.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${provider.apiKey}`,
+          'Content-Type': 'application/json',
+          ...(providerId === 'openrouter' && {
+            'HTTP-Referer': 'https://whitecaves.realestate',
+            'X-Title': 'White Caves Real Estate',
+          }),
+        },
+        body: JSON.stringify({
           model: provider.model,
           messages,
           max_tokens: maxTokens,
-          temperature
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${provider.apiKey}`,
-            'Content-Type': 'application/json',
-            ...(providerId === 'openrouter' && {
-              'HTTP-Referer': 'https://whitecaves.realestate',
-              'X-Title': 'White Caves Real Estate'
-            })
-          },
-          timeout: 60000
-        }
-      );
+          temperature,
+        }),
+        signal: AbortSignal.timeout(60000),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const apiError = new Error(data.error?.message || `HTTP ${response.status}`);
+        apiError.responseData = data;
+        throw apiError;
+      }
 
       provider.successCount++;
       return {
         success: true,
         provider: provider.name,
         model: provider.model,
-        content: response.data.choices[0].message.content,
-        usage: response.data.usage || {}
+        content: data.choices[0].message.content,
+        usage: data.usage || {},
       };
     } catch (error) {
       provider.failureCount++;
       provider.lastError = error.message;
-      
-      console.error(`❌ ${provider.name} error:`, error.response?.data || error.message);
-      
+
+      console.error(`❌ ${provider.name} error:`, error.responseData || error.message);
+
       return {
         success: false,
         provider: provider.name,
-        error: error.response?.data?.error?.message || error.message
+        error: error.message,
       };
     }
   }
@@ -146,12 +149,12 @@ class AIEnsembleService {
     for (const [providerId, provider] of sortedProviders) {
       console.log(`🔄 Trying ${provider.name}...`);
       const result = await this.callProvider(providerId, messages, options);
-      
+
       if (result.success) {
         console.log(`✅ Success with ${provider.name}`);
         return result;
       }
-      
+
       console.log(`⚠️ ${provider.name} failed, trying next...`);
     }
 
@@ -159,11 +162,7 @@ class AIEnsembleService {
   }
 
   async generateWithEnsemble(messages, options = {}) {
-    const { 
-      useParallel = false, 
-      combineResults = false,
-      preferredProvider = null 
-    } = options;
+    const { useParallel = false, combineResults = false, preferredProvider = null } = options;
 
     if (preferredProvider && this.providers[preferredProvider]?.available) {
       return this.callProvider(preferredProvider, messages, options);
@@ -208,18 +207,18 @@ Please synthesize these responses into a single, comprehensive, and well-structu
 
     const synthesisMessages = [
       { role: 'system', content: 'You are an expert at synthesizing and improving AI responses.' },
-      { role: 'user', content: combinedPrompt }
+      { role: 'user', content: combinedPrompt },
     ];
 
     return this.generateWithFallback(synthesisMessages, { maxTokens: 4096 });
   }
 
   async generateSRS(analysisData, options = {}) {
-    const { 
+    const {
       detailLevel = 'standard',
       includeDiagrams = true,
       includeCompliance = true,
-      format = 'markdown'
+      format = 'markdown',
     } = options;
 
     const systemPrompt = `You are an expert Software Requirements Specification (SRS) document writer. 
@@ -259,13 +258,13 @@ Use the actual file counts, component names, and structure from the analysis dat
 
     const messages = [
       { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt }
+      { role: 'user', content: userPrompt },
     ];
 
     return this.generateWithEnsemble(messages, {
       maxTokens: 8192,
       temperature: 0.3,
-      ...options
+      ...options,
     });
   }
 
@@ -274,18 +273,19 @@ Use the actual file counts, component names, and structure from the analysis dat
       quality: `Analyze this code for quality issues, best practices, and improvements:`,
       security: `Perform a security audit of this code, identifying vulnerabilities and risks:`,
       performance: `Analyze this code for performance issues and optimization opportunities:`,
-      architecture: `Analyze the architectural patterns and design decisions in this code:`
+      architecture: `Analyze the architectural patterns and design decisions in this code:`,
     };
 
     const messages = [
-      { 
-        role: 'system', 
-        content: 'You are an expert code reviewer specializing in React, Node.js, and MongoDB applications.' 
+      {
+        role: 'system',
+        content:
+          'You are an expert code reviewer specializing in React, Node.js, and MongoDB applications.',
       },
-      { 
-        role: 'user', 
-        content: `${prompts[analysisType] || prompts.quality}\n\n\`\`\`\n${codeContent}\n\`\`\`` 
-      }
+      {
+        role: 'user',
+        content: `${prompts[analysisType] || prompts.quality}\n\n\`\`\`\n${codeContent}\n\`\`\``,
+      },
     ];
 
     return this.generateWithFallback(messages, { maxTokens: 2048, temperature: 0.2 });
@@ -312,7 +312,7 @@ Generate an audit report with:
 
     const messages = [
       { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt }
+      { role: 'user', content: userPrompt },
     ];
 
     return this.generateWithFallback(messages, { maxTokens: 4096, temperature: 0.2 });
@@ -328,8 +328,8 @@ Generate an audit report with:
       stats: {
         success: p.successCount,
         failure: p.failureCount,
-        lastError: p.lastError
-      }
+        lastError: p.lastError,
+      },
     }));
   }
 }
