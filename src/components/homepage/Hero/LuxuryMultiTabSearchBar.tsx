@@ -5,7 +5,12 @@ import { useNavigate } from 'react-router-dom';
 export type SearchCategory = 'buy' | 'rent' | 'off-plan' | 'commercial';
 
 interface LuxuryMultiTabSearchBarProps {
-  onSearchSubmit?: (filters: { category: SearchCategory; area: string; priceRange: string; propertyType: string }) => void;
+  onSearchSubmit?: (filters: {
+    category: SearchCategory;
+    area: string;
+    priceRange: string;
+    propertyType: string;
+  }) => void;
 }
 
 export const LuxuryMultiTabSearchBar: FC<LuxuryMultiTabSearchBarProps> = ({ onSearchSubmit }) => {
@@ -75,10 +80,11 @@ export const LuxuryMultiTabSearchBar: FC<LuxuryMultiTabSearchBarProps> = ({ onSe
         <button
           type="button"
           onClick={() => setActiveTab('buy')}
+          aria-pressed={activeTab === 'buy'}
           className={`px-5 py-2 rounded-xl text-xs font-black tracking-wider transition-all uppercase ${
             activeTab === 'buy'
               ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/30 ring-1 ring-red-400/50'
-              : 'text-slate-400 hover:text-slate-100'
+              : 'text-slate-300 hover:text-slate-100'
           }`}
         >
           Buy Luxury
@@ -86,10 +92,11 @@ export const LuxuryMultiTabSearchBar: FC<LuxuryMultiTabSearchBarProps> = ({ onSe
         <button
           type="button"
           onClick={() => setActiveTab('rent')}
+          aria-pressed={activeTab === 'rent'}
           className={`px-5 py-2 rounded-xl text-xs font-black tracking-wider transition-all uppercase ${
             activeTab === 'rent'
               ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/30 ring-1 ring-red-400/50'
-              : 'text-slate-400 hover:text-slate-100'
+              : 'text-slate-300 hover:text-slate-100'
           }`}
         >
           Rent Premium
@@ -97,10 +104,11 @@ export const LuxuryMultiTabSearchBar: FC<LuxuryMultiTabSearchBarProps> = ({ onSe
         <button
           type="button"
           onClick={() => setActiveTab('off-plan')}
+          aria-pressed={activeTab === 'off-plan'}
           className={`flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-black tracking-wider transition-all uppercase ${
             activeTab === 'off-plan'
               ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/30 ring-1 ring-red-400/50'
-              : 'text-slate-400 hover:text-slate-100'
+              : 'text-slate-300 hover:text-slate-100'
           }`}
         >
           <span>Off-Plan Launches</span>
@@ -112,10 +120,11 @@ export const LuxuryMultiTabSearchBar: FC<LuxuryMultiTabSearchBarProps> = ({ onSe
         <button
           type="button"
           onClick={() => setActiveTab('commercial')}
+          aria-pressed={activeTab === 'commercial'}
           className={`px-5 py-2 rounded-xl text-xs font-black tracking-wider transition-all uppercase ${
             activeTab === 'commercial'
               ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/30 ring-1 ring-red-400/50'
-              : 'text-slate-400 hover:text-slate-100'
+              : 'text-slate-300 hover:text-slate-100'
           }`}
         >
           Commercial &amp; Land
@@ -128,7 +137,9 @@ export const LuxuryMultiTabSearchBar: FC<LuxuryMultiTabSearchBarProps> = ({ onSe
         <div className="flex items-center gap-2.5 bg-slate-900/90 border border-slate-800 rounded-xl px-3.5 py-2.5">
           <MapPin className="w-4 h-4 text-red-500 shrink-0" />
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Prime Location</span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+              Prime Location
+            </span>
             <select
               value={selectedArea}
               onChange={e => setSelectedArea(e.target.value)}
@@ -148,7 +159,9 @@ export const LuxuryMultiTabSearchBar: FC<LuxuryMultiTabSearchBarProps> = ({ onSe
         <div className="flex items-center gap-2.5 bg-slate-900/90 border border-slate-800 rounded-xl px-3.5 py-2.5">
           <Building className="w-4 h-4 text-sky-400 shrink-0" />
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Property Class</span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+              Property Class
+            </span>
             <select
               value={selectedType}
               onChange={e => setSelectedType(e.target.value)}
@@ -168,7 +181,9 @@ export const LuxuryMultiTabSearchBar: FC<LuxuryMultiTabSearchBarProps> = ({ onSe
         <div className="flex items-center gap-2.5 bg-slate-900/90 border border-slate-800 rounded-xl px-3.5 py-2.5">
           <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Budget Tier</span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+              Budget Tier
+            </span>
             <select
               value={selectedPrice}
               onChange={e => setSelectedPrice(e.target.value)}

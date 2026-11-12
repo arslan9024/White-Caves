@@ -259,13 +259,13 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
             <span>{copy.searchAction}</span>
           </button>
 
-        {/* Target T-0004: Emaar & DAMAC Developer Quick-Chips Active State */}
-        <motion.div variants={heroItemVariants} className="my-2">
-          <DeveloperFilterQuickChips
-            developers={developers}
-            onSelectDeveloper={handleDeveloperClick}
-          />
-        </motion.div>
+          {/* Target T-0004: Emaar & DAMAC Developer Quick-Chips Active State */}
+          <motion.div variants={heroItemVariants} className="my-2">
+            <DeveloperFilterQuickChips
+              developers={developers}
+              onSelectDeveloper={handleDeveloperClick}
+            />
+          </motion.div>
         </motion.div>
 
         <motion.div className="luxury-hero__cta-group" variants={heroItemVariants}>
@@ -274,7 +274,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
             onClick={handleFindRentals}
             whileHover={prefersReducedMotion ? undefined : { scale: 1.04 }}
             whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
-            aria-label={copy.rentalsLabel}
+            aria-label={`${copy.rentalsLabel}: ${copy.rentals}`}
           >
             <span>{copy.rentals}</span>
             <ArrowRight size={18} aria-hidden="true" />
@@ -285,7 +285,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
             onClick={handleBrowseProperties}
             whileHover={prefersReducedMotion ? undefined : { scale: 1.04 }}
             whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
-            aria-label={copy.browseLabel}
+            aria-label={`${copy.browseLabel}: ${copy.browse}`}
           >
             <Phone size={18} aria-hidden="true" />
             <span>{copy.browse}</span>
@@ -296,7 +296,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
             onClick={handleBookConsultation}
             whileHover={prefersReducedMotion ? undefined : { scale: 1.04 }}
             whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
-            aria-label={copy.consultationLabel}
+            aria-label={`${copy.consultationLabel}: ${copy.consultation}`}
           >
             <Phone size={18} aria-hidden="true" />
             <span>{copy.consultation}</span>

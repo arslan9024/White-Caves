@@ -387,8 +387,9 @@
 }
 
 .auth-page-container .auth-tab.active {
-  background: var(--brand-primary);
-  color: #0f172a;
+  background: #ffffff;
+  color: #1e293b;
+  box-shadow: inset 0 0 0 2px var(--brand-primary);
 }
 
 .auth-method-tabs {

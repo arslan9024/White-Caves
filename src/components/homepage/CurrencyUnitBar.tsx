@@ -34,6 +34,7 @@ export const CurrencyUnitBar: FC<CurrencyUnitBarProps> = ({
   return (
     <div
       className={`w-full bg-white border border-slate-200 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs ${className}`}
+      role="group"
       aria-label="Currency and Measurement Switcher"
     >
       {/* Left: FX Currency Toggles */}
@@ -48,9 +49,10 @@ export const CurrencyUnitBar: FC<CurrencyUnitBarProps> = ({
               key={c}
               type="button"
               onClick={() => handleCurrencySelect(c)}
+              aria-pressed={selectedCurrency === c}
               className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
                 selectedCurrency === c
-                  ? 'bg-red-500 text-slate-800 shadow-sm'
+                  ? 'bg-white text-slate-900 shadow-sm ring-2 ring-inset ring-red-500'
                   : 'text-slate-600 hover:text-slate-800'
               }`}
             >
@@ -79,9 +81,10 @@ export const CurrencyUnitBar: FC<CurrencyUnitBarProps> = ({
               key={u}
               type="button"
               onClick={() => handleUnitSelect(u)}
+              aria-pressed={selectedUnit === u}
               className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
                 selectedUnit === u
-                  ? 'bg-red-500 text-slate-800 shadow-sm'
+                  ? 'bg-white text-slate-900 shadow-sm ring-2 ring-inset ring-red-500'
                   : 'text-slate-600 hover:text-slate-800'
               }`}
             >
