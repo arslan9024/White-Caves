@@ -43,3 +43,4 @@ scripts/
 .nvmrc
 .node-version
 attached_assets/
+middleware.ts
