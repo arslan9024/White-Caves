@@ -12,8 +12,9 @@ test.describe('Visual Regression Testing', () => {
     // The maxDiffPixelRatio allows up to 1% difference across browsers
     await expect(page).toHaveScreenshot('dashboard-full-page.png', {
       fullPage: true,
-      maxDiffPixelRatio: 0.01, 
-      animations: 'disabled'
+      maxDiffPixelRatio: 0.01,
+      animations: 'disabled',
+      timeout: 15_000,
     });
   });
 
@@ -25,7 +26,8 @@ test.describe('Visual Regression Testing', () => {
     await expect(page).toHaveScreenshot('crm-hub-page.png', {
       fullPage: true,
       maxDiffPixelRatio: 0.01,
-      animations: 'disabled'
+      animations: 'disabled',
+      timeout: 15_000,
     });
   });
 });

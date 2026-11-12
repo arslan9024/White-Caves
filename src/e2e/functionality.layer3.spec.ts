@@ -690,30 +690,17 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   // ==================== STATE MANAGEMENT ====================
   test.describe('State Management', () => {
     test('L3-080: Component state updates on interaction', async ({ page }) => {
-      await page
-        .goto('/crm', {
-          waitUntil: 'domcontentloaded',
-          timeout: 10000,
-        })
-        .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/crm' });
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 10_000 });
 
-      // Get initial content
-      const contentBefore = await page.locator('main, [role="main"]').textContent();
+      const buyButton = page.getByRole('button', { name: 'Buy Luxury' });
+      const offPlanButton = page.getByRole('button', { name: 'Off-Plan Launches' });
+      await expect(buyButton).toHaveAttribute('aria-pressed', 'true');
+      await expect(offPlanButton).toHaveAttribute('aria-pressed', 'false');
 
-      // Interact with page
-      const buttons = page.locator('button');
-      if ((await buttons.count()) > 0) {
-        await buttons.first().click();
-        await page.waitForTimeout(500);
+      await offPlanButton.click();
 
-        // Content may change
-        const contentAfter = await page.locator('main, [role="main"]').textContent();
-
-        // State should be reactive
-        expect(contentBefore).toBeTruthy();
-        expect(contentAfter).toBeTruthy();
-      }
+      await expect(offPlanButton).toHaveAttribute('aria-pressed', 'true');
+      await expect(buyButton).toHaveAttribute('aria-pressed', 'false');
     });
 
     test('L3-081: Local storage persists user preferences', async ({ page }) => {
