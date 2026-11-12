@@ -5,7 +5,7 @@
   "description": "White Caves Real Estate - Dubai's Premier Luxury Property Platform",
   "homepage": ".",
   "engines": {
-    "node": ">=22.19.0",
+    "node": "^22.13.0 || >=24",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -150,8 +150,8 @@
     "free-agents": "powershell -ExecutionPolicy Bypass -File scripts/free-agents-loop.ps1 -NoBrowser",
     "free-agents:browser": "powershell -ExecutionPolicy Bypass -File scripts/free-agents-loop.ps1 -OpenBrowser",
     "free-agents:nobrowser": "powershell -ExecutionPolicy Bypass -File scripts/free-agents-loop.ps1 -NoBrowser",
-    "seo:generate": "node scripts/generate-seo-assets.js",
-    "seo:generate:staging": "node scripts/generate-seo-assets.js --domain=https://staging.whitecaves.com",
+    "seo:generate": "node .agents/scripts/generate-seo-assets.js",
+    "seo:generate:staging": "node .agents/scripts/generate-seo-assets.js --domain=https://staging.whitecaves.com",
     "quality:seo": "npm run seo:generate",
     "test:assistant-contract": "npm run test:run -- src/services/__tests__/assistantsService.test.ts",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
