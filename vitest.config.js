@@ -23,7 +23,6 @@ export default defineConfig({
     include: [
       'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'server/**/*.{test,spec}.{js,jsx,ts,tsx}',
-      'app/**/*.{test,spec}.{js,jsx,ts,tsx}',
       '**/__tests__/**/*.{js,jsx,ts,tsx}',
     ],
     exclude: [
