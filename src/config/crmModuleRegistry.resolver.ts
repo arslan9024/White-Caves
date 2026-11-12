@@ -1,10 +1,12 @@
 import type { CRMModuleDefinition } from './crmModuleRegistry.types.js';
 import { CORE_CRM_MODULES } from './crmModuleRegistry.core.js';
+import { THEODORA_FINANCE_MODULES } from './crmModuleRegistry.finance.js';
 import { OPERATIONS_CRM_MODULES } from './crmModuleRegistry.operations.js';
 import { ASSISTANTS_CRM_MODULES } from './crmModuleRegistry.assistants.js';
 
 export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
   ...CORE_CRM_MODULES,
+  ...THEODORA_FINANCE_MODULES,
   ...OPERATIONS_CRM_MODULES,
   ...ASSISTANTS_CRM_MODULES,
 };

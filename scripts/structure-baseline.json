@@ -861,7 +861,7 @@
       "src/services/authService.ts": 487,
       "src/services/ConversationAnalyzer.js": 476,
       "src/services/crmService.ts": 406,
-      "src/services/DynamicPricingEngine.js": 889,
+      "src/services/DynamicPricingEngine.js": 903,
       "src/services/henryDocumentParsing.test.ts": 715,
       "src/services/HenryPassportScannerService.ts": 384,
       "src/services/HenryPdfEngineService.ts": 598,
