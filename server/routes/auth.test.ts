@@ -7,7 +7,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import express from 'express';
 import request from 'supertest';
 import crypto from 'crypto';
 
@@ -125,49 +124,7 @@ vi.mock('../middleware/auth.js', () => ({
   },
 }));
 
-import authRoutes from './auth.js';
-
-// ── Test app factory ─────────────────────────────────────────────────
-function createApp(
-  role: string | null = 'owner',
-  userId: string | null = 'user-1',
-  autoCsrf = true
-) {
-  const app = express();
-  app.set('trust proxy', 1);
-  app.use(express.json());
-  // Minimal inline cookie parser for tests (avoids importing cookie-parser in test env)
-  app.use((req: any, _res: any, next: any) => {
-    const cookieHeader = req.headers.cookie as string | undefined;
-    const cookies: Record<string, string> = {};
-    if (cookieHeader) {
-      cookieHeader.split(';').forEach((part: string) => {
-        const eqIdx = part.indexOf('=');
-        if (eqIdx > 0) {
-          cookies[part.slice(0, eqIdx).trim()] = decodeURIComponent(part.slice(eqIdx + 1).trim());
-        }
-      });
-    }
-    // Non-CSRF tests model the frontend's GET /csrf bootstrap before mutations.
-    if (autoCsrf && !cookies.csrf_token) {
-      cookies.csrf_token = 'auth-test-csrf-token';
-      req.headers['x-csrf-token'] = 'auth-test-csrf-token';
-    }
-    req.cookies = cookies;
-    next();
-  });
-  app.use((req, _res, next) => {
-    if (userId) {
-      (req as any).user = { id: userId, email: 'test@whitecaves.ae', role: role || 'owner' };
-    }
-    next();
-  });
-  app.use('/api/auth', authRoutes);
-  app.use((err: any, _req: any, res: any, _next: any) => {
-    res.status(err.statusCode || 500).json({ success: false, error: err.message });
-  });
-  return app;
-}
+import { createApp } from './auth.test-support.js';
 
 // ═════════════════════════════════════════════════════════════════════
 
