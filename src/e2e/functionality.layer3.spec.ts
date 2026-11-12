@@ -692,8 +692,8 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
     test('L3-080: Component state updates on interaction', async ({ page }) => {
       await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 10_000 });
 
-      const buyButton = page.getByRole('button', { name: 'Buy Luxury' });
-      const offPlanButton = page.getByRole('button', { name: 'Off-Plan Launches' });
+      const buyButton = page.getByRole('button', { name: /buy luxury/i });
+      const offPlanButton = page.getByRole('button', { name: /off-plan launches/i });
       await expect(buyButton).toHaveAttribute('aria-pressed', 'true');
       await expect(offPlanButton).toHaveAttribute('aria-pressed', 'false');
 
