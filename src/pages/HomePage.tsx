@@ -31,7 +31,6 @@ import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
 import { TestimonialPodium } from '../components/homepage/TestimonialPodium';
 import { QuickSearchModal } from '../components/homepage/QuickSearchModal';
 import { WhatsAppConciergePill } from '../components/homepage/WhatsAppConciergePill';
-import { CurrencyUnitBar } from '../components/homepage/CurrencyUnitBar';
 import '../styles/luxuryDesignSystem.css';
 import './HomePage.css';
 
@@ -287,11 +286,6 @@ const HomePage: FC = () => {
 
         {/* Real Geospatial Map Engine with Red Markers */}
         <MapContainer />
-
-        {/* Currency & Measurement Unit Switcher Bar */}
-        <div className="max-w-7xl mx-auto px-4 my-6">
-          <CurrencyUnitBar />
-        </div>
 
         {/* Featured Properties */}
         <Suspense fallback={<SectionLoader />}>
