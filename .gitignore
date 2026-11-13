@@ -185,3 +185,17 @@ sessions/
 .vercel
 .env*
 .vite/
+
+# Backend-only assets (live in White-Caves-Server repo)
+server/
+prisma/
+services/
+k8s/
+helm/
+prometheus/
+secrets/
+Dockerfile.prod
+nginx.conf
+nginx.prod.conf
+nodemon.json
+tsconfig.server.json
