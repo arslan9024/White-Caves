@@ -78,4 +78,49 @@ describe('AEGIS 12-Level Sovereign Tree Query Engine (TURING-LAW-000)', () => {
     expect(aegisResults.length).toBeGreaterThan(0);
     expect(aegisResults.some(r => r.bookId === 'book-02-aegis')).toBe(true);
   });
+
+  it('should accurately resolve hover preview data for constitutional protocols and tree nodes', async () => {
+    const { getNodePreviewData } = await import('./previewHelper');
+
+    // Statutory protocol lookup
+    const turingPreview = getNodePreviewData(AEGIS_12_LEVEL_CORPUS, 'TURING-LAW-000');
+    expect(turingPreview).not.toBeNull();
+    expect(turingPreview?.title).toContain('Turing Zero-Waste');
+    expect(turingPreview?.badge).toBe('TURING-LAW-000');
+
+    // AEG protocol lookup
+    const aegPreview = getNodePreviewData(AEGIS_12_LEVEL_CORPUS, 'AEG-003');
+    expect(aegPreview).not.toBeNull();
+    expect(aegPreview?.category).toContain('Prometheus Pillar');
+
+    // 12-Level tree node lookup
+    const chPreview = getNodePreviewData(AEGIS_12_LEVEL_CORPUS, 'CH05-PROTOCOLS');
+    expect(chPreview).not.toBeNull();
+    expect(chPreview?.title).toContain('Sovereign Protocol Canon');
+    expect(chPreview?.levelText).toBe('Level 5');
+  });
+
+  it('should compare tree navigation snapshots correctly for history tracking', async () => {
+    const { areSnapshotsEqual } = await import('./navigationHistoryTypes');
+
+    const snap1 = {
+      bookId: 'book-01-white-caves',
+      volId: 'VL03-001',
+      cantoId: 'CN04-001',
+      chapterId: 'CH05-001',
+      subChapterId: null,
+      sectionId: null,
+      topicId: null,
+      artifactId: null,
+      paragraphId: null,
+      sentenceId: null,
+      lineId: null,
+    };
+
+    const snap2 = { ...snap1 };
+    expect(areSnapshotsEqual(snap1, snap2)).toBe(true);
+
+    const snap3 = { ...snap1, chapterId: 'CH05-002' };
+    expect(areSnapshotsEqual(snap1, snap3)).toBe(false);
+  });
 });
