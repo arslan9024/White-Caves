@@ -22,7 +22,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-FOUNDATIONS-1',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Executive Operational Directives',
           summary:
             '> **Canonical governance revision:** 2026-10-24 > **Authority:** Managing Director Arslan Malik Bash',
           topics: [
@@ -30,7 +30,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-FOUNDATIONS-1',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Enterprise Charter',
               summary:
                 '> **Canonical governance revision:** 2026-10-24 > **Authority:** Managing Direct',
               artifacts: [
@@ -38,7 +38,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-FOUNDATIONS-1',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Institutional Specification',
                   type: 'LAW',
                   filePath: '.agents/project-vision.md',
                   totalLines: 4,
@@ -92,7 +92,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-FOUNDATIONS-2',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Executive Operational Directives',
           summary:
             'This document serves as the high-level portfolio of the White Caves Real Estate CRM platform. It spe',
           topics: [
@@ -100,7 +100,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-FOUNDATIONS-2',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Enterprise Charter',
               summary:
                 'This document serves as the high-level portfolio of the White Caves Real Estate ',
               artifacts: [
@@ -108,7 +108,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-FOUNDATIONS-2',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Institutional Specification',
                   type: 'LAW',
                   filePath: '.agents/global-walkthrough.md',
                   totalLines: 1,
@@ -178,7 +178,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-FOUNDATIONS-3',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Executive Operational Directives',
           summary:
             '> **Report date:** 2026-10-24 (MD Suite on main) > **Repository:** https://github.com/arslan9024/Whi',
           topics: [
@@ -186,7 +186,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-FOUNDATIONS-3',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Enterprise Charter',
               summary:
                 '> **Report date:** 2026-10-24 (MD Suite on main) > **Repository:** https://githu',
               artifacts: [
@@ -194,7 +194,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-FOUNDATIONS-3',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Institutional Specification',
                   type: 'LAW',
                   filePath: '.agents/project-progress-report.md',
                   totalLines: 5,
@@ -247,7 +247,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-FOUNDATIONS-4',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Executive Operational Directives',
           summary:
             '> **Agency:** White Caves Global Agency > **Orchestrator:** @Ada (Chief Architect) > **Last Updated:',
           topics: [
@@ -255,7 +255,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-FOUNDATIONS-4',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Enterprise Charter',
               summary:
                 '> **Agency:** White Caves Global Agency > **Orchestrator:** @Ada (Chief Architec',
               artifacts: [
@@ -263,7 +263,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-FOUNDATIONS-4',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Institutional Specification',
                   type: 'LAW',
                   filePath: '.agents/project-progress.md',
                   totalLines: 7,
@@ -316,7 +316,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-FOUNDATIONS-5',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Executive Operational Directives',
           summary:
             '> **Last updated:** 2026-10-30 (MD Suite merged) > **Status:** Governance + Hero + CRM DLD + **MD Su',
           topics: [
@@ -324,7 +324,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-FOUNDATIONS-5',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Enterprise Charter',
               summary:
                 '> **Last updated:** 2026-10-30 (MD Suite merged) > **Status:** Governance + Hero',
               artifacts: [
@@ -332,7 +332,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-FOUNDATIONS-5',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Institutional Specification',
                   type: 'LAW',
                   filePath: '.agents/daily-milestone-tracker.md',
                   totalLines: 6,
@@ -385,7 +385,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-FOUNDATIONS-6',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Executive Operational Directives',
           summary:
             '> **Authoritative Subagent Ownership Roster for `.agents/orchestrator/` & `.agents/scripts/`** > **F',
           topics: [
@@ -393,7 +393,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-FOUNDATIONS-6',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Enterprise Charter',
               summary:
                 '> **Authoritative Subagent Ownership Roster for `.agents/orchestrator/` & `.agen',
               artifacts: [
@@ -401,7 +401,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-FOUNDATIONS-6',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Institutional Specification',
                   type: 'LAW',
                   filePath: '.agents/orchestrator-tool-assignments.md',
                   totalLines: 4,
@@ -454,7 +454,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-FOUNDATIONS-7',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Executive Operational Directives',
           summary:
             '**Status:** Week 2 Ready | 5 Test Files Created **Date:** January 17, 2026 (Preparation) **Total Tes',
           topics: [
@@ -462,7 +462,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-FOUNDATIONS-7',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Enterprise Charter',
               summary:
                 '**Status:** Week 2 Ready | 5 Test Files Created **Date:** January 17, 2026 (Prep',
               artifacts: [
@@ -470,7 +470,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-FOUNDATIONS-7',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Institutional Specification',
                   type: 'LAW',
                   filePath: '.agents/test-suite-documentation.md',
                   totalLines: 4,
@@ -523,7 +523,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-FOUNDATIONS-8',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Executive Operational Directives',
           summary:
             '> **Authoritative Engineering Law for White Caves Real Estate LLC** > **Protocol:** Bhakti Protocol ',
           topics: [
@@ -531,7 +531,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-FOUNDATIONS-8',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Enterprise Charter',
               summary:
                 '> **Authoritative Engineering Law for White Caves Real Estate LLC** > **Protocol',
               artifacts: [
@@ -539,7 +539,7 @@ export const CHAPTER_CORE_FOUNDATIONS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-FOUNDATIONS-8',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Institutional Specification',
                   type: 'LAW',
                   filePath: '.agents/aegis-governance-laws.md',
                   totalLines: 5,

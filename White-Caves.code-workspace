@@ -7,6 +7,10 @@
     {
       "name": "💬 WhatsApp Bot Linda",
       "path": "../whatsapp-bot-linda"
+    },
+    {
+      "name": "🔐 Central Secrets & Credentials",
+      "path": "../secrets"
     }
   ],
   "settings": {

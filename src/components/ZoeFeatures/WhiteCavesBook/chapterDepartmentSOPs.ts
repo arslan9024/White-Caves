@@ -22,7 +22,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-1',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU009` | **Agent:** `@Joelle` (AI Predictive Lead Scoring Specialist) | **Status:**',
           topics: [
@@ -30,7 +30,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-1',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU009` | **Agent:** `@Joelle` (AI Predictive Lead Scoring Speci',
               artifacts: [
@@ -38,7 +38,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-1',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/03_ai_assistants/README.md',
@@ -92,7 +92,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-2',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU010` | **Agent:** `@Sofia` (SecOps & Cryptographic Defense Director) | **Status:*',
           topics: [
@@ -100,7 +100,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-2',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU010` | **Agent:** `@Sofia` (SecOps & Cryptographic Defense Di',
               artifacts: [
@@ -108,7 +108,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-2',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/05_requirements/compliance-requirements.md',
@@ -180,7 +180,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-3',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU012` | **Agent:** `@Cassie` (Cross-Platform Mobile Integration Lead) | **Status:*',
           topics: [
@@ -188,7 +188,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-3',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU012` | **Agent:** `@Cassie` (Cross-Platform Mobile Integratio',
               artifacts: [
@@ -196,7 +196,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-3',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/09_crm_features/analytics-dashboard.md',
@@ -251,7 +251,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-4',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU004` | **Agent:** `@Timnit` (Compliance & Regulatory Gate Specialist) | **Status:',
           topics: [
@@ -259,7 +259,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-4',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU004` | **Agent:** `@Timnit` (Compliance & Regulatory Gate Spe',
               artifacts: [
@@ -267,7 +267,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-4',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/09_crm_features/dld-integration.md',
@@ -354,7 +354,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-5',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU011` | **Agent:** `@Annie` (Container Ecosystem & PDF Infrastructure Architect) |',
           topics: [
@@ -362,7 +362,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-5',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU011` | **Agent:** `@Annie` (Container Ecosystem & PDF Infrast',
               artifacts: [
@@ -370,7 +370,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-5',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/09_crm_features/document-generation.md',
@@ -424,7 +424,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-6',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU006` | **Agent:** `@Invoice` (Director of FinTech & Statutory Tax Systems) | **St',
           topics: [
@@ -432,7 +432,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-6',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU006` | **Agent:** `@Invoice` (Director of FinTech & Statutory',
               artifacts: [
@@ -440,7 +440,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-6',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/09_crm_features/financial-reporting.md',
@@ -527,7 +527,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-7',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU013` | **Agent:** `@Victoria` (Director of Luxury Client Experience & Landlord Re',
           topics: [
@@ -535,7 +535,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-7',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU013` | **Agent:** `@Victoria` (Director of Luxury Client Expe',
               artifacts: [
@@ -543,7 +543,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-7',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/09_crm_features/landlord-portal.md',
@@ -597,7 +597,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-8',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU005` | **Agent:** `@Timnit` (Legal Operations & RERA Conveyance Lead) | **Status:',
           topics: [
@@ -605,7 +605,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-8',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU005` | **Agent:** `@Timnit` (Legal Operations & RERA Conveyan',
               artifacts: [
@@ -613,7 +613,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-8',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/09_crm_features/legal-management.md',
@@ -700,7 +700,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-9',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU008` | **Agent:** `@Victoria` (Leasing Operations & Asset Management Lead) | **St',
           topics: [
@@ -708,7 +708,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-9',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU008` | **Agent:** `@Victoria` (Leasing Operations & Asset Man',
               artifacts: [
@@ -716,7 +716,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-9',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/09_crm_features/tenancy-ejari.md',
@@ -787,7 +787,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
           level: 7,
           nodeId: 'S07-SC06-BIZ-10',
           sectionNumber: 1,
-          title: 'Section: General Overview',
+          title: 'Section: Statutory & Operational Rules',
           summary:
             '> **Tracking:** `DU001` | **Agent:** `@S5` (SecOps Core Node) | **Status:** `IMPLEMENTED & ENFORCED`',
           topics: [
@@ -795,7 +795,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
               level: 8,
               nodeId: 'T08-SC06-BIZ-10',
               topicNumber: 1,
-              title: 'Topic: General Overview',
+              title: 'Topic: Core Architectural Specification',
               summary:
                 '> **Tracking:** `DU001` | **Agent:** `@S5` (SecOps Core Node) | **Status:** `IMP',
               artifacts: [
@@ -803,7 +803,7 @@ export const CHAPTER_DEPARTMENT_SOPS: ChapterNode = {
                   level: 9,
                   nodeId: 'A09-SC06-BIZ-10',
                   artifactNumber: 1,
-                  title: 'Artifact: General Overview',
+                  title: 'Artifact: Production Data Contract',
                   type: 'LAW',
                   filePath:
                     'C:/Users/Dell/Documents/antigravity/White-Caves/White-Caves-Frontend/.agents/business_docs/09_crm_features/wave-16-security-hardening.md',

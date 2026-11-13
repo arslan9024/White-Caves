@@ -1,6 +1,8 @@
 // src/components/ZoeFeatures/WhiteCavesBook/MultiLevelBookView.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useMultiLevelBook } from './MultiLevelBookContext';
+import { AEGIS_12_LEVEL_CORPUS } from './masterLibraryData';
+import { search12LevelTree, SearchMatch } from './treeQueryEngine';
 import {
   BookOpen,
   ChevronRight,
@@ -12,6 +14,7 @@ import {
   CornerDownRight,
   ArrowUpLeft,
   AlignLeft,
+  X,
 } from 'lucide-react';
 
 export const MultiLevelBookView: React.FC = () => {
@@ -46,6 +49,11 @@ export const MultiLevelBookView: React.FC = () => {
     returnUpOneLevel,
     resetToChapter,
   } = useMultiLevelBook();
+
+  // Search results computed via 12-Level Omni-Search Engine
+  const searchResults = useMemo(() => {
+    return search12LevelTree(AEGIS_12_LEVEL_CORPUS, searchQuery, 15);
+  }, [searchQuery]);
 
   return (
     <div className="flex flex-col h-full w-full bg-[#030712] text-slate-100 rounded-xl border border-sky-500/20 overflow-hidden shadow-2xl">
@@ -95,15 +103,62 @@ export const MultiLevelBookView: React.FC = () => {
         </div>
 
         {/* Global 12-Level Omni-Search */}
-        <div className="relative w-72">
+        <div className="relative w-80">
           <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
           <input
             type="text"
             placeholder="Search lines, sentences, artifacts..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-8 pr-3 py-1 text-xs bg-slate-950/80 border border-slate-700/60 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-400 transition"
+            className="w-full pl-8 pr-7 py-1 text-xs bg-slate-950/80 border border-slate-700/60 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-400 transition"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2 top-2 text-slate-500 hover:text-slate-300"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+
+          {/* Omni-Search Live Dropdown */}
+          {searchQuery.trim().length >= 2 && (
+            <div className="absolute left-0 right-0 top-9 bg-slate-900 border border-sky-500/30 rounded-lg shadow-2xl z-50 max-h-80 overflow-y-auto divide-y divide-slate-800">
+              <div className="px-3 py-1.5 bg-slate-950 text-[10px] text-slate-400 font-mono uppercase flex justify-between">
+                <span>{searchResults.length} Matches Found</span>
+                <span>Sub-60-Token Coordinates</span>
+              </div>
+              {searchResults.length === 0 ? (
+                <div className="p-3 text-xs text-slate-500 text-center">
+                  No nodes matching "{searchQuery}"
+                </div>
+              ) : (
+                searchResults.map(match => (
+                  <button
+                    key={match.nodeId}
+                    onClick={() => {
+                      selectBook(match.bookId);
+                      setSearchQuery('');
+                    }}
+                    className="w-full text-left p-2.5 hover:bg-slate-800/80 transition flex flex-col gap-1 group"
+                  >
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="font-mono text-sky-400 font-semibold uppercase bg-sky-950/60 border border-sky-800/40 px-1.5 py-0.5 rounded">
+                        L{match.level}: {match.levelName}
+                      </span>
+                      <span className="text-slate-500 text-[10px]">{match.bookTitle}</span>
+                    </div>
+                    <div className="text-xs font-semibold text-slate-200 group-hover:text-white truncate">
+                      {match.title}
+                    </div>
+                    <div className="text-[11px] text-slate-400 line-clamp-1 italic">
+                      "{match.snippet}"
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
         </div>
       </div>
 

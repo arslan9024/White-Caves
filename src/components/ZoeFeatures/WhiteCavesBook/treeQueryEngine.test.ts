@@ -5,6 +5,7 @@ import {
   findNodeById,
   queryTreeCoordinate,
   calculateTokenSavingsBenchmark,
+  search12LevelTree,
 } from './treeQueryEngine';
 
 describe('AEGIS 12-Level Sovereign Tree Query Engine (TURING-LAW-000)', () => {
@@ -62,5 +63,19 @@ describe('AEGIS 12-Level Sovereign Tree Query Engine (TURING-LAW-000)', () => {
     const benchmark = calculateTokenSavingsBenchmark(8000, 50);
     expect(benchmark.savingsPercentage).toBeGreaterThanOrEqual(90);
     expect(benchmark.multiplierFactor).toBeGreaterThanOrEqual(100);
+  });
+
+  it('should execute 12-Level Omni-Search across books and return sub-60-token coordinates', () => {
+    // Search for VAT in the library
+    const results = search12LevelTree(AEGIS_12_LEVEL_CORPUS, 'VAT', 10);
+    expect(results.length).toBeGreaterThan(0);
+    const topResult = results[0];
+    expect(topResult.bookTitle).toContain('White Caves');
+    expect(topResult.tokenEstimate).toBeLessThanOrEqual(60);
+
+    // Search for Turing in the library
+    const aegisResults = search12LevelTree(AEGIS_12_LEVEL_CORPUS, 'Turing', 10);
+    expect(aegisResults.length).toBeGreaterThan(0);
+    expect(aegisResults.some(r => r.bookId === 'book-02-aegis')).toBe(true);
   });
 });
