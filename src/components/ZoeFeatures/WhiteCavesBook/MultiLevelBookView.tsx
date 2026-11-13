@@ -4,21 +4,14 @@ import { useMultiLevelBook } from './MultiLevelBookContext';
 import {
   BookOpen,
   ChevronRight,
-  ChevronLeft,
   Search,
   Layers,
   FolderTree,
   FileCode2,
   Sigma,
-  FileText,
   CornerDownRight,
-  Lightbulb,
   ArrowUpLeft,
-  Hash,
-  Sparkles,
   AlignLeft,
-  Quote,
-  Terminal,
 } from 'lucide-react';
 
 export const MultiLevelBookView: React.FC = () => {
