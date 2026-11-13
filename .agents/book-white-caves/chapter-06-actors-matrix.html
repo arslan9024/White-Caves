@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 6: Domain Actors & Entity-Action-Structure Matrix — The Book of White Caves</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #0F172A;
+      --border: rgba(56, 189, 248, 0.2);
+      --accent-red: #EF4444;
+      --accent-cyan: #38BDF8;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --text: #F3F4F6;
+      --text-muted: #9CA3AF;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+    .dual-nav {
+      display: flex;
+      justify-content: space-between;
+      margin: 2rem 0;
+      padding: 1rem 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .dual-nav a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    main {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    h1, h2, h3, h4 {
+      color: #fff;
+    }
+    code {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent-cyan);
+      font-size: 0.9em;
+    }
+    .callout {
+      border-left: 4px solid var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.08);
+      padding: 1rem 1.5rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.5rem 0;
+    }
+    .actor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .actor-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .actor-card:hover {
+      border-color: var(--accent-cyan);
+    }
+    .actor-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent-cyan);
+      margin-bottom: 0.5rem;
+    }
+    .actor-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    .badge-internal { background: rgba(56, 189, 248, 0.2); color: var(--accent-cyan); }
+    .badge-client { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); }
+    .badge-institutional { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    th {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--accent-cyan);
+    }
+    tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  
+    .book-hyperlink {
+      color: #38bdf8;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      transition: color 0.2s, background 0.2s;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    .book-hyperlink:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+    
+</style>
+</head>
+<body>
+  <header>
+    <div><strong>📖 The Book of White Caves</strong> / Chapter 6</div>
+    <a href="index.html" style="color: var(--accent-cyan); text-decoration: none;">📑 Index</a>
+  </header>
+
+  <main>
+    <div class="dual-nav">
+      <span>⏮️ Previous: <a href="chapter-05-mary.html">Ch 5: Mary Inventory</a></span>
+      <span>Next: <a href="progress-intelligence.html">Progress Intelligence ⏭️</a></span>
+    </div>
+
+    <h1>Chapter 6: Domain Actors &amp; Entity-Action-Structure Matrix</h1>
+    <p><em>Curated by @Aurora, Principal Systems CTO &amp; Canonical Chronicler</em></p>
+
+    <div class="callout">
+      <strong>Statutory Invariant (TURING-SEPARATION-010):</strong><br>
+      Clean decoupling of Actors, Actions, and Structure across all systems:<br>
+      • <strong>Where they belong (<a href="chapter-06-actors-matrix.html" class="book-hyperlink" title="Explore: DMS">DMS</a>):</strong> 12 Fixed Corporate Departments (Floors 1–13).<br>
+      • <strong>Who &amp; What exists (<a href="chapter-06-actors-matrix.html" class="book-hyperlink" title="Explore: ERMS">ERMS</a>):</strong> Pure Entities separated into Actors (Users, Clients, Developers, Banks) and Objects (Properties, Units, Accounts, Permits). Zero verbs or task steps live here.<br>
+      • <strong>What they do (<a href="chapter-06-actors-matrix.html" class="book-hyperlink" title="Explore: TMS">TMS</a>):</strong> Actions and tasks (Verbs: <code>VERIFY_KYC</code>, <code>GENERATE_EJARI</code>, <code>COLLECT_RENT</code>). Every task connects an Actor within a Department.
+    </div>
+
+    <h2>1. The 18 Canonical Platform Actors</h2>
+
+    <h3>Group A: Internal Platform &amp; Workforce Identities</h3>
+    <div class="actor-grid">
+      <div class="actor-card">
+        <span class="actor-badge badge-internal">Internal Identity</span>
+        <div class="actor-title">USER</div>
+        <p>The foundational authentication and session principal (email, password hash, TOTP RFC-6238, Firebase sync). Authenticates all system participants.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-internal">Security Control</span>
+        <div class="actor-title">ROLE (RBAC)</div>
+        <p>App permissions and floor clearance levels (Levels 1–6). Completely decoupled from HR job titles via <code>RoleAssignment</code>.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-internal">HR / Personnel</span>
+        <div class="actor-title">EMPLOYEE</div>
+        <p>Corporate employment record (employee code, department designation, labor card, and contract details).</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-internal">Gamification &amp; Performance</span>
+        <div class="actor-title">STAFF_PROFILE</div>
+        <p>Operational stats, Merit XP (+500 per statutory gate under AEG-037), and dynamic 60%–70% commission split engine (AEG-038).</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-internal">Autonomous Mesh</span>
+        <div class="actor-title">AI_ASSISTANT</div>
+        <p>Autonomous and co-pilot agents within the 235-agent AEGIS mesh (Zoe COO, Ada, Elena, and the 120 departmental supervisors).</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-internal">Recruitment</span>
+        <div class="actor-title">CANDIDATE</div>
+        <p>Recruitment prospects undergoing CV parsing, scoring, RERA broker license checks, and automated onboarding to Employee.</p>
+      </div>
+    </div>
+
+    <h3>Group B: Transacting Parties &amp; Client Personas</h3>
+    <div class="actor-grid">
+      <div class="actor-card">
+        <span class="actor-badge badge-client">CRM Master Entity</span>
+        <div class="actor-title">CLIENT</div>
+        <p>The single source of truth for transacting persons/entities. Retains KYC, passports, nationality, and communication history.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-client">Property Owner (Leasing)</span>
+        <div class="actor-title">LANDLORD</div>
+        <p>Legal title deed holder listing units for lease; signs leasing agreements and authorizes Ejari registrations.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-client">Lease Occupant</span>
+        <div class="actor-title">TENANT</div>
+        <p>Active or prospective lessee; submits tenancy documents, PDC cheques, and signs Unified Ejari contracts.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-client">Property Purchaser</span>
+        <div class="actor-title">BUYER</div>
+        <p>Purchaser in off-plan or secondary markets; submits Source of Wealth/POF, signs Form F (MOU), and funds escrow.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-client">Property Vendor</span>
+        <div class="actor-title">SELLER</div>
+        <p>Secondary market vendor holding Title Deed (Mulkiya); executes Form A marketing agreements and developer NOC clearance.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-client">External / Internal Broker</span>
+        <div class="actor-title">BROKER_AGENT</div>
+        <p>Licensed agent holding a RERA Broker Registration Number (BRN); governed by Form I broker-to-broker agreements.</p>
+      </div>
+    </div>
+
+    <h3>Group C: Institutional &amp; Dubai Real Estate Infrastructure</h3>
+    <div class="actor-grid">
+      <div class="actor-card">
+        <span class="actor-badge badge-institutional">Master / Private Developer</span>
+        <div class="actor-title">DEVELOPER</div>
+        <p>Off-plan project developers (Emaar, DAMAC, Meraas, Sobha, Aldar). Releases inventory, executes SPAs, and grants resale NOCs.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-institutional">DLD Authorized Transfer Office</span>
+        <div class="actor-title">REGISTRATION_TRUSTEE</div>
+        <p>Authorized DLD offices (e.g., Al Tabo) conducting secondary transfers, collecting 4% DLD fees, and issuing e-Title Deeds.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-institutional">Financial Institution</span>
+        <div class="actor-title">MORTGAGE_LENDER</div>
+        <p>Commercial banks (ADCB, Emirates NBD, FAB). Issues Pre-Approvals, final offer letters (FOL), and mortgage liability release letters.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-institutional">Corporate Holding Vehicle</span>
+        <div class="actor-title">CORPORATE_SPV</div>
+        <p>DIFC / ADGM / RAK ICC special purpose vehicles holding luxury real estate assets for liability ring-fencing and estate planning.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-institutional">Community &amp; HOA Authority</span>
+        <div class="actor-title">MOLLAK_ASSOCIATION</div>
+        <p>DLD-governed system for service charge clearance. No developer NOC or secondary title transfer can proceed without Mollak clearance.</p>
+      </div>
+      <div class="actor-card">
+        <span class="actor-badge badge-institutional">Facility &amp; Works</span>
+        <div class="actor-title">CONTRACTOR</div>
+        <p>Maintenance providers, snagging inspectors, and fit-out teams executing property handovers and maintenance SLAs.</p>
+      </div>
+    </div>
+
+    <h2>2. Resolving Role Overlaps: The Dynamic Entity-Role Pattern</h2>
+    <p>In high-end Dubai real estate, a client who purchases an off-plan penthouse as a <code>BUYER</code> becomes the <code>LANDLORD</code> when leasing it out, or later a <code>SELLER</code> upon exit.</p>
+    <div class="callout">
+      <strong>Database Resolution:</strong> A single <code>Client</code> record exists with a multi-role classification tag. The role is contextualized through <code>ClientProperty.relationship</code> (<code>owner</code>, <code>tenant</code>, <code>buyer</code>, <code>interested</code>) and transactional foreign keys. This guarantees zero contact duplication and 100% unified financial history.
+    </div>
+
+    <h2>3. Separation of RBAC Permissions vs. HR Job Titles</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Domain</th>
+          <th>Model / Concept</th>
+          <th>Purpose</th>
+          <th>Example Values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>App Security (RBAC)</strong></td>
+          <td><code>operationalLevel</code> (1..6)</td>
+          <td>Controls API gate permissions, button capabilities, and floor clearance.</td>
+          <td><code>Level 1 (Agent)</code>, <code>Level 4 (Dept Head)</code>, <code>Level 6 (Managing Director)</code></td>
+        </tr>
+        <tr>
+          <td><strong>Human Resources (Job)</strong></td>
+          <td><code>RoleAssignment.roleName</code></td>
+          <td>Represents corporate job position, title, and marketing designation.</td>
+          <td><code>"Senior Offplan Luxury Specialist"</code>, <code>"Client Concierge Lead"</code></td>
+        </tr>
+        <tr>
+          <td><strong>Performance &amp; Splits</strong></td>
+          <td><code>StaffProfile</code></td>
+          <td>Manages Merit XP (+500 per statutory gate) and dynamic 60%–70% split escalation.</td>
+          <td><code>accumulatedXP: 3500</code>, <code>dynamicBonusSplitPct: 67.5%</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="dual-nav">
+      <span>⏮️ Previous: <a href="chapter-05-mary.html">Ch 5: Mary Inventory</a></span>
+      <span>Next: <a href="progress-intelligence.html">Progress Intelligence ⏭️</a></span>
+    </div>
+  </main>
+
+  <footer style="text-align: center; padding: 2rem; border-top: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem;">
+    <p>Authored continuously by <strong>@Aurora</strong> &amp; <strong>@Zoe</strong> | Governed by the AEGIS V5.0 Sovereign Constitution</p>
+  </footer>
+</body>
+</html>

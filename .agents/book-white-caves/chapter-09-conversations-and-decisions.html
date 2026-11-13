@@ -124,7 +124,22 @@
       display: flex;
       justify-content: space-between;
     }
-  </style>
+  
+    .book-hyperlink {
+      color: #38bdf8;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      transition: color 0.2s, background 0.2s;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    .book-hyperlink:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+    
+</style>
 </head>
 <body>
 
@@ -143,7 +158,7 @@
       <div class="meta-item"><strong>Status:</strong> <span style="color: var(--accent-emerald);">APPROVED & ACTIVE</span></div>
       <div class="meta-item"><strong>Date:</strong> 2026-11-13</div>
       <div class="meta-item"><strong>Decision Maker:</strong> Managing Director & @Ada / @Aurora</div>
-      <div class="meta-item"><strong>Impacted Repos:</strong> White-Caves-Web & White-Caves-Frontend</div>
+      <div class="meta-item"><strong>Impacted Repos:</strong> <a href="chapter-09-conversations-and-decisions.html#web-decoupling" class="book-hyperlink" title="Explore: White-Caves-Web">White-Caves-Web</a> & White-Caves-Frontend</div>
     </div>
     <p>
       <strong>Context:</strong> As the White Caves project expanded to include 12 corporate brokerage departments, 235 AI agents, DLD/Ejari integrations, and client portals, bundling public marketing landing pages with the private enterprise CRM created bundle bloat, SEO compromises, and deployment friction.
@@ -152,7 +167,7 @@
       <strong>Decision:</strong> Formal separation into two autonomous code repositories:
     </p>
     <ul>
-      <li><strong>White-Caves-Web (<code>https://github.com/arslan9024/White-Caves-Web.git</code>):</strong> Public-facing luxury marketing engine deployed to <code>whitecaves.ae</code> / <code>www.whitecaves.ae</code> on Vercel. Optimized for Core Web Vitals, SSR/SSG, and luxury buyer lead acquisition.</li>
+      <li><strong><a href="chapter-09-conversations-and-decisions.html#web-decoupling" class="book-hyperlink" title="Explore: White-Caves-Web">White-Caves-Web</a> (<code>https://github.com/arslan9024/<a href="chapter-09-conversations-and-decisions.html#web-decoupling" class="book-hyperlink" title="Explore: White-Caves-Web">White-Caves-Web</a>.git</code>):</strong> Public-facing luxury marketing engine deployed to <code>whitecaves.ae</code> / <code>www.whitecaves.ae</code> on Vercel. Optimized for Core Web Vitals, SSR/SSG, and luxury buyer lead acquisition.</li>
       <li><strong>White-Caves-Frontend (<code>White-Caves-Frontend.git</code>):</strong> Private Enterprise CRM/ERP operations platform deployed to <code>app.whitecaves.ae</code>. Optimized for high-throughput Redux state, broker transaction flows, and Zoe AI operations.</li>
     </ul>
   </div>
@@ -162,7 +177,7 @@
     <thead>
       <tr>
         <th>Dimension</th>
-        <th>Public Web (White-Caves-Web)</th>
+        <th>Public Web (<a href="chapter-09-conversations-and-decisions.html#web-decoupling" class="book-hyperlink" title="Explore: White-Caves-Web">White-Caves-Web</a>)</th>
         <th>Private CRM App (White-Caves-Frontend)</th>
       </tr>
     </thead>

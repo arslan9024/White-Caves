@@ -11,6 +11,7 @@ import {
 } from './TopNavbar.style';
 import { useTopNavbarLogic, TopNavbarProps } from './TopNavbar.logic';
 import { UserPreferencesDropdown } from '../layout/PublicNavbar/UserPreferencesDropdown';
+import ThemeToggle from '../ThemeToggle';
 
 export type { TopNavbarProps };
 
@@ -43,7 +44,11 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
       {/* ── Left Wing: Navigation Links (Single White Caves HQ Anchor) ── */}
       <NavWing $align="left">
         <NavLink
-          $active={currentPath === '/' || currentPath.startsWith('/dashboard') || currentPath.startsWith('/crm')}
+          $active={
+            currentPath === '/' ||
+            currentPath.startsWith('/dashboard') ||
+            currentPath.startsWith('/crm')
+          }
           onClick={() => {
             if (props.onToggleSidebar) {
               props.onToggleSidebar();
@@ -82,6 +87,9 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
 
       {/* ── Right Wing: Notifications & Centralized Profile Menu ── */}
       <NavWing $align="right">
+        {/* Light / Dark Mode Toggle */}
+        <ThemeToggle compact={true} />
+
         {/* Notifications & Escalations */}
         <QuickActionBtn title="Notifications & Escalations" aria-label="Notifications">
           <Bell size={16} />
@@ -106,10 +114,7 @@ export const TopNavbar: FC<TopNavbarProps> = props => {
           </ProfileTrigger>
 
           {isProfileOpen && (
-            <UserPreferencesDropdown
-              user={user}
-              onClose={() => setIsProfileOpen(false)}
-            />
+            <UserPreferencesDropdown user={user} onClose={() => setIsProfileOpen(false)} />
           )}
         </ProfileMenuWrapper>
       </NavWing>
