@@ -30,7 +30,6 @@ import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
 import { TestimonialPodium } from '../components/homepage/TestimonialPodium';
 import { QuickSearchModal } from '../components/homepage/QuickSearchModal';
-import { RegulatoryTrustStrip } from '../components/homepage/RegulatoryTrustStrip';
 import { WhatsAppConciergePill } from '../components/homepage/WhatsAppConciergePill';
 import { CurrencyUnitBar } from '../components/homepage/CurrencyUnitBar';
 import '../styles/luxuryDesignSystem.css';
@@ -252,9 +251,6 @@ const HomePage: FC = () => {
           isLoading={isHomepageLoading}
           onSearchClick={() => setIsSearchOpen(true)}
         />
-
-        {/* RERA & DLD Regulatory Compliance Strip */}
-        <RegulatoryTrustStrip />
 
         {/* Market Trust Strip */}
         <section className="home-page__trust-strip" aria-label="Market trust highlights">
