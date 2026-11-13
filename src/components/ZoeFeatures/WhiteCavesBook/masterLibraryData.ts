@@ -1,6 +1,7 @@
 // src/components/ZoeFeatures/WhiteCavesBook/masterLibraryData.ts
 import { MasterCorpusRoot } from './treeTypes';
 import { CHAPTER_OF_PROTOCOLS } from './chapterOfProtocols';
+import { CHAPTER_CORE_FOUNDATIONS } from './chapterCoreFoundations';
 import { CHAPTER_DEPARTMENT_SOPS } from './chapterDepartmentSOPs';
 import { CHAPTER_STRATEGIC_PLANS } from './chapterStrategicPlans';
 import { CHAPTER_BUSINESS_STRATEGIES } from './chapterBusinessStrategies';
@@ -47,6 +48,7 @@ export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
                   description: 'Statutory constitutional rules governing all agents and subagents.',
                   chapters: [
                     CHAPTER_OF_PROTOCOLS,
+                    CHAPTER_CORE_FOUNDATIONS,
                     {
                       level: 5,
                       nodeId: 'CH05-001',
