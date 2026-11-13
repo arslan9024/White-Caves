@@ -1,6 +1,15 @@
 // src/components/ZoeFeatures/WhiteCavesBook/MultiLevelBookContext.tsx
-import React, { createContext, useContext, useState, useMemo, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useRef,
+  useCallback,
+  ReactNode,
+} from 'react';
 import { AEGIS_12_LEVEL_CORPUS } from './masterLibraryData';
+import { TreeNavigationSnapshot, areSnapshotsEqual } from './navigationHistoryTypes';
 import {
   MasterCorpusRoot,
   ProjectLibraryNode,
@@ -36,6 +45,13 @@ interface MultiLevelBookContextType {
   breadcrumbs: NavigationBreadcrumb[];
   searchQuery: string;
   setSearchQuery: (q: string) => void;
+
+  // History stack controls
+  canGoBack: boolean;
+  canGoForward: boolean;
+  goBack: () => void;
+  goForward: () => void;
+  historyLength: number;
 
   // Level selector actions
   selectBook: (bookId: string) => void;
@@ -82,6 +98,116 @@ export const MultiLevelBookProvider: React.FC<{ children: ReactNode; initialBook
   const [paragraphId, setParagraphId] = useState<string | null>(null);
   const [sentenceId, setSentenceId] = useState<string | null>(null);
   const [lineId, setLineId] = useState<string | null>(null);
+
+  // Browser-style Navigation History Stack
+  const initialSnapshot: TreeNavigationSnapshot = useMemo(
+    () => ({
+      bookId: initialBookId,
+      volId: 'VL03-001',
+      cantoId: 'CN04-001',
+      chapterId: 'CH05-001',
+      subChapterId: null,
+      sectionId: null,
+      topicId: null,
+      artifactId: null,
+      paragraphId: null,
+      sentenceId: null,
+      lineId: null,
+    }),
+    [initialBookId]
+  );
+
+  const [history, setHistory] = useState<TreeNavigationSnapshot[]>([initialSnapshot]);
+  const [historyIndex, setHistoryIndex] = useState<number>(0);
+  const isNavigatingHistoryRef = useRef<boolean>(false);
+
+  // Push snapshot to history when state changes (unless navigating through history)
+  const currentSnapshot: TreeNavigationSnapshot = useMemo(
+    () => ({
+      bookId,
+      volId,
+      cantoId,
+      chapterId,
+      subChapterId,
+      sectionId,
+      topicId,
+      artifactId,
+      paragraphId,
+      sentenceId,
+      lineId,
+    }),
+    [
+      bookId,
+      volId,
+      cantoId,
+      chapterId,
+      subChapterId,
+      sectionId,
+      topicId,
+      artifactId,
+      paragraphId,
+      sentenceId,
+      lineId,
+    ]
+  );
+
+  React.useEffect(() => {
+    if (isNavigatingHistoryRef.current) {
+      isNavigatingHistoryRef.current = false;
+      return;
+    }
+
+    setHistory(prev => {
+      const active = prev[historyIndex];
+      if (active && areSnapshotsEqual(active, currentSnapshot)) {
+        return prev;
+      }
+      // Truncate any forward history and append the new snapshot
+      const updated = [...prev.slice(0, historyIndex + 1), currentSnapshot];
+      return updated;
+    });
+    setHistoryIndex(prev => prev + 1);
+  }, [currentSnapshot]);
+
+  const applySnapshot = useCallback((snap: TreeNavigationSnapshot) => {
+    isNavigatingHistoryRef.current = true;
+    setBookId(snap.bookId);
+    setVolId(snap.volId);
+    setCantoId(snap.cantoId);
+    setChapterId(snap.chapterId);
+    setSubChapterId(snap.subChapterId);
+    setSectionId(snap.sectionId);
+    setTopicId(snap.topicId);
+    setArtifactId(snap.artifactId);
+    setParagraphId(snap.paragraphId);
+    setSentenceId(snap.sentenceId);
+    setLineId(snap.lineId);
+  }, []);
+
+  const canGoBack = historyIndex > 0;
+  const canGoForward = historyIndex < history.length - 1;
+
+  const goBack = useCallback(() => {
+    if (historyIndex > 0) {
+      const targetIndex = historyIndex - 1;
+      const targetSnap = history[targetIndex];
+      if (targetSnap) {
+        setHistoryIndex(targetIndex);
+        applySnapshot(targetSnap);
+      }
+    }
+  }, [historyIndex, history, applySnapshot]);
+
+  const goForward = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const targetIndex = historyIndex + 1;
+      const targetSnap = history[targetIndex];
+      if (targetSnap) {
+        setHistoryIndex(targetIndex);
+        applySnapshot(targetSnap);
+      }
+    }
+  }, [historyIndex, history, applySnapshot]);
 
   // Derivations
   const currentLibrary = corpus.libraries[0];
@@ -510,6 +636,11 @@ export const MultiLevelBookProvider: React.FC<{ children: ReactNode; initialBook
         breadcrumbs,
         searchQuery,
         setSearchQuery,
+        canGoBack,
+        canGoForward,
+        goBack,
+        goForward,
+        historyLength: history.length,
         selectBook,
         selectVolume,
         selectCanto,

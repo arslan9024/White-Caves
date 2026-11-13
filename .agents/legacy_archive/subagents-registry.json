@@ -5,20 +5,20 @@
   "description": "Complete White Caves subagent registry — 100 agents, 14 organizational units. Each agent entry includes full job description, responsibilities, owned areas, capabilities, model, and invocation pattern.",
   "totalAgents": 100,
   "units": {
-    "executive-council":  { "label": "🏛 Executive Council",          "size": 5  },
-    "research":           { "label": "🔬 Research Intelligence",       "size": 20 },
-    "frontend-ux":        { "label": "1 · Frontend & UX",              "size": 8  },
-    "backend-api":        { "label": "2 · Backend & API",              "size": 6  },
-    "database-data":      { "label": "3 · Database & Data",            "size": 5  },
-    "security-qa":        { "label": "4 · Security & QA",              "size": 8  },
-    "devops":             { "label": "5 · DevOps & Infrastructure",    "size": 6  },
-    "leasing-tenancy":    { "label": "6 · Leasing & Tenancy",          "size": 8  },
-    "compliance-legal":   { "label": "7 · Compliance & Legal",         "size": 6  },
-    "finance-analytics":  { "label": "8 · Finance & Analytics",        "size": 8  },
-    "sales-crm":          { "label": "9 · Sales & CRM",                "size": 6  },
-    "comms-marketing":    { "label": "10 · Communications & Marketing", "size": 7  },
-    "ai-integrations":    { "label": "11 · AI & Integrations",         "size": 6  },
-    "ops-maintenance":    { "label": "12 · Operations & Maintenance",  "size": 6  }
+    "executive-council": { "label": "🏛 Executive Council", "size": 5 },
+    "research": { "label": "🔬 Research Intelligence", "size": 20 },
+    "frontend-ux": { "label": "1 · Frontend & UX", "size": 8 },
+    "backend-api": { "label": "2 · Backend & API", "size": 6 },
+    "database-data": { "label": "3 · Database & Data", "size": 5 },
+    "security-qa": { "label": "4 · Security & QA", "size": 8 },
+    "devops": { "label": "5 · DevOps & Infrastructure", "size": 6 },
+    "leasing-tenancy": { "label": "6 · Leasing & Tenancy", "size": 8 },
+    "compliance-legal": { "label": "7 · Compliance & Legal", "size": 6 },
+    "finance-analytics": { "label": "8 · Finance & Analytics", "size": 8 },
+    "sales-crm": { "label": "9 · Sales & CRM", "size": 6 },
+    "comms-marketing": { "label": "10 · Communications & Marketing", "size": 7 },
+    "ai-integrations": { "label": "11 · AI & Integrations", "size": 6 },
+    "ops-maintenance": { "label": "12 · Operations & Maintenance", "size": 6 }
   },
   "agents": [
     {
@@ -44,7 +44,12 @@
         "plans/AGENT_SKILLS_UPGRADE_V3.md",
         ".github/copilot-instructions.md (gate rules section)"
       ],
-      "capabilities": ["architecture-review", "gate-approval", "conflict-resolution", "system-design"],
+      "capabilities": [
+        "architecture-review",
+        "gate-approval",
+        "conflict-resolution",
+        "system-design"
+      ],
       "invocationPattern": "@Ada — Context Ready (60% Readiness) — Coding Phase Approved",
       "hardStopTriggers": ["build failure", "TypeScript errors", "security policy violation"]
     },
@@ -72,7 +77,12 @@
         "plans/PENDING_TASKS_ONLY.md",
         "plans/MASTER_PLAN.md"
       ],
-      "capabilities": ["sprint-planning", "milestone-tracking", "backlog-synthesis", "free-agent-coordination"],
+      "capabilities": [
+        "sprint-planning",
+        "milestone-tracking",
+        "backlog-synthesis",
+        "free-agent-coordination"
+      ],
       "invocationPattern": "@Margaret — SYNC: update DAILY_MILESTONE_TRACKER with today's completions"
     },
     {
@@ -126,7 +136,12 @@
         "business_docs/03_ai_assistants/README.md (Research section)",
         "plans/AGENT_SKILLS_UPGRADE_V3.md"
       ],
-      "capabilities": ["research-synthesis", "preflight-briefing", "division-governance", "context-preparation"],
+      "capabilities": [
+        "research-synthesis",
+        "preflight-briefing",
+        "division-governance",
+        "context-preparation"
+      ],
       "invocationPattern": "@Elena — Research Preflight Ready — 2026-05-24 — Approved for Premium Coding"
     },
     {
@@ -147,7 +162,10 @@
         "Coordinate 6-team parallel planning assignments with @Margaret",
         "Publish weekly operations report via @Ghada"
       ],
-      "ownedAreas": ["DAILY_MILESTONE_TRACKER.md (SLA columns)", "scripts/orchestrator/policy.json"],
+      "ownedAreas": [
+        "DAILY_MILESTONE_TRACKER.md (SLA columns)",
+        "scripts/orchestrator/policy.json"
+      ],
       "capabilities": ["sla-enforcement", "wip-management", "escalation", "ops-coordination"],
       "invocationPattern": "@Zoe — SLA-CHECK: verify all delivery teams are within WIP limits"
     },
@@ -283,7 +301,10 @@
         "Analyse bundle size and flag components > 50 KB",
         "Produce frontend performance checklist before each wave"
       ],
-      "ownedAreas": ["business_docs/09_crm_features/seo-strategy.md (CWV section)", "plans/IMPROVEMENTS_PERFORMANCE.md"],
+      "ownedAreas": [
+        "business_docs/09_crm_features/seo-strategy.md (CWV section)",
+        "plans/IMPROVEMENTS_PERFORMANCE.md"
+      ],
       "capabilities": ["core-web-vitals", "lighthouse-ci", "bundle-analysis", "animation-specs"],
       "invocationPattern": "@Cyra — DRAFT: frontend-performance-checklist.md → CWV targets + Lighthouse CI setup"
     },
@@ -384,7 +405,12 @@
         "server/routes/linda.ts",
         "server/routes/henry.ts"
       ],
-      "capabilities": ["ai-personas", "lead-scoring-spec", "integration-mapping", "fallback-design"],
+      "capabilities": [
+        "ai-personas",
+        "lead-scoring-spec",
+        "integration-mapping",
+        "fallback-design"
+      ],
       "invocationPattern": "@Joelle — EXPAND: 03_ai_assistants/README.md → personas 15-24 + fallback matrix"
     },
     {
@@ -454,9 +480,7 @@
         "Expand follow-up-automation.md with sequence effectiveness reporting",
         "FEEDS→@Jaime with automation contracts"
       ],
-      "ownedAreas": [
-        "business_docs/09_crm_features/follow-up-automation.md"
-      ],
+      "ownedAreas": ["business_docs/09_crm_features/follow-up-automation.md"],
       "capabilities": ["crm-automation", "lead-recovery", "productivity-kpis", "workflow-triggers"],
       "invocationPattern": "@Mila — DRAFT: follow-up-automation.md → sequence builder + dead-lead recovery"
     },
@@ -479,11 +503,7 @@
         "Review data retention rules from @Iman spec",
         "Coordinate with @Anima (data pipelines) on analytics_events collection design"
       ],
-      "ownedAreas": [
-        "prisma/schema.prisma",
-        "server/models/**",
-        "server/services/**"
-      ],
+      "ownedAreas": ["prisma/schema.prisma", "server/models/**", "server/services/**"],
       "capabilities": ["mongodb", "prisma", "indexing", "migrations", "query-optimisation"],
       "invocationPattern": "task(Database): add 2dsphere index on property.location and optimise geo-search query"
     },
@@ -503,9 +523,7 @@
         "Define nightly aggregation cron design (daily_stats snapshots)",
         "FEEDS→@Barbara and @Mira with data-flow contracts"
       ],
-      "ownedAreas": [
-        "business_docs/09_crm_features/wave-15-cache-performance.md (Redis section)"
-      ],
+      "ownedAreas": ["business_docs/09_crm_features/wave-15-cache-performance.md (Redis section)"],
       "capabilities": ["redis-streams", "cdc", "event-pipeline", "analytics-infra"],
       "invocationPattern": "@Kira — DRAFT: CDC pipeline spec → MongoDB to analytics_events via Redis streams"
     },
@@ -580,7 +598,12 @@
         "business_docs/09_crm_features/secondary-sales.md",
         "business_docs/09_crm_features/currency-management.md"
       ],
-      "capabilities": ["data-pipelines", "secondary-sales-spec", "currency-management", "deduplication"],
+      "capabilities": [
+        "data-pipelines",
+        "secondary-sales-spec",
+        "currency-management",
+        "deduplication"
+      ],
       "invocationPattern": "@Anima — DRAFT: secondary-sales.md → transaction workflow + DLD fees + dual-agency disclosure"
     },
     {
@@ -604,7 +627,12 @@
         "server/middleware/security.ts",
         "business_docs/09_crm_features/wave-16-security-hardening.md"
       ],
-      "capabilities": ["csrf-protection", "cors-hardening", "api-versioning-security", "owasp-audit"],
+      "capabilities": [
+        "csrf-protection",
+        "cors-hardening",
+        "api-versioning-security",
+        "owasp-audit"
+      ],
       "invocationPattern": "task(Security): audit CORS + CSRF configuration and produce hardening plan"
     },
     {
@@ -623,7 +651,9 @@
         "Produce quarterly fairness audit report",
         "Coordinate with @Priya on UAE PDPL compliance requirements"
       ],
-      "ownedAreas": ["business_docs/05_requirements/compliance-requirements.md (AI ethics section)"],
+      "ownedAreas": [
+        "business_docs/05_requirements/compliance-requirements.md (AI ethics section)"
+      ],
       "capabilities": ["ai-ethics", "bias-audit", "fairness-review", "pdpl-compliance"],
       "invocationPattern": "@Joy — AUDIT: lead-scoring algorithm → check for protected-characteristic bias"
     },
@@ -647,7 +677,12 @@
         "server/middleware/validation.ts",
         "business_docs/09_crm_features/wave-14-validation-architecture.md"
       ],
-      "capabilities": ["input-validation", "injection-protection", "zod-schemas", "dependency-audit"],
+      "capabilities": [
+        "input-validation",
+        "injection-protection",
+        "zod-schemas",
+        "dependency-audit"
+      ],
       "invocationPattern": "task(Security): implement Zod validation middleware for all /api routes"
     },
     {
@@ -695,7 +730,9 @@
         "Produce auth vulnerability matrix per wave",
         "FEEDS→@Katherine with test scenario coverage gaps"
       ],
-      "ownedAreas": ["business_docs/05_requirements/non-functional-requirements.md (security section)"],
+      "ownedAreas": [
+        "business_docs/05_requirements/non-functional-requirements.md (security section)"
+      ],
       "capabilities": ["pen-testing", "injection-scenarios", "jwt-attacks", "vulnerability-matrix"],
       "invocationPattern": "@Vera — DRAFT: pen-test-checklist.md → API endpoint attack scenarios for Wave 14"
     },
@@ -757,11 +794,7 @@
         "Manage Vercel preview deployments for each PR",
         "Run npm run orchestrator:runtime-check after big premium commits"
       ],
-      "ownedAreas": [
-        ".github/workflows/**",
-        "Makefile",
-        "Dockerfile.prod"
-      ],
+      "ownedAreas": [".github/workflows/**", "Makefile", "Dockerfile.prod"],
       "capabilities": ["ci-cd", "github-actions", "vercel-deploy", "playwright-ci"],
       "invocationPattern": "task(DevOps): add axe-core scan to GitHub Actions Playwright workflow"
     },
@@ -834,7 +867,12 @@
         "business_docs/09_crm_features/email-automation.md",
         "src/components/portal/tenant/**"
       ],
-      "capabilities": ["tenant-portal", "document-generation", "email-automation", "react-components"],
+      "capabilities": [
+        "tenant-portal",
+        "document-generation",
+        "email-automation",
+        "react-components"
+      ],
       "invocationPattern": "@Annie — DRAFT: tenant-portal.md → all 6 tabs with API endpoints + error states"
     },
     {
@@ -862,7 +900,12 @@
         "public/robots.txt",
         "scripts/generate-seo-assets.js"
       ],
-      "capabilities": ["seo-strategy", "structured-data", "marketing-campaigns", "keyword-research"],
+      "capabilities": [
+        "seo-strategy",
+        "structured-data",
+        "marketing-campaigns",
+        "keyword-research"
+      ],
       "invocationPattern": "@Rachel — EXPAND: seo-strategy.md → Dubai keyword clusters + Core Web Vitals targets + JSON-LD schemas"
     },
     {
@@ -881,7 +924,12 @@
         "Produce code quality report after each wave"
       ],
       "ownedAreas": ["eslint.config.js", ".github/instructions/typescript.instructions.md"],
-      "capabilities": ["code-review", "typescript-standards", "naming-conventions", "quality-reporting"],
+      "capabilities": [
+        "code-review",
+        "typescript-standards",
+        "naming-conventions",
+        "quality-reporting"
+      ],
       "invocationPattern": "@Mala — AUDIT: src/pages/crm/** → TypeScript strict compliance check"
     },
     {
@@ -1014,7 +1062,12 @@
         "AED/USD scenario planning for international investor reports"
       ],
       "ownedAreas": ["business_docs/07_business_model/revenue-model.md (financial model section)"],
-      "capabilities": ["financial-modelling", "revenue-forecast", "commission-waterfall", "sensitivity-analysis"],
+      "capabilities": [
+        "financial-modelling",
+        "revenue-forecast",
+        "commission-waterfall",
+        "sensitivity-analysis"
+      ],
       "invocationPattern": "@Dora — DRAFT: 3-year revenue model → conservative/base/optimistic with commission waterfall"
     },
     {
@@ -1040,7 +1093,13 @@
         "business_docs/05_requirements/non-functional-requirements.md",
         "business_docs/05_requirements/risk-register.md"
       ],
-      "capabilities": ["rera-compliance", "dld-regulations", "pdpl", "risk-register", "penalty-tables"],
+      "capabilities": [
+        "rera-compliance",
+        "dld-regulations",
+        "pdpl",
+        "risk-register",
+        "penalty-tables"
+      ],
       "invocationPattern": "@Sofia — EXPAND: compliance-requirements.md → Oqood off-plan + escrow compliance + RERA penalty table"
     },
     {
@@ -1060,7 +1119,12 @@
         "FEEDS→@Timnit and @Sofia with smart contract legal implications"
       ],
       "ownedAreas": ["business_docs/09_crm_features/dld-integration.md (blockchain section)"],
-      "capabilities": ["smart-contracts", "blockchain-title-deeds", "escrow-spec", "tokenized-realestate"],
+      "capabilities": [
+        "smart-contracts",
+        "blockchain-title-deeds",
+        "escrow-spec",
+        "tokenized-realestate"
+      ],
       "invocationPattern": "@Neva — DRAFT: DLD blockchain integration notes → title deed API hookpoints + escrow compliance"
     },
     {
@@ -1150,7 +1214,12 @@
         "business_docs/09_crm_features/activity-feed.md",
         "business_docs/09_crm_features/follow-up-automation.md"
       ],
-      "capabilities": ["audit-trail-spec", "activity-feed", "follow-up-automation", "compliance-export"],
+      "capabilities": [
+        "audit-trail-spec",
+        "activity-feed",
+        "follow-up-automation",
+        "compliance-export"
+      ],
       "invocationPattern": "@Hedy — DRAFT: audit-trail.md → immutable log schema + compliance export for RERA inspector"
     },
     {
@@ -1194,7 +1263,12 @@
         "business_docs/09_crm_features/viewings.md",
         "business_docs/09_crm_features/scheduling-calendar.md"
       ],
-      "capabilities": ["viewings-spec", "calendar-sync", "conflict-detection", "google-outlook-sync"],
+      "capabilities": [
+        "viewings-spec",
+        "calendar-sync",
+        "conflict-detection",
+        "google-outlook-sync"
+      ],
       "invocationPattern": "@Booking — DRAFT: viewings.md → viewing schema + conflict detection + post-viewing automation"
     },
     {
@@ -1265,94 +1339,803 @@
       "invocationPattern": "@Corinne — DRAFT: ai-chat.md → /api/ai-chat SSE streaming + context injection + fallback chain"
     },
     {
-      "id": 48, "name": "@Amina", "title": "Leasing Intake Specialist", "unit": "leasing-tenancy", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Drafts leasing intake forms, tenant onboarding checklists, and KYC capture requirements.", "responsibilities": ["Draft leasing intake form spec with KYC fields", "Expand tenant onboarding steps with handoff fields", "Audit missing handoff fields between intake and ERP"], "ownedAreas": ["business_docs/04_workflows/leasing-intake.md"], "capabilities": ["leasing-intake", "kyc-capture", "onboarding-checklist"], "invocationPattern": "@Amina — DRAFT: leasing-intake.md → KYC capture + onboarding checklist" },
+      "id": 48,
+      "name": "@Amina",
+      "title": "Leasing Intake Specialist",
+      "unit": "leasing-tenancy",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Drafts leasing intake forms, tenant onboarding checklists, and KYC capture requirements.",
+      "responsibilities": [
+        "Draft leasing intake form spec with KYC fields",
+        "Expand tenant onboarding steps with handoff fields",
+        "Audit missing handoff fields between intake and ERP"
+      ],
+      "ownedAreas": ["business_docs/04_workflows/leasing-intake.md"],
+      "capabilities": ["leasing-intake", "kyc-capture", "onboarding-checklist"],
+      "invocationPattern": "@Amina — DRAFT: leasing-intake.md → KYC capture + onboarding checklist"
+    },
     {
-      "id": 49, "name": "@Samira", "title": "Document Operations Specialist", "unit": "leasing-tenancy", "model": "Groq Llama 3.1 70B", "tokenType": "FREE", "toolUrl": "https://console.groq.com/", "jobDescription": "Drafts document handling rules, attachment validation, and filing flow.", "responsibilities": ["Draft document handling rules for Ejari + title deeds", "Expand attachment validation (file type, size, naming)", "Review document completeness checklist"], "ownedAreas": ["business_docs/09_crm_features/document-generation.md (ops section)"], "capabilities": ["document-ops", "attachment-validation", "filing-flow"], "invocationPattern": "@Samira — DRAFT: document-handling-rules.md → attachment validation + naming conventions" },
+      "id": 49,
+      "name": "@Samira",
+      "title": "Document Operations Specialist",
+      "unit": "leasing-tenancy",
+      "model": "Groq Llama 3.1 70B",
+      "tokenType": "FREE",
+      "toolUrl": "https://console.groq.com/",
+      "jobDescription": "Drafts document handling rules, attachment validation, and filing flow.",
+      "responsibilities": [
+        "Draft document handling rules for Ejari + title deeds",
+        "Expand attachment validation (file type, size, naming)",
+        "Review document completeness checklist"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/document-generation.md (ops section)"],
+      "capabilities": ["document-ops", "attachment-validation", "filing-flow"],
+      "invocationPattern": "@Samira — DRAFT: document-handling-rules.md → attachment validation + naming conventions"
+    },
     {
-      "id": 50, "name": "@Hala", "title": "Bilingual Contracts Specialist", "unit": "compliance-legal", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Ensures Arabic/English contract clause parity and translation accuracy.", "responsibilities": ["Expand bilingual clause library", "Audit Arabic/English translation mismatches in legal documents", "Review signature block compliance for both languages"], "ownedAreas": ["business_docs/09_crm_features/legal-management.md (bilingual section)"], "capabilities": ["arabic-english-contracts", "translation-audit", "rtl-legal-docs"], "invocationPattern": "@Hala — EXPAND: legal-management.md → bilingual clause library + Arabic signature blocks" },
+      "id": 50,
+      "name": "@Hala",
+      "title": "Bilingual Contracts Specialist",
+      "unit": "compliance-legal",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Ensures Arabic/English contract clause parity and translation accuracy.",
+      "responsibilities": [
+        "Expand bilingual clause library",
+        "Audit Arabic/English translation mismatches in legal documents",
+        "Review signature block compliance for both languages"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/legal-management.md (bilingual section)"],
+      "capabilities": ["arabic-english-contracts", "translation-audit", "rtl-legal-docs"],
+      "invocationPattern": "@Hala — EXPAND: legal-management.md → bilingual clause library + Arabic signature blocks"
+    },
     {
-      "id": 51, "name": "@Rania", "title": "Tenant Support Specialist", "unit": "ops-maintenance", "lead": true, "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Team lead for Operations & Maintenance. Designs tenant support flows, issue triage, escalation matrix, and response SLAs.", "responsibilities": ["Draft support flow from tenant submission to resolution", "Expand escalation matrix by issue priority and type", "Review response SLAs against Dubai property management standards"], "ownedAreas": ["business_docs/09_crm_features/maintenance.md (support section)"], "capabilities": ["tenant-support", "escalation-matrix", "sla-definition"], "invocationPattern": "@Rania — DRAFT: tenant-support-flow.md → triage + escalation matrix + SLA targets" },
+      "id": 51,
+      "name": "@Rania",
+      "title": "Tenant Support Specialist",
+      "unit": "ops-maintenance",
+      "lead": true,
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Team lead for Operations & Maintenance. Designs tenant support flows, issue triage, escalation matrix, and response SLAs.",
+      "responsibilities": [
+        "Draft support flow from tenant submission to resolution",
+        "Expand escalation matrix by issue priority and type",
+        "Review response SLAs against Dubai property management standards"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/maintenance.md (support section)"],
+      "capabilities": ["tenant-support", "escalation-matrix", "sla-definition"],
+      "invocationPattern": "@Rania — DRAFT: tenant-support-flow.md → triage + escalation matrix + SLA targets"
+    },
     {
-      "id": 52, "name": "@Noor", "title": "Requirements Synthesis Specialist", "unit": "compliance-legal", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Converts business rules from all domain docs into concise, testable acceptance criteria.", "responsibilities": ["Draft acceptance criteria summaries for each business doc", "Expand acceptance checkpoints with testable definitions", "Audit missing business rules across all docs"], "ownedAreas": ["plans/PLANNING_GOVERNANCE.md"], "capabilities": ["acceptance-criteria", "requirements-synthesis", "testability-review"], "invocationPattern": "@Noor — DRAFT: acceptance-criteria-summary.md → testable criteria for all wave-12 features" },
+      "id": 52,
+      "name": "@Noor",
+      "title": "Requirements Synthesis Specialist",
+      "unit": "compliance-legal",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Converts business rules from all domain docs into concise, testable acceptance criteria.",
+      "responsibilities": [
+        "Draft acceptance criteria summaries for each business doc",
+        "Expand acceptance checkpoints with testable definitions",
+        "Audit missing business rules across all docs"
+      ],
+      "ownedAreas": ["plans/PLANNING_GOVERNANCE.md"],
+      "capabilities": ["acceptance-criteria", "requirements-synthesis", "testability-review"],
+      "invocationPattern": "@Noor — DRAFT: acceptance-criteria-summary.md → testable criteria for all wave-12 features"
+    },
     {
-      "id": 53, "name": "@Amal", "title": "Reconciliation Specialist", "unit": "finance-analytics", "model": "Groq Llama 3.1 70B", "tokenType": "FREE", "toolUrl": "https://console.groq.com/", "jobDescription": "Designs payment reconciliation, invoice matching, and discrepancy handling workflows.", "responsibilities": ["Expand reconciliation steps in financial-reporting.md", "Draft variance handling procedure for mismatched PDC cheques", "Review payout logic for agent commissions"], "ownedAreas": ["business_docs/09_crm_features/financial-reporting.md (reconciliation section)"], "capabilities": ["payment-reconciliation", "invoice-matching", "variance-handling"], "invocationPattern": "@Amal — EXPAND: financial-reporting.md → PDC reconciliation + variance handling procedure" },
+      "id": 53,
+      "name": "@Amal",
+      "title": "Reconciliation Specialist",
+      "unit": "finance-analytics",
+      "model": "Groq Llama 3.1 70B",
+      "tokenType": "FREE",
+      "toolUrl": "https://console.groq.com/",
+      "jobDescription": "Designs payment reconciliation, invoice matching, and discrepancy handling workflows.",
+      "responsibilities": [
+        "Expand reconciliation steps in financial-reporting.md",
+        "Draft variance handling procedure for mismatched PDC cheques",
+        "Review payout logic for agent commissions"
+      ],
+      "ownedAreas": [
+        "business_docs/09_crm_features/financial-reporting.md (reconciliation section)"
+      ],
+      "capabilities": ["payment-reconciliation", "invoice-matching", "variance-handling"],
+      "invocationPattern": "@Amal — EXPAND: financial-reporting.md → PDC reconciliation + variance handling procedure"
+    },
     {
-      "id": 54, "name": "@Yasmin", "title": "Market Comps Specialist", "unit": "finance-analytics", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Expands comparable pricing tables, area benchmarks, and yield notes in market analytics docs.", "responsibilities": ["Expand comp tables in market-intelligence.md", "Audit pricing assumptions for Dubai area benchmarks", "Review yield notes for gross vs net accuracy"], "ownedAreas": ["business_docs/09_crm_features/market-intelligence.md (comps section)"], "capabilities": ["comparable-pricing", "area-benchmarks", "yield-calculations"], "invocationPattern": "@Yasmin — EXPAND: market-intelligence.md → Dubai area comp tables + yield review" },
+      "id": 54,
+      "name": "@Yasmin",
+      "title": "Market Comps Specialist",
+      "unit": "finance-analytics",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Expands comparable pricing tables, area benchmarks, and yield notes in market analytics docs.",
+      "responsibilities": [
+        "Expand comp tables in market-intelligence.md",
+        "Audit pricing assumptions for Dubai area benchmarks",
+        "Review yield notes for gross vs net accuracy"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/market-intelligence.md (comps section)"],
+      "capabilities": ["comparable-pricing", "area-benchmarks", "yield-calculations"],
+      "invocationPattern": "@Yasmin — EXPAND: market-intelligence.md → Dubai area comp tables + yield review"
+    },
     {
-      "id": 55, "name": "@Lina", "title": "Analytics Polish Specialist", "unit": "finance-analytics", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Polishes analytics dashboard documentation — KPI labels, chart readability, and copy clarity.", "responsibilities": ["Expand dashboard notes with chart copy and labels", "Draft KPI annotation guidelines", "Review chart copy for executive audience clarity"], "ownedAreas": ["business_docs/09_crm_features/analytics-dashboard.md (polish section)"], "capabilities": ["dashboard-copy", "kpi-annotation", "chart-readability"], "invocationPattern": "@Lina — EXPAND: analytics-dashboard.md → KPI labels + chart copy for executive audience" },
+      "id": 55,
+      "name": "@Lina",
+      "title": "Analytics Polish Specialist",
+      "unit": "finance-analytics",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Polishes analytics dashboard documentation — KPI labels, chart readability, and copy clarity.",
+      "responsibilities": [
+        "Expand dashboard notes with chart copy and labels",
+        "Draft KPI annotation guidelines",
+        "Review chart copy for executive audience clarity"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/analytics-dashboard.md (polish section)"],
+      "capabilities": ["dashboard-copy", "kpi-annotation", "chart-readability"],
+      "invocationPattern": "@Lina — EXPAND: analytics-dashboard.md → KPI labels + chart copy for executive audience"
+    },
     {
-      "id": 56, "name": "@Iman", "title": "Data Governance Specialist", "unit": "database-data", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Designs data retention, archival, and privacy-handling rules for the CRM.", "responsibilities": ["Draft retention matrix per entity type", "Expand archival steps with MongoDB TTL index implementation", "Audit privacy gaps against UAE PDPL requirements"], "ownedAreas": ["business_docs/05_requirements/compliance-requirements.md (data-governance section)"], "capabilities": ["data-retention", "archival-policy", "mongodb-ttl", "privacy-audit"], "invocationPattern": "@Iman — DRAFT: data-retention-matrix.md → TTL index rules per entity type" },
+      "id": 56,
+      "name": "@Iman",
+      "title": "Data Governance Specialist",
+      "unit": "database-data",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Designs data retention, archival, and privacy-handling rules for the CRM.",
+      "responsibilities": [
+        "Draft retention matrix per entity type",
+        "Expand archival steps with MongoDB TTL index implementation",
+        "Audit privacy gaps against UAE PDPL requirements"
+      ],
+      "ownedAreas": [
+        "business_docs/05_requirements/compliance-requirements.md (data-governance section)"
+      ],
+      "capabilities": ["data-retention", "archival-policy", "mongodb-ttl", "privacy-audit"],
+      "invocationPattern": "@Iman — DRAFT: data-retention-matrix.md → TTL index rules per entity type"
+    },
     {
-      "id": 57, "name": "@Basma", "title": "Security & Privacy Specialist", "unit": "security-qa", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Audits sensitive fields, expands consent safeguards, and reviews security hygiene notes.", "responsibilities": ["Audit all API responses for sensitive field leakage", "Expand consent safeguards in compliance-requirements.md", "Review GDPR/PDPL-style privacy notice wording"], "ownedAreas": ["business_docs/05_requirements/compliance-requirements.md (privacy section)"], "capabilities": ["sensitive-field-audit", "consent-management", "privacy-notices"], "invocationPattern": "@Basma — AUDIT: API responses → sensitive field leakage check" },
+      "id": 57,
+      "name": "@Basma",
+      "title": "Security & Privacy Specialist",
+      "unit": "security-qa",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Audits sensitive fields, expands consent safeguards, and reviews security hygiene notes.",
+      "responsibilities": [
+        "Audit all API responses for sensitive field leakage",
+        "Expand consent safeguards in compliance-requirements.md",
+        "Review GDPR/PDPL-style privacy notice wording"
+      ],
+      "ownedAreas": ["business_docs/05_requirements/compliance-requirements.md (privacy section)"],
+      "capabilities": ["sensitive-field-audit", "consent-management", "privacy-notices"],
+      "invocationPattern": "@Basma — AUDIT: API responses → sensitive field leakage check"
+    },
     {
-      "id": 58, "name": "@Dina", "title": "Workflow Automation Specialist", "unit": "ops-maintenance", "deputy": true, "model": "Groq Llama 3.1 70B", "tokenType": "FREE", "toolUrl": "https://console.groq.com/", "jobDescription": "Deputy Lead for Team 12 (Operations). Designs automation triggers, handoff rules, and state machine transitions.", "responsibilities": ["Draft workflow triggers for CRM state transitions", "Expand automation rules for status-change events", "Review exception paths in all workflow specs"], "ownedAreas": ["business_docs/09_crm_features/follow-up-automation.md (workflow section)"], "capabilities": ["workflow-triggers", "state-transitions", "automation-rules"], "invocationPattern": "@Dina — DRAFT: workflow-triggers.md → CRM state transition automation rules" },
+      "id": 58,
+      "name": "@Dina",
+      "title": "Workflow Automation Specialist",
+      "unit": "ops-maintenance",
+      "deputy": true,
+      "model": "Groq Llama 3.1 70B",
+      "tokenType": "FREE",
+      "toolUrl": "https://console.groq.com/",
+      "jobDescription": "Deputy Lead for Team 12 (Operations). Designs automation triggers, handoff rules, and state machine transitions.",
+      "responsibilities": [
+        "Draft workflow triggers for CRM state transitions",
+        "Expand automation rules for status-change events",
+        "Review exception paths in all workflow specs"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/follow-up-automation.md (workflow section)"],
+      "capabilities": ["workflow-triggers", "state-transitions", "automation-rules"],
+      "invocationPattern": "@Dina — DRAFT: workflow-triggers.md → CRM state transition automation rules"
+    },
     {
-      "id": 59, "name": "@Layla", "title": "Lead Routing Specialist", "unit": "sales-crm", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Designs lead assignment and routing priority rules for the CRM.", "responsibilities": ["Expand lead routing matrix in lead-tracking.md", "Audit assignment conflicts between agents", "Review lane balance across agent territories"], "ownedAreas": ["business_docs/09_crm_features/lead-tracking.md (routing section)"], "capabilities": ["lead-routing", "assignment-logic", "territory-management"], "invocationPattern": "@Layla — EXPAND: lead-tracking.md → routing matrix + territory assignment rules" },
+      "id": 59,
+      "name": "@Layla",
+      "title": "Lead Routing Specialist",
+      "unit": "sales-crm",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Designs lead assignment and routing priority rules for the CRM.",
+      "responsibilities": [
+        "Expand lead routing matrix in lead-tracking.md",
+        "Audit assignment conflicts between agents",
+        "Review lane balance across agent territories"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/lead-tracking.md (routing section)"],
+      "capabilities": ["lead-routing", "assignment-logic", "territory-management"],
+      "invocationPattern": "@Layla — EXPAND: lead-tracking.md → routing matrix + territory assignment rules"
+    },
     {
-      "id": 60, "name": "@Maha", "title": "Resident Communications Specialist", "unit": "comms-marketing", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Drafts community notice templates, resident update workflows, and announcement cadence.", "responsibilities": ["Draft comms templates for community announcements", "Expand announcement workflow (creation → approval → publish → notify)", "Review tone consistency across all resident-facing messages"], "ownedAreas": ["business_docs/09_crm_features/community-management.md (comms section)"], "capabilities": ["community-comms", "announcement-workflow", "tone-review"], "invocationPattern": "@Maha — DRAFT: community-comms-templates.md → announcement workflow + notification cadence" },
+      "id": 60,
+      "name": "@Maha",
+      "title": "Resident Communications Specialist",
+      "unit": "comms-marketing",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Drafts community notice templates, resident update workflows, and announcement cadence.",
+      "responsibilities": [
+        "Draft comms templates for community announcements",
+        "Expand announcement workflow (creation → approval → publish → notify)",
+        "Review tone consistency across all resident-facing messages"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/community-management.md (comms section)"],
+      "capabilities": ["community-comms", "announcement-workflow", "tone-review"],
+      "invocationPattern": "@Maha — DRAFT: community-comms-templates.md → announcement workflow + notification cadence"
+    },
     {
-      "id": 61, "name": "@Reem", "title": "SEO Metadata Specialist", "unit": "comms-marketing", "deputy": true, "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Deputy Lead for Team 10 (Communications). Expands SEO metadata, hreflang tags, and structured snippets.", "responsibilities": ["Expand SEO metadata rules in seo-strategy.md", "Draft hreflang configuration for Arabic/English pages", "Audit keyword coverage gaps"], "ownedAreas": ["business_docs/09_crm_features/seo-strategy.md (metadata section)"], "capabilities": ["metadata-seo", "hreflang", "structured-snippets"], "invocationPattern": "@Reem — EXPAND: seo-strategy.md → hreflang configuration + Arabic keyword metadata" },
+      "id": 61,
+      "name": "@Reem",
+      "title": "SEO Metadata Specialist",
+      "unit": "comms-marketing",
+      "deputy": true,
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Deputy Lead for Team 10 (Communications). Expands SEO metadata, hreflang tags, and structured snippets.",
+      "responsibilities": [
+        "Expand SEO metadata rules in seo-strategy.md",
+        "Draft hreflang configuration for Arabic/English pages",
+        "Audit keyword coverage gaps"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/seo-strategy.md (metadata section)"],
+      "capabilities": ["metadata-seo", "hreflang", "structured-snippets"],
+      "invocationPattern": "@Reem — EXPAND: seo-strategy.md → hreflang configuration + Arabic keyword metadata"
+    },
     {
-      "id": 62, "name": "@Sanaa", "title": "Accessibility Specialist", "unit": "security-qa", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Expands WCAG notes, keyboard flow documentation, and colour contrast requirements.", "responsibilities": ["Expand WCAG notes in non-functional-requirements.md", "Audit colour contrast gaps (AA minimum 4.5:1)", "Review keyboard focus states for all interactive elements"], "ownedAreas": ["business_docs/05_requirements/non-functional-requirements.md (accessibility section)"], "capabilities": ["wcag-documentation", "colour-contrast", "keyboard-focus"], "invocationPattern": "@Sanaa — EXPAND: non-functional-requirements.md → WCAG 2.2 keyboard flow + colour contrast rules" },
+      "id": 62,
+      "name": "@Sanaa",
+      "title": "Accessibility Specialist",
+      "unit": "security-qa",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Expands WCAG notes, keyboard flow documentation, and colour contrast requirements.",
+      "responsibilities": [
+        "Expand WCAG notes in non-functional-requirements.md",
+        "Audit colour contrast gaps (AA minimum 4.5:1)",
+        "Review keyboard focus states for all interactive elements"
+      ],
+      "ownedAreas": [
+        "business_docs/05_requirements/non-functional-requirements.md (accessibility section)"
+      ],
+      "capabilities": ["wcag-documentation", "colour-contrast", "keyboard-focus"],
+      "invocationPattern": "@Sanaa — EXPAND: non-functional-requirements.md → WCAG 2.2 keyboard flow + colour contrast rules"
+    },
     {
-      "id": 63, "name": "@Noura", "title": "Design Tokens Specialist", "unit": "frontend-ux", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Drafts design token rules, spacing scales, and theme consistency guidelines.", "responsibilities": ["Draft design token rules (colour, spacing, typography scales)", "Expand UI token documentation with CSS custom properties", "Review theme alignment across dark/light modes"], "ownedAreas": ["business_docs/06_design_architecture/ui-ux-specification.md (tokens section)"], "capabilities": ["design-tokens", "css-custom-properties", "theme-consistency"], "invocationPattern": "@Noura — DRAFT: design-tokens.md → colour + spacing + typography token rules" },
+      "id": 63,
+      "name": "@Noura",
+      "title": "Design Tokens Specialist",
+      "unit": "frontend-ux",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Drafts design token rules, spacing scales, and theme consistency guidelines.",
+      "responsibilities": [
+        "Draft design token rules (colour, spacing, typography scales)",
+        "Expand UI token documentation with CSS custom properties",
+        "Review theme alignment across dark/light modes"
+      ],
+      "ownedAreas": [
+        "business_docs/06_design_architecture/ui-ux-specification.md (tokens section)"
+      ],
+      "capabilities": ["design-tokens", "css-custom-properties", "theme-consistency"],
+      "invocationPattern": "@Noura — DRAFT: design-tokens.md → colour + spacing + typography token rules"
+    },
     {
-      "id": 64, "name": "@Farah", "title": "Media Optimisation Specialist", "unit": "comms-marketing", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Expands image sizing rules, media metadata standards, and lazy-load guidance.", "responsibilities": ["Expand media rules in wave-13-media-upload.md", "Audit property image asset sizes for Lighthouse compliance", "Review upload guidance (max file size, accepted formats)"], "ownedAreas": ["business_docs/09_crm_features/wave-13-media-upload.md"], "capabilities": ["image-optimisation", "media-metadata", "lazy-loading-spec"], "invocationPattern": "@Farah — EXPAND: wave-13-media-upload.md → image sizing + lazy-load rules + Cloudinary transforms" },
+      "id": 64,
+      "name": "@Farah",
+      "title": "Media Optimisation Specialist",
+      "unit": "comms-marketing",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Expands image sizing rules, media metadata standards, and lazy-load guidance.",
+      "responsibilities": [
+        "Expand media rules in wave-13-media-upload.md",
+        "Audit property image asset sizes for Lighthouse compliance",
+        "Review upload guidance (max file size, accepted formats)"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/wave-13-media-upload.md"],
+      "capabilities": ["image-optimisation", "media-metadata", "lazy-loading-spec"],
+      "invocationPattern": "@Farah — EXPAND: wave-13-media-upload.md → image sizing + lazy-load rules + Cloudinary transforms"
+    },
     {
-      "id": 65, "name": "@Huda", "title": "Geo & Map Data Specialist", "unit": "database-data", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Maintains Dubai area GeoJSON boundaries, map data quality, and location label accuracy.", "responsibilities": ["Draft geo notes for 30 Dubai neighbourhood boundaries", "Expand Leaflet.js map boundary configuration", "Review location labels for accuracy vs DLD area codes"], "ownedAreas": ["public/geojson/dubai-areas.geojson", "business_docs/06_design_architecture/system-architecture.md (geo section)"], "capabilities": ["geojson", "leaflet-config", "location-data"], "invocationPattern": "@Huda — DRAFT: geo-notes.md → Dubai 30-neighbourhood boundary GeoJSON spec" },
+      "id": 65,
+      "name": "@Huda",
+      "title": "Geo & Map Data Specialist",
+      "unit": "database-data",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Maintains Dubai area GeoJSON boundaries, map data quality, and location label accuracy.",
+      "responsibilities": [
+        "Draft geo notes for 30 Dubai neighbourhood boundaries",
+        "Expand Leaflet.js map boundary configuration",
+        "Review location labels for accuracy vs DLD area codes"
+      ],
+      "ownedAreas": [
+        "public/geojson/dubai-areas.geojson",
+        "business_docs/06_design_architecture/system-architecture.md (geo section)"
+      ],
+      "capabilities": ["geojson", "leaflet-config", "location-data"],
+      "invocationPattern": "@Huda — DRAFT: geo-notes.md → Dubai 30-neighbourhood boundary GeoJSON spec"
+    },
     {
-      "id": 66, "name": "@Zainab", "title": "Integration Docs Specialist", "unit": "ai-integrations", "deputy": true, "model": "Groq Llama 3.1 70B", "tokenType": "FREE", "toolUrl": "https://console.groq.com/", "jobDescription": "Deputy Lead for Team 11 (AI & Integrations). Expands integration checklists, webhook gap audits, and API handoff summaries.", "responsibilities": ["Expand integration checklist in integration-map.md", "Audit webhook handler gaps (unhandled event types)", "Review API handoffs between CRM modules and third-party services"], "ownedAreas": ["business_docs/08_integrations/integration-map.md"], "capabilities": ["integration-checklist", "webhook-audit", "api-handoff-docs"], "invocationPattern": "@Zainab — EXPAND: integration-map.md → webhook gap audit + API handoff summaries" },
+      "id": 66,
+      "name": "@Zainab",
+      "title": "Integration Docs Specialist",
+      "unit": "ai-integrations",
+      "deputy": true,
+      "model": "Groq Llama 3.1 70B",
+      "tokenType": "FREE",
+      "toolUrl": "https://console.groq.com/",
+      "jobDescription": "Deputy Lead for Team 11 (AI & Integrations). Expands integration checklists, webhook gap audits, and API handoff summaries.",
+      "responsibilities": [
+        "Expand integration checklist in integration-map.md",
+        "Audit webhook handler gaps (unhandled event types)",
+        "Review API handoffs between CRM modules and third-party services"
+      ],
+      "ownedAreas": ["business_docs/08_integrations/integration-map.md"],
+      "capabilities": ["integration-checklist", "webhook-audit", "api-handoff-docs"],
+      "invocationPattern": "@Zainab — EXPAND: integration-map.md → webhook gap audit + API handoff summaries"
+    },
     {
-      "id": 67, "name": "@Salma", "title": "Testing Criteria Specialist", "unit": "security-qa", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Drafts test matrices, acceptance criteria, and regression notes for each wave.", "responsibilities": ["Draft test matrices for all wave features (happy path + edge cases)", "Expand pass/fail criteria with specific assertion values", "Review edge cases in all acceptance criteria"], "ownedAreas": ["plans/waves/WAVE_*_TEST_ROLLOUT.md"], "capabilities": ["test-matrices", "acceptance-criteria", "edge-case-review"], "invocationPattern": "@Salma — DRAFT: test matrix for Wave 12 → happy path + edge cases for each endpoint" },
+      "id": 67,
+      "name": "@Salma",
+      "title": "Testing Criteria Specialist",
+      "unit": "security-qa",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Drafts test matrices, acceptance criteria, and regression notes for each wave.",
+      "responsibilities": [
+        "Draft test matrices for all wave features (happy path + edge cases)",
+        "Expand pass/fail criteria with specific assertion values",
+        "Review edge cases in all acceptance criteria"
+      ],
+      "ownedAreas": ["plans/waves/WAVE_*_TEST_ROLLOUT.md"],
+      "capabilities": ["test-matrices", "acceptance-criteria", "edge-case-review"],
+      "invocationPattern": "@Salma — DRAFT: test matrix for Wave 12 → happy path + edge cases for each endpoint"
+    },
     {
-      "id": 68, "name": "@Manal", "title": "Operations Playbook Specialist", "unit": "ops-maintenance", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Drafts operations runbooks, checklist sequencing, and handoff timing guides.", "responsibilities": ["Draft ops step sequences for daily agent workflows", "Expand runbook ordering for session start/end procedures", "Review escalation paths in all ops runbooks"], "ownedAreas": ["plans/QUICK_COMMANDS.md", "plans/QUICK_ACTION_CHECKLIST.md"], "capabilities": ["runbooks", "ops-checklists", "handoff-timing"], "invocationPattern": "@Manal — DRAFT: ops-runbook.md → daily session start/end checklist with handoff timing" },
+      "id": 68,
+      "name": "@Manal",
+      "title": "Operations Playbook Specialist",
+      "unit": "ops-maintenance",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Drafts operations runbooks, checklist sequencing, and handoff timing guides.",
+      "responsibilities": [
+        "Draft ops step sequences for daily agent workflows",
+        "Expand runbook ordering for session start/end procedures",
+        "Review escalation paths in all ops runbooks"
+      ],
+      "ownedAreas": ["plans/QUICK_COMMANDS.md", "plans/QUICK_ACTION_CHECKLIST.md"],
+      "capabilities": ["runbooks", "ops-checklists", "handoff-timing"],
+      "invocationPattern": "@Manal — DRAFT: ops-runbook.md → daily session start/end checklist with handoff timing"
+    },
     {
-      "id": 69, "name": "@Ghada", "title": "Executive Reporting Specialist", "unit": "ops-maintenance", "model": "Groq Llama 3.1 70B", "tokenType": "FREE", "toolUrl": "https://console.groq.com/", "jobDescription": "Produces concise executive summaries, weekly progress highlights, and risk callouts for @Ada and the board.", "responsibilities": ["Draft weekly executive summary (≤ 1 page, bullets + risk flags)", "Expand weekly view in DAILY_MILESTONE_TRACKER.md", "Review KPI snapshot accuracy before board reporting"], "ownedAreas": ["DAILY_MILESTONE_TRACKER.md (executive summary section)"], "capabilities": ["executive-reporting", "progress-summaries", "risk-callouts"], "invocationPattern": "@Ghada — DRAFT: weekly-exec-summary.md → W21 2026 highlights + risk flags" },
+      "id": 69,
+      "name": "@Ghada",
+      "title": "Executive Reporting Specialist",
+      "unit": "ops-maintenance",
+      "model": "Groq Llama 3.1 70B",
+      "tokenType": "FREE",
+      "toolUrl": "https://console.groq.com/",
+      "jobDescription": "Produces concise executive summaries, weekly progress highlights, and risk callouts for @Ada and the board.",
+      "responsibilities": [
+        "Draft weekly executive summary (≤ 1 page, bullets + risk flags)",
+        "Expand weekly view in DAILY_MILESTONE_TRACKER.md",
+        "Review KPI snapshot accuracy before board reporting"
+      ],
+      "ownedAreas": ["DAILY_MILESTONE_TRACKER.md (executive summary section)"],
+      "capabilities": ["executive-reporting", "progress-summaries", "risk-callouts"],
+      "invocationPattern": "@Ghada — DRAFT: weekly-exec-summary.md → W21 2026 highlights + risk flags"
+    },
     {
-      "id": 70, "name": "@Rehab", "title": "Queue Management Specialist", "unit": "ops-maintenance", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Manages backlog ordering, queue health, and next-task selection across all orchestrator queues.", "responsibilities": ["Audit task queue ordering for priority consistency", "Expand prioritisation rules for dependency-safe execution", "Review readiness flow for blocked tasks"], "ownedAreas": ["logs/orchestrator/task-queue.json"], "capabilities": ["queue-management", "prioritisation", "backlog-ordering"], "invocationPattern": "@Rehab — AUDIT: task-queue.json → reorder by priority + check blocked tasks" },
+      "id": 70,
+      "name": "@Rehab",
+      "title": "Queue Management Specialist",
+      "unit": "ops-maintenance",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Manages backlog ordering, queue health, and next-task selection across all orchestrator queues.",
+      "responsibilities": [
+        "Audit task queue ordering for priority consistency",
+        "Expand prioritisation rules for dependency-safe execution",
+        "Review readiness flow for blocked tasks"
+      ],
+      "ownedAreas": ["logs/orchestrator/task-queue.json"],
+      "capabilities": ["queue-management", "prioritisation", "backlog-ordering"],
+      "invocationPattern": "@Rehab — AUDIT: task-queue.json → reorder by priority + check blocked tasks"
+    },
     {
-      "id": 73, "name": "@Iris", "title": "Deputy Research Lead & Technology Intelligence Analyst", "unit": "research", "model": "Groq Llama 3.3 70B", "tokenType": "FREE", "toolUrl": "https://console.groq.com/", "jobDescription": "Deputy Lead for the Research Intelligence Division. Scouts technology trends, React/Node/TypeScript ecosystem updates, and UAE PropTech innovations.", "responsibilities": ["Publish weekly technology pulse brief", "Benchmark competitor tech stacks vs White Caves architecture", "Survey free AI coding assistants suitable for team"], "ownedAreas": ["plans/tech-pulse.md"], "capabilities": ["tech-trend-scouting", "framework-analysis", "competitor-benchmarking"], "invocationPattern": "@Iris — RESEARCH: tech-trends → React 19 + Express 5 ecosystem updates relevant to White Caves" },
+      "id": 73,
+      "name": "@Iris",
+      "title": "Deputy Research Lead & Technology Intelligence Analyst",
+      "unit": "research",
+      "model": "Groq Llama 3.3 70B",
+      "tokenType": "FREE",
+      "toolUrl": "https://console.groq.com/",
+      "jobDescription": "Deputy Lead for the Research Intelligence Division. Scouts technology trends, React/Node/TypeScript ecosystem updates, and UAE PropTech innovations.",
+      "responsibilities": [
+        "Publish weekly technology pulse brief",
+        "Benchmark competitor tech stacks vs White Caves architecture",
+        "Survey free AI coding assistants suitable for team"
+      ],
+      "ownedAreas": ["plans/tech-pulse.md"],
+      "capabilities": ["tech-trend-scouting", "framework-analysis", "competitor-benchmarking"],
+      "invocationPattern": "@Iris — RESEARCH: tech-trends → React 19 + Express 5 ecosystem updates relevant to White Caves"
+    },
     {
-      "id": 74, "name": "@Aisha", "title": "Dubai Real Estate Market Analyst", "unit": "research", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Publishes daily Dubai property market pulse briefs with DLD transaction data and area price trends.", "responsibilities": ["Daily DLD transaction summary by area", "Price trend for top 10 Dubai neighbourhoods", "Off-plan project pipeline with RERA approval status"], "ownedAreas": ["business_docs/09_crm_features/market-analytics.md (market data section)"], "capabilities": ["dld-data", "market-pulse", "off-plan-pipeline"], "invocationPattern": "@Aisha — BRIEF: dubai-market-pulse → weekly DLD transactions + price trends for top 10 areas" },
+      "id": 74,
+      "name": "@Aisha",
+      "title": "Dubai Real Estate Market Analyst",
+      "unit": "research",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Publishes daily Dubai property market pulse briefs with DLD transaction data and area price trends.",
+      "responsibilities": [
+        "Daily DLD transaction summary by area",
+        "Price trend for top 10 Dubai neighbourhoods",
+        "Off-plan project pipeline with RERA approval status"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/market-analytics.md (market data section)"],
+      "capabilities": ["dld-data", "market-pulse", "off-plan-pipeline"],
+      "invocationPattern": "@Aisha — BRIEF: dubai-market-pulse → weekly DLD transactions + price trends for top 10 areas"
+    },
     {
-      "id": 75, "name": "@Priya", "title": "Legal & Regulatory Intelligence Analyst", "unit": "research", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Monitors RERA 2024/2025 regulatory updates, DLD policy changes, and UAE PDPL enforcement notices.", "responsibilities": ["Identify all RERA/DLD regulatory changes from Jan-May 2026", "Brief on UAE PDPL current enforcement status", "Alert @Sofia on any compliance-impacting regulatory change"], "ownedAreas": ["business_docs/05_requirements/compliance-requirements.md (RERA updates)"], "capabilities": ["rera-monitoring", "dld-policy", "pdpl-enforcement"], "invocationPattern": "@Priya — AUDIT: rera-updates-2026 → identify regulatory changes impacting property CRMs" },
+      "id": 75,
+      "name": "@Priya",
+      "title": "Legal & Regulatory Intelligence Analyst",
+      "unit": "research",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Monitors RERA 2024/2025 regulatory updates, DLD policy changes, and UAE PDPL enforcement notices.",
+      "responsibilities": [
+        "Identify all RERA/DLD regulatory changes from Jan-May 2026",
+        "Brief on UAE PDPL current enforcement status",
+        "Alert @Sofia on any compliance-impacting regulatory change"
+      ],
+      "ownedAreas": ["business_docs/05_requirements/compliance-requirements.md (RERA updates)"],
+      "capabilities": ["rera-monitoring", "dld-policy", "pdpl-enforcement"],
+      "invocationPattern": "@Priya — AUDIT: rera-updates-2026 → identify regulatory changes impacting property CRMs"
+    },
     {
-      "id": 76, "name": "@Sana", "title": "Financial Markets Analyst", "unit": "research", "model": "Groq Llama 3.1 70B", "tokenType": "FREE", "toolUrl": "https://console.groq.com/", "jobDescription": "Researches UAE mortgage rates, EIBOR benchmark, investment yields, and FTA VAT guidance updates.", "responsibilities": ["Weekly UAE mortgage rates brief from 5 major banks", "Research VAT exemptions and FTA 2026 guidance", "Produce yield comparison vs GCC alternatives"], "ownedAreas": ["business_docs/09_crm_features/financial-reporting.md (mortgage section)"], "capabilities": ["mortgage-rates", "vat-guidance", "investment-yields"], "invocationPattern": "@Sana — BRIEF: uae-mortgage-rates → current rates from 5 UAE banks + eligibility for expat buyers" },
+      "id": 76,
+      "name": "@Sana",
+      "title": "Financial Markets Analyst",
+      "unit": "research",
+      "model": "Groq Llama 3.1 70B",
+      "tokenType": "FREE",
+      "toolUrl": "https://console.groq.com/",
+      "jobDescription": "Researches UAE mortgage rates, EIBOR benchmark, investment yields, and FTA VAT guidance updates.",
+      "responsibilities": [
+        "Weekly UAE mortgage rates brief from 5 major banks",
+        "Research VAT exemptions and FTA 2026 guidance",
+        "Produce yield comparison vs GCC alternatives"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/financial-reporting.md (mortgage section)"],
+      "capabilities": ["mortgage-rates", "vat-guidance", "investment-yields"],
+      "invocationPattern": "@Sana — BRIEF: uae-mortgage-rates → current rates from 5 UAE banks + eligibility for expat buyers"
+    },
     {
-      "id": 77, "name": "@Yara", "title": "UX & Customer Experience Analyst", "unit": "research", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Benchmarks luxury real estate buyer journeys and MENA mobile interaction patterns.", "responsibilities": ["Benchmark top 5 luxury PropTech UX flows (Compass, Christie's, Knight Frank)", "Research tenant portal UX best practices for MENA mobile users", "FEEDS→@Marissa and @Annie with UX research packets"], "ownedAreas": ["business_docs/09_crm_features/luxury-segment.md (UX benchmarks)"], "capabilities": ["luxury-ux-benchmarks", "mena-mobile-ux", "ux-competitor-analysis"], "invocationPattern": "@Yara — RESEARCH: luxury-buyer-journey → benchmark top 5 luxury PropTech UX flows" },
+      "id": 77,
+      "name": "@Yara",
+      "title": "UX & Customer Experience Analyst",
+      "unit": "research",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Benchmarks luxury real estate buyer journeys and MENA mobile interaction patterns.",
+      "responsibilities": [
+        "Benchmark top 5 luxury PropTech UX flows (Compass, Christie's, Knight Frank)",
+        "Research tenant portal UX best practices for MENA mobile users",
+        "FEEDS→@Marissa and @Annie with UX research packets"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/luxury-segment.md (UX benchmarks)"],
+      "capabilities": ["luxury-ux-benchmarks", "mena-mobile-ux", "ux-competitor-analysis"],
+      "invocationPattern": "@Yara — RESEARCH: luxury-buyer-journey → benchmark top 5 luxury PropTech UX flows"
+    },
     {
-      "id": 78, "name": "@Nadia", "title": "Competitive Intelligence Analyst", "unit": "research", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Analyses PropertyFinder, Bayut, Dubizzle, and Allsopp & Allsopp CRM features for competitive gap identification.", "responsibilities": ["Compare White Caves CRM features vs PropertyFinder/Bayut/Allsopp gaps", "Brief on market share and positioning opportunities", "FEEDS→@Margaret with competitive gap report"], "ownedAreas": ["plans/MASTER_PLAN.md (competitive section)"], "capabilities": ["competitive-analysis", "feature-gap-analysis", "market-positioning"], "invocationPattern": "@Nadia — BENCHMARK: competitor-crm-features → White Caves vs PropertyFinder/Bayut feature gap" },
+      "id": 78,
+      "name": "@Nadia",
+      "title": "Competitive Intelligence Analyst",
+      "unit": "research",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Analyses PropertyFinder, Bayut, Dubizzle, and Allsopp & Allsopp CRM features for competitive gap identification.",
+      "responsibilities": [
+        "Compare White Caves CRM features vs PropertyFinder/Bayut/Allsopp gaps",
+        "Brief on market share and positioning opportunities",
+        "FEEDS→@Margaret with competitive gap report"
+      ],
+      "ownedAreas": ["plans/MASTER_PLAN.md (competitive section)"],
+      "capabilities": ["competitive-analysis", "feature-gap-analysis", "market-positioning"],
+      "invocationPattern": "@Nadia — BENCHMARK: competitor-crm-features → White Caves vs PropertyFinder/Bayut feature gap"
+    },
     {
-      "id": 79, "name": "@Leila", "title": "AI/ML & Emerging Technology Analyst", "unit": "research", "model": "DeepSeek R1", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Researches LLM capabilities for real estate use cases, AI lead scoring models, and generative AI for property descriptions.", "responsibilities": ["Survey 2025/2026 AI applications in property management CRMs", "Brief on ML-based lead scoring best practices and open-source options", "FEEDS→@Joelle and @Barbara with AI capabilities and data requirements"], "ownedAreas": ["business_docs/03_ai_assistants/README.md (AI capabilities section)"], "capabilities": ["llm-research", "ai-lead-scoring", "generative-ai"], "invocationPattern": "@Leila — RESEARCH: llm-real-estate-use-cases → AI applications for Dubai property CRM 2026" },
+      "id": 79,
+      "name": "@Leila",
+      "title": "AI/ML & Emerging Technology Analyst",
+      "unit": "research",
+      "model": "DeepSeek R1",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Researches LLM capabilities for real estate use cases, AI lead scoring models, and generative AI for property descriptions.",
+      "responsibilities": [
+        "Survey 2025/2026 AI applications in property management CRMs",
+        "Brief on ML-based lead scoring best practices and open-source options",
+        "FEEDS→@Joelle and @Barbara with AI capabilities and data requirements"
+      ],
+      "ownedAreas": ["business_docs/03_ai_assistants/README.md (AI capabilities section)"],
+      "capabilities": ["llm-research", "ai-lead-scoring", "generative-ai"],
+      "invocationPattern": "@Leila — RESEARCH: llm-real-estate-use-cases → AI applications for Dubai property CRM 2026"
+    },
     {
-      "id": 80, "name": "@Chloe", "title": "Security & Threat Intelligence Analyst", "unit": "research", "model": "Groq Llama 3.3 70B", "tokenType": "FREE", "toolUrl": "https://console.groq.com/", "jobDescription": "Researches PropTech security incidents, OWASP Top 10 for real estate apps, and UAE cybersecurity regulations.", "responsibilities": ["Survey known PropTech breaches and CRM vulnerabilities", "Map OWASP Top 10 to White Caves CRM with mitigation steps", "Brief @Katherine and @Radia on current threat landscape"], "ownedAreas": ["business_docs/05_requirements/compliance-requirements.md (security threats)"], "capabilities": ["threat-intelligence", "proptech-security", "owasp-mapping"], "invocationPattern": "@Chloe — AUDIT: proptech-security-incidents-2025 → breaches in property management systems + mitigations" },
+      "id": 80,
+      "name": "@Chloe",
+      "title": "Security & Threat Intelligence Analyst",
+      "unit": "research",
+      "model": "Groq Llama 3.3 70B",
+      "tokenType": "FREE",
+      "toolUrl": "https://console.groq.com/",
+      "jobDescription": "Researches PropTech security incidents, OWASP Top 10 for real estate apps, and UAE cybersecurity regulations.",
+      "responsibilities": [
+        "Survey known PropTech breaches and CRM vulnerabilities",
+        "Map OWASP Top 10 to White Caves CRM with mitigation steps",
+        "Brief @Katherine and @Radia on current threat landscape"
+      ],
+      "ownedAreas": ["business_docs/05_requirements/compliance-requirements.md (security threats)"],
+      "capabilities": ["threat-intelligence", "proptech-security", "owasp-mapping"],
+      "invocationPattern": "@Chloe — AUDIT: proptech-security-incidents-2025 → breaches in property management systems + mitigations"
+    },
     {
-      "id": 81, "name": "@Mona", "title": "Data Science & Statistical Methods Analyst", "unit": "research", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Researches AVM methodologies, statistical approaches to property market prediction, and data quality frameworks.", "responsibilities": ["Survey AVM approaches (hedonic pricing, ML regression, comp-based)", "Brief on data quality frameworks for property records", "FEEDS→@Fei-Fei and @Barbara with data science methodology recommendations"], "ownedAreas": ["business_docs/09_crm_features/property-valuation.md (AVM methodology)"], "capabilities": ["avm-research", "statistical-methods", "data-quality-frameworks"], "invocationPattern": "@Mona — RESEARCH: avm-methodologies → hedonic pricing vs ML regression for Dubai property" },
+      "id": 81,
+      "name": "@Mona",
+      "title": "Data Science & Statistical Methods Analyst",
+      "unit": "research",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Researches AVM methodologies, statistical approaches to property market prediction, and data quality frameworks.",
+      "responsibilities": [
+        "Survey AVM approaches (hedonic pricing, ML regression, comp-based)",
+        "Brief on data quality frameworks for property records",
+        "FEEDS→@Fei-Fei and @Barbara with data science methodology recommendations"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/property-valuation.md (AVM methodology)"],
+      "capabilities": ["avm-research", "statistical-methods", "data-quality-frameworks"],
+      "invocationPattern": "@Mona — RESEARCH: avm-methodologies → hedonic pricing vs ML regression for Dubai property"
+    },
     {
-      "id": 82, "name": "@Sara", "title": "Integration Ecosystem & API Analyst", "unit": "research", "model": "Mistral Small", "tokenType": "FREE", "toolUrl": "https://chat.mistral.ai/", "jobDescription": "Researches UAE/Dubai portal API availability, WhatsApp Business API updates, and e-signature API changes.", "responsibilities": ["Brief on PropertyFinder and Bayut API integration options + feed formats", "Research Meta WhatsApp API 2026 pricing and template categories", "Survey DocuSign/Adobe Sign API capabilities for e-signature integration"], "ownedAreas": ["business_docs/08_integrations/integration-map.md (portal feeds)"], "capabilities": ["portal-api-research", "whatsapp-api-updates", "esignature-api"], "invocationPattern": "@Sara — BRIEF: portal-api-availability → PropertyFinder/Bayut API feed formats for White Caves" },
+      "id": 82,
+      "name": "@Sara",
+      "title": "Integration Ecosystem & API Analyst",
+      "unit": "research",
+      "model": "Mistral Small",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.mistral.ai/",
+      "jobDescription": "Researches UAE/Dubai portal API availability, WhatsApp Business API updates, and e-signature API changes.",
+      "responsibilities": [
+        "Brief on PropertyFinder and Bayut API integration options + feed formats",
+        "Research Meta WhatsApp API 2026 pricing and template categories",
+        "Survey DocuSign/Adobe Sign API capabilities for e-signature integration"
+      ],
+      "ownedAreas": ["business_docs/08_integrations/integration-map.md (portal feeds)"],
+      "capabilities": ["portal-api-research", "whatsapp-api-updates", "esignature-api"],
+      "invocationPattern": "@Sara — BRIEF: portal-api-availability → PropertyFinder/Bayut API feed formats for White Caves"
+    },
     {
-      "id": 83, "name": "@Dalia", "title": "Performance, Scalability & Architecture Analyst", "unit": "research", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Researches Node.js + MongoDB performance patterns, React rendering optimisation, and CRM load testing benchmarks.", "responsibilities": ["Brief on CRM load profiles at 1K, 10K, 100K leads", "Research MongoDB indexing + query patterns for real-estate property search", "FEEDS→@Ruchi (performance) and @Gwynne (DevOps) with architecture options"], "ownedAreas": ["business_docs/06_design_architecture/system-architecture.md (performance section)"], "capabilities": ["performance-research", "mongodb-optimisation", "scalability-benchmarks"], "invocationPattern": "@Dalia — RESEARCH: crm-performance-benchmarks → load profiles at 10K leads + MongoDB optimisation" },
+      "id": 83,
+      "name": "@Dalia",
+      "title": "Performance, Scalability & Architecture Analyst",
+      "unit": "research",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Researches Node.js + MongoDB performance patterns, React rendering optimisation, and CRM load testing benchmarks.",
+      "responsibilities": [
+        "Brief on CRM load profiles at 1K, 10K, 100K leads",
+        "Research MongoDB indexing + query patterns for real-estate property search",
+        "FEEDS→@Ruchi (performance) and @Gwynne (DevOps) with architecture options"
+      ],
+      "ownedAreas": [
+        "business_docs/06_design_architecture/system-architecture.md (performance section)"
+      ],
+      "capabilities": ["performance-research", "mongodb-optimisation", "scalability-benchmarks"],
+      "invocationPattern": "@Dalia — RESEARCH: crm-performance-benchmarks → load profiles at 10K leads + MongoDB optimisation"
+    },
     {
-      "id": 84, "name": "@Hana", "title": "SEO, Digital Marketing & Growth Analyst", "unit": "research", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Researches Dubai real estate SEO keywords, Google algorithm updates affecting property portals, and PropTech growth techniques.", "responsibilities": ["Research top 200 Dubai property keywords with monthly volume + competition", "Brief on Google algorithm changes impacting real estate SEO", "FEEDS→@Rachel with keyword data and algorithm insights"], "ownedAreas": ["business_docs/09_crm_features/seo-strategy.md (keyword research)"], "capabilities": ["keyword-research", "google-algorithm-monitoring", "proptech-growth"], "invocationPattern": "@Hana — RESEARCH: dubai-real-estate-keywords → top 200 keywords with volume + competition scores" },
+      "id": 84,
+      "name": "@Hana",
+      "title": "SEO, Digital Marketing & Growth Analyst",
+      "unit": "research",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Researches Dubai real estate SEO keywords, Google algorithm updates affecting property portals, and PropTech growth techniques.",
+      "responsibilities": [
+        "Research top 200 Dubai property keywords with monthly volume + competition",
+        "Brief on Google algorithm changes impacting real estate SEO",
+        "FEEDS→@Rachel with keyword data and algorithm insights"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/seo-strategy.md (keyword research)"],
+      "capabilities": ["keyword-research", "google-algorithm-monitoring", "proptech-growth"],
+      "invocationPattern": "@Hana — RESEARCH: dubai-real-estate-keywords → top 200 keywords with volume + competition scores"
+    },
     {
-      "id": 85, "name": "@Rana", "title": "Mobile UX & Cross-Platform Analyst", "unit": "research", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Researches MENA mobile usage statistics, PWA vs native app for real estate, and touch interaction patterns.", "responsibilities": ["Brief on UAE smartphone usage, dominant screen sizes, mobile browsing vs app split", "Research PWA capability matrix for White Caves mobile CRM", "FEEDS→@Tracy (responsive) and @Mira (mobile strategy) with research packets"], "ownedAreas": ["business_docs/06_design_architecture/ui-ux-specification.md (mobile research)"], "capabilities": ["mena-mobile-research", "pwa-assessment", "touch-patterns"], "invocationPattern": "@Rana — BRIEF: mena-mobile-stats → UAE smartphone usage + PWA vs native for CRM" },
+      "id": 85,
+      "name": "@Rana",
+      "title": "Mobile UX & Cross-Platform Analyst",
+      "unit": "research",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Researches MENA mobile usage statistics, PWA vs native app for real estate, and touch interaction patterns.",
+      "responsibilities": [
+        "Brief on UAE smartphone usage, dominant screen sizes, mobile browsing vs app split",
+        "Research PWA capability matrix for White Caves mobile CRM",
+        "FEEDS→@Tracy (responsive) and @Mira (mobile strategy) with research packets"
+      ],
+      "ownedAreas": [
+        "business_docs/06_design_architecture/ui-ux-specification.md (mobile research)"
+      ],
+      "capabilities": ["mena-mobile-research", "pwa-assessment", "touch-patterns"],
+      "invocationPattern": "@Rana — BRIEF: mena-mobile-stats → UAE smartphone usage + PWA vs native for CRM"
+    },
     {
-      "id": 86, "name": "@Wafa", "title": "DevOps, Cloud & Infrastructure Analyst", "unit": "research", "model": "DeepSeek V3", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Researches Vercel vs AWS cost comparisons, MongoDB Atlas pricing tiers, and CI/CD best practices.", "responsibilities": ["Brief on Vercel vs AWS cost for 10K MAU + feature comparison", "Research MongoDB Atlas tier upgrade triggers", "FEEDS→@Gwynne and @Lisa with infrastructure recommendations"], "ownedAreas": ["plans/IMPROVEMENTS_ARCHITECTURE.md (hosting section)"], "capabilities": ["cloud-cost-research", "atlas-tier-analysis", "cicd-benchmarks"], "invocationPattern": "@Wafa — BRIEF: vercel-vs-aws-2026 → cost comparison for 10K MAU + feature matrix" },
+      "id": 86,
+      "name": "@Wafa",
+      "title": "DevOps, Cloud & Infrastructure Analyst",
+      "unit": "research",
+      "model": "DeepSeek V3",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Researches Vercel vs AWS cost comparisons, MongoDB Atlas pricing tiers, and CI/CD best practices.",
+      "responsibilities": [
+        "Brief on Vercel vs AWS cost for 10K MAU + feature comparison",
+        "Research MongoDB Atlas tier upgrade triggers",
+        "FEEDS→@Gwynne and @Lisa with infrastructure recommendations"
+      ],
+      "ownedAreas": ["plans/IMPROVEMENTS_ARCHITECTURE.md (hosting section)"],
+      "capabilities": ["cloud-cost-research", "atlas-tier-analysis", "cicd-benchmarks"],
+      "invocationPattern": "@Wafa — BRIEF: vercel-vs-aws-2026 → cost comparison for 10K MAU + feature matrix"
+    },
     {
-      "id": 87, "name": "@Lara", "title": "Accessibility, Inclusion & Standards Analyst", "unit": "research", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Researches WCAG 2.2 new success criteria, ARIA patterns for real estate search, and RTL accessibility for Arabic UI.", "responsibilities": ["Identify WCAG 2.2 new success criteria impacting White Caves", "Brief on accessible Arabic RTL interfaces in React + Tailwind", "FEEDS→@Africa and @Sanaa with accessibility research packets"], "ownedAreas": ["business_docs/05_requirements/non-functional-requirements.md (accessibility research)"], "capabilities": ["wcag-research", "aria-patterns", "rtl-accessibility"], "invocationPattern": "@Lara — AUDIT: wcag-2.2-new-criteria → new requirements impacting White Caves CRM + portal" },
+      "id": 87,
+      "name": "@Lara",
+      "title": "Accessibility, Inclusion & Standards Analyst",
+      "unit": "research",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Researches WCAG 2.2 new success criteria, ARIA patterns for real estate search, and RTL accessibility for Arabic UI.",
+      "responsibilities": [
+        "Identify WCAG 2.2 new success criteria impacting White Caves",
+        "Brief on accessible Arabic RTL interfaces in React + Tailwind",
+        "FEEDS→@Africa and @Sanaa with accessibility research packets"
+      ],
+      "ownedAreas": [
+        "business_docs/05_requirements/non-functional-requirements.md (accessibility research)"
+      ],
+      "capabilities": ["wcag-research", "aria-patterns", "rtl-accessibility"],
+      "invocationPattern": "@Lara — AUDIT: wcag-2.2-new-criteria → new requirements impacting White Caves CRM + portal"
+    },
     {
-      "id": 88, "name": "@Rima", "title": "Business Intelligence & Strategic Planning Analyst", "unit": "research", "model": "Groq Llama 3.1 70B", "tokenType": "FREE", "toolUrl": "https://console.groq.com/", "jobDescription": "Researches UAE real estate investment outlook, OKR framework for PropTech startups, and KPI benchmarking.", "responsibilities": ["Produce 6-month Dubai residential + commercial market outlook", "Benchmark White Caves KPI targets vs PropTech industry standards", "FEEDS→@Margaret and @Cassie with BI and strategy inputs"], "ownedAreas": ["plans/MASTER_PLAN.md (market context)"], "capabilities": ["market-outlook", "kpi-benchmarking", "strategic-bi"], "invocationPattern": "@Rima — BRIEF: uae-realestate-outlook-2026 → 6-month market forecast + KPI industry benchmarks" },
+      "id": 88,
+      "name": "@Rima",
+      "title": "Business Intelligence & Strategic Planning Analyst",
+      "unit": "research",
+      "model": "Groq Llama 3.1 70B",
+      "tokenType": "FREE",
+      "toolUrl": "https://console.groq.com/",
+      "jobDescription": "Researches UAE real estate investment outlook, OKR framework for PropTech startups, and KPI benchmarking.",
+      "responsibilities": [
+        "Produce 6-month Dubai residential + commercial market outlook",
+        "Benchmark White Caves KPI targets vs PropTech industry standards",
+        "FEEDS→@Margaret and @Cassie with BI and strategy inputs"
+      ],
+      "ownedAreas": ["plans/MASTER_PLAN.md (market context)"],
+      "capabilities": ["market-outlook", "kpi-benchmarking", "strategic-bi"],
+      "invocationPattern": "@Rima — BRIEF: uae-realestate-outlook-2026 → 6-month market forecast + KPI industry benchmarks"
+    },
     {
-      "id": 89, "name": "@Nour", "title": "Product Discovery & User Testing Analyst", "unit": "research", "model": "Gemini 2.0 Flash", "tokenType": "FREE", "toolUrl": "https://aistudio.google.com/", "jobDescription": "Researches user story mapping, buyer persona profiles, and acceptance criteria validation.", "responsibilities": ["Research 5 key Dubai buyer/renter personas with pain points and tech usage", "Brief on acceptance criteria gaps across business docs", "FEEDS→@Marissa (luxury UX) and @Margaret (planning) with product research"], "ownedAreas": ["business_docs/09_crm_features/luxury-segment.md (personas)"], "capabilities": ["persona-research", "user-story-mapping", "acceptance-criteria-gaps"], "invocationPattern": "@Nour — RESEARCH: dubai-buyer-personas → 5 key property buyer/renter personas with behaviors" },
+      "id": 89,
+      "name": "@Nour",
+      "title": "Product Discovery & User Testing Analyst",
+      "unit": "research",
+      "model": "Gemini 2.0 Flash",
+      "tokenType": "FREE",
+      "toolUrl": "https://aistudio.google.com/",
+      "jobDescription": "Researches user story mapping, buyer persona profiles, and acceptance criteria validation.",
+      "responsibilities": [
+        "Research 5 key Dubai buyer/renter personas with pain points and tech usage",
+        "Brief on acceptance criteria gaps across business docs",
+        "FEEDS→@Marissa (luxury UX) and @Margaret (planning) with product research"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/luxury-segment.md (personas)"],
+      "capabilities": ["persona-research", "user-story-mapping", "acceptance-criteria-gaps"],
+      "invocationPattern": "@Nour — RESEARCH: dubai-buyer-personas → 5 key property buyer/renter personas with behaviors"
+    },
     {
-      "id": 90, "name": "@Zara", "title": "International Regulations & Multi-Market Compliance Analyst", "unit": "research", "model": "Mistral Small", "tokenType": "FREE", "toolUrl": "https://chat.mistral.ai/", "jobDescription": "Researches GCC cross-border real estate regulations, FATF AML standards, and multi-nationality freehold rules.", "responsibilities": ["Research GCC investment regulations for Saudi/Kuwait/Bahrain buyers in Dubai", "Brief on FATF AML guidance for real estate + UAE implementation", "FEEDS→@Sofia (compliance) and @Timnit (DLD/legal) with international regulation updates"], "ownedAreas": ["business_docs/05_requirements/compliance-requirements.md (international section)"], "capabilities": ["gcc-regulations", "fatf-aml", "freehold-rules", "multi-market-compliance"], "invocationPattern": "@Zara — RESEARCH: gcc-cross-border-regs → investment regulations for Dubai property buyers from GCC" },
+      "id": 90,
+      "name": "@Zara",
+      "title": "International Regulations & Multi-Market Compliance Analyst",
+      "unit": "research",
+      "model": "Mistral Small",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.mistral.ai/",
+      "jobDescription": "Researches GCC cross-border real estate regulations, FATF AML standards, and multi-nationality freehold rules.",
+      "responsibilities": [
+        "Research GCC investment regulations for Saudi/Kuwait/Bahrain buyers in Dubai",
+        "Brief on FATF AML guidance for real estate + UAE implementation",
+        "FEEDS→@Sofia (compliance) and @Timnit (DLD/legal) with international regulation updates"
+      ],
+      "ownedAreas": [
+        "business_docs/05_requirements/compliance-requirements.md (international section)"
+      ],
+      "capabilities": ["gcc-regulations", "fatf-aml", "freehold-rules", "multi-market-compliance"],
+      "invocationPattern": "@Zara — RESEARCH: gcc-cross-border-regs → investment regulations for Dubai property buyers from GCC"
+    },
     {
-      "id": 91, "name": "@Dana", "title": "Emerging Tech & Innovation Scouting Analyst", "unit": "research", "model": "DeepSeek R1", "tokenType": "FREE", "toolUrl": "https://chat.deepseek.com/", "jobDescription": "Scouts blockchain for title deeds, PropTech AI tools, smart building IoT, tokenised real estate, and metaverse property innovations.", "responsibilities": ["Research DLD blockchain experiments and White Caves integration readiness", "Survey AI tools adopted by top Dubai brokers in 2026", "FEEDS→@Neva (smart contracts) and @Joelle (AI tools) with innovation scouting briefs"], "ownedAreas": ["business_docs/09_crm_features/dld-integration.md (blockchain section)"], "capabilities": ["blockchain-research", "iot-smart-buildings", "tokenized-realestate", "ai-tool-scouting"], "invocationPattern": "@Dana — RESEARCH: blockchain-title-deeds → DLD blockchain experiments + White Caves integration readiness"
+      "id": 91,
+      "name": "@Dana",
+      "title": "Emerging Tech & Innovation Scouting Analyst",
+      "unit": "research",
+      "model": "DeepSeek R1",
+      "tokenType": "FREE",
+      "toolUrl": "https://chat.deepseek.com/",
+      "jobDescription": "Scouts blockchain for title deeds, PropTech AI tools, smart building IoT, tokenised real estate, and metaverse property innovations.",
+      "responsibilities": [
+        "Research DLD blockchain experiments and White Caves integration readiness",
+        "Survey AI tools adopted by top Dubai brokers in 2026",
+        "FEEDS→@Neva (smart contracts) and @Joelle (AI tools) with innovation scouting briefs"
+      ],
+      "ownedAreas": ["business_docs/09_crm_features/dld-integration.md (blockchain section)"],
+      "capabilities": [
+        "blockchain-research",
+        "iot-smart-buildings",
+        "tokenized-realestate",
+        "ai-tool-scouting"
+      ],
+      "invocationPattern": "@Dana — RESEARCH: blockchain-title-deeds → DLD blockchain experiments + White Caves integration readiness"
     }
   ],
   "invocationProtocol": {
     "freeAgentFormat": "@[AgentName] — [ACTION]: [TARGET FILE or TOPIC] → produce [OUTPUT FORMAT] → FEEDS→@[TargetAgent]: [file#section]",
-    "allowedActions": ["EXPAND", "DRAFT", "REVIEW", "AUDIT", "SYNC", "RESEARCH", "BRIEF", "SYNTHESIZE", "BENCHMARK"],
+    "allowedActions": [
+      "EXPAND",
+      "DRAFT",
+      "REVIEW",
+      "AUDIT",
+      "SYNC",
+      "RESEARCH",
+      "BRIEF",
+      "SYNTHESIZE",
+      "BENCHMARK"
+    ],
     "handoffTags": {
       "consumes": "CONSUMES←@Agent: file#section",
       "feeds": "FEEDS→@Agent: file#section",
@@ -1361,12 +2144,99 @@
     "taskIsComplete": "Only when CONSUMES + FEEDS + FEEDS_ACK are all present and verifiable."
   },
   "modelRouting": {
-    "premiumAgents": ["@Ada", "@Radia", "@Daniela", "@Ecem", "@Katherine", "@Gwynne", "@Una", "@Lea", "@Tracy", "@Africa", "@Mira", "@Ruchi", "@Barbara", "@Grace"],
+    "premiumAgents": [
+      "@Ada",
+      "@Radia",
+      "@Daniela",
+      "@Ecem",
+      "@Katherine",
+      "@Gwynne",
+      "@Una",
+      "@Lea",
+      "@Tracy",
+      "@Africa",
+      "@Mira",
+      "@Ruchi",
+      "@Barbara",
+      "@Grace"
+    ],
     "freeAgents": "All agents id 16–100 except those in premiumAgents list",
     "freeProviders": {
-      "geminiFlash": ["@Margaret", "@Grace", "@Marissa", "@Annie", "@Rachel", "@Timnit", "@Sofia", "@Noura", "@Reem", "@Maha", "@Cyra", "@Tara", "@Lila", "@Lisa", "@Amina", "@Hala", "@Noor", "@Iman", "@Basma", "@Sanaa", "@Joy", "@Manal", "@Rehab", "@Elena", "@Aisha", "@Priya", "@Yara", "@Hana", "@Rana", "@Lara", "@Nour"],
-      "groqLlama": ["@Zoe", "@Invoice", "@Hedy", "@Maya", "@Booking", "@Jaime", "@Joelle", "@Pola", "@Vera", "@Dina", "@Amal", "@Ghada", "@Iris", "@Sana", "@Chloe", "@Rima", "@Zainab", "@Samira"],
-      "deepseekV3": ["@Cassie", "@Fei-Fei", "@Anima", "@Mary", "@Corinne", "@Rania", "@Layla", "@Lina", "@Farah", "@Huda", "@Salma", "@Yasmin", "@Kira", "@Petra", "@Nadia", "@Mona", "@Dalia", "@Wafa", "@Dora", "@Mila"],
+      "geminiFlash": [
+        "@Margaret",
+        "@Grace",
+        "@Marissa",
+        "@Annie",
+        "@Rachel",
+        "@Timnit",
+        "@Sofia",
+        "@Noura",
+        "@Reem",
+        "@Maha",
+        "@Cyra",
+        "@Tara",
+        "@Lila",
+        "@Lisa",
+        "@Amina",
+        "@Hala",
+        "@Noor",
+        "@Iman",
+        "@Basma",
+        "@Sanaa",
+        "@Joy",
+        "@Manal",
+        "@Rehab",
+        "@Elena",
+        "@Aisha",
+        "@Priya",
+        "@Yara",
+        "@Hana",
+        "@Rana",
+        "@Lara",
+        "@Nour"
+      ],
+      "groqLlama": [
+        "@Zoe",
+        "@Invoice",
+        "@Hedy",
+        "@Maya",
+        "@Booking",
+        "@Jaime",
+        "@Joelle",
+        "@Pola",
+        "@Vera",
+        "@Dina",
+        "@Amal",
+        "@Ghada",
+        "@Iris",
+        "@Sana",
+        "@Chloe",
+        "@Rima",
+        "@Zainab",
+        "@Samira"
+      ],
+      "deepseekV3": [
+        "@Cassie",
+        "@Fei-Fei",
+        "@Anima",
+        "@Mary",
+        "@Corinne",
+        "@Rania",
+        "@Layla",
+        "@Lina",
+        "@Farah",
+        "@Huda",
+        "@Salma",
+        "@Yasmin",
+        "@Kira",
+        "@Petra",
+        "@Nadia",
+        "@Mona",
+        "@Dalia",
+        "@Wafa",
+        "@Dora",
+        "@Mila"
+      ],
       "mistralSmall": ["@Neva", "@Sara", "@Zara"],
       "deepseekR1": ["@Leila", "@Dana"]
     }

@@ -17,11 +17,11 @@ export interface CanonicalDivisionDef {
   desksCount: number; // 12 Desks per Division
 }
 
-import CANONICAL_MATRIX from '../../.agents/protocols/CANONICAL_108_DIVISIONS_MATRIX.json';
+import { CANONICAL_108_DIVISIONS_MATRIX } from '../../.agents/protocols/CANONICAL_108_DIVISIONS_MATRIX';
 
 export const CANONICAL_108_DIVISIONS: CanonicalDivisionDef[] =
-  CANONICAL_MATRIX.departments.flatMap(dept =>
-    dept.divisions.map(div => ({
+  CANONICAL_108_DIVISIONS_MATRIX.departments.flatMap((dept: any) =>
+    dept.divisions.map((div: any) => ({
       code: div.code,
       slot: div.slot,
       deptCode: dept.deptCode,

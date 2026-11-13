@@ -17,7 +17,8 @@ export interface LedgerEntry {
   id: string;
   name: string;
   role: string;
-  email: string;
+  roleTitle?: string;
+  email?: string;
   level: number;
   merit_xp_count: number;
   reward_tier_split: number;

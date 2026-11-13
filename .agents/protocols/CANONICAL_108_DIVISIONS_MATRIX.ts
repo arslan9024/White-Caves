@@ -6,18 +6,23 @@
 export interface Canonical108DivisionsMatrix {
   protocol: string;
   version: string;
-  authority: {
-    name: string;
-    role: string;
-    email: string;
-    reraOrn: string;
-  };
-  executivePartner: {
-    id: string;
-    name: string;
-    role: string;
-  };
+  authority:
+    | string
+    | {
+        name: string;
+        role: string;
+        email: string;
+        reraOrn: string;
+      };
+  executivePartner:
+    | string
+    | {
+        id: string;
+        name: string;
+        role: string;
+      };
   formula: string;
+  rules?: Record<string, string>;
   departments: any[];
 }
 

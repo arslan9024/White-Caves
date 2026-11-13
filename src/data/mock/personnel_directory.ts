@@ -11,6 +11,7 @@ export interface PersonnelEntry {
   department: string;
   name: string;
   level: number;
+  reportsTo?: string;
 }
 
 export const PERSONNEL_DIRECTORY: PersonnelEntry[] = [
