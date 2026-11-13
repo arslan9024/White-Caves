@@ -1,6 +1,12 @@
 // src/components/ZoeFeatures/WhiteCavesBook/masterLibraryData.ts
 import { MasterCorpusRoot } from './treeTypes';
 import { CHAPTER_OF_PROTOCOLS } from './chapterOfProtocols';
+import { CHAPTER_DEPARTMENT_SOPS } from './chapterDepartmentSOPs';
+import { CHAPTER_STRATEGIC_PLANS } from './chapterStrategicPlans';
+import { CHAPTER_BUSINESS_STRATEGIES } from './chapterBusinessStrategies';
+import { CHAPTER_PHASE_HISTORY } from './chapterPhaseHistory';
+import { CHAPTER_WAVE_SPRINTS } from './chapterWaveSprints';
+import { CHAPTER_SESSION_TRANSCRIPTS } from './chapterSessionTranscripts';
 
 export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
   level: 0,
@@ -48,95 +54,63 @@ export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
                       chapterCode: 'CH-01',
                       title: 'Chapter 01: The Grand Architecture',
                       subtitle: 'Statutory Zero-Waste AI Credit Laws & Clean Tree Primitives',
-                      readTimeMinutes: 7,
+                      readTimeMinutes: 15,
                       subChapters: [
                         {
                           level: 6,
                           nodeId: 'SC06-001',
                           subChapterNumber: 1,
-                          title: 'Sub-Chapter 1.1: Supreme Turing Law #0 (TURING-LAW-000)',
+                          title: 'Sub-Chapter 1: The Turing Zero-Waste AI Credit Law',
                           summary:
-                            'Every second and every AI credit counts. Parallel tool execution and zero-token deterministic operations.',
+                            'Statutory directives to eliminate token inflation, sequential roundtrips, and bloated context dumps.',
                           sections: [
                             {
                               level: 7,
                               nodeId: 'S07-001',
                               sectionNumber: 1,
-                              title: 'Section 1.1.1: Parallel Batching & Velocity Mechanics',
+                              title: 'Section 1.1: Foundations of Parallel Execution',
                               summary:
-                                'Executing all independent read_file, edit_file, and run_command calls concurrently.',
+                                'How parallel tool batching and surgical slicing guarantee sub-second iteration.',
                               topics: [
                                 {
                                   level: 8,
                                   nodeId: 'T08-001',
                                   topicNumber: 1,
-                                  title: 'Topic 1.1.1.1: Velocity & Credit Cap Formula',
+                                  title: 'Topic 1.1.1: Token Budget Invariance',
                                   summary:
-                                    'The mathematical equation bounding token consumption and maximizing turn throughput.',
+                                    'Maintaining strict sub-15,000 token envelopes across complex refactoring cycles.',
                                   artifacts: [
                                     {
                                       level: 9,
                                       nodeId: 'A09-001',
                                       artifactNumber: 1,
-                                      title:
-                                        'Artifact: Credit Velocity Optimization Law (TURING-LAW-000)',
-                                      type: 'ALGORITHM',
-                                      filePath: '.agents/aegis/core-loop/turingOrchestrator.ts',
-                                      totalLines: 36,
+                                      title: 'Artifact: Execution Envelope Constraint',
+                                      type: 'LAW',
+                                      filePath: '.agents/AGENTS.md',
+                                      totalLines: 120,
                                       complexity: 'O(1)',
                                       paragraphs: [
                                         {
                                           level: 10,
                                           nodeId: 'P10-001',
                                           paragraphNumber: 1,
-                                          header:
-                                            'Paragraph 1: Mathematical Axiom of AI Credit Preservation',
+                                          header: 'Paragraph 1: Invariant Ceiling Enforcement',
                                           narrative:
-                                            'AI credits and execution turns are strictly governed by continuous rate equations to prevent token burn and unnecessary conversational pauses.',
-                                          mathFormulas: [
-                                            {
-                                              title: 'Credit Velocity Optimization Law',
-                                              latex:
-                                                'V_{\\text{turn}} = \\frac{\\sum_{i=1}^n \\Delta_{\\text{ops}, i}}{\\Delta t_{\\text{turn}}} \\quad \\text{subject to} \\quad \\mathcal{C}_{\\text{token}} \\le 15{,}000',
-                                              explanation:
-                                                'Velocity measures operations per turn duration while strictly bounding LLM token cost to <= 15,000 tokens per task.',
-                                            },
-                                          ],
+                                            'Token consumption is governed by deterministic rules that reject uncompressed context payloads and enforce sub-second batch dispatch.',
                                           sentences: [
                                             {
                                               level: 11,
                                               nodeId: 'S11-001',
                                               sentenceNumber: 1,
                                               statement:
-                                                'Every AI credit and execution second must produce maximum deterministic output without token leakage.',
+                                                'Every single AI credit and execution second counts toward operational resilience.',
                                               statutoryInvariant: true,
                                               lines: [
                                                 {
                                                   level: 12,
                                                   nodeId: 'L12-001',
                                                   lineNumber: 1,
-                                                  text: 'const HARD_TOKEN_CEILING = 15000;',
-                                                  tokenType: 'KEYWORD',
-                                                },
-                                                {
-                                                  level: 12,
-                                                  nodeId: 'L12-002',
-                                                  lineNumber: 2,
-                                                  text: 'export function checkVelocity(turnDelta: number): boolean {',
-                                                  tokenType: 'IDENTIFIER',
-                                                },
-                                                {
-                                                  level: 12,
-                                                  nodeId: 'L12-003',
-                                                  lineNumber: 3,
-                                                  text: '  return turnDelta <= 2000;',
-                                                  tokenType: 'LITERAL',
-                                                },
-                                                {
-                                                  level: 12,
-                                                  nodeId: 'L12-004',
-                                                  lineNumber: 4,
-                                                  text: '}',
+                                                  text: 'const TOKEN_HARD_LIMIT = 15000;',
                                                   tokenType: 'OPERATOR',
                                                 },
                                               ],
@@ -170,6 +144,81 @@ export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
                         },
                       ],
                     },
+                  ],
+                },
+              ],
+            },
+            {
+              level: 3,
+              nodeId: 'VL03-002',
+              volumeNumber: 2,
+              title: 'Volume II: Department Operations & Floor SOPs',
+              description: 'Standard Operating Procedures across the 12 Brokerage Divisions.',
+              cantos: [
+                {
+                  level: 4,
+                  nodeId: 'CN04-002',
+                  cantoNumber: 1,
+                  title: 'Canto 1: Brokerage Department Floor Playbooks',
+                  description: 'SOPs, compliance checkpoints, and automated task specifications.',
+                  chapters: [CHAPTER_DEPARTMENT_SOPS],
+                },
+              ],
+            },
+            {
+              level: 3,
+              nodeId: 'VL03-003',
+              volumeNumber: 3,
+              title: 'Volume III: Strategic Master Plans & Autopilot Roadmaps',
+              description: 'Infinite Crucible execution loops, wave roadmaps, and backlog targets.',
+              cantos: [
+                {
+                  level: 4,
+                  nodeId: 'CN04-003',
+                  cantoNumber: 1,
+                  title: 'Canto 1: Autopilot Execution & Backlog Architecture',
+                  description: 'Ouroboros loop directives, daily milestones, and ERMS upgrades.',
+                  chapters: [CHAPTER_STRATEGIC_PLANS],
+                },
+              ],
+            },
+            {
+              level: 3,
+              nodeId: 'VL03-004',
+              volumeNumber: 4,
+              title: 'Volume IV: Business Strategy & Legal Invariants',
+              description:
+                'Dubai Land Department regulations, credit preservation, and security models.',
+              cantos: [
+                {
+                  level: 4,
+                  nodeId: 'CN04-004',
+                  cantoNumber: 1,
+                  title: 'Canto 1: Real Estate Strategy & Constitutional Laws',
+                  description:
+                    'Enterprise business strategy, engine continuity, and role matrices.',
+                  chapters: [CHAPTER_BUSINESS_STRATEGIES],
+                },
+              ],
+            },
+            {
+              level: 3,
+              nodeId: 'VL03-005',
+              volumeNumber: 5,
+              title: 'Volume V: Autonomous Evolution, Phases & Wave Sprints',
+              description:
+                'Historical engineering phases, wave sprints, and continuous memory compaction.',
+              cantos: [
+                {
+                  level: 4,
+                  nodeId: 'CN04-005',
+                  cantoNumber: 1,
+                  title: 'Canto 1: Engineering Execution & SQA Wave Chronicles',
+                  description: 'Milestones, sprint logs, and compacted memory records.',
+                  chapters: [
+                    CHAPTER_PHASE_HISTORY,
+                    CHAPTER_WAVE_SPRINTS,
+                    CHAPTER_SESSION_TRANSCRIPTS,
                   ],
                 },
               ],
