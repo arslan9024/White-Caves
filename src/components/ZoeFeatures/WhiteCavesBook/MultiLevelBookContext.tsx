@@ -1,219 +1,384 @@
 // src/components/ZoeFeatures/WhiteCavesBook/MultiLevelBookContext.tsx
 import React, { createContext, useContext, useState, useMemo, ReactNode } from 'react';
-import { AEGIS_MASTER_LIBRARY } from './masterLibraryData';
+import { AEGIS_12_LEVEL_CORPUS } from './masterLibraryData';
 import {
-  LibraryRoot,
+  MasterCorpusRoot,
+  ProjectLibraryNode,
   BookNode,
   VolumeNode,
+  CantoNode,
   ChapterNode,
+  SubChapterNode,
   SectionNode,
   TopicNode,
-  LeafArtifact,
+  LeafArtifactNode,
+  ParagraphNode,
+  SentenceNode,
+  LineNode,
   NavigationBreadcrumb,
 } from './treeTypes';
 
 interface MultiLevelBookContextType {
-  library: LibraryRoot;
+  corpus: MasterCorpusRoot;
+  currentLibrary: ProjectLibraryNode;
   currentBook: BookNode;
   currentVolume: VolumeNode;
+  currentCanto: CantoNode;
   currentChapter: ChapterNode;
+  currentSubChapter: SubChapterNode | null;
   currentSection: SectionNode | null;
   currentTopic: TopicNode | null;
-  currentLeaf: LeafArtifact | null;
+  currentArtifact: LeafArtifactNode | null;
+  currentParagraph: ParagraphNode | null;
+  currentSentence: SentenceNode | null;
+  currentLine: LineNode | null;
+  activeLevel: number;
   breadcrumbs: NavigationBreadcrumb[];
   searchQuery: string;
   setSearchQuery: (q: string) => void;
-  // Navigation actions
-  selectVolume: (volumeId: string) => void;
+
+  // Level selector actions
+  selectVolume: (volId: string) => void;
+  selectCanto: (cantoId: string) => void;
   selectChapter: (chapterId: string) => void;
-  selectSection: (sectionId: string) => void;
-  selectTopic: (topicId: string) => void;
-  selectLeaf: (leafId: string) => void;
+  selectSubChapter: (subId: string) => void;
+  selectSection: (secId: string) => void;
+  selectTopic: (topId: string) => void;
+  selectArtifact: (artId: string) => void;
+  selectParagraph: (pId: string) => void;
+  selectSentence: (sId: string) => void;
+  selectLine: (lId: string) => void;
+  returnUpOneLevel: () => void;
   resetToChapter: () => void;
-  resetToVolume: () => void;
-  nextChapter: () => void;
-  prevChapter: () => void;
-  // Dynamic leaf register for AEGIS self-learning
-  appendLeafArtifact: (
-    chapterId: string,
-    sectionId: string,
-    topicId: string,
-    artifact: LeafArtifact
-  ) => void;
 }
 
 const MultiLevelBookContext = createContext<MultiLevelBookContextType | null>(null);
 
 export const MultiLevelBookProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [library, setLibrary] = useState<LibraryRoot>(AEGIS_MASTER_LIBRARY);
-  const [currentBookId, setCurrentBookId] = useState<string>('book-01-white-caves');
-  const [currentVolumeId, setCurrentVolumeId] = useState<string>('vol-01');
-  const [currentChapterId, setCurrentChapterId] = useState<string>('ch-01');
-  const [currentSectionId, setCurrentSectionId] = useState<string | null>(null);
-  const [currentTopicId, setCurrentTopicId] = useState<string | null>(null);
-  const [currentLeafId, setCurrentLeafId] = useState<string | null>(null);
+  const [corpus] = useState<MasterCorpusRoot>(AEGIS_12_LEVEL_CORPUS);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const currentBook = useMemo(() => {
-    return library.books.find(b => b.bookId === currentBookId) || library.books[0];
-  }, [library, currentBookId]);
+  // Selected level keys
+  const [volId, setVolId] = useState<string>('VL03-001');
+  const [cantoId, setCantoId] = useState<string>('CN04-001');
+  const [chapterId, setChapterId] = useState<string>('CH05-001');
+  const [subChapterId, setSubChapterId] = useState<string | null>(null);
+  const [sectionId, setSectionId] = useState<string | null>(null);
+  const [topicId, setTopicId] = useState<string | null>(null);
+  const [artifactId, setArtifactId] = useState<string | null>(null);
+  const [paragraphId, setParagraphId] = useState<string | null>(null);
+  const [sentenceId, setSentenceId] = useState<string | null>(null);
+  const [lineId, setLineId] = useState<string | null>(null);
+
+  // Derivations
+  const currentLibrary = corpus.libraries[0];
+  const currentBook = currentLibrary.books[0];
 
   const currentVolume = useMemo(() => {
-    return currentBook.volumes.find(v => v.nodeId === currentVolumeId) || currentBook.volumes[0];
-  }, [currentBook, currentVolumeId]);
+    return currentBook.volumes.find(v => v.nodeId === volId) || currentBook.volumes[0];
+  }, [currentBook, volId]);
+
+  const currentCanto = useMemo(() => {
+    return currentVolume.cantos.find(c => c.nodeId === cantoId) || currentVolume.cantos[0];
+  }, [currentVolume, cantoId]);
 
   const currentChapter = useMemo(() => {
-    return (
-      currentVolume.chapters.find(c => c.nodeId === currentChapterId) || currentVolume.chapters[0]
-    );
-  }, [currentVolume, currentChapterId]);
+    return currentCanto.chapters.find(ch => ch.nodeId === chapterId) || currentCanto.chapters[0];
+  }, [currentCanto, chapterId]);
+
+  const currentSubChapter = useMemo(() => {
+    if (!subChapterId) return null;
+    return currentChapter.subChapters.find(sc => sc.nodeId === subChapterId) || null;
+  }, [currentChapter, subChapterId]);
 
   const currentSection = useMemo(() => {
-    if (!currentSectionId) return null;
-    return currentChapter.sections.find(s => s.nodeId === currentSectionId) || null;
-  }, [currentChapter, currentSectionId]);
+    if (!currentSubChapter || !sectionId) return null;
+    return currentSubChapter.sections.find(s => s.nodeId === sectionId) || null;
+  }, [currentSubChapter, sectionId]);
 
   const currentTopic = useMemo(() => {
-    if (!currentSection || !currentTopicId) return null;
-    return currentSection.topics.find(t => t.nodeId === currentTopicId) || null;
-  }, [currentSection, currentTopicId]);
+    if (!currentSection || !topicId) return null;
+    return currentSection.topics.find(t => t.nodeId === topicId) || null;
+  }, [currentSection, topicId]);
 
-  const currentLeaf = useMemo(() => {
-    if (!currentTopic || !currentLeafId) return null;
-    return currentTopic.leaves.find(l => l.nodeId === currentLeafId) || null;
-  }, [currentTopic, currentLeafId]);
+  const currentArtifact = useMemo(() => {
+    if (!currentTopic || !artifactId) return null;
+    return currentTopic.artifacts.find(a => a.nodeId === artifactId) || null;
+  }, [currentTopic, artifactId]);
 
-  // Build root-to-leaf breadcrumb lineage
+  const currentParagraph = useMemo(() => {
+    if (!currentArtifact || !paragraphId) return null;
+    return currentArtifact.paragraphs.find(p => p.nodeId === paragraphId) || null;
+  }, [currentArtifact, paragraphId]);
+
+  const currentSentence = useMemo(() => {
+    if (!currentParagraph || !sentenceId) return null;
+    return currentParagraph.sentences.find(s => s.nodeId === sentenceId) || null;
+  }, [currentParagraph, sentenceId]);
+
+  const currentLine = useMemo(() => {
+    if (!currentSentence || !lineId) return null;
+    return currentSentence.lines.find(l => l.nodeId === lineId) || null;
+  }, [currentSentence, lineId]);
+
+  // Determine active level (0 to 12)
+  const activeLevel = useMemo(() => {
+    if (currentLine) return 12;
+    if (currentSentence) return 11;
+    if (currentParagraph) return 10;
+    if (currentArtifact) return 9;
+    if (currentTopic) return 8;
+    if (currentSection) return 7;
+    if (currentSubChapter) return 6;
+    return 5; // Chapter level baseline
+  }, [
+    currentLine,
+    currentSentence,
+    currentParagraph,
+    currentArtifact,
+    currentTopic,
+    currentSection,
+    currentSubChapter,
+  ]);
+
+  // Full 12-Level Dynamic Breadcrumb Lineage
   const breadcrumbs = useMemo(() => {
-    const list: NavigationBreadcrumb[] = [
-      { level: 0, label: 'AEGIS Library', pathId: 'root' },
-      { level: 1, label: currentBook.title, pathId: currentBook.bookId },
-      { level: 2, label: `Vol ${currentVolume.volumeNumber}`, pathId: currentVolume.nodeId },
-      { level: 3, label: currentChapter.chapterCode, pathId: currentChapter.nodeId },
+    const b: NavigationBreadcrumb[] = [
+      { level: 0, levelName: 'L0: Corpus', label: corpus.corpusName, pathId: 'corpus' },
+      {
+        level: 1,
+        levelName: 'L1: Library',
+        label: currentLibrary.title,
+        pathId: currentLibrary.libraryId,
+      },
+      { level: 2, levelName: 'L2: Book', label: currentBook.title, pathId: currentBook.bookId },
+      {
+        level: 3,
+        levelName: 'L3: Volume',
+        label: `Vol ${currentVolume.volumeNumber}`,
+        pathId: currentVolume.nodeId,
+      },
+      {
+        level: 4,
+        levelName: 'L4: Canto',
+        label: `Canto ${currentCanto.cantoNumber}`,
+        pathId: currentCanto.nodeId,
+      },
+      {
+        level: 5,
+        levelName: 'L5: Chapter',
+        label: currentChapter.chapterCode,
+        pathId: currentChapter.nodeId,
+      },
     ];
+    if (currentSubChapter) {
+      b.push({
+        level: 6,
+        levelName: 'L6: Sub-Ch',
+        label: `SC-${currentSubChapter.subChapterNumber}`,
+        pathId: currentSubChapter.nodeId,
+      });
+    }
     if (currentSection) {
-      list.push({ level: 4, label: `Sec ${currentSection.nodeId}`, pathId: currentSection.nodeId });
+      b.push({
+        level: 7,
+        levelName: 'L7: Section',
+        label: `§ ${currentSection.sectionNumber}`,
+        pathId: currentSection.nodeId,
+      });
     }
     if (currentTopic) {
-      list.push({ level: 5, label: `Topic ${currentTopic.nodeId}`, pathId: currentTopic.nodeId });
+      b.push({
+        level: 8,
+        levelName: 'L8: Topic',
+        label: `T-${currentTopic.topicNumber}`,
+        pathId: currentTopic.nodeId,
+      });
     }
-    if (currentLeaf) {
-      list.push({ level: 6, label: `Leaf: ${currentLeaf.title}`, pathId: currentLeaf.nodeId });
+    if (currentArtifact) {
+      b.push({
+        level: 9,
+        levelName: 'L9: File',
+        label: `Art #${currentArtifact.artifactNumber}`,
+        pathId: currentArtifact.nodeId,
+      });
     }
-    return list;
-  }, [currentBook, currentVolume, currentChapter, currentSection, currentTopic, currentLeaf]);
-
-  const selectVolume = (volId: string) => {
-    setCurrentVolumeId(volId);
-    const targetVol = currentBook.volumes.find(v => v.nodeId === volId);
-    if (targetVol && targetVol.chapters.length > 0) {
-      setCurrentChapterId(targetVol.chapters[0].nodeId);
-      setCurrentSectionId(null);
-      setCurrentTopicId(null);
-      setCurrentLeafId(null);
+    if (currentParagraph) {
+      b.push({
+        level: 10,
+        levelName: 'L10: Para',
+        label: `¶ ${currentParagraph.paragraphNumber}`,
+        pathId: currentParagraph.nodeId,
+      });
     }
-  };
+    if (currentSentence) {
+      b.push({
+        level: 11,
+        levelName: 'L11: Sentence',
+        label: `S.${currentSentence.sentenceNumber}`,
+        pathId: currentSentence.nodeId,
+      });
+    }
+    if (currentLine) {
+      b.push({
+        level: 12,
+        levelName: 'L12: Line',
+        label: `Line ${currentLine.lineNumber}`,
+        pathId: currentLine.nodeId,
+      });
+    }
+    return b;
+  }, [
+    corpus,
+    currentLibrary,
+    currentBook,
+    currentVolume,
+    currentCanto,
+    currentChapter,
+    currentSubChapter,
+    currentSection,
+    currentTopic,
+    currentArtifact,
+    currentParagraph,
+    currentSentence,
+    currentLine,
+  ]);
 
-  const selectChapter = (chId: string) => {
-    setCurrentChapterId(chId);
-    setCurrentSectionId(null);
-    setCurrentTopicId(null);
-    setCurrentLeafId(null);
-  };
-
-  const selectSection = (secId: string) => {
-    setCurrentSectionId(secId);
-    setCurrentTopicId(null);
-    setCurrentLeafId(null);
-  };
-
-  const selectTopic = (topId: string) => {
-    setCurrentTopicId(topId);
-    setCurrentLeafId(null);
-  };
-
-  const selectLeaf = (leafId: string) => {
-    setCurrentLeafId(leafId);
-  };
-
-  const resetToChapter = () => {
-    setCurrentSectionId(null);
-    setCurrentTopicId(null);
-    setCurrentLeafId(null);
-  };
-
-  const resetToVolume = () => {
+  const selectVolume = (id: string) => {
+    setVolId(id);
+    const target = currentBook.volumes.find(v => v.nodeId === id);
+    if (target && target.cantos.length > 0) {
+      setCantoId(target.cantos[0].nodeId);
+      if (target.cantos[0].chapters.length > 0) {
+        setChapterId(target.cantos[0].chapters[0].nodeId);
+      }
+    }
     resetToChapter();
   };
 
-  const chapterList = currentVolume.chapters;
-  const currentChapterIdx = chapterList.findIndex(c => c.nodeId === currentChapter.nodeId);
-
-  const nextChapter = () => {
-    if (currentChapterIdx < chapterList.length - 1) {
-      selectChapter(chapterList[currentChapterIdx + 1].nodeId);
+  const selectCanto = (id: string) => {
+    setCantoId(id);
+    const target = currentVolume.cantos.find(c => c.nodeId === id);
+    if (target && target.chapters.length > 0) {
+      setChapterId(target.chapters[0].nodeId);
     }
+    resetToChapter();
   };
 
-  const prevChapter = () => {
-    if (currentChapterIdx > 0) {
-      selectChapter(chapterList[currentChapterIdx - 1].nodeId);
-    }
+  const selectChapter = (id: string) => {
+    setChapterId(id);
+    resetToChapter();
   };
 
-  const appendLeafArtifact = (
-    chapterId: string,
-    sectionId: string,
-    topicId: string,
-    artifact: LeafArtifact
-  ) => {
-    setLibrary(prev => {
-      const cloned = JSON.parse(JSON.stringify(prev)) as LibraryRoot;
-      for (const b of cloned.books) {
-        for (const v of b.volumes) {
-          for (const c of v.chapters) {
-            if (c.nodeId === chapterId) {
-              for (const s of c.sections) {
-                if (s.nodeId === sectionId) {
-                  for (const t of s.topics) {
-                    if (t.nodeId === topicId) {
-                      t.leaves.push(artifact);
-                      return cloned;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      return cloned;
-    });
+  const selectSubChapter = (id: string) => {
+    setSubChapterId(id);
+    setSectionId(null);
+    setTopicId(null);
+    setArtifactId(null);
+    setParagraphId(null);
+    setSentenceId(null);
+    setLineId(null);
+  };
+
+  const selectSection = (id: string) => {
+    setSectionId(id);
+    setTopicId(null);
+    setArtifactId(null);
+    setParagraphId(null);
+    setSentenceId(null);
+    setLineId(null);
+  };
+
+  const selectTopic = (id: string) => {
+    setTopicId(id);
+    setArtifactId(null);
+    setParagraphId(null);
+    setSentenceId(null);
+    setLineId(null);
+  };
+
+  const selectArtifact = (id: string) => {
+    setArtifactId(id);
+    setParagraphId(null);
+    setSentenceId(null);
+    setLineId(null);
+  };
+
+  const selectParagraph = (id: string) => {
+    setParagraphId(id);
+    setSentenceId(null);
+    setLineId(null);
+  };
+
+  const selectSentence = (id: string) => {
+    setSentenceId(id);
+    setLineId(null);
+  };
+
+  const selectLine = (id: string) => {
+    setLineId(id);
+  };
+
+  const resetToChapter = () => {
+    setSubChapterId(null);
+    setSectionId(null);
+    setTopicId(null);
+    setArtifactId(null);
+    setParagraphId(null);
+    setSentenceId(null);
+    setLineId(null);
+  };
+
+  const returnUpOneLevel = () => {
+    if (lineId) {
+      setLineId(null);
+    } else if (sentenceId) {
+      setSentenceId(null);
+    } else if (paragraphId) {
+      setParagraphId(null);
+    } else if (artifactId) {
+      setArtifactId(null);
+    } else if (topicId) {
+      setTopicId(null);
+    } else if (sectionId) {
+      setSectionId(null);
+    } else if (subChapterId) {
+      setSubChapterId(null);
+    }
   };
 
   return (
     <MultiLevelBookContext.Provider
       value={{
-        library,
+        corpus,
+        currentLibrary,
         currentBook,
         currentVolume,
+        currentCanto,
         currentChapter,
+        currentSubChapter,
         currentSection,
         currentTopic,
-        currentLeaf,
+        currentArtifact,
+        currentParagraph,
+        currentSentence,
+        currentLine,
+        activeLevel,
         breadcrumbs,
         searchQuery,
         setSearchQuery,
         selectVolume,
+        selectCanto,
         selectChapter,
+        selectSubChapter,
         selectSection,
         selectTopic,
-        selectLeaf,
+        selectArtifact,
+        selectParagraph,
+        selectSentence,
+        selectLine,
+        returnUpOneLevel,
         resetToChapter,
-        resetToVolume,
-        nextChapter,
-        prevChapter,
-        appendLeafArtifact,
       }}
     >
       {children}
