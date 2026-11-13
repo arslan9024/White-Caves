@@ -98,6 +98,7 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({
                 ? '👑 Founder (L5)'
                 : `L${accessLevel} · ${roleLabels[currentRole] || currentRole}`}
             </RoleBadge>
+            {activeUser?.name && <p style={{ fontWeight: 600, margin: 0 }}>{activeUser.name}</p>}
             <p title={activeUser?.email || activeUser?.role || PREFERENCE_LABELS.guestRole}>
               {activeUser?.email || activeUser?.role || PREFERENCE_LABELS.guestRole}
             </p>

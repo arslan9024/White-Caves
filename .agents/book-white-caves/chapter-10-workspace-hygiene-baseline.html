@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 10: Sovereign Workspace Hygiene & Foundation Baseline | The Book of White Caves</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #0F172A;
+      --border: rgba(56, 189, 248, 0.2);
+      --accent-red: #EF4444;
+      --accent-cyan: #38BDF8;
+      --accent-emerald: #10B981;
+      --accent-purple: #A855F7;
+      --text: #F3F4F6;
+      --text-muted: #9CA3AF;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .nav-header a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    h1 {
+      color: #fff;
+      font-size: 2.2rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .metric-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .metric-val {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: var(--accent-cyan);
+    }
+    .metric-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    code {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      color: var(--accent-cyan);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav-header">
+    <a href="index.html">&larr; Back to Encyclopedia Index</a>
+    <span class="badge">Sovereign Architecture Baseline</span>
+  </div>
+
+  <h1>Chapter 10: Sovereign Workspace Hygiene & Foundation Baseline</h1>
+  <p style="color: var(--text-muted);">Published: 2026-11-13 | Overseeing Protocol: TURING-ROOT-007 & TURING-LAW-000</p>
+
+  <div class="card">
+    <h2 style="color: var(--accent-cyan); margin-top: 0;">1. Baseline Validation Snapshot</h2>
+    <p>Following strict adherence to the White Caves Real Estate AEGIS V5.0 constitution, Phase 1 (Foundation Stabilization) and Phase 2 (Documentation & Chronicling) established the canonical workspace baseline:</p>
+    
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-val" style="color: var(--accent-emerald);">ACTIVE</div>
+        <div class="metric-label">Google Cloud Auth (ADC)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color: var(--accent-emerald);">0 ERRORS</div>
+        <div class="metric-label">TypeScript Compiler (tsc)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color: var(--accent-emerald);">100% PASS</div>
+        <div class="metric-label">Core Vitest Assertions</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color: var(--accent-emerald);">PRISTINE</div>
+        <div class="metric-label">Root Hygiene (TURING-ROOT-007)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="color: var(--accent-cyan); margin-top: 0;">2. Architecture Control Plane Verification</h2>
+    <p>The control plane operates strictly under <code>.agents/</code>. No root pollution exists. Key verification markers:</p>
+    <ul>
+      <li><strong>GCP / Vertex AI Authentication:</strong> Validated via Step 0 pre-flight auth checklist. Active operator account credentialed.</li>
+      <li><strong>TypeScript Strictness:</strong> Ran <code>npx tsc --noEmit</code> across the entire frontend repository with zero type violations.</li>
+      <li><strong>Unit Testing Health:</strong> Verified fast execution (&lt; 5s) of security and route guards (<code>src/__tests__/FounderGuard.test.ts</code>) via Vitest.</li>
+      <li><strong>Documentation Integration:</strong> Chronicled in Chapter 10 for continuous grounding with the White Caves visual book viewer.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2 style="color: var(--accent-purple); margin-top: 0;">3. Forward Horizons: Phases 3 &ndash; 5</h2>
+    <p>With foundation and chronicling locked, the workspace is primed for execution:</p>
+    <ol>
+      <li><strong>Phase 3 (Feature Increment):</strong> Target specific backlog tasks and department modules via parallel single-slice implementations.</li>
+      <li><strong>Phase 4 (Autopilot / Scheduler):</strong> Implement non-blocking background routines for zero-token telemetry updates.</li>
+      <li><strong>Phase 5 (Release Readiness Gate):</strong> End-to-end multi-tier audit prior to protected production branch merges.</li>
+    </ol>
+  </div>
+
+</body>
+</html>

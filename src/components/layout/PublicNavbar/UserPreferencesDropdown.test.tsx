@@ -8,6 +8,7 @@ import authReducer from '../../../store/authSlice';
 import { ThemeProvider } from '../../../context/ThemeContext';
 import { LanguageProvider } from '../../../context/LanguageContext';
 import { CurrencyProvider } from '../../../context/CurrencyContext';
+import { UserRoleProvider } from '../../../context/UserRoleContext';
 import { UserPreferencesDropdown } from './UserPreferencesDropdown';
 
 function renderDropdown(user: any = null, onClose = vi.fn()) {
@@ -22,9 +23,11 @@ function renderDropdown(user: any = null, onClose = vi.fn()) {
       <ThemeProvider>
         <LanguageProvider>
           <CurrencyProvider>
-            <BrowserRouter>
-              <UserPreferencesDropdown user={user} onClose={onClose} />
-            </BrowserRouter>
+            <UserRoleProvider initialUser={user}>
+              <BrowserRouter>
+                <UserPreferencesDropdown user={user} onClose={onClose} />
+              </BrowserRouter>
+            </UserRoleProvider>
           </CurrencyProvider>
         </LanguageProvider>
       </ThemeProvider>
