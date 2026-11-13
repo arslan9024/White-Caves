@@ -105,3 +105,4 @@ files.forEach(file => {
 
 console.log(`[Book Chronicler] Injected ${totalInjectedLinks} hyperlinks across chapters.`);
 console.log(`[Book Chronicler] Synced all files to public/.agents/book-white-caves/`);
+
