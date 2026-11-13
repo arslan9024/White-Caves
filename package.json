@@ -9,7 +9,8 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "npm run dev:precheck && concurrently --names \"CLIENT,SERVER\" --prefix-colors \"cyan,green\" \"npm run dev:client\" \"npm run dev:server\"",
+    "dev": "npm run dev:precheck && vite",
+    "dev:monorepo": "npm run dev:precheck && concurrently --names \"CLIENT,SERVER\" --prefix-colors \"cyan,green\" \"npm run dev:client\" \"npm run dev:server\"",
     "aegis:ouroboros": "node ../.agents/orchestrator/aegis-perpetual-ouroboros.js",
     "aegis:ouroboros:once": "node ../.agents/orchestrator/aegis-perpetual-ouroboros.js --once",
     "aegis:crucible:infinite": "node ../.agents/orchestrator/aegis-perpetual-ouroboros.js",
