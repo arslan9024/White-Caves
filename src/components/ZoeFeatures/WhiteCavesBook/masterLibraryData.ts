@@ -1,5 +1,6 @@
 // src/components/ZoeFeatures/WhiteCavesBook/masterLibraryData.ts
 import { MasterCorpusRoot } from './treeTypes';
+import { CHAPTER_OF_PROTOCOLS } from './chapterOfProtocols';
 
 export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
   level: 0,
@@ -39,6 +40,7 @@ export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
                   title: 'Canto 1: Sovereign Governance & Optimization Laws',
                   description: 'Statutory constitutional rules governing all agents and subagents.',
                   chapters: [
+                    CHAPTER_OF_PROTOCOLS,
                     {
                       level: 5,
                       nodeId: 'CH05-001',
