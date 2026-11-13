@@ -46,7 +46,7 @@ describe('AEGIS 12-Level Sovereign Tree Query Engine (TURING-LAW-000)', () => {
       expect(result.level).toBe(12);
       expect((result.node as any).nodeId).toBe(targetNodeId);
       expect(result.tokenEstimate).toBeLessThan(60);
-      expect(result.lineage.some(l => l.titleOrId.includes('Corpus'))).toBe(true);
+      expect(result.lineage.some(l => l.titleOrId.includes('AEGIS'))).toBe(true);
     }
   });
 

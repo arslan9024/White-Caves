@@ -66,7 +66,7 @@ export const MultiLevelBookView: React.FC = () => {
             <p className="text-[11px] text-slate-400">{currentBook.subtitle}</p>
           </div>
 
-          {/* Book Switcher Tabs: 1. White Caves (Project) | 2. Aegis Sterling (Autobiography) */}
+          {/* Book Switcher Tabs: 1. White Caves (Project & Brokerage) | 2. AEGIS (Autonomous Multi-Agent AI Engine) */}
           <div className="hidden lg:flex items-center gap-1.5 p-1 rounded-xl bg-slate-950/80 border border-slate-800 ml-4">
             {currentLibrary.books.map(b => {
               const isSelected = b.bookId === currentBook.bookId;
@@ -85,8 +85,8 @@ export const MultiLevelBookView: React.FC = () => {
                   ></span>
                   <span>
                     {b.bookNumber === 1
-                      ? 'Book 1: White Caves'
-                      : 'Book 2: Aegis Sterling (Autobiography)'}
+                      ? 'Book 1: White Caves Real Estate'
+                      : 'Book 2: AEGIS Autonomous Engine'}
                   </span>
                 </button>
               );

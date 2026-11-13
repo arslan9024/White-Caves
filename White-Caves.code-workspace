@@ -3,6 +3,10 @@
     {
       "name": "White-Caves (Core Platform)",
       "path": "."
+    },
+    {
+      "name": "💬 WhatsApp Bot Linda",
+      "path": "../whatsapp-bot-linda"
     }
   ],
   "settings": {
