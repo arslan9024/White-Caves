@@ -1,6 +1,6 @@
 # White Caves Real Estate LLC — AEGIS V5.0 Sovereign Agent Constitution
 
-> **Policy:** `2026.11.06-aegis-v5-unified-mesh-v1` | **Control Plane:** `.agents/` | **Mesh:** Dual `1-12-108` (`235` Agents) + `42` Rules (`AEG-001`–`AEG-042`)
+> **Policy:** `2026.11.13-aegis-v5-shell-efficiency-patch` | **Control Plane:** `.agents/` | **Mesh:** Dual `1-12-108` (`235` Agents) + `42` Rules (`AEG-001`–`AEG-042`)
 
 ---
 
@@ -37,6 +37,13 @@
 14. **Dual Format Optimization: Markdown for Steering vs. TypeScript for Knowledge Bases (`TURING-DUAL-FORMAT-014`):**
     - **Markdown (`.md`) for Agent Steering & System Directives:** Prompts, root constitutions (`AGENTS.md`, `CLAUDE.md`, `antigravity.md`), and behavioral guidelines must strictly be authored in pure Markdown. This maximizes AI attention density, guarantees native prompt ingestion across Antigravity and LLM runtimes, and eliminates wasted tokens on syntax boilerplate (`export const`, string quotes, escape characters).
     - **TypeScript (`.ts`) for Structured Knowledge & Book Systems:** Deep architectural encyclopedias, chapter registries, and structured enterprise records (such as The Book of White Caves and `master-workforce-grid.ts`) are structured as modular, typed TypeScript modules. This enables surgical line-range reads (`30`–`50` lines instead of `5,000`-line markdown dumps), compiler verification (`npx tsc --noEmit`) at `0` token cost, and seamless zero-overhead import into React UI components (`WhiteCavesBookViewer.tsx`). Together, this dual-format pattern achieves optimal credit conservation under `TURING-LAW-000`.
+15. **PowerShell Zero-Waste Shell Laws (`TURING-SHELL-015`) — Crystallized 2026-11-13:** Every shell invocation in PowerShell MUST follow these non-negotiable patterns:
+    - **`head` IS BANNED.** PowerShell has no `head` command. Always use `Select-Object -First N`. Violation costs 1 wasted turn + ~300 tokens per retry.
+    - **NEVER `Get-ChildItem -Recurse` on `.agents/` or any large directory for discovery.** It dumps thousands of irrelevant filenames (~3,000–5,000 wasted tokens). Always use `git grep -rl <keyword> .agents/` or `Get-ChildItem .agents -Depth 1` or `Get-ChildItem -Recurse -Filter "<specific-pattern>"` instead.
+    - **`git grep -n` BEFORE reading files.** To determine whether a type, function, or feature exists, run `git grep` first (0 token cost). Only read the file slice (`StartLine`/`EndLine`) if the implementation is actually needed.
+    - **Never run the same information query twice.** If `status.ps1` already returned queue depth, do NOT also run `aegis-progress-report.js` for the same data. One authoritative source per data point.
+    - **Verify script existence before execution.** Use `Test-Path` in the same parallel batch before blindly executing `node <path>` or `powershell -File <path>` to avoid speculative 404 turns.
+    - **Input token hard budget per `/aegis-task`:** Pre-flight ≤ 800 | File reads ≤ 2,000 | Implementation ≤ 4,000 | Tests + git ≤ 500 | **Total ≤ 8,000 tokens.** Exceeding 10,000 requires a post-session waste log entry.
 
 ---
 
