@@ -272,6 +272,23 @@ export function getDefaultRules(): TuringAuditRule[] {
         return { valid: true };
       },
     },
+    {
+      id: 'TURING-RULE-TIERS-012',
+      name: 'Multi-Tier Rule Ingestion & Sovereign Self-Correction Law',
+      description:
+        'Enforces hierarchical rule evaluation: Global (~/.gemini/config/rules/antigravity.md) -> Umbrella (White-Caves/.agents/antigravity.md) -> Project (<repo>/.agents/antigravity.md). Corrections must crystallize to the proper tier.',
+      check: ctx => {
+        const text = ctx.promptText.toLowerCase();
+        if (text.includes('ignore global rules') || text.includes('bypass project rules')) {
+          return {
+            valid: false,
+            message:
+              'Violation [TURING-RULE-TIERS-012]: Bypassing tiered Antigravity/AEGIS rules is forbidden. All sessions must respect Global, Monorepo, and Project rule tiers.',
+          };
+        }
+        return { valid: true };
+      },
+    },
     // Additional rules can be added here following the same shape.
   ];
 }

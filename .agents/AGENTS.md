@@ -28,6 +28,12 @@
     - **What they do (TMS):** Actions and tasks (Verbs: `VERIFY_KYC`, `GENERATE_EJARI`, `COLLECT_RENT`). Every task connects an Actor (ERMS) within a Department (DMS).
     - **Relationship Invariance:** In ERMS, relationships between entities are established and updated strictly on the basis of completed actions in TMS.
 11. **Living Book Chronicler & Continuous Knowledge Grounding (`TURING-BOOK-011`):** Every key architectural decision, conversational breakthrough, repository decoupling, and milestone must be preserved as an official chapter inside `.agents/book-white-caves/` and indexed in `WhiteCavesBookViewer.tsx`. The Turing engine must audit and verify that chronicler documentation remains updated without staleness across iterative development cycles.
+12. **Multi-Tier Rule Ingestion & Sovereign Self-Correction Loop (`TURING-RULE-TIERS-012`):** Every chat session initializes by evaluating the tiered Antigravity/AEGIS rules:
+    - **Tier 1 (Global System):** `C:\Users\Dell\.gemini\config\rules\antigravity.md` (universal system prompt layer across all workspaces).
+    - **Tier 2 (Monorepo Umbrella):** `White-Caves/.agents/antigravity.md` (cross-repository synchronization contracts).
+    - **Tier 3 (Project / Node):** `<repo>/.agents/antigravity.md` (Server/Frontend/Mobile/Web) and `.agents/rules/*.md`.
+    - **Sovereign Feedback Loop:** Whenever the user corrects an error, changes architectural direction, or provides a new pattern, the agent must immediately crystallize the directive into the appropriate rule tier and document it in `.agents/book-white-caves/` so every subsequent session and subagent inherits the learning.
+13. **Strict AI Dev Server Ban (`TURING-DEV-SERVER-BAN-013`):** Under NO circumstances should any AI agent, orchestrator, or automated subagent execute `npm run dev`, `vite`, `expo start`, `nodemon`, or any continuous local development server process inside Antigravity sessions. All development servers are reserved exclusively for the developer to run independently in external native Windows PowerShell terminals. Agents may only run static non-blocking verifications (e.g. `npm run build`, `npx tsc --noEmit`, or single-file test runs).
 
 ---
 
