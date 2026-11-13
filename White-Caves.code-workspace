@@ -11,6 +11,18 @@
     {
       "name": "🔐 Central Secrets & Credentials",
       "path": "../secrets"
+    },
+    {
+      "name": "📦 Monorepo Backup (Archive)",
+      "path": "../White-Caves-Frontend-Monorepo-Backup"
+    },
+    {
+      "name": "⚙️ White Caves Server",
+      "path": "../White-Caves-Server"
+    },
+    {
+      "name": "🛡️ Aegis-Sterling",
+      "path": "../Aegis-Sterling"
     }
   ],
   "settings": {
