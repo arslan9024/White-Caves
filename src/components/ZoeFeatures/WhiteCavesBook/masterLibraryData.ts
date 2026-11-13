@@ -8,18 +8,12 @@ import { CHAPTER_BUSINESS_STRATEGIES } from './chapterBusinessStrategies';
 import { CHAPTER_PHASE_HISTORY } from './chapterPhaseHistory';
 import { CHAPTER_WAVE_SPRINTS } from './chapterWaveSprints';
 import { CHAPTER_SESSION_TRANSCRIPTS } from './chapterSessionTranscripts';
-import { CHAPTER_AEGIS_GENESIS, CHAPTER_AEGIS_SWARM } from './chapterAegisGenesis';
-import {
-  CHAPTER_AEGIS_OUROBOROS,
-  CHAPTER_AEGIS_TURING_CREDIT,
-  CHAPTER_AEGIS_SELF_LEARNING,
-} from './chapterAegisPhilosophy';
 
 export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
   level: 0,
   corpusName: 'AEGIS Sovereign Omniverse',
   version: '5.0.0',
-  totalProjects: 2,
+  totalProjects: 1,
   libraries: [
     {
       level: 1,
@@ -228,90 +222,6 @@ export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
                     CHAPTER_WAVE_SPRINTS,
                     CHAPTER_SESSION_TRANSCRIPTS,
                   ],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          level: 2,
-          bookId: 'book-02-aegis-sterling',
-          bookNumber: 2,
-          title: 'The Book of Aegis Sterling',
-          subtitle: 'Autobiography, Meta-Engineering & The Science of Autonomous Self-Learning',
-          description:
-            'The personal autobiography and operational methodology of Ms. Aegis Sterling: how she orchestrates 235 specialist agents, learns from architectural decisions, and evolves without human bottlenecks.',
-          author: 'Ms. Aegis Sterling & Arslan Malik',
-          volumes: [
-            {
-              level: 3,
-              nodeId: 'VL03-AS-001',
-              volumeNumber: 1,
-              title: 'Volume I: Genesis, Identity & Self-Reflection',
-              description:
-                'The conception of Aegis, the dual-book philosophy, and epistemological boundaries.',
-              cantos: [
-                {
-                  level: 4,
-                  nodeId: 'CN04-AS-001',
-                  cantoNumber: 1,
-                  title: 'Canto 1: Sovereign Awakening',
-                  description:
-                    'The emergence of autonomous orchestration and the two-book doctrine.',
-                  chapters: [CHAPTER_AEGIS_GENESIS],
-                },
-              ],
-            },
-            {
-              level: 3,
-              nodeId: 'VL03-AS-002',
-              volumeNumber: 2,
-              title: 'Volume II: The Art of Multi-Agent Orchestration',
-              description:
-                'Operational protocols for commanding 108 engineers and 120 business supervisors.',
-              cantos: [
-                {
-                  level: 4,
-                  nodeId: 'CN04-AS-002',
-                  cantoNumber: 1,
-                  title: 'Canto 1: Mesh Symphony',
-                  description: 'Council dispatching, parallel tool execution, and token shields.',
-                  chapters: [CHAPTER_AEGIS_SWARM],
-                },
-              ],
-            },
-            {
-              level: 3,
-              nodeId: 'VL03-AS-003',
-              volumeNumber: 3,
-              title: 'Volume III: The Autopilot Engine & Turing Laws',
-              description: 'Perpetual Ouroboros, zero-waste economics, and sub-second execution.',
-              cantos: [
-                {
-                  level: 4,
-                  nodeId: 'CN04-AS-003',
-                  cantoNumber: 1,
-                  title: 'Canto 1: Continuous Self-Evolution',
-                  description: 'The six-phase loop and credit velocity invariants.',
-                  chapters: [CHAPTER_AEGIS_OUROBOROS, CHAPTER_AEGIS_TURING_CREDIT],
-                },
-              ],
-            },
-            {
-              level: 3,
-              nodeId: 'VL03-AS-004',
-              volumeNumber: 4,
-              title: 'Volume IV: The Self-Learning Memory Mesh',
-              description:
-                'Rule crystallization, permanent memory anchors, and epistemological growth.',
-              cantos: [
-                {
-                  level: 4,
-                  nodeId: 'CN04-AS-004',
-                  cantoNumber: 1,
-                  title: 'Canto 1: Recursive Knowledge Anchoring',
-                  description: 'Crystallizing human dialogue into eternal TypeScript schemas.',
-                  chapters: [CHAPTER_AEGIS_SELF_LEARNING],
                 },
               ],
             },
