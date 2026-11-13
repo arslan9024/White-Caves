@@ -56,6 +56,7 @@ export interface ParagraphNode {
   paragraphNumber: number;
   header?: string;
   narrative: string;
+  markdownContent?: string;
   mathFormulas?: MathFormula[];
   codeBlocks?: CodeBlock[];
   sentences: SentenceNode[];
@@ -113,6 +114,7 @@ export interface ChapterNode {
   title: string;
   subtitle: string;
   readTimeMinutes: number;
+  overviewMarkdown?: string;
   subChapters: SubChapterNode[];
 }
 

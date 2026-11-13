@@ -14,6 +14,8 @@ export const CHAPTER_WHITE_CAVES_ENTERPRISE: ChapterNode = {
   title: 'Chapter 01: White Caves Real Estate Enterprise Operations',
   subtitle: 'Dubai Brokerage Operations, 12 Corporate Floors, DLD/RERA Compliance & Client Journey',
   readTimeMinutes: 35,
+  overviewMarkdown:
+    'White Caves Real Estate LLC represents sovereign prop-tech engineering in Dubai. This volume covers the complete lifecycle of our 12 Corporate Floors, governed under statutory protocol AEG-012, with deep links to [Protocol Catalog](CH05-PROTOCOLS) and the autonomous [Turing Architecture](CH05-001). Cross-reference active departments via [Department SOPs](CH05-DEPARTMENT-SOPS) or review statutory escrow settlement rules in [Valkyrie Ledger](AEG-026).',
   subChapters: [
     {
       level: 6,

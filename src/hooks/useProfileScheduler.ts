@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import companyLedger from '../mocks/companyMasterLedger.json';
+import companyLedger from '../mocks/companyMasterLedger';
 
 export interface DocumentExpiryAlert {
   docType: string;
@@ -99,17 +99,17 @@ export function useProfileScheduler(): ProfileSchedulerState {
     });
 
     let highestSeverity: ProfileSchedulerState['highestSeverity'] = 'CLEAR';
-    if (activeAlerts.some((a) => a.thresholdLevel === '30_DAYS_CRITICAL')) {
+    if (activeAlerts.some(a => a.thresholdLevel === '30_DAYS_CRITICAL')) {
       highestSeverity = 'CRITICAL';
-    } else if (activeAlerts.some((a) => a.thresholdLevel === '60_DAYS_WARNING')) {
+    } else if (activeAlerts.some(a => a.thresholdLevel === '60_DAYS_WARNING')) {
       highestSeverity = 'WARNING';
-    } else if (activeAlerts.some((a) => a.thresholdLevel === '90_DAYS_NOTICE')) {
+    } else if (activeAlerts.some(a => a.thresholdLevel === '90_DAYS_NOTICE')) {
       highestSeverity = 'NOTICE';
     }
 
     const primaryTickerMessage =
       activeAlerts.length > 0
-        ? activeAlerts.map((a) => a.message).join('  ///  ')
+        ? activeAlerts.map(a => a.message).join('  ///  ')
         : '✓ White Caves Corporate Credentials Fully Verified — DET License #1388443 | RERA ORN #44483 | Ejari #0120250814005322';
 
     setState({

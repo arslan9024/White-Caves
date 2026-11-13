@@ -9,6 +9,8 @@ export const CHAPTER_STRATEGIC_PLANS: ChapterNode = {
   title: 'Chapter 31: Strategic Master Plans & Autopilot Directives',
   subtitle: 'Ouroboros Execution Loops, ERMS Upgrades, Backlog Deduplication & Wave Roadmaps',
   readTimeMinutes: 40,
+  overviewMarkdown:
+    'This chapter sets forth the autonomous evolution roadmap for the White Caves CRM and the AEGIS engine. It details the 6-Phase Perpetual Ouroboros Loop, Entity-Relationship-Management-System (ERMS) refinements under TURING-SEPARATION-010, and zero-backlog deduplication protocols. Every plan connects corporate goals to autonomous squad executions. Cross-reference real estate business procedures in [Department SOPs](CH05-DEPT-SOPS), review active protocols in the [Protocol Canon](CH05-PROTOCOLS), and check completed milestones in [Phase History](CH05-PHASE-EXEC).',
   subChapters: [
     {
       level: 6,

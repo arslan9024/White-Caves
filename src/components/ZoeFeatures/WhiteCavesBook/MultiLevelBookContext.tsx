@@ -49,6 +49,7 @@ interface MultiLevelBookContextType {
   selectParagraph: (pId: string) => void;
   selectSentence: (sId: string) => void;
   selectLine: (lId: string) => void;
+  navigateToNodeId: (nodeId: string) => boolean;
   returnUpOneLevel: () => void;
   resetToChapter: () => void;
 }
@@ -350,6 +351,117 @@ export const MultiLevelBookProvider: React.FC<{ children: ReactNode; initialBook
     setLineId(id);
   };
 
+  /**
+   * Universal Hyperlink Navigator:
+   * Jumps to ANY node across the entire 12-level hierarchy by its ID
+   */
+  const navigateToNodeId = (targetId: string): boolean => {
+    if (!targetId) return false;
+    const cleanId = targetId.trim().replace(/^#/, '');
+
+    for (const lib of corpus.libraries) {
+      for (const b of lib.books) {
+        if (b.bookId === cleanId) {
+          setBookId(b.bookId);
+          resetToChapter();
+          return true;
+        }
+        for (const v of b.volumes) {
+          if (v.nodeId === cleanId) {
+            setBookId(b.bookId);
+            setVolId(v.nodeId);
+            resetToChapter();
+            return true;
+          }
+          for (const c of v.cantos) {
+            if (c.nodeId === cleanId) {
+              setBookId(b.bookId);
+              setVolId(v.nodeId);
+              setCantoId(c.nodeId);
+              resetToChapter();
+              return true;
+            }
+            for (const ch of c.chapters) {
+              if (ch.nodeId === cleanId || ch.chapterCode === cleanId) {
+                setBookId(b.bookId);
+                setVolId(v.nodeId);
+                setCantoId(c.nodeId);
+                setChapterId(ch.nodeId);
+                resetToChapter();
+                return true;
+              }
+              for (const sc of ch.subChapters) {
+                if (sc.nodeId === cleanId) {
+                  setBookId(b.bookId);
+                  setVolId(v.nodeId);
+                  setCantoId(c.nodeId);
+                  setChapterId(ch.nodeId);
+                  setSubChapterId(sc.nodeId);
+                  setSectionId(null);
+                  return true;
+                }
+                for (const sec of sc.sections) {
+                  if (sec.nodeId === cleanId) {
+                    setBookId(b.bookId);
+                    setVolId(v.nodeId);
+                    setCantoId(c.nodeId);
+                    setChapterId(ch.nodeId);
+                    setSubChapterId(sc.nodeId);
+                    setSectionId(sec.nodeId);
+                    setTopicId(null);
+                    return true;
+                  }
+                  for (const top of sec.topics) {
+                    if (top.nodeId === cleanId) {
+                      setBookId(b.bookId);
+                      setVolId(v.nodeId);
+                      setCantoId(c.nodeId);
+                      setChapterId(ch.nodeId);
+                      setSubChapterId(sc.nodeId);
+                      setSectionId(sec.nodeId);
+                      setTopicId(top.nodeId);
+                      setArtifactId(null);
+                      return true;
+                    }
+                    for (const art of top.artifacts) {
+                      if (art.nodeId === cleanId) {
+                        setBookId(b.bookId);
+                        setVolId(v.nodeId);
+                        setCantoId(c.nodeId);
+                        setChapterId(ch.nodeId);
+                        setSubChapterId(sc.nodeId);
+                        setSectionId(sec.nodeId);
+                        setTopicId(top.nodeId);
+                        setArtifactId(art.nodeId);
+                        setParagraphId(null);
+                        return true;
+                      }
+                      for (const p of art.paragraphs) {
+                        if (p.nodeId === cleanId) {
+                          setBookId(b.bookId);
+                          setVolId(v.nodeId);
+                          setCantoId(c.nodeId);
+                          setChapterId(ch.nodeId);
+                          setSubChapterId(sc.nodeId);
+                          setSectionId(sec.nodeId);
+                          setTopicId(top.nodeId);
+                          setArtifactId(art.nodeId);
+                          setParagraphId(p.nodeId);
+                          return true;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return false;
+  };
+
   const resetToChapter = () => {
     setSubChapterId(null);
     setSectionId(null);
@@ -409,6 +521,7 @@ export const MultiLevelBookProvider: React.FC<{ children: ReactNode; initialBook
         selectParagraph,
         selectSentence,
         selectLine,
+        navigateToNodeId,
         returnUpOneLevel,
         resetToChapter,
       }}

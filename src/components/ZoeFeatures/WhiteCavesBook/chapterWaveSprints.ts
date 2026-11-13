@@ -9,6 +9,8 @@ export const CHAPTER_WAVE_SPRINTS: ChapterNode = {
   title: 'Chapter 34: Wave Sprints & SQA Delivery Tracks',
   subtitle: 'Autonomous wave iterations, security hardening, and test suites',
   readTimeMinutes: 48,
+  overviewMarkdown:
+    'This chapter provides real-time and historical telemetry for autonomous engineering wave sprints executed across the White Caves monorepo. It details daily milestones managed by @Margaret, SQA verification gates run by @Rachel_QA, and continuous security hardening under AEG-018 through AEG-025. Compare sprint outcomes against the overarching roadmap in [Strategic Plans](CH05-STRAT-PLANS), study previous architectural migrations in [Phase History](CH05-PHASE-EXEC), and review constitutional engineering constraints in the [Protocol Canon](CH05-PROTOCOLS).',
   subChapters: [
     {
       level: 6,

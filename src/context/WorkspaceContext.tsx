@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import rawLedgerData from '../mocks/companyMasterLedger.json';
+import rawLedgerData from '../mocks/companyMasterLedger';
 import { Department, Personnel, Property, CompanyMasterLedger } from '../types/companyCore';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { selectCurrentUser } from '../store/userSlice';
 
 // ─── Ledger normaliser ────────────────────────────────────────────────────────
-// companyMasterLedger.json may be a flat array (stub) or a proper CompanyMasterLedger
+// companyMasterLedger may be a flat array (stub) or a proper CompanyMasterLedger
 // object. This function safely coerces either shape into the expected interface.
 
 function normaliseLedger(raw: unknown): CompanyMasterLedger {
@@ -60,8 +60,7 @@ function normaliseLedger(raw: unknown): CompanyMasterLedger {
       commissionRule: { agentSplit: 0, companySplit: 1, tierName: 'MD Override' },
       joinedDate: '2023-01-01',
       isActive: true,
-      avatarUrl:
-        'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop',
+      avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop',
     });
   }
 
@@ -116,8 +115,7 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
         commissionRule: { agentSplit: 0.5, companySplit: 0.5, tierName: 'Standard Split (50/50)' },
         joinedDate: '2024-01-01',
         isActive: true,
-        avatarUrl:
-          'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop',
+        avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop',
       };
     }
     // Safe fallback — normaliseLedger guarantees at least the founder exists
@@ -128,8 +126,8 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const isMaster = Boolean(
     reduxUser?.email === 'arslanmalikgoraha@gmail.com' ||
-      reduxUser?.accessLevel === 5 ||
-      defaultUser.email === 'arslanmalikgoraha@gmail.com'
+    reduxUser?.accessLevel === 5 ||
+    defaultUser.email === 'arslanmalikgoraha@gmail.com'
   );
 
   const effectiveAccessLevel =

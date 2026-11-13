@@ -248,8 +248,8 @@ async function run(): Promise<void> {
   }
   console.log(`[Migration] ✓ Migrated ${migrated} legacy VirtualStaff records to Personnel.`);
 
-  // ── 3B. Seed Virtual Staff & Supervisors from master-workforce-grid.json ────
-  console.log('[Migration] Ingesting Virtual Staff from master-workforce-grid.json...');
+  // ── 3B. Seed Virtual Staff & Supervisors from master-workforce-grid ────
+  console.log('[Migration] Ingesting Virtual Staff from master-workforce-grid...');
   const gridPath = path.resolve(__dirname, '../config/ai-command-center/master-workforce-grid.json');
   let gridIngested = 0;
   if (fs.existsSync(gridPath)) {

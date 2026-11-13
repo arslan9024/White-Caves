@@ -9,6 +9,8 @@ export const CHAPTER_PHASE_HISTORY: ChapterNode = {
   title: 'Chapter 33: Historical Engineering Phases & Migrations',
   subtitle: 'Consolidated historical milestones from Phase 0 through Phase 6',
   readTimeMinutes: 48,
+  overviewMarkdown:
+    'This chapter documents the developmental journey of White Caves Real Estate CRM from Phase 0 foundation through Phase 6 sovereign stabilization. Trace the evolution of our 12 Corporate Floors, the introduction of the dual-track agent mesh, DLD compliance milestones, and the establishment of TURING-LAW-000. For current operational blueprints, see [Department SOPs](CH05-DEPT-SOPS) and the [Sovereign Protocol Canon](CH05-PROTOCOLS); for recent delivery iterations, consult [Wave Sprints](CH05-WAVE-SPRINTS).',
   subChapters: [
     {
       level: 6,

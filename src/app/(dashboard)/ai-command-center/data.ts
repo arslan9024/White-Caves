@@ -1,4 +1,4 @@
-import masterWorkforceGrid from '../../../config/ai-command-center/master-workforce-grid.json';
+import masterWorkforceGrid from '../../../config/ai-command-center/master-workforce-grid';
 import type { DepartmentGroup, VirtualStaffMember } from './types';
 
 export const INITIAL_DEPARTMENTS: DepartmentGroup[] = masterWorkforceGrid.departments.map(dept => ({

@@ -9,6 +9,8 @@ export const CHAPTER_OF_PROTOCOLS: ChapterNode = {
   title: 'Chapter 42: The Sovereign Protocol Canon (AEG-001 to AEG-042)',
   subtitle: 'Unified Mathematical Constitution: Prometheus, Turing, Phoenix, Valkyrie & Apocalypse',
   readTimeMinutes: 25,
+  overviewMarkdown:
+    'This is the constitutional bedrock of AEGIS V5.0 — the 42 statutory engineering protocols that govern every autonomous agent, every UI component, and every backend service across all White Caves repositories. The protocols are organized into five doctrinal pillars: Prometheus (AEG-001–009) governs frontend primitives and the [Context Triad](T08-P1.1.1); Turing (AEG-010–017) enforces zero-waste velocity and is explored in depth in [The Grand Architecture](CH05-001); Phoenix (AEG-018–025) handles security and testing contracts; Valkyrie (AEG-026–033) covers Dubai regulatory compliance, Ejari alerts, and VAT reserves (see [Enterprise Operations](CH05-WC-01)); and Apocalypse (AEG-034–042) powers OCR, market intelligence, and the XP leaderboard system. Every chapter in this library references specific AEG codes — click any protocol badge to navigate directly here.',
   subChapters: [
     {
       level: 6,
@@ -16,7 +18,7 @@ export const CHAPTER_OF_PROTOCOLS: ChapterNode = {
       subChapterNumber: 1,
       title: 'Sub-Chapter 1: Prometheus Core Unbound (AEG-001 to AEG-009)',
       summary:
-        'Frontend layout primitives, Context Triad, Level 5 RBAC, and Right-Sidebar Explorer rules.',
+        'The Prometheus pillar defines the visual DNA of the CRM. AEG-001 mandates the Right-Sidebar Explorer (eliminating duplicate left/right navigation), AEG-002 establishes White Caves Red (#EF4444) as the sovereign brand accent, and AEG-003 introduces the [Context Triad](T08-P1.1.1) — the immutable (Theme, Language, Currency) tuple that drives every render cycle. AEG-004–005 cover Level 5 RBAC and RTL layout enforcement, while AEG-006–009 define 12-Way co-location and filter caching across all [Corporate Floors](CH05-DEPT-SOPS).',
       sections: [
         {
           level: 7,
@@ -94,7 +96,7 @@ export const CHAPTER_OF_PROTOCOLS: ChapterNode = {
       subChapterNumber: 2,
       title: 'Sub-Chapter 2: Turing Silent Velocity (AEG-010 to AEG-017)',
       summary:
-        'Zero-waste credit velocity, sub-second single-file tests, zero-runtime Tailwind CSS v4 variables, and 1500ms government API timeout contracts.',
+        'The Turing pillar is the economic engine of AEGIS — it governs how AI credits are spent, how execution speed is measured, and why every wasted token is treated as an architectural failure. AEG-010 enforces zero-runtime CSS variables (Tailwind CSS v4), AEG-011 sets 1500ms hard timeouts on all Dubai government API integrations (DLD, Trakheesi, Ejari), AEG-012 mandates idempotent DLD/Ejari composite keys (preventing duplicate contract registrations), and AEG-013–015 require relational Prisma models with Husky secret scanning. For the full credit velocity theory, see [The Grand Architecture](CH05-001) and [Business Strategies](CH05-BIZ-STRAT).',
       sections: [
         {
           level: 7,
@@ -172,7 +174,7 @@ export const CHAPTER_OF_PROTOCOLS: ChapterNode = {
       subChapterNumber: 3,
       title: 'Sub-Chapter 3: Phoenix Shield Isolation (AEG-018 to AEG-025)',
       summary:
-        'Secret abstraction, streaming shells, strict tsc --noEmit gates, Vitest assertions, and stateless DLD parsing.',
+        'Secret abstraction, streaming shells, strict tsc --noEmit gates, Vitest assertions, and stateless DLD parsing. Phoenix shields the system from leaked credentials (AEG-018 mandates .env-only secret storage with Husky pre-commit scanning), enforces compile-time correctness via strict TypeScript checks (AEG-022), and guarantees test integrity through Vitest assertions and Playwright E2E across both LTR and RTL layouts (AEG-023–024). AEG-025 requires all DLD PDF parsing to be stateless and side-effect-free. For testing strategy details, see [Wave Sprints](CH05-WAVE-SPRINTS).',
       sections: [
         {
           level: 7,
@@ -240,7 +242,7 @@ export const CHAPTER_OF_PROTOCOLS: ChapterNode = {
       subChapterNumber: 4,
       title: 'Sub-Chapter 4: Valkyrie Ledger Rise (AEG-026 to AEG-033)',
       summary:
-        'Static DLD PDF overlays, 90/60/30-day Ejari notifications, 5% UAE FTA VAT + 9% corporate tax reserves, sequential receipts, and Zoho Books synchronization.',
+        'The Valkyrie pillar governs all Dubai real estate regulatory compliance and financial control surfaces. AEG-026 mandates static PDF overlays for DLD title deeds (no dynamic rendering of government documents), AEG-027–028 enforce 90/60/30-day Ejari expiry alerts with automated tenant notification, and AEG-029–030 calculate 5% UAE FTA VAT and 9% corporate tax reserves on every commission transaction. AEG-031 requires sequential receipt numbering with Zoho Books synchronization, and AEG-033 locks all COMPLETED deals as immutable — no retroactive editing. Full compliance details in [Enterprise Operations](CH05-WC-01) and [Department SOPs](CH05-DEPT-SOPS).',
       sections: [
         {
           level: 7,
@@ -323,7 +325,7 @@ export const CHAPTER_OF_PROTOCOLS: ChapterNode = {
       subChapterNumber: 5,
       title: 'Sub-Chapter 5: Apocalypse Overdrive Matrix (AEG-034 to AEG-042)',
       summary:
-        'Web Worker OCR, gated intelligence reports, +500 XP statutory gate rewards, 60%-70% dynamic broker splits, and strict file limits (< 350 lines).',
+        'The Apocalypse pillar handles high-performance computation and gamification. AEG-034–036 offload OCR processing to Web Workers (preventing UI thread blocking during passport and Emirates ID scans), AEG-037–039 implement the Merit XP Leaderboard system with +500 XP statutory gate rewards for completing compliance checkpoints, and AEG-040 defines 60%–70% dynamic broker commission splits based on deal type and seniority. AEG-042 enforces strict < 350 lines per file — any component exceeding this is automatically flagged for decomposition. See [Core Foundations](CH05-CORE-FOUNDATIONS) for project structure and [Strategic Plans](CH05-STRAT-PLANS) for implementation roadmap.',
       sections: [
         {
           level: 7,

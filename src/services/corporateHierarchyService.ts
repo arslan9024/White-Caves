@@ -1,7 +1,7 @@
 import { DepartmentNode, IDepartmentNode } from '../models/DepartmentNode';
 import { VirtualStaff, IVirtualStaff } from '../models/VirtualStaff';
 import { CustomSquad, ICustomSquad } from '../models/CustomSquad';
-import masterWorkforceGrid from '../config/ai-command-center/master-workforce-grid.json';
+import masterWorkforceGrid from '../config/ai-command-center/master-workforce-grid';
 import { createLogger } from '../utils/logger';
 
 const log = createLogger('CorporateHierarchy');

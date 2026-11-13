@@ -9,6 +9,8 @@ export const CHAPTER_BUSINESS_STRATEGIES: ChapterNode = {
   title: 'Chapter 32: Enterprise Business Strategies & Continuous Laws',
   subtitle: 'Credit Preservation Law, Dubai Market Strategy, RBAC Engine & Infinite Crucible',
   readTimeMinutes: 35,
+  overviewMarkdown:
+    'This chapter establishes the core operational strategies governing White Caves and the AEGIS autonomous engine. It articulates the statutory Credit Preservation Law under TURING-LAW-000, multi-tier rule routing, and Dubai off-plan investment strategies. Discover how Level 5 RBAC safeguards critical CRM flows and how autonomous autopilot iterations resolve backlogs via the Infinite Crucible. For the full engineering constitution, see the [Sovereign Protocol Canon](CH05-PROTOCOLS); for project milestones, visit [Strategic Plans](CH05-STRAT-PLANS) and [Wave Sprints](CH05-WAVE-SPRINTS).',
   subChapters: [
     {
       level: 6,

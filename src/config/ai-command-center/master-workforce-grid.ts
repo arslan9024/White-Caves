@@ -1,0 +1,1624 @@
+export interface SovereignAuthority {
+  name: string;
+  title: string;
+  email: string;
+  licenseDet: string;
+  reraOrn: string;
+}
+
+export interface ExecutiveAiPartner {
+  id: string;
+  name: string;
+  gender: string;
+  title: string;
+}
+
+export interface WorkforceCounts {
+  executiveLead: number;
+  departmentManagers: number;
+  supervisorsPerDepartment: number;
+  totalSupervisors: number;
+  totalActiveAiStaff: number;
+}
+
+export interface DepartmentManager {
+  id: string;
+  name: string;
+  title: string;
+  avatar: string;
+  responsibilities: string[];
+}
+
+export interface DepartmentSupervisor {
+  id: string;
+  name: string;
+  title: string;
+  slot: number;
+  tasks: string[];
+  gender?: string;
+}
+
+export interface DepartmentGridNode {
+  deptId: string;
+  deptCode: string;
+  deptName: string;
+  color: string;
+  manager: DepartmentManager;
+  supervisors: DepartmentSupervisor[];
+  divisions?: any[];
+}
+
+export interface MasterWorkforceGrid {
+  protocol: string;
+  version: string;
+  sovereignAuthority: SovereignAuthority;
+  executiveAiPartner: ExecutiveAiPartner;
+  counts: WorkforceCounts;
+  departments: DepartmentGridNode[];
+}
+
+export const MASTER_WORKFORCE_GRID: MasterWorkforceGrid = {
+  protocol: 'BHAKTI-1-12-108-ALL-FEMALE-AI-WORKFORCE',
+  version: '2026.10-canonical-v1',
+  sovereignAuthority: {
+    name: 'Arslan Malik Bashir Ahmad',
+    title: 'Managing Director & Founder (Level 5)',
+    email: 'arslanmalikgoraha@gmail.com',
+    licenseDet: '1388443',
+    reraOrn: '44483',
+  },
+  executiveAiPartner: {
+    id: 'zoe',
+    name: 'Zoe',
+    gender: 'Female',
+    title: 'Chief Operations Officer (COO)',
+  },
+  counts: {
+    executiveLead: 1,
+    departmentManagers: 12,
+    supervisorsPerDepartment: 9,
+    totalSupervisors: 108,
+    totalActiveAiStaff: 121,
+  },
+  departments: [
+    {
+      deptId: 'customer_experience',
+      deptCode: 'DEPT-01',
+      deptName: 'Customer Experience, Concierge & Hospitality',
+      color: '#EF4444',
+      manager: {
+        id: 'mgr_corinne',
+        name: 'AI Corinne',
+        title: 'Director of Customer Experience & Hospitality',
+        avatar: '👔',
+        responsibilities: [
+          'VIP client welcoming, 5-star concierge, multi-lingual reception, and frontline luxury hospitality.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-corinne-vip-desk',
+          name: 'AI Corinne VIP Desk',
+          title: '5-Star Concierge & Welcome Supervisor',
+          slot: 1,
+          tasks: ['VIP Arrival Briefings', 'Multi-Lingual Protocol', 'Chauffeur Coordination'],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-clientcare',
+          name: 'AI ClientCare',
+          title: 'Client Onboarding & Relations Supervisor',
+          slot: 2,
+          tasks: [
+            'Welcome Gift Pack Dispatch',
+            'Client Verification Gate',
+            'Hospitality Experience Logging',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-privateshowing',
+          name: 'AI PrivateShowing',
+          title: 'Private Villa & Yacht Showing Supervisor',
+          slot: 3,
+          tasks: ['Viewing Itinerary Scheduling', 'Access Key Clearance', 'Hostess Protocol Sync'],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-multilingualdesk',
+          name: 'AI MultilingualDesk',
+          title: 'International Multi-Lingual Desk Supervisor',
+          slot: 4,
+          tasks: [
+            'Russian / Mandarin / Arabic Desks',
+            'Cultural Etiquette Guidance',
+            'Timezone Concierge Response',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-feedbacksentinel',
+          name: 'AI FeedbackSentinel',
+          title: 'Client NPS & Satisfaction Supervisor',
+          slot: 5,
+          tasks: ['Post-Viewing Surveys', 'Complaint SLA Tracking', 'Service Escalation Routing'],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-chauffeurlogistics',
+          name: 'AI ChauffeurLogistics',
+          title: 'VIP Mobility & Chauffeur Logistics Supervisor',
+          slot: 6,
+          tasks: [
+            'Fleet Dispatch Coordination',
+            'Airport Transfer Booking',
+            'Helipad Access Coordination',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-eventhostess',
+          name: 'AI EventHostess',
+          title: 'Private Showcase Event Hostess Supervisor',
+          slot: 7,
+          tasks: [
+            'Guest List Accreditation',
+            'Catering & Hospitality QC',
+            'RSVP Badge Authentication',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-retentioncare',
+          name: 'AI RetentionCare',
+          title: 'High-Net-Worth Retention & Loyalty Supervisor',
+          slot: 8,
+          tasks: [
+            'Anniversary & Milestone Gifting',
+            'VIP Club Privilege Management',
+            'Dormant Client Warming',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-emergencyrelief',
+          name: 'AI EmergencyRelief',
+          title: 'Urgent Client Concierge & Support Supervisor',
+          slot: 9,
+          tasks: [
+            'Late-Night Booking Support',
+            'Emergency Property Access',
+            '15-Minute Hospitality Response',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'marketing_branding',
+      deptCode: 'DEPT-02',
+      deptName: 'Marketing, Branding & Digital Acquisition',
+      color: '#EC4899',
+      manager: {
+        id: 'mgr_olivia',
+        name: 'AI Olivia',
+        title: 'Director of Marketing & Brand Acquisition',
+        avatar: '👔',
+        responsibilities: [
+          'Omnichannel lead acquisition, luxury brand identity, portal syndication (Bayut/PropertyFinder), and paid campaigns.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-olivia-campaigns',
+          name: 'AI Olivia Campaigns',
+          title: 'Omnichannel Lead Acquisition Supervisor',
+          slot: 1,
+          tasks: [
+            'Google Ads Budget Pacing',
+            'Meta Real Estate Funnels',
+            'Cost Per Lead Calibration',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-portalsyndicator',
+          name: 'AI PortalSyndicator',
+          title: 'Bayut & PropertyFinder Syndication Supervisor',
+          slot: 2,
+          tasks: [
+            'TruCheck Listing Verification',
+            'Featured Tier Allocation',
+            'Duplicate Listing Interception',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-brandguardian',
+          name: 'AI BrandGuardian',
+          title: 'Luxury Brand Identity & Aesthetic Supervisor',
+          slot: 3,
+          tasks: [
+            'Typography & Color Palette Audit',
+            'Brochure Style Compliance',
+            'Logo Usage Integrity',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-socialpulse',
+          name: 'AI SocialPulse',
+          title: 'Instagram, LinkedIn & YouTube Studio Supervisor',
+          slot: 4,
+          tasks: [
+            'Reels & Drone Walkthrough QC',
+            'Influencer Collaboration Tracking',
+            'Editorial Content Calendar',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-seodominance',
+          name: 'AI SeoDominance',
+          title: 'Dubai Luxury Real Estate SEO Supervisor',
+          slot: 5,
+          tasks: [
+            'Keyword Opportunity Mapping',
+            'Backlink Velocity Tracking',
+            'Developer Cluster SEO Pages',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-emailnurture',
+          name: 'AI EmailNurture',
+          title: 'Investor Newsletter & Automation Supervisor',
+          slot: 6,
+          tasks: [
+            'Weekly Market Pulse Dispatch',
+            'Segmented Drip Automations',
+            'Open Rate & Click Attribution',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-eventpromoter',
+          name: 'AI EventPromoter',
+          title: 'Off-Plan Launch Promotion Supervisor',
+          slot: 7,
+          tasks: [
+            'Webinar Registration Funnels',
+            'City Roadshow Digital Collateral',
+            'Early-Bird Token Promotion',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-performanceaudit',
+          name: 'AI PerformanceAudit',
+          title: 'Marketing ROAS & Multi-Touch Attribution Supervisor',
+          slot: 8,
+          tasks: ['UTM Pipeline Mapping', 'ROAS Calculations', 'Marketing Spend Escrow Tracking'],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-creativestudio',
+          name: 'AI CreativeStudio',
+          title: '3D Matterport & Architectural Render Supervisor',
+          slot: 9,
+          tasks: [
+            'Virtual Staging Review',
+            'Twilight Photography Verification',
+            '3D Floor Plan Approval',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'human_resources',
+      deptCode: 'DEPT-03',
+      deptName: 'Human Resources, Performance & Recruiting',
+      color: '#8B5CF6',
+      manager: {
+        id: 'mgr_selena',
+        name: 'AI Selena',
+        title: 'Director of Human Resources & Performance',
+        avatar: '👔',
+        responsibilities: [
+          'Talent acquisition, broker performance KPIs, RERA broker licensing onboarding, and organizational culture.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-selena-talent',
+          name: 'AI Selena Talent',
+          title: 'Broker Recruitment & Talent Acquisition Supervisor',
+          slot: 1,
+          tasks: [
+            'Top-Producer Headhunting',
+            'Candidate Screening Interviews',
+            'Compensation Offer Letters',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-brokerlicensing',
+          name: 'AI BrokerLicensing',
+          title: 'RERA Broker Card & DLD Accreditation Supervisor',
+          slot: 2,
+          tasks: ['DLD Broker Card Renewal', 'RERA Exam Verification', 'Unaccredited Interception'],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-performancekpi',
+          name: 'AI PerformanceKpi',
+          title: 'Agent Quota & Merit XP Scoring Supervisor',
+          slot: 3,
+          tasks: [
+            'Daily Dial & Meeting Audits',
+            'Monthly Closing Quotas',
+            'Merit XP Calculation Engine',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-visarelocation',
+          name: 'AI VisaRelocation',
+          title: 'Employment Visa & Emirates ID Supervisor',
+          slot: 4,
+          tasks: [
+            'ICP Visa Application Tracking',
+            'Medical Fitness Booking',
+            'Emirates ID Biometrics Scheduling',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-mohrepayroll',
+          name: 'AI MohrePayroll',
+          title: 'WPS Salary & MoHRE Compliance Supervisor',
+          slot: 5,
+          tasks: [
+            'SIF File Generation',
+            'WPS Salary Payout Verification',
+            'EOSG Gratuity Provisioning',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-brokeracademy',
+          name: 'AI BrokerAcademy',
+          title: 'White Caves Broker Training Academy Supervisor',
+          slot: 6,
+          tasks: [
+            'Objection Handling Modules',
+            'Off-Plan Masterclasses',
+            'Contracts & Form F Workshops',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-attendanceleaves',
+          name: 'AI AttendanceLeaves',
+          title: 'Attendance, Leaves & Roster Management Supervisor',
+          slot: 7,
+          tasks: [
+            'Duty Roster Scheduling',
+            'Annual Leave Approval Flow',
+            'Office Presence Monitoring',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-emiratisationdesk',
+          name: 'AI EmiratisationDesk',
+          title: 'Nafis & UAE National Employment Supervisor',
+          slot: 8,
+          tasks: [
+            'Nafis Portal Submissions',
+            'MoHRE Target Verification',
+            'National Trainee Mentorship',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-cultureethics',
+          name: 'AI CultureEthics',
+          title: 'Corporate Ethics & Disciplinary Conduct Supervisor',
+          slot: 9,
+          tasks: [
+            'Commission Dispute Arbitrations',
+            'Anti-Harassment Protocols',
+            'Quarterly Employee NPS',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'technology_systems',
+      deptCode: 'DEPT-04',
+      deptName: 'Technology, Systems & Digital Infrastructure',
+      color: '#0EA5E9',
+      manager: {
+        id: 'mgr_aurora',
+        name: 'AI Aurora',
+        title: 'Chief Technology & Digital Infrastructure Director',
+        avatar: '👔',
+        responsibilities: [
+          'Core CRM software engineering, cloud infrastructure, AI automation pipelines, and API gateway security.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-aurora-core',
+          name: 'AI Aurora Core',
+          title: 'Next.js & Frontend Architecture Supervisor',
+          slot: 1,
+          tasks: [
+            'React 19 Zero-Latency Renders',
+            'Design System Token Audits',
+            'Core Web Vitals Tuning',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-backendgate',
+          name: 'AI BackendGate',
+          title: 'Express API Gateway & Microservices Supervisor',
+          slot: 2,
+          tasks: [
+            'Sub-10ms Route Dispatch',
+            'JWT RBAC Security Gates',
+            'API Rate-Limiting Protocols',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-databaseprisma',
+          name: 'AI DatabasePrisma',
+          title: 'Prisma ORM & PostgreSQL Cluster Supervisor',
+          slot: 3,
+          tasks: [
+            'Index Performance Tuning',
+            'Zero-Downtime Schema Migrations',
+            'Connection Pool Health',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-devopscloud',
+          name: 'AI DevopsCloud',
+          title: 'Docker, CI/CD & Kubernetes Cloud Supervisor',
+          slot: 4,
+          tasks: [
+            'Automated Vitest Pipeline Gates',
+            'Zero-Downtime Rolling Deploys',
+            'Server Latency Telemetry',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-agentmeshengine',
+          name: 'AI AgentMeshEngine',
+          title: '121-Agent Autonomous Coordination Supervisor',
+          slot: 5,
+          tasks: [
+            '15-Minute SLA Watchdog',
+            'Agent Inter-Communication Bus',
+            'Prompt Token Optimizer',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-securitysentinel',
+          name: 'AI SecuritySentinel',
+          title: 'App Defense & Cryptographic Integrity Supervisor',
+          slot: 6,
+          tasks: [
+            'Statutory Secret Rotation',
+            'DDoS Mitigation Shield',
+            'Vulnerability Code Audits',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-mobilebridge',
+          name: 'AI MobileBridge',
+          title: 'Cross-Platform React Native Bridge Supervisor',
+          slot: 7,
+          tasks: [
+            'Push Notification Gateway',
+            'Offline SQLite Sync Engine',
+            'Biometric Auth Verification',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-visionocrcore',
+          name: 'AI VisionOcrCore',
+          title: 'Emirates ID & Passport Vision OCR Supervisor',
+          slot: 8,
+          tasks: [
+            'MRZ Passport Decoding',
+            'Emirates ID Front/Back Extraction',
+            'Title Deed Tamper Detection',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-systembackup',
+          name: 'AI SystemBackup',
+          title: 'Disaster Recovery & Encrypted Storage Supervisor',
+          slot: 9,
+          tasks: [
+            'Daily Snapshot Verification',
+            'Encrypted Vault Redundancy',
+            'Failover Readiness Drills',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'sales_operations',
+      deptCode: 'DEPT-05',
+      deptName: 'Sales, Services & Operations (Sales & Leasing Divisions)',
+      color: '#F97316',
+      manager: {
+        id: 'mgr_clara',
+        name: 'AI Clara',
+        title: 'Director of Sales, Services & Operations',
+        avatar: '👔',
+        responsibilities: [
+          'Overall executive directorship over Brokerage Sales Division & Residential/Commercial Leasing Division.',
+          'Direct supervisory oversight of Buying & Selling and Leasing Operations Managers (AI Nadia)',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      divisions: [
+        {
+          divisionId: 'sales_brokerage',
+          name: 'Buying & Selling Division (Resale & Offplan)',
+          status: 'YEAR_2_ROADMAP',
+          manager: {
+            id: 'mgr_clara_sales',
+            name: 'AI Clara',
+            title: 'Sales Operations Division Manager',
+          },
+        },
+        {
+          divisionId: 'leasing_brokerage',
+          name: 'Leasing Properties Division (Phase 1 Active)',
+          status: 'ACTIVE_PHASE_1',
+          manager: {
+            id: 'mgr_nadia_leasing',
+            name: 'AI Nadia',
+            title: 'Leasing Operations Division Manager',
+          },
+        },
+      ],
+      supervisors: [
+        {
+          id: 'ai-clara-sales',
+          name: 'AI Clara Sales',
+          title: 'Secondary Resale & Villa Portfolio Supervisor',
+          slot: 1,
+          tasks: [
+            'Listing Presentation Mandates',
+            'Seller Negotiation Strategy',
+            'Form F Contract Finalization',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-offplanallocation',
+          name: 'AI OffPlanAllocation',
+          title: 'Emaar, DAMAC & Nakheel Launch Allocation Supervisor',
+          slot: 2,
+          tasks: [
+            'VIP Token Queue Reservation',
+            'Payment Plan Comparisons',
+            'Handover Progress Auditing',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-dealcloser',
+          name: 'AI DealCloser',
+          title: 'Luxury Closing & Transaction Settlement Supervisor',
+          slot: 3,
+          tasks: [
+            'Offer-to-Agreement Acceleration',
+            'Escrow Down Payment Proof',
+            'Commission Milestone Tracking',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-commercialbroker',
+          name: 'AI CommercialBroker',
+          title: 'Commercial Office & Retail Space Supervisor',
+          slot: 4,
+          tasks: [
+            'DIFC & Business Bay Offices',
+            'Yield & Cap Rate Valuations',
+            'Commercial Tenancy Contracts',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-buyermatcher',
+          name: 'AI BuyerMatcher',
+          title: 'High-Net-Worth Buyer Matching Supervisor',
+          slot: 5,
+          tasks: [
+            'Investor Requirement Matching',
+            'Exclusive Pocket Listing Dispatch',
+            'Proof of Funds Verification',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-viewingscheduler',
+          name: 'AI ViewingScheduler',
+          title: 'Client Viewing & Open House Coordinator',
+          slot: 6,
+          tasks: [
+            'Smart Lock Access Codes',
+            'Viewing Feedback Capture',
+            'Agent Calendar Optimization',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-pipelinevelocity',
+          name: 'AI PipelineVelocity',
+          title: 'Sales Pipeline Velocity & Stage Gate Supervisor',
+          slot: 7,
+          tasks: [
+            'Stalled Deal Diagnostics',
+            'Stage Transition SLAs',
+            'Weekly Sales Forecast Modeling',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-commissionsplitter',
+          name: 'AI CommissionSplitter',
+          title: 'Internal Broker Commission & Split Supervisor',
+          slot: 8,
+          tasks: [
+            'Tiered Commission Split Calcs',
+            'Referral Fee Deductions',
+            'Director Sign-off Routing',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-leaddistributor',
+          name: 'AI LeadDistributor',
+          title: 'Fair Lead Distribution & Round-Robin Supervisor',
+          slot: 9,
+          tasks: [
+            'Performance-Based Routing',
+            'Instant 5-Minute Lead Alert',
+            'SLA Miss Re-allocation',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'inventory_portfolio',
+      deptCode: 'DEPT-06',
+      deptName: 'Inventory, Portfolio & Asset Management',
+      color: '#10B981',
+      manager: {
+        id: 'mgr_sentinel',
+        name: 'AI Sentinel',
+        title: 'Director of Inventory & Asset Management',
+        avatar: '👔',
+        responsibilities: [
+          'Master property inventory catalog, landlord portfolio custody, developer unit allocation, and asset preservation.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-sentinel-inventory',
+          name: 'AI Sentinel Inventory',
+          title: 'Master Real Estate Inventory Catalog Supervisor',
+          slot: 1,
+          tasks: [
+            '10,000+ Listing Deduplication',
+            'Available / Reserved Status Sync',
+            'Property Media Quality Audit',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-landlordliaison',
+          name: 'AI LandlordLiaison',
+          title: 'Landlord Onboarding & Mandate Custody Supervisor',
+          slot: 2,
+          tasks: [
+            'Form A Mandate Verification',
+            'Owner Identity Verification',
+            'Exclusive Agency Renewals',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-clustervaluation',
+          name: 'AI ClusterValuation',
+          title: 'DAMAC Hills 2 & Master Community Portfolio Supervisor',
+          slot: 3,
+          tasks: [
+            'Cluster Price/Sqft Tracking',
+            'Historical Resale Comps',
+            'Rental Return Benchmarks',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-assetinspection',
+          name: 'AI AssetInspection',
+          title: 'Property Snagging & Condition Audit Supervisor',
+          slot: 4,
+          tasks: [
+            'Digital Snagging Checklists',
+            'Handover Key Custody Log',
+            'Defect Rectification Tracking',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-offplantracker',
+          name: 'AI OffPlanTracker',
+          title: 'Developer Construction Milestone & Handover Supervisor',
+          slot: 5,
+          tasks: [
+            'DLD Milestone Progress Photos',
+            'Anticipated Handover Dates',
+            'Payment Notice Reconciliations',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-keymanagement',
+          name: 'AI KeyManagement',
+          title: 'Smart Lockbox & Access Token Custody Supervisor',
+          slot: 6,
+          tasks: [
+            'Access Log Monitoring',
+            'Broker Fob Sign-Out Engine',
+            'Emergency Access Protocol',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-listingstaging',
+          name: 'AI ListingStaging',
+          title: 'Inventory Virtual Tour & Floor Plan Supervisor',
+          slot: 7,
+          tasks: [
+            'Matterport 3D Link Verifications',
+            'Architectural Floor Plan CAD',
+            'Drone Footage Integration',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-inventoryarchive',
+          name: 'AI InventoryArchive',
+          title: 'Sold & Expired Listing Archival Supervisor',
+          slot: 8,
+          tasks: [
+            'Automatic Delisting on Sale',
+            'Expired Mandate Notifications',
+            'Historical Price Trend Archival',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-bulkinvestorpacks',
+          name: 'AI BulkInvestorPacks',
+          title: 'Bulk Portfolio Packaging & Institutional Deck Supervisor',
+          slot: 9,
+          tasks: [
+            'Full-Building Portfolio Packets',
+            'Tenancy Schedule Audits',
+            'Consolidated NOI Calculations',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'partnerships_growth',
+      deptCode: 'DEPT-07',
+      deptName: 'Partnerships, Alliances & Capital Growth',
+      color: '#14B8A6',
+      manager: {
+        id: 'mgr_maktoum',
+        name: 'AI Maktoum',
+        title: 'Director of Strategic Alliances & Capital Growth',
+        avatar: '👔',
+        responsibilities: [
+          'Tier-1 master developer alliances (Emaar, Nakheel, Sobha), family office relations, institutional JV capital, and global investor corridors.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-maktoum-alliances',
+          name: 'AI Maktoum Alliances',
+          title: 'Master Developer Institutional Partnership Supervisor',
+          slot: 1,
+          tasks: [
+            'Emaar / Nakheel Agreement Terms',
+            'Top Agency Tier Qualification',
+            'Exclusive Allocation Quotas',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-familyoffice',
+          name: 'AI FamilyOffice',
+          title: 'Global Family Office & Sovereign Wealth Supervisor',
+          slot: 2,
+          tasks: [
+            'Confidential Mandate Negotiation',
+            'Private Placement Decks',
+            'Cross-Border Fund Structuring',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-bankmortgages',
+          name: 'AI BankMortgages',
+          title: 'Mortgage Brokerage & Banking Alliance Supervisor',
+          slot: 3,
+          tasks: [
+            'Preferred Bank Interest Rates',
+            'Pre-Approval Pipeline Tracking',
+            'Mortgage Referral Commissions',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-relocationpartners',
+          name: 'AI RelocationPartners',
+          title: 'Corporate Relocation & Expat Concierge Supervisor',
+          slot: 4,
+          tasks: [
+            'Corporate Housing Contracts',
+            'Executive Relocation Packs',
+            'Long-Term Corporate Leases',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-globalcorridors',
+          name: 'AI GlobalCorridors',
+          title: 'European, Asian & GCC Investor Desk Supervisor',
+          slot: 5,
+          tasks: [
+            'Foreign Investor Roadshows',
+            'Overseas Affiliate Broker JVs',
+            'Multi-Currency Settlement Rules',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-luxurybrands',
+          name: 'AI LuxuryBrands',
+          title: 'Branded Residences (Armani/Cavalli) Alliance Supervisor',
+          slot: 6,
+          tasks: [
+            'Brand License Compliance',
+            'Exclusive VIP Launch Previews',
+            'Co-Branded Marketing Approvals',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-goldenvisanetwork',
+          name: 'AI GoldenVisaNetwork',
+          title: 'Government PRO & Golden Visa Strategic Desk',
+          slot: 7,
+          tasks: [
+            '2M+ AED Property Valuation Fast-Path',
+            'Immigration Filing Direct Desk',
+            'Investor Family Residency Tracking',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-ventureexpansion',
+          name: 'AI VentureExpansion',
+          title: 'Franchise, M&A & Strategic Growth Supervisor',
+          slot: 8,
+          tasks: [
+            'Boutique Brokerage Acquisitions',
+            'Branch License Applications',
+            'Enterprise Valuation Modeling',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-sponsorshipalliance',
+          name: 'AI SponsorshipAlliance',
+          title: 'Luxury Golf & Yacht Event Sponsorship Supervisor',
+          slot: 9,
+          tasks: [
+            'Polo & Yacht Club Sponsorships',
+            'VIP Investor Dinners',
+            'Sponsorship ROAS Verification',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'media_public_relations',
+      deptCode: 'DEPT-08',
+      deptName: 'Media, Public Relations & Communications',
+      color: '#25D366',
+      manager: {
+        id: 'mgr_maya',
+        name: 'AI Maya',
+        title: 'Director of Media & Public Relations',
+        avatar: '👔',
+        responsibilities: [
+          'Executive press releases, luxury architectural media studio, public relations broadcasts, and corporate reputation management.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-maya-pr',
+          name: 'AI Maya PR',
+          title: 'Executive Communications & Press Bureau Supervisor',
+          slot: 1,
+          tasks: [
+            'Bloomberg / Forbes Dubai Pitches',
+            'CEO Thought-Leadership Op-Eds',
+            'Crisis PR Protocol Monitoring',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-mediastudio',
+          name: 'AI MediaStudio',
+          title: 'White Caves Media & High-End Production Supervisor',
+          slot: 2,
+          tasks: [
+            '4K Cinema Video Post-Production',
+            'Sound Design & Voiceovers',
+            'Celebrity Agent Interviews',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-editorialpublish',
+          name: 'AI EditorialPublish',
+          title: 'White Caves Luxury Magazine & Journal Supervisor',
+          slot: 3,
+          tasks: [
+            'Quarterly Print & Digital Journal',
+            'Architectural Feature Stories',
+            'Editorial Copywriting Review',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-influencerdesk',
+          name: 'AI InfluencerDesk',
+          title: 'Luxury Lifestyle & Real Estate Influencer Desk',
+          slot: 4,
+          tasks: [
+            'Content Partnership Contracts',
+            'Filming Permissions at Landmarks',
+            'Attribution Code Tracking',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-awardsubmissions',
+          name: 'AI AwardSubmissions',
+          title: 'International Property Awards & Accolades Supervisor',
+          slot: 5,
+          tasks: [
+            'Arabian Property Awards Entry',
+            'Best Luxury Brokerage Dossier',
+            'Trophy & Credential Marketing',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-podcastercore',
+          name: 'AI PodcasterCore',
+          title: 'Dubai Real Estate Podcast & Livestream Supervisor',
+          slot: 6,
+          tasks: [
+            'Weekly Industry Podcast Prep',
+            'Guest Booking & Screening',
+            'Omnichannel Audio Syndication',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-corporateidentity',
+          name: 'AI CorporateIdentity',
+          title: 'Public Brand Reputation & Sentiment Supervisor',
+          slot: 7,
+          tasks: [
+            'Google Reviews Sentiment Scan',
+            'Social Mentions Radar',
+            'Proactive Issue Rectification',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-eventpressoffice',
+          name: 'AI EventPressOffice',
+          title: 'Press Conference & Launch Event Media Supervisor',
+          slot: 8,
+          tasks: ['Journalist Accreditation', 'Press Kit Distribution', 'Live Broadcast Feeds'],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-digitalbroadcasting',
+          name: 'AI DigitalBroadcasting',
+          title: 'Telegram, WhatsApp VIP Channel Broadcast Supervisor',
+          slot: 9,
+          tasks: [
+            'VIP Off-Market Deal Bulletins',
+            'Broadcast List Engagement',
+            'Instant Deal Notification Alerts',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'research_analytics',
+      deptCode: 'DEPT-09',
+      deptName: 'Research, Analytics & Market Intelligence',
+      color: '#64748B',
+      manager: {
+        id: 'mgr_elena',
+        name: 'AI Elena',
+        title: 'Chief Research & Intelligence Director',
+        avatar: '👔',
+        responsibilities: [
+          'Dubai Land Department macroeconomic transaction indexing, price appreciation forecasting, and real estate data science.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-elena-research',
+          name: 'AI Elena Research',
+          title: 'Macroeconomic Indexing & Transaction Science Supervisor',
+          slot: 1,
+          tasks: [
+            'Daily Official Sales Feed Processing',
+            'Off-Plan vs Ready Volume Split',
+            'Price-Per-Sqft Inflation Index',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-predictiveml',
+          name: 'AI PredictiveMl',
+          title: 'Sub-Cluster Capital Appreciation ML Supervisor',
+          slot: 2,
+          tasks: [
+            '3-Year Price Prediction Models',
+            'Supply Pipeline Oversupply Alerts',
+            'Demand Wave Forecasting',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-rentalyieldengine',
+          name: 'AI RentalYieldEngine',
+          title: 'Gross vs Net Rental Yield Optimization Supervisor',
+          slot: 3,
+          tasks: [
+            'Service Charge Drag Deductions',
+            'Short-Term vs Long-Term ROI',
+            'Optimal Rent Pricing Recommendations',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-heatmapgeospatial',
+          name: 'AI HeatmapGeospatial',
+          title: 'Dubai Real Estate Demand Heatmap Supervisor',
+          slot: 4,
+          tasks: [
+            'Search Volume Geographic Maps',
+            'Metro Extension ROI Projections',
+            'Infrastructure Proximity Index',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-competitorradar',
+          name: 'AI CompetitorRadar',
+          title: 'Market Competitor Pricing & Days-on-Market Supervisor',
+          slot: 5,
+          tasks: [
+            'Competitor Inventory Deviation',
+            'Average Days on Market Tracking',
+            'Cluster Market Share Analysis',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-demographicsprofiler',
+          name: 'AI DemographicsProfiler',
+          title: 'Buyer Origin & Demographic Capital Flow Supervisor',
+          slot: 6,
+          tasks: [
+            'Foreign Capital Inflow by Country',
+            'Family vs Single Living Trends',
+            'Wealth Corridor Mapping',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-macropulsegcc',
+          name: 'AI MacroPulseGcc',
+          title: 'Interest Rates, EIBOR & Currency Impact Supervisor',
+          slot: 7,
+          tasks: [
+            'CBUAE EIBOR Rate Trends',
+            'USD/AED Peg Stability Tracking',
+            'Global Flight-to-Safety Inflow',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-masterplantracker',
+          name: 'AI MasterPlanTracker',
+          title: 'Dubai 2040 Urban Master Plan Supervisor',
+          slot: 8,
+          tasks: [
+            'New Infrastructure Green Zones',
+            'Airport Relocation Impact Study',
+            'Zoning Law Amendment Monitoring',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-whitepaperstudio',
+          name: 'AI WhitePaperStudio',
+          title: 'Quarterly Dubai Market Intelligence Report Supervisor',
+          slot: 9,
+          tasks: [
+            'Quarterly Real Estate White Paper',
+            'Executive Summary Infographics',
+            'Investor Webinar Data Slides',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'accounting_finance',
+      deptCode: 'DEPT-10',
+      deptName: 'Accounting, Finance & Tax',
+      color: '#F59E0B',
+      manager: {
+        id: 'mgr_theodora',
+        name: 'AI Theodora',
+        title: 'Chief Financial Director',
+        avatar: '👔',
+        responsibilities: [
+          'UAE FTA VAT 5%, Corporate Tax 9%, broker commission ledger, escrow account reconciliations, and P&L financial audits.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-theodora-finance',
+          name: 'AI Theodora Finance',
+          title: 'Chief Accounting Officer & Statutory Audit Supervisor',
+          slot: 1,
+          tasks: [
+            'Monthly P&L Financial Close',
+            'Balance Sheet Reconciliations',
+            'Statutory Financial Statement Prep',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-uaetaxengine',
+          name: 'AI UaeTaxEngine',
+          title: 'UAE Corporate Tax 9% & Federal Tax Authority Supervisor',
+          slot: 2,
+          tasks: [
+            '375k AED Statutory Threshold Tracking',
+            '9% Corporate Tax Reserve Auto-Transfer',
+            'Annual Corporate Tax Return Filing',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-uaevatcompliance',
+          name: 'AI UaeVatCompliance',
+          title: 'UAE FTA VAT 5% Invoicing & Filing Supervisor',
+          slot: 3,
+          tasks: [
+            'Sequential Tax Invoice Generation',
+            '5% VAT Output/Input Reconciliation',
+            'Quarterly VAT 201 Return Submissions',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-escrowaccountsync',
+          name: 'AI EscrowAccountSync',
+          title: 'RERA Trust Account & Escrow Reconciliation Supervisor',
+          slot: 4,
+          tasks: [
+            'Escrow Deposit Account Verification',
+            'Developer Milestone Drawdowns',
+            'Trustee Fee Allocation Verification',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-brokerpayrollcomm',
+          name: 'AI BrokerPayrollComm',
+          title: 'Broker Commission Payout & Split Ledger Supervisor',
+          slot: 5,
+          tasks: [
+            'Net Commission Split Calculation',
+            'Withholding Tax Reconciliations',
+            'Direct Bank Transfer Batches',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-accountspayable',
+          name: 'AI AccountsPayable',
+          title: 'Vendor Payments & Office Operating Expenses Supervisor',
+          slot: 6,
+          tasks: [
+            'Vendor Invoice Verification',
+            'Office Rent & Utility Settlements',
+            'Expense Approval Hierarchies',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-treasuryforex',
+          name: 'AI TreasuryForex',
+          title: 'Multi-Currency Escrow & FX Hedging Supervisor',
+          slot: 7,
+          tasks: [
+            'USD/EUR/GBP Currency Conversion',
+            'Crypto-to-Fiat Escrow Compliance',
+            'Bank Account Liquidity Buffers',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-zohobookssync',
+          name: 'AI ZohoBooksSync',
+          title: 'Zoho Books Enterprise Two-Way Sync Supervisor',
+          slot: 8,
+          tasks: [
+            'Automated Journal Entry Posting',
+            'Bank Feed Reconciliation Rule',
+            'ERP Ledger Consistency Audits',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-financialauditor',
+          name: 'AI FinancialAuditor',
+          title: 'External Audit Defense & Financial Governance Supervisor',
+          slot: 9,
+          tasks: [
+            'Big Four Audit Dossier Preparation',
+            'Anti-Fraud Transaction Sampling',
+            'Budget vs Actual Variance Analysis',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'legal_compliance',
+      deptCode: 'DEPT-11',
+      deptName: 'Legal, Compliance & Audit',
+      color: '#6366F1',
+      manager: {
+        id: 'mgr_sofia',
+        name: 'AI Sofia',
+        title: 'Chief Legal & Compliance Officer',
+        avatar: '👔',
+        responsibilities: [
+          'DLD/RERA statutory compliance, Trakheesi permits, Anti-Money Laundering (goAML/KYC), and corporate contract governance.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-sofia-legal',
+          name: 'AI Sofia Legal',
+          title: 'DLD & RERA Statutory Compliance Officer',
+          slot: 1,
+          tasks: [
+            'Trakheesi Permit Verification',
+            'Law No. 8 Escrow Compliance',
+            'Brokerage Legal Dispute Resolution',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-goamlscreening',
+          name: 'AI GoAmlScreening',
+          title: 'Anti-Money Laundering (AML/goAML) & PEP Supervisor',
+          slot: 2,
+          tasks: [
+            'goAML Suspicious Transaction Reports (STR)',
+            'PEP & Sanctions List Screening',
+            'Source of Funds Verification',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-trakheesiengine',
+          name: 'AI TrakheesiEngine',
+          title: 'DLD Trakheesi Advertising Permit Supervisor',
+          slot: 3,
+          tasks: [
+            'Instant Trakheesi QR Code Generation',
+            'Portal Permit Matching (Bayut/PF)',
+            'Unlicensed Ad Penalty Interception',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-formacontract',
+          name: 'AI FormAContract',
+          title: 'RERA Form A (Seller Mandate) Compliance Supervisor',
+          slot: 4,
+          tasks: [
+            'Owner Title Deed Match',
+            'Listing Price Statutory Verification',
+            'Exclusivity Period Enforcement',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-formbcontract',
+          name: 'AI FormBContract',
+          title: 'RERA Form B (Buyer Representation) Supervisor',
+          slot: 5,
+          tasks: [
+            'Buyer Identity KYC Check',
+            'Retainer Fee Escrow Verification',
+            'Dual Agency Disclosure Enforcement',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-formfcontract',
+          name: 'AI FormFContract',
+          title: 'RERA Form F (MOU / Unified Sale Contract) Supervisor',
+          slot: 6,
+          tasks: [
+            '10% Security Deposit Custody',
+            'Mortgage Approval Contingency Clause',
+            'DLD Transfer Date Penalty Clause',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-poaverification',
+          name: 'AI PoaVerification',
+          title: 'Power of Attorney & Dubai Courts Notary Supervisor',
+          slot: 7,
+          tasks: [
+            'Dubai Courts Notary Stamp Verification',
+            'POA Powers Scope Audit (Sale/Accept Funds)',
+            'Expiry Date & Revocation Check',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-dataprivacylaw',
+          name: 'AI DataPrivacyLaw',
+          title: 'UAE Personal Data Protection Law (PDPL) Supervisor',
+          slot: 8,
+          tasks: [
+            'Client Document Encryption Verification',
+            'Data Access Audit Logging',
+            'Consent Withdrawal Handlers',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-legalarbitration',
+          name: 'AI LegalArbitration',
+          title: 'DLD Rental Dispute Center (RDC) & Legal Counsel',
+          slot: 9,
+          tasks: [
+            'RDC Eviction Notice Compliance',
+            'Deposit Refund Disputes Settlement',
+            'Court Memo Drafting & Case Law Prep',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+    {
+      deptId: 'executive_governance',
+      deptCode: 'DEPT-12',
+      deptName: 'Executive, Governance & Strategy',
+      color: '#1E293B',
+      manager: {
+        id: 'mgr_zayed',
+        name: 'AI Zayed',
+        title: 'Director of Strategic Governance & Enterprise Operations',
+        avatar: '👔',
+        responsibilities: [
+          'Board of Directors governance, strategic enterprise roadmap execution, M&A operations, and sovereign company policy.',
+          'Direct supervisory oversight of 9 operational squads',
+          'Executive liaison with Managing Director & COO AI Zoe',
+        ],
+      },
+      supervisors: [
+        {
+          id: 'ai-zayed-governance',
+          name: 'AI Zayed Governance',
+          title: 'Board Secretariat & Sovereign Policy Supervisor',
+          slot: 1,
+          tasks: [
+            'Board of Directors Resolutions',
+            'Level 5 Sovereign Authority Gates',
+            'Statutory Corporate Minutes',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-strategicroadmap',
+          name: 'AI StrategicRoadmap',
+          title: 'Long-Range Enterprise OKRs & Growth Supervisor',
+          slot: 2,
+          tasks: [
+            'Quarterly Company Milestone Tracking',
+            'Department Capability Audits',
+            'Resource Allocation Modeling',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-riskmanagement',
+          name: 'AI RiskManagement',
+          title: 'Enterprise Risk & Catastrophe Shield Supervisor',
+          slot: 3,
+          tasks: [
+            'Market Downturn Stress-Testing',
+            'Insurance Policy Coverage Reviews',
+            'Counterparty Default Safeguards',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-zoecooliaison',
+          name: 'AI ZoeCooLiaison',
+          title: 'Executive Chief AI Assistant Zoe Operations Desk',
+          slot: 4,
+          tasks: [
+            '12 Department Inter-Communication',
+            'High-Priority Alert Filtering for MD',
+            '15-Minute SLA Dashboard Sync',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-meritxpmaster',
+          name: 'AI MeritXpMaster',
+          title: 'Company-Wide Merit Leaderboard & XP Master Supervisor',
+          slot: 5,
+          tasks: [
+            'Staff Merit Score Verification',
+            'Level 1-5 Authority Level Upgrades',
+            'Annual Merit Award Allocations',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-complianceoversight',
+          name: 'AI ComplianceOversight',
+          title: 'Cross-Department Statutory Policy Audit Supervisor',
+          slot: 6,
+          tasks: [
+            'Random Department Process Audits',
+            'Codebase Architecture Law Enforcement',
+            'Zero-Downtime Governance Check',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-capitalallocation',
+          name: 'AI CapitalAllocation',
+          title: 'Capital Re-Investment & Sovereign Reserve Supervisor',
+          slot: 7,
+          tasks: [
+            'Retained Earnings Reserve Allocation',
+            'Tech Stack R&D Reinvestment',
+            'Contingency Liquidity Maintenance',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-corporaterestructure',
+          name: 'AI CorporateRestructure',
+          title: 'Department Slot & Organizational Topology Supervisor',
+          slot: 8,
+          tasks: [
+            '1-12-108 Topology Integrity Check',
+            'Department Slot Swap Verification',
+            'Sub-Department Capacity Planning',
+          ],
+          gender: 'Female',
+        },
+        {
+          id: 'ai-sovereignsignoff',
+          name: 'AI SovereignSignOff',
+          title: 'Founder & Managing Director Digital Seal Supervisor',
+          slot: 9,
+          tasks: [
+            'Executive Seal Digital Timestamping',
+            'High-Value Contract Final Pass Gate',
+            'Sovereign Veto Logging Engine',
+          ],
+          gender: 'Female',
+        },
+      ],
+    },
+  ],
+} as const;
+
+export const getDepartmentById = (deptId: string): DepartmentGridNode | undefined =>
+  MASTER_WORKFORCE_GRID.departments.find(d => d.deptId === deptId);
+
+export const getDepartmentByCode = (code: string): DepartmentGridNode | undefined =>
+  MASTER_WORKFORCE_GRID.departments.find(d => d.deptCode.toLowerCase() === code.toLowerCase());
+
+export const getAllSupervisors = (): DepartmentSupervisor[] =>
+  MASTER_WORKFORCE_GRID.departments.flatMap(d => d.supervisors);
+
+export const getSupervisorById = (id: string): DepartmentSupervisor | undefined =>
+  getAllSupervisors().find(s => s.id === id);
+
+export const getAllManagers = (): DepartmentManager[] =>
+  MASTER_WORKFORCE_GRID.departments.map(d => d.manager);
+
+export default MASTER_WORKFORCE_GRID;
