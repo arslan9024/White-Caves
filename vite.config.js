@@ -5,6 +5,11 @@ import path from 'path';
 import federation from '@originjs/vite-plugin-federation';
 
 export default defineConfig(async ({ command }) => {
+  const apiPort = process.env.API_PORT || '5001';
+  if (!/^\d+$/.test(apiPort) || Number(apiPort) < 1 || Number(apiPort) > 65535) {
+    throw new Error('API_PORT must be an integer between 1 and 65535.');
+  }
+  const apiTarget = `http://127.0.0.1:${Number(apiPort)}`;
   const plugins = [
     react(),
     federation({
@@ -192,12 +197,12 @@ export default defineConfig(async ({ command }) => {
       },
       proxy: {
         '/socket.io': {
-          target: 'http://127.0.0.1:5001',
+          target: apiTarget,
           changeOrigin: true,
           ws: true,
         },
         '/api': {
-          target: 'http://127.0.0.1:5001',
+          target: apiTarget,
           changeOrigin: true,
           configure: proxy => {
             const origEmit = proxy.emit.bind(proxy);

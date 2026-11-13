@@ -20,11 +20,15 @@
  *   --message <msg>    Custom commit message suffix
  */
 
+console.error(
+  'Legacy automatic Git workflow disabled: use npm run git:safe -- check and review changes manually.'
+);
+process.exit(1);
+
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { runScan } from './aegis-autopilot-scanner.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,6 +76,7 @@ function logCycle(label, top12, buildOk, commitHash) {
 
 // ── Main ───────────────────────────────────────────────────────────────────
 async function main() {
+  const { runScan } = await import('./aegis-autopilot-scanner.js');
   const opts = parseArgs();
   const cycleLabel = opts.cycle || 'N+?';
 
@@ -116,7 +121,9 @@ async function main() {
 
     run('git add .');
 
-    const msgSuffix = opts.message ? ` — ${opts.message}` : ` — TS strictness + test coverage + design tokens`;
+    const msgSuffix = opts.message
+      ? ` — ${opts.message}`
+      : ` — TS strictness + test coverage + design tokens`;
     const commitMsg = `aegis/autopilot: resolved cycle ${cycleLabel} top 12 targets${msgSuffix}`;
     const commitResult = run(`git commit -m "${commitMsg}"`);
 

@@ -1,5 +1,60 @@
 # DevOps & Git Workflow Guide
 
+## Current shared-checkout safety policy (supersedes the archive below)
+
+**The older guide below is retained as historical reference only. Do not execute
+its staging, switching, merging, rollback, or branch-deletion recipes.**
+It predates the protected-main policy and contains unsafe direct pushes, hard
+resets, hook bypass risks, and deletion before remote-main verification.
+
+While Antigravity and VS Code still share this folder, use only one writer at a
+time. A branch name does not isolate files, the index, or the checked-out branch.
+Stop other editing/automation sessions before switching branches or committing.
+Separate folders/worktrees remain a follow-up; this helper does not provide
+cross-editor locking or block arbitrary manual Git commands.
+
+```powershell
+# Inspect status and divergence against freshly fetched origin/main.
+npm run git:safe -- check
+
+# Explicitly create a new branch from CURRENT HEAD, only with a clean checkout.
+npm run git:safe -- start 57 copilot vscode dev commission-fix
+npm run git:safe -- start 58 gemini antigravity staging contract-fix
+```
+
+Names follow `copilot/wave-{NN}-{agent}-{platform}-{dev|staging|prod}-{task}`.
+The `copilot/` namespace preserves repository policy; agent/platform metadata
+identifies the actual writer. Environment labels do not deploy anything.
+Existing branches are never reset or reused. The helper does not update/rebase
+your source HEAD; inspect its base and divergence before starting work.
+
+Review changes and stage **specific paths**, not the entire shared checkout.
+Review the whole staged diff before committing, keep hooks enabled, push only
+the named feature branch, then open a PR to `main`. Follow required checks,
+reviews, and the `wave-{NN}-complete` pre-merge tag policy. Never push directly to
+`main`, force-push, or merge automatically.
+
+```powershell
+# Verification only: never deletes either branch.
+npm run git:safe -- retire-check copilot/wave-57-copilot-vscode-dev-commission-fix
+```
+
+Retain local AND remote branches until all their commits are reachable from
+freshly fetched `origin/main`. Remote feature-branch backup alone is not enough.
+This conservative check refuses squash/rebase uncertainty; do not force-delete
+on that basis. Cleanup is a separate, explicitly authorized operation, after
+checking every worktree for unsaved/untracked work. No cleanup is automatic.
+
+Quarantined entry points now fail before work: `aegis-cycle.js`,
+`aegis-nova-v2-engine.cjs`, `aegis-fast-five.ps1`, `session-end.ps1`,
+`loop-start-sync.ps1`, and `tracker-commit-when-free.ps1`. Ten-task restart Git
+sync refuses to run; tri-turn Git workflow/push/auto-merge options are rejected.
+Unrelated runners have not been comprehensively audited.
+
+---
+
+## Archived guide (obsolete; not operational instructions)
+
 **White Caves Project**  
 **Version**: 1.0  
 **Date**: March 6, 2026
@@ -35,6 +90,7 @@ chore/* (maintenance)
 ### Daily Workflow
 
 #### 1. Start New Feature
+
 ```bash
 # Update develop
 git checkout develop
@@ -52,6 +108,7 @@ git push origin feature/commission-tracking
 ```
 
 #### 2. Work on Existing Feature
+
 ```bash
 # Sync with latest develop
 git fetch origin
@@ -66,6 +123,7 @@ git push origin feature/commission-tracking
 ```
 
 #### 3. Merge to Develop
+
 ```bash
 # Verify tests pass locally
 npm run test:run
@@ -89,6 +147,7 @@ git push origin --delete feature/commission-tracking
 ```
 
 #### 4. Release to Production
+
 ```bash
 # When develop is ready for production
 git checkout main
@@ -110,6 +169,7 @@ git push origin v1.1.0
 ### Format
 
 Use **Conventional Commits** format:
+
 ```
 <type>(<scope>): <subject>
 
@@ -119,6 +179,7 @@ Use **Conventional Commits** format:
 ```
 
 ### Type
+
 - **feat**: A new feature
 - **fix**: A bug fix
 - **docs**: Documentation changes
@@ -130,12 +191,15 @@ Use **Conventional Commits** format:
 - **ci**: CI/CD pipeline changes
 
 ### Scope
+
 The area of the codebase affected:
+
 - `auth`, `commission`, `freelancer`, `api`, `ui`, `test`, etc.
 
 ### Examples
 
 **Good Commits**:
+
 ```
 feat(commission): add commission calculation engine
 fix(auth): resolve JWT token expiration issue
@@ -145,6 +209,7 @@ docs: update README with setup instructions
 ```
 
 **Bad Commits**:
+
 ```
 fixed stuff
 update
@@ -188,6 +253,7 @@ hotfix/<issue-name>         # Emergency fixes
 ### Pre-Commit Checks (Local)
 
 **Before pushing ANY commit:**
+
 ```bash
 # 1. Run linter
 npm run lint
@@ -211,11 +277,13 @@ npm run build
 ### All-in-One Quality Check
 
 Create alias in `.bashrc` or `.zshrc`:
+
 ```bash
 alias pre-commit='npm run lint:fix && npm run format && npm run test:run && npm audit'
 ```
 
 Then use:
+
 ```bash
 pre-commit
 git add .
@@ -225,6 +293,7 @@ git commit -m "..."
 ### Automated GitHub Actions (CI/CD)
 
 Triggers on:
+
 - **Push to `main`**: Run all checks + deploy to production
 - **Push to `develop`**: Run all checks + deploy to staging
 - **Pull Request**: Run tests + lint + build
@@ -234,12 +303,14 @@ Triggers on:
 ## Deployment Pipeline
 
 ### Development Environment
+
 ```bash
 npm run dev
 # Runs on http://localhost:5000
 ```
 
 ### Staging
+
 ```bash
 git checkout develop
 git pull
@@ -250,6 +321,7 @@ npm run start
 ```
 
 ### Production
+
 ```bash
 git checkout main
 git pull
@@ -392,6 +464,7 @@ git push origin main
 ### Code Review Checklist
 
 When reviewing PRs, verify:
+
 - ✅ Follows commit standards
 - ✅ Tests added for new features
 - ✅ ESLint passes (no warnings)
@@ -415,6 +488,7 @@ When reviewing PRs, verify:
 ## Environment Variables
 
 ### Required `.env.local`
+
 ```
 VITE_API_URL=http://localhost:3000/api
 VITE_FIREBASE_API_KEY=...
@@ -422,6 +496,7 @@ VITE_STRIPE_PUBLISHABLE_KEY=...
 ```
 
 ### Required Production `.env`
+
 ```
 DB_URL=...
 FIREBASE_ADMIN_SDK=...
@@ -430,6 +505,7 @@ JWT_SECRET=...
 ```
 
 **Never commit `.env` to git!** Use `.env.example` instead:
+
 ```
 /.env
 /.env.local

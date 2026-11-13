@@ -33,6 +33,28 @@ npm run aegis:health       # AEGIS V5.0 governance & protocol health check
 npm run aegis:compliance   # Export statutory AEG-001..AEG-042 compliance report
 ```
 
+To select another local backend port in PowerShell, run
+`$env:API_PORT = '5002'; $env:VITE_API_URL = '/api'; npm run dev`.
+The relative browser URL uses Vite's same-origin proxy instead of an absolute
+`VITE_API_URL` from the local environment that may still point to port 5001.
+The launcher and Vite REST/Socket.io
+proxies share this shell variable (default: 5001). A busy port is never
+reclaimed automatically; a failed dev process stops its sibling launched by
+the same command.
+
+`npm run aegis:ouroboros` now runs one local verification cycle by default.
+Use `-- --cycles N` for an explicit positive finite count. It stops on the first
+failed check, never stages/commits/pushes, and never relocates or deletes root
+documents. Concurrent runs are refused; after an interrupted run, inspect the
+PID in `.agents/orchestrator/logs/ouroboros.lock` before manually removing a stale
+lock. `--skip-test` reports tests as skipped, not passed. Generated research and
+implementation claims are no longer emitted.
+
+`npm run check:limits` is a strict non-test source-file limit audit and exits
+nonzero while oversized files remain. Its co-location summary is filename
+inventory, not proof of architecture compliance or test coverage. The separate
+`npm run validate:structure` technical-debt ratchet is unchanged.
+
 ---
 
 ## Contact

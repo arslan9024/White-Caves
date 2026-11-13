@@ -7,6 +7,8 @@ param(
   [string]$Wave = ""
 )
 
+throw "Legacy automatic Git workflow disabled: use npm run git:safe -- check and review changes manually."
+
 $ErrorActionPreference = "Continue"
 $root = Resolve-Path $WorkspaceRoot
 $logsDir = Join-Path $root "logs\orchestrator"

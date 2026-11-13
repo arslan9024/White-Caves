@@ -1,14 +1,25 @@
 param(
-  [ValidateRange(1, 65535)]
-  [int]$Port = 5001
+  [string]$Port = $(if ($env:API_PORT) { $env:API_PORT } else { 5001 })
 )
 
 $ErrorActionPreference = 'Stop'
+[int]$parsedPort = 0
+if ($Port -notmatch '^[0-9]+$' -or -not [int]::TryParse($Port, [ref]$parsedPort) -or $parsedPort -lt 1 -or $parsedPort -gt 65535) {
+  throw 'API_PORT must be an integer between 1 and 65535.'
+}
+$Port = "$parsedPort"
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Set-Location $repoRoot
 
-if (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue) {
-  throw "Port $Port is already in use. Stop its owner explicitly or select another API_PORT. No processes were stopped."
+# Probe the bind directly: CIM connection inventories can miss live listeners.
+$probe = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, $parsedPort)
+$probe.ExclusiveAddressUse = $true
+try {
+  $probe.Start()
+} catch {
+  throw "Cannot bind API port ${Port}. Select another API_PORT or inspect its owner: $($_.Exception.Message) No processes were stopped."
+} finally {
+  $probe.Stop()
 }
 
 $env:API_PORT = "$Port"
