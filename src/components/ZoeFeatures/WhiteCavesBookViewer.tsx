@@ -1,24 +1,13 @@
 // src/components/ZoeFeatures/WhiteCavesBookViewer.tsx
 import React from 'react';
-import { BookProvider } from './WhiteCavesBook/BookContext';
-import { ModernBookView } from './WhiteCavesBook/ModernBookView';
+import { MultiLevelBookProvider } from './WhiteCavesBook/MultiLevelBookContext';
+import { MultiLevelBookView } from './WhiteCavesBook/MultiLevelBookView';
 
-interface WhiteCavesBookViewerProps {
-  initialChapter?: string;
-}
-
-export const WhiteCavesBookViewer: React.FC<WhiteCavesBookViewerProps> = ({
-  initialChapter = 'chapter-01-architecture',
-}) => {
-  // Normalize initial chapter slug (strip .html if provided by legacy callers)
-  const normalizedSlug = initialChapter
-    .replace('.html', '')
-    .replace('index', 'chapter-01-architecture');
-
+export const WhiteCavesBookViewer: React.FC = () => {
   return (
-    <BookProvider initialSlug={normalizedSlug}>
-      <ModernBookView />
-    </BookProvider>
+    <MultiLevelBookProvider>
+      <MultiLevelBookView />
+    </MultiLevelBookProvider>
   );
 };
 
