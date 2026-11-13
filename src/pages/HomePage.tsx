@@ -30,7 +30,6 @@ import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
 import { TestimonialPodium } from '../components/homepage/TestimonialPodium';
 import { QuickSearchModal } from '../components/homepage/QuickSearchModal';
-import { WhatsAppConciergePill } from '../components/homepage/WhatsAppConciergePill';
 import '../styles/luxuryDesignSystem.css';
 import './HomePage.css';
 
@@ -321,9 +320,6 @@ const HomePage: FC = () => {
           <ContactCTA />
           <OnboardingGateway />
         </Suspense>
-
-        {/* VIP WhatsApp Concierge Floating Pill */}
-        <WhatsAppConciergePill />
 
         {/* Quick Search Launcher Modal Overlay */}
         <QuickSearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
