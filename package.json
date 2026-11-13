@@ -31,6 +31,8 @@
     "aegis:workflow:master": "node ../.agents/orchestrator/aegis-engine.js cycle",
     "aegis:erp:supercharge": "node ../.agents/orchestrator/aegis-engine.js cycle",
     "aegis:md:sovereign": "node ../.agents/orchestrator/aegis-engine.js cycle",
+    "aegis:compile:book": "node .agents/orchestrator/sync-and-hyperlink-book.cjs",
+    "aegis:check:book": "node .agents/orchestrator/check-book-links.cjs",
     "dev:precheck": "node ../.agents/orchestrator/check-node-version.js",
     "check:limits": "node ../.agents/orchestrator/check-five-way-and-file-limits.js",
     "audit:architecture": "node ../.agents/orchestrator/check-five-way-and-file-limits.js",

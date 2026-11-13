@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 09: Autonomous Chronicler & Architectural Decision Registry | The Book of White Caves</title>
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #0F172A;
+      --border: rgba(56, 189, 248, 0.2);
+      --accent-red: #EF4444;
+      --accent-cyan: #38BDF8;
+      --accent-emerald: #10B981;
+      --accent-purple: #A855F7;
+      --text: #F3F4F6;
+      --text-muted: #9CA3AF;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .nav-header a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-top: 0;
+      color: #FFF;
+      border-bottom: 2px solid var(--accent-red);
+      padding-bottom: 0.5rem;
+    }
+    h2 {
+      color: var(--accent-cyan);
+      margin-top: 2rem;
+    }
+    .decision-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .decision-card.highlight {
+      border-left-color: var(--accent-red);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(239, 68, 68, 0.05));
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+    }
+    .meta-item strong {
+      color: var(--accent-cyan);
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    th {
+      background: #1E293B;
+      color: var(--accent-cyan);
+    }
+    tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .flow-box {
+      background: #020617;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #38BDF8;
+      overflow-x: auto;
+    }
+    .footer-nav {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+    }
+  
+    .book-hyperlink {
+      color: #38bdf8;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      transition: color 0.2s, background 0.2s;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    .book-hyperlink:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+    
+</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+  <div class="nav-header">
+    <a href="index.html">← Table of Contents</a>
+    <span style="color: var(--text-muted); font-size: 0.85rem;">The Book of White Caves · Volume IV</span>
+    <a href="chapter-08-multi-repo-rbac.html">← Chapter 08</a>
+  </div>
+
+  <div class="badge">Architecture Decision Record (ADR) · 2026.11.13</div>
+  <h1>Chapter 09: Autonomous Chronicler & Architectural Decision Registry</h1>
+
+  <div class="decision-card highlight">
+    <h3 style="margin-top: 0; color: #FFF;">ADR-09.1: Sovereign Repository Decoupling (Public Web vs. Enterprise CRM)</h3>
+    <div class="meta-grid">
+      <div class="meta-item"><strong>Status:</strong> <span style="color: var(--accent-emerald);">APPROVED & ACTIVE</span></div>
+      <div class="meta-item"><strong>Date:</strong> 2026-11-13</div>
+      <div class="meta-item"><strong>Decision Maker:</strong> Managing Director & @Ada / @Aurora</div>
+      <div class="meta-item"><strong>Impacted Repos:</strong> <a href="chapter-09-conversations-and-decisions.html#web-decoupling" class="book-hyperlink" title="Explore: White-Caves-Web">White-Caves-Web</a> & White-Caves-<a href="chapter-01-architecture.html" class="book-hyperlink" title="Explore Frontend">Frontend</a></div>
+    </div>
+    <p>
+      <strong>Context:</strong> As the White Caves project expanded to include 12 corporate brokerage departments, 235 AI agents, DLD/Ejari integrations, and client portals, bundling public marketing landing pages with the private enterprise CRM created bundle bloat, SEO compromises, and deployment friction.
+    </p>
+    <p>
+      <strong>Decision:</strong> Formal separation into two autonomous code repositories:
+    </p>
+    <ul>
+      <li><strong><a href="chapter-09-conversations-and-decisions.html#web-decoupling" class="book-hyperlink" title="Explore: White-Caves-Web">White-Caves-Web</a> (<code>https://github.com/arslan9024/<a href="chapter-09-conversations-and-decisions.html#web-decoupling" class="book-hyperlink" title="Explore: White-Caves-Web">White-Caves-Web</a>.git</code>):</strong> Public-facing luxury marketing engine deployed to <code>whitecaves.ae</code> / <code>www.whitecaves.ae</code> on Vercel. Optimized for Core Web Vitals, SSR/SSG, and luxury buyer lead acquisition.</li>
+      <li><strong>White-Caves-<a href="chapter-01-architecture.html" class="book-hyperlink" title="Explore Frontend">Frontend</a> (<code>White-Caves-<a href="chapter-01-architecture.html" class="book-hyperlink" title="Explore Frontend">Frontend</a>.git</code>):</strong> Private Enterprise CRM/ERP operations platform deployed to <code>app.whitecaves.ae</code>. Optimized for high-throughput Redux state, broker transaction flows, and Zoe AI operations.</li>
+    </ul>
+  </div>
+
+  <h2>Decoupled Architecture Matrix</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Dimension</th>
+        <th>Public Web (<a href="chapter-09-conversations-and-decisions.html#web-decoupling" class="book-hyperlink" title="Explore: White-Caves-Web">White-Caves-Web</a>)</th>
+        <th>Private CRM App (White-Caves-<a href="chapter-01-architecture.html" class="book-hyperlink" title="Explore Frontend">Frontend</a>)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Primary Objective</strong></td>
+        <td>SEO, Core Web Vitals, Luxury Brand Appeal, Public Inquiries</td>
+        <td>Enterprise Workflows, Transaction Engine, DLD Ejari, SecOps</td>
+      </tr>
+      <tr>
+        <td><strong>Audience</strong></td>
+        <td>Anonymous Public, Prospective Buyers, Google Search Bots</td>
+        <td>Brokers, Department Heads, Executives, Authenticated VIP Clients</td>
+      </tr>
+      <tr>
+        <td><strong>Target Domain</strong></td>
+        <td><code>whitecaves.ae</code> & <code>www.whitecaves.ae</code></td>
+        <td><code>app.whitecaves.ae</code> (or <code>portal.whitecaves.ae</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>State Complexity</strong></td>
+        <td>Lightweight (SSR / SSG / Form Submissions)</td>
+        <td>Heavyweight (Redux Toolkit, 1-12-108 Mesh, Real-time WebSockets)</td>
+      </tr>
+      <tr>
+        <td><strong>Security Profile</strong></td>
+        <td>Publicly Indexed, Open CDN Cache</td>
+        <td>Strict JWT Auth, RBAC Level 5, <code>noindex</code> Disallowed Crawlers</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Knowledge Chronicling Workflow</h2>
+  <div class="flow-box">
+[Collaborative Discussion / Chat]
+       │
+       ▼
+[Architectural Synthesis & Verification]
+       │
+       ▼
+[The Chronicler Skill (aegis-white-caves-chronicler)]
+       │
+       ├──► Writes HTML Chapter in .agents/book-white-caves/
+       ├──► Updates Master Table of Contents (index.html)
+       └──► Re-indexes In-App Book Viewer (WhiteCavesBookViewer.tsx)
+       │
+       ▼
+[Autonomous Grounding for all 235 AEGIS Agents]
+  </div>
+
+  <h2>Future Conversation Ingestion Protocols</h2>
+  <p>
+    Every future breakthrough in technical architecture, corporate policy, financial compliance, or agent intelligence discussed between the Managing Director and the engineering team is systematically synthesized into a new Book chapter or ADR record. This guarantees zero architectural memory loss and complete continuity across development phases.
+  </p>
+
+  <h2>ADR-008: Tiered Antigravity & AEGIS Autonomous Entry-Point Architecture (2026.11.13)</h2>
+  <div class="card">
+    <p><strong>Context & Decision:</strong> Established a multi-tier instruction hierarchy (<code>TURING-RULE-TIERS-012</code>) ensuring Antigravity chat sessions operate under full AEGIS orchestration while honoring specific workspace rules:</p>
+    <ul>
+      <li><strong>Global System Layer (<code>~/.gemini/config/rules/antigravity.md</code>):</strong> Evaluated universally across all chats; establishes sovereign AEGIS lifecycle and continuous self-correction feedback loop.</li>
+      <li><strong>Monorepo Umbrella Layer (<code>White-Caves/.agents/antigravity.md</code>):</strong> Shared cross-service contracts across <a href="chapter-08-multi-repo-rbac.html" class="book-hyperlink" title="Explore Server">Server</a>, <a href="chapter-01-architecture.html" class="book-hyperlink" title="Explore Frontend">Frontend</a>, <a href="chapter-08-multi-repo-rbac.html" class="book-hyperlink" title="Explore Mobile">Mobile</a>, and Web.</li>
+      <li><strong>Project Nodes (<code>White-Caves-<a href="chapter-08-multi-repo-rbac.html" class="book-hyperlink" title="Explore Server">Server</a>/.agents/antigravity.md</code> & <code>White-Caves-<a href="chapter-01-architecture.html" class="book-hyperlink" title="Explore Frontend">Frontend</a>/.agents/antigravity.md</code>):</strong> Dedicated backend and frontend rules obeying <code><a href="chapter-01-architecture.html#turing-root-007" class="book-hyperlink" title="Explore: TURING-ROOT-007">TURING-ROOT-007</a></code> (root cleanliness).</li>
+      <li><strong>Sovereign Learning Loop:</strong> Mistakes and corrections provided in chat are automatically written to the respective rule file and chronicled in this book, allowing AEGIS agents to become progressively smarter every session.</li>
+    </ul>
+  </div>
+
+  <div class="footer-nav">
+    <a href="chapter-07-web-decoupling.html">← Previous: Chapter 07 (Web Decoupling Matrix)</a>
+    <a href="progress-intelligence.html">Next: Progress Intelligence Dashboard →</a>
+  </div>
+
+</body>
+</html>

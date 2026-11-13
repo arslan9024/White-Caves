@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 08: Multi-Repo Sovereignty & Dual-Track RBAC Portals | The Book of White Caves</title>
+  <style>
+    body {
+      background-color: #09090b;
+      color: #f4f4f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 { color: #ffffff; }
+    h1 { border-bottom: 2px solid #ef4444; padding-bottom: 0.5rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid #27272a;
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    th { background: #18181b; color: #ef4444; }
+    tr:nth-child(even) { background: #121215; }
+    .status-active { color: #10b981; font-weight: 600; }
+    .status-quarantine { color: #ef4444; font-weight: 600; }
+    .nav-back {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: #a1a1aa;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .nav-back:hover { color: #ffffff; }
+    .highlight-card {
+      background: #18181b;
+      border-left: 4px solid #ef4444;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+    pre {
+      background: #121215;
+      border: 1px solid #27272a;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      color: #e4e4e7;
+      font-size: 0.85rem;
+    }
+    code {
+      color: #ef4444;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+  
+    .book-hyperlink {
+      color: #38bdf8;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      transition: color 0.2s, background 0.2s;
+      padding: 0 2px;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+    .book-hyperlink:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.15);
+    }
+    
+</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <a href="index.html" class="nav-back">← Back to Table of Contents</a>
+  <div class="badge">AEGIS V5.0 Architecture Record · 2026.11.13</div>
+  <h1>Chapter 08: Multi-Repo Sovereignty, Standalone Server & Dual-Track RBAC Portals</h1>
+
+  <div class="highlight-card">
+    <h3>Sovereign Evolution: The Multi-Root Separation & Central Vault</h3>
+    <p>
+      Under the governing guidance of <strong>AEGIS Sterling</strong> and <strong><a href="chapter-01-architecture.html#turing-law-000" class="book-hyperlink" title="Explore TURING-LAW-000">TURING-LAW-000</a></strong>, the White Caves monolith was successfully transitioned into a clean <strong>Multi-Root Project Architecture</strong> anchored by a shared git-ignored <code>secrets/</code> vault. 
+    </p>
+  </div>
+
+  <h2>1. Multi-Repo Topology & Responsibilities</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Repository</th>
+        <th>GitHub Origin</th>
+        <th>Runtime & Platform</th>
+        <th>Sovereignty Scope</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>White-Caves-<a href="chapter-01-architecture.html" class="book-hyperlink" title="Explore Frontend">Frontend</a></strong></td>
+        <td><code>arslan9024/White-Caves-<a href="chapter-01-architecture.html" class="book-hyperlink" title="Explore Frontend">Frontend</a></code></td>
+        <td>Vite + React 18 + Redux Toolkit (Vercel)</td>
+        <td>Public luxury portal, buyer UI, client dashboards, agent task cockpits.</td>
+      </tr>
+      <tr>
+        <td><strong>White-Caves-Server</strong></td>
+        <td><code>arslan9024/White-Caves-Server</code></td>
+        <td>Node.js 24 + Express + Prisma v6 + Socket.IO (Cloudflare / K8s)</td>
+        <td>Standalone high-throughput API, 5-assistant AI orchestrator, DLD/Ejari sync, cron schedulers.</td>
+      </tr>
+      <tr>
+        <td><strong>White-Caves-Mobile</strong></td>
+        <td><code>arslan9024/White-Caves-Mobile</code></td>
+        <td>React Native / Expo (iOS & Android)</td>
+        <td>Mobile agent inspections, biometric client login, push viewing alerts.</td>
+      </tr>
+      <tr>
+        <td><strong>Aegis-Sterling</strong></td>
+        <td><code>arslan9024/Aegis-Sterling</code></td>
+        <td>Aegis Sovereign Core + Vite/Tailwind Mission Control UI</td>
+        <td>Cross-project orchestration engine, Turing protocols, living Book of White Caves encyclopedia.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. Dual-Track RBAC & Multi-Portal Architecture</h2>
+  <p>
+    White Caves strictly enforces an orthogonal dual-track access model governed by <code>ROLE_RANK</code>, <code>ROLE_HIERARCHY</code>, and <code>ROLE_PERMISSIONS</code>:
+  </p>
+  <pre>
+                                     ┌───────────────────────────────────┐
+                                     │     Base User Account (Auth)      │
+                                     └─────────────────┬─────────────────┘
+                                                       │
+                       ┌───────────────────────────────┴───────────────────────────────┐
+                       ▼                                                               ▼
+        ┌───────────────────────────────┐                               ┌───────────────────────────────┐
+        │  Track A: Internal Staff CRM  │                               │  Track B: External Clients    │
+        │       (ROLE_RANK = 2)         │                               │       (ROLE_RANK = 3)         │
+        └──────────────┬────────────────┘                               └──────────────┬────────────────┘
+                       │                                                               │
+     Level 6: Owner & Managing Director (100)                     1. Landlord Portal: Yields, Ejari renewals (30)
+     Level 5: Department Pillar Director (95)                     2. Property Owner: Private Portfolio (25)
+     Level 4: Division Manager (90)                               3. Seller Portal: Valuation & Conveyancing (20)
+     Level 3: Task Supervisor (75)                                4. Tenant Portal: Ejari, Rent PDCs (10)
+     Level 2: Squad Team Leader (60)                              5. Buyer Portal: Off-plan, Escrow, NOC (10)
+     Level 1: Agent & Employee (50)                               6. External Developer / Bank / Broker (35)
+  </pre>
+
+  <h2>3. Standalone Server Migration Highlights</h2>
+  <ul>
+    <li><strong>Asset Parity:</strong> 911 of 911 server files migrated with 100% parity from legacy monorepo.</li>
+    <li><strong>Single Purpose File Law &amp; Zero Waste:</strong> Pruned 67 unreferenced front-end React view components (12,699 lines deleted) from the server repository.</li>
+    <li><strong>TypeScript Ratchet (<code>RULE-009</code>):</strong> Replaced legacy JS recruitment mapper with typed <code>recruitmentRecordMapper.ts</code>.</li>
+    <li><strong>Structure Validation:</strong> Clean zero-error pass under <code>scripts/validate-structure.mjs</code>.</li>
+    <li><strong>Automated Gate Tests:</strong> Authored <code>server/tests/multi-portal-rbac.test.ts</code> proving complete isolation between client portal tokens and staff CRM endpoints.</li>
+  </ul>
+</body>
+</html>

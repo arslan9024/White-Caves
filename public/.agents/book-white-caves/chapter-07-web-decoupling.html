@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 07: The Great Web Decoupling & Unified Domain Matrix | The Book of White Caves</title>
+  <style>
+    body {
+      background-color: #09090b;
+      color: #f4f4f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 { color: #ffffff; }
+    h1 { border-bottom: 2px solid #ef4444; padding-bottom: 0.5rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid #27272a;
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    th { background: #18181b; color: #ef4444; }
+    tr:nth-child(even) { background: #121215; }
+    .status-migrated { color: #10b981; font-weight: 600; }
+    .status-pending { color: #f59e0b; font-weight: 600; }
+    .status-crm { color: #60a5fa; font-weight: 600; }
+    .nav-back {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: #a1a1aa;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .nav-back:hover { color: #ffffff; }
+    .highlight-card {
+      background: #18181b;
+      border-left: 4px solid #ef4444;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+  
+    .book-hyperlink {
+      color: #38bdf8;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      transition: color 0.2s, background 0.2s;
+      padding: 0 2px;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+    .book-hyperlink:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.15);
+    }
+    
+</style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <a href="index.html" class="nav-back">← Back to Table of Contents</a>
+  <div class="badge">AEGIS V5.0 Architecture Record · 2026.11.13</div>
+  <h1>Chapter 07: The Great Web Decoupling & Unified Domain Matrix</h1>
+
+  <div class="highlight-card">
+    <h3>Sovereign Architecture Axiom: The Decoupled Twin</h3>
+    <p>
+      In accordance with <strong><a href="chapter-01-architecture.html#turing-law-000" class="book-hyperlink" title="Explore TURING-LAW-000">TURING-LAW-000</a></strong> and <strong>TURING-SEPARATION-010</strong>, the White Caves public digital experience was bifurcated into a high-performance, server-rendered Next.js marketing engine (<code>whitecaves.com</code>) and an ultra-secure, stateful Vite/Redux CRM operations portal (<code>app.whitecaves.com</code>).
+    </p>
+  </div>
+
+  <h2>1. Comprehensive Feature Inventory: Old vs Modernized</h2>
+  <p>The original unified portal contained 22 discrete visual modules. Below is the historical audit tracking what has been ported, optimized, or intentionally reserved for the operational CRM tier.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Original Feature / Section</th>
+        <th>Source Location</th>
+        <th>Status</th>
+        <th>AEGIS Target & Optimization Strategy</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>Luxury Hero Section</strong></td>
+        <td><code>Hero/LuxuryHeroSection.tsx</code></td>
+        <td><span class="status-migrated">Migrated (V1)</span></td>
+        <td>Next.js 16 LCP optimized. 4 sub-atoms (Shell, Background, Metrics, CTA).</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>Market Statistics Ribbon</strong></td>
+        <td><code>MarketStatsBanner.tsx</code></td>
+        <td><span class="status-migrated">Migrated (V1)</span></td>
+        <td>Live count-up atom with static fallback resilience (AED 45.5B+ portfolio).</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>Featured Properties Grid</strong></td>
+        <td><code>FeaturedPropertiesSection.tsx</code></td>
+        <td><span class="status-migrated">Migrated (V1)</span></td>
+        <td>Static luxury dataset, DLD verification badges, responsive cards.</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>Client Endorsements & Testimonials</strong></td>
+        <td><code>Testimonials.tsx</code></td>
+        <td><span class="status-migrated">Migrated (V1)</span></td>
+        <td>5-star verified investor reviews with institutional provenance.</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><strong>Leadership & Advisory Team</strong></td>
+        <td><code>Team/Team.tsx</code></td>
+        <td><span class="status-migrated">Migrated (V1)</span></td>
+        <td>Split into TeamGrid and TeamCard primitives.</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><strong>Confidential Consultation & Lead Form</strong></td>
+        <td><code>Contact/ContactCTA.tsx</code></td>
+        <td><span class="status-migrated">Migrated (V1)</span></td>
+        <td>Surgical ContactCTA + ContactForm with 15-minute response SLA.</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><strong>Corporate Public Footer</strong></td>
+        <td><code>PublicFooter.tsx</code></td>
+        <td><span class="status-migrated">Migrated (V1)</span></td>
+        <td>Includes DLD License #108920, newsletter subscription, and statutory links.</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><strong>Global Navbar & <a href="chapter-08-multi-repo-rbac.html" class="book-hyperlink" title="Explore Mobile">Mobile</a> Drawer</strong></td>
+        <td><code>PublicNavbar.tsx</code></td>
+        <td><span class="status-migrated">Migrated (V1)</span></td>
+        <td>Next.js Link routing, backdrop blur, and direct Agent Portal integration.</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><strong>Interactive Area Guide Grid</strong></td>
+        <td><code>AreaGuideGrid.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>Community deep-dives for Palm Jumeirah, Downtown, and DAMAC Hills 2.</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><strong>Geospatial Map Engine (Red Markers)</strong></td>
+        <td><code>MapContainer.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>Interactive Leaflet / MapLibre luxury Dubai property map.</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td><strong>Currency & Unit Switcher Bar</strong></td>
+        <td><code>CurrencyUnitBar.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>Client-side AED/USD/EUR/GBP/SAR currency & SqFt/SqM toggle.</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td><strong>Gamified ROI & Mortgage Tools Dashboard</strong></td>
+        <td><code>ToolsDashboard.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>Interactive rental yield, capital appreciation & mortgage calculator.</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td><strong>Sunset Photography Gallery</strong></td>
+        <td><code>DubaiSunsetGallery.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>Curated high-res imagery of iconic Dubai waterfront developments.</td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td><strong>Regulatory & Escrow Trust Strip</strong></td>
+        <td><code>RegulatoryTrustStrip.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>RERA, DLD Trakheesi, and UAE Central Bank Escrow badges.</td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td><strong>Floating VIP WhatsApp Concierge</strong></td>
+        <td><code>WhatsAppConciergePill.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>Persistent quick-action bottom-right advisory trigger.</td>
+      </tr>
+      <tr>
+        <td>16</td>
+        <td><strong>Quick Search Command Bar (Ctrl+K)</strong></td>
+        <td><code>QuickSearchModal.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>Instant keyboard-navigated omni-search for luxury inventory.</td>
+      </tr>
+      <tr>
+        <td>17</td>
+        <td><strong>Developer Quick-Chips & Filters</strong></td>
+        <td><code>DeveloperFilterQuickChips.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>One-tap filtering for Emaar, DAMAC, Nakheel, Sobha, and Meraas.</td>
+      </tr>
+      <tr>
+        <td>18</td>
+        <td><strong>Multi-Tab Hero Search Bar</strong></td>
+        <td><code>LuxuryMultiTabSearchBar.tsx</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>Buy vs Rent vs Off-Plan tabbed search with budget range selectors.</td>
+      </tr>
+      <tr>
+        <td>19</td>
+        <td><strong>3D Virtual Tour WebGL Viewer</strong></td>
+        <td><code>VirtualTourModal.tsx</code></td>
+        <td><span class="status-crm">CRM Sovereign</span></td>
+        <td>Requires heavy WebGL engine; routed to app.whitecaves.com.</td>
+      </tr>
+      <tr>
+        <td>20</td>
+        <td><strong>Property Comparison Matrix</strong></td>
+        <td><code>PropertyComparisonDrawer.tsx</code></td>
+        <td><span class="status-crm">CRM Sovereign</span></td>
+        <td>Multi-unit comparison drawer reserved for authenticated buyer accounts.</td>
+      </tr>
+      <tr>
+        <td>21</td>
+        <td><strong>Role Selection Gateway Modal</strong></td>
+        <td><code>RoleSelectionModal.tsx</code></td>
+        <td><span class="status-crm">CRM Sovereign</span></td>
+        <td>Investor vs Landlord vs Broker onboarding portal gateway.</td>
+      </tr>
+      <tr>
+        <td>22</td>
+        <td><strong>Recently Viewed Properties Tracking</strong></td>
+        <td><code>useRecentlyViewed.ts</code></td>
+        <td><span class="status-pending">Pending Wave 2</span></td>
+        <td>Client-side localStorage drawer for visitor retention.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. Architectural Synthesis & Principles</h2>
+  <ul>
+    <li><strong>Sovereign Zero-Waste (AEG-042):</strong> Every newly ported component remains under 350 lines, isolating markup from static datasets.</li>
+    <li><strong>SEO & Core Web Vitals Dominance:</strong> Next.js 16 static pre-rendering delivers sub-100ms First Contentful Paint (FCP) and near-instant Largest Contentful Paint (LCP).</li>
+    <li><strong>Continuous Chronicle Integration:</strong> As features advance through Wave 2, this chronicle updates automatically to reflect architectural truth.</li>
+  </ul>
+</body>
+</html>
