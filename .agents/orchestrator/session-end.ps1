@@ -28,6 +28,8 @@ param(
   [switch]$SkipAutoComplete     # skip final fast-complete pass
 )
 
+throw "Legacy automatic Git workflow disabled: use npm run git:safe -- check and review changes manually."
+
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
 $scripts  = Join-Path $root ".agents\orchestrator"

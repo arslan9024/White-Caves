@@ -1187,24 +1187,8 @@ function Invoke-GitSyncBeforeRestart {
     [string]$Branch
   )
 
-  Write-ActivityLog -Stage "GIT" -Message "Syncing branch '$Branch' (pull then push) before restart" -Color "DarkCyan"
-
-  $pull = Get-RunSummary -Command "cd '$Root'; git pull origin $Branch"
-  if (-not $pull.ok) {
-    $trimPull = if ($pull.output.Length -gt 240) { $pull.output.Substring(0, 240) + " ..." } else { $pull.output }
-    Write-ActivityLog -Stage "GIT" -Message "git pull failed: $trimPull" -Color "Red"
-    return $false
-  }
-
-  $push = Get-RunSummary -Command "cd '$Root'; git push origin $Branch"
-  if (-not $push.ok) {
-    $trimPush = if ($push.output.Length -gt 240) { $push.output.Substring(0, 240) + " ..." } else { $push.output }
-    Write-ActivityLog -Stage "GIT" -Message "git push failed: $trimPush" -Color "Red"
-    return $false
-  }
-
-  Write-ActivityLog -Stage "GIT" -Message "Branch '$Branch' synced successfully" -Color "Green"
-  return $true
+  Write-ActivityLog -Stage "GIT" -Message "Automatic pull/push disabled for '$Branch'. Use npm run git:safe -- check and review manually; restart blocked." -Color "Red"
+  return $false
 }
 
 function Get-RunSummary {

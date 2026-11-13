@@ -138,14 +138,18 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
     await page.keyboard.press('Escape');
     await page.waitForTimeout(500);
 
-    // aria-label is 'Find rental properties in Dubai' — that is the accessible name Playwright uses
-    const findRentalsButton = page.getByRole('button', { name: 'Find rental properties in Dubai' });
+    const findRentalsButton = page.getByRole('button', {
+      name: /Find rental properties in Dubai/,
+    });
     await expect(findRentalsButton).toBeVisible({ timeout: 10_000 });
+    const visibleButtonText = (await findRentalsButton.innerText()).trim();
+    const accessibleName = (await findRentalsButton.getAttribute('aria-label')) ?? '';
+    expect(accessibleName.toLowerCase()).toContain(visibleButtonText.toLowerCase());
 
     // Use dispatchEvent for cross-browser React event compatibility
     await page.evaluate(() => {
       const btn = document.querySelector(
-        'button[aria-label="Find rental properties in Dubai"]'
+        'button[aria-label^="Find rental properties in Dubai"]'
       ) as HTMLButtonElement | null;
       if (btn)
         btn.dispatchEvent(
@@ -179,7 +183,7 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
     await page.waitForTimeout(400);
 
     const searchSubmitButton = page.locator(
-      'button[aria-label="Search properties"], button[aria-label="Find rental properties in Dubai"]'
+      'button[aria-label="Search properties"], button[aria-label^="Find rental properties in Dubai"]'
     );
     const hasSearchSubmit = (await searchSubmitButton.count()) > 0;
     test.skip(!hasSearchSubmit, 'Homepage leasing search CTA is not present in this variant.');
@@ -189,7 +193,7 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
     await page.evaluate(() => {
       const btn = (document.querySelector('button[aria-label="Search properties"]') ||
         document.querySelector(
-          'button[aria-label="Find rental properties in Dubai"]'
+          'button[aria-label^="Find rental properties in Dubai"]'
         )) as HTMLButtonElement | null;
       if (btn)
         btn.dispatchEvent(

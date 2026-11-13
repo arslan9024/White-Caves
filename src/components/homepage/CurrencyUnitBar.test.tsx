@@ -33,4 +33,26 @@ describe('CurrencyUnitBar Component', () => {
 
     expect(handleUnit).toHaveBeenCalledWith('SqM');
   });
+
+  it('exposes the selected currency and unit to assistive technology', () => {
+    render(<CurrencyUnitBar />);
+
+    const aedButton = screen.getByRole('button', { name: 'AED' });
+    const usdButton = screen.getByRole('button', { name: 'USD' });
+    const sqFtButton = screen.getByRole('button', { name: 'SqFt' });
+    const sqMButton = screen.getByRole('button', { name: 'SqM' });
+
+    expect(aedButton).toHaveAttribute('aria-pressed', 'true');
+    expect(usdButton).toHaveAttribute('aria-pressed', 'false');
+    expect(sqFtButton).toHaveAttribute('aria-pressed', 'true');
+    expect(sqMButton).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.click(usdButton);
+    fireEvent.click(sqMButton);
+
+    expect(aedButton).toHaveAttribute('aria-pressed', 'false');
+    expect(usdButton).toHaveAttribute('aria-pressed', 'true');
+    expect(sqFtButton).toHaveAttribute('aria-pressed', 'false');
+    expect(sqMButton).toHaveAttribute('aria-pressed', 'true');
+  });
 });

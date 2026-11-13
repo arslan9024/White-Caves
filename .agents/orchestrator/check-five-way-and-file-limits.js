@@ -1,14 +1,14 @@
 /**
  * AEGIS Governance Validator: 7-Category Architecture & Single Purpose File Limits (< 350 lines)
  *
- * Enforces:
+ * Scope:
  * 1. Single Purpose File Law: Source files must not exceed 350 lines.
- * 2. Canonical 7-Category Co-Location: View, Logic, Styles, Data, Config, Tests, Workflows.
- * 3. Systemic Directory 7-Categories: Views, Config, State, Handlers, Engines, Workflows, Tests.
+ * 2. Filename inventory only: does not prove single responsibility or test coverage.
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const ROOT = process.cwd();
 const SRC_DIR = path.join(ROOT, 'src');
@@ -28,7 +28,8 @@ const IGNORE_PATTERNS = [
 
 function getLinesCount(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
-  return content.split('\n').length;
+  if (!content) return 0;
+  return content.split('\n').length - (content.endsWith('\n') ? 1 : 0);
 }
 
 function walkDir(dir, fileList = []) {
@@ -36,7 +37,7 @@ function walkDir(dir, fileList = []) {
   const files = fs.readdirSync(dir);
   for (const file of files) {
     const fullPath = path.join(dir, file);
-    if (IGNORE_PATTERNS.some(p => fullPath.includes(p))) continue;
+    if (IGNORE_PATTERNS.includes(file)) continue;
     const stat = fs.statSync(fullPath);
     if (stat.isDirectory()) {
       walkDir(fullPath, fileList);
@@ -74,9 +75,7 @@ export function auditFileLimits() {
   if (oversized.length === 0) {
     console.log('✅ 100% of non-test source files adhere to the 350-line Single Purpose File Law!');
   } else {
-    console.log(
-      `⚠️ Found ${oversized.length} files currently exceeding the 350-line target for iterative refactoring:`
-    );
+    console.log(`❌ Found ${oversized.length} non-test source files exceeding the 350-line limit:`);
     oversized.slice(0, 10).forEach(o => {
       console.log(
         `   - ${o.file} (${o.lines} lines) -> Target: Split into View/Logic/Styles/Data/Config/Test/Workflow`
@@ -89,11 +88,9 @@ export function auditFileLimits() {
 
 export function auditSevenCategoryArchitecture() {
   console.log(
-    '\n🔍 [AEGIS Governance] Auditing Canonical 7-Category Co-Location Standards in src/components/...\n'
+    '\n🔍 [AEGIS Governance] Inventorying co-located filenames in src/components/ (not semantic compliance)...\n'
   );
   const compDir = path.join(SRC_DIR, 'components');
-  if (!fs.existsSync(compDir)) return { valid: true };
-
   let complianceScore = 0;
   let auditedComponents = 0;
   let testedComponents = 0;
@@ -103,7 +100,9 @@ export function auditSevenCategoryArchitecture() {
     const entries = fs.readdirSync(dirPath, { withFileTypes: true });
     const subFiles = entries.filter(e => !e.isDirectory()).map(e => e.name);
     const hasView = subFiles.some(
-      f => f.includes('.view.') || f.endsWith('.tsx') || f.endsWith('.jsx')
+      f =>
+        !/\.(test|spec)\./.test(f) &&
+        (f.includes('.view.') || f.endsWith('.tsx') || f.endsWith('.jsx'))
     );
     const hasTest = subFiles.some(f => f.includes('.test.') || f.includes('.spec.'));
     const hasWorkflow = subFiles.some(
@@ -112,7 +111,12 @@ export function auditSevenCategoryArchitecture() {
 
     if (hasView) {
       auditedComponents++;
-      complianceScore++;
+      const hasLogic = subFiles.some(f => f.includes('.logic.') || /^use.*\.ts$/.test(f));
+      const hasStyles = subFiles.some(f => f.includes('.styles.'));
+      const hasData = subFiles.some(f => f.includes('.data.') || f.includes('.registries.'));
+      const hasConfig = subFiles.some(f => f.includes('.config.') || f.includes('.types.'));
+      if (hasLogic && hasStyles && hasData && hasConfig && hasTest && hasWorkflow)
+        complianceScore++;
       if (hasTest) testedComponents++;
       if (hasWorkflow) workflowComponents++;
     }
@@ -129,17 +133,15 @@ export function auditSevenCategoryArchitecture() {
     }
   }
 
-  scanComponentDir(compDir);
+  if (fs.existsSync(compDir)) scanComponentDir(compDir);
 
   console.log(`Audited ${auditedComponents} component directories.`);
-  console.log(`✅ 7-Category Architecture Standard is active across UI and Server modules.`);
-  console.log(`   - Co-located layers: View, Logic, Styles, Data, Config, Tests, Workflows.`);
+  console.log(`   - All seven filename categories present: ${complianceScore} directories.`);
   console.log(
-    `   - Co-located test coverage: ${testedComponents} component directories have dedicated unit/interaction test specs.`
+    '   - File presence does not establish architecture compliance or executed test coverage.'
   );
-  console.log(
-    `   - Co-located workflow coverage: ${workflowComponents} component directories have dedicated autonomous/dnd workflow modules.`
-  );
+  console.log(`   - Test filenames present: ${testedComponents} component directories.`);
+  console.log(`   - Workflow filenames present: ${workflowComponents} component directories.`);
   return { auditedComponents, complianceScore, testedComponents, workflowComponents };
 }
 
@@ -147,5 +149,13 @@ export function auditSevenCategoryArchitecture() {
 export const auditSixCategoryArchitecture = auditSevenCategoryArchitecture;
 export const auditFiveWayCategories = auditSevenCategoryArchitecture;
 
-auditFileLimits();
-auditSevenCategoryArchitecture();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try {
+    const result = auditFileLimits();
+    auditSevenCategoryArchitecture();
+    if (result.oversizedCount > 0) process.exitCode = 1;
+  } catch (error) {
+    console.error(`[AEGIS Governance] Audit failed: ${error.message}`);
+    process.exitCode = 1;
+  }
+}
