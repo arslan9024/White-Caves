@@ -16,10 +16,19 @@ export const WhiteCavesBookViewer: React.FC<WhiteCavesBookViewerProps> = ({
     { id: 'chapter-01-architecture.html', title: 'Ch 1: The Grand Architecture' },
     { id: 'chapter-02-mesh.html', title: 'Ch 2: AEGIS Sovereign Mesh' },
     { id: 'chapter-03-ouroboros.html', title: 'Ch 3: Protocol Perpetual Ouroboros' },
+    { id: 'chapter-04-henry.html', title: 'Ch 4: Henry OCR & Audit' },
+    { id: 'chapter-05-mary.html', title: 'Ch 5: Mary Property Inventory' },
+    { id: 'chapter-06-actors-matrix.html', title: 'Ch 6: Domain Actors Matrix' },
+    { id: 'chapter-07-web-decoupling.html', title: 'Ch 7: Web Decoupling & Domains' },
+    { id: 'chapter-08-multi-repo-rbac.html', title: 'Ch 8: Multi-Repo & Portals' },
+    {
+      id: 'chapter-09-conversations-and-decisions.html',
+      title: 'Ch 9: Architectural Decisions & ADR',
+    },
     { id: 'progress-intelligence.html', title: '⚡ Progress & Target Intelligence' },
   ];
 
-  const currentIndex = chapters.findIndex((c) => c.id === currentChapter);
+  const currentIndex = chapters.findIndex(c => c.id === currentChapter);
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -74,7 +83,7 @@ export const WhiteCavesBookViewer: React.FC<WhiteCavesBookViewerProps> = ({
             Next <ChevronRight className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setKey((k) => k + 1)}
+            onClick={() => setKey(k => k + 1)}
             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition ml-2"
             title="Refresh Book View"
           >
@@ -97,4 +106,3 @@ export const WhiteCavesBookViewer: React.FC<WhiteCavesBookViewerProps> = ({
 };
 
 export default WhiteCavesBookViewer;
-

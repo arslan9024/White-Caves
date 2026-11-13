@@ -251,6 +251,27 @@ export function getDefaultRules(): TuringAuditRule[] {
         return { valid: true };
       },
     },
+    {
+      id: 'TURING-BOOK-011',
+      name: 'Living Technical Book & Continuous Chronicling Law',
+      description:
+        'Every high-level architectural decision, repository topology change, and system design milestone must be chronicled in .agents/book-white-caves/ and indexed in WhiteCavesBookViewer.tsx.',
+      check: ctx => {
+        const text = ctx.promptText.toLowerCase();
+        if (
+          text.includes('disable book') ||
+          text.includes('delete book of white caves') ||
+          text.includes('remove chronicler')
+        ) {
+          return {
+            valid: false,
+            message:
+              'Violation [TURING-BOOK-011]: Disabling or removing The Book of White Caves chronicling system is prohibited. All major architectural decisions must be retained in .agents/book-white-caves/.',
+          };
+        }
+        return { valid: true };
+      },
+    },
     // Additional rules can be added here following the same shape.
   ];
 }

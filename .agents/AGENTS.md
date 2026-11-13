@@ -27,7 +27,7 @@
     - **Who & What exists (ERMS):** Pure Entities separated into Actors (Users, Clients, Landlords, Tenants, Brokers) and Objects (Properties, Units, Accounts, Permits). Zero tasks or action steps live here.
     - **What they do (TMS):** Actions and tasks (Verbs: `VERIFY_KYC`, `GENERATE_EJARI`, `COLLECT_RENT`). Every task connects an Actor (ERMS) within a Department (DMS).
     - **Relationship Invariance:** In ERMS, relationships between entities are established and updated strictly on the basis of completed actions in TMS.
-
+11. **Living Book Chronicler & Continuous Knowledge Grounding (`TURING-BOOK-011`):** Every key architectural decision, conversational breakthrough, repository decoupling, and milestone must be preserved as an official chapter inside `.agents/book-white-caves/` and indexed in `WhiteCavesBookViewer.tsx`. The Turing engine must audit and verify that chronicler documentation remains updated without staleness across iterative development cycles.
 
 ---
 
@@ -42,15 +42,15 @@
 
 ## 2. Level 0 — Executive Council (`.agents/executive/`)
 
-| Agent | Role | Domain | Tier |
-| :--- | :--- | :--- | :--- |
-| **`@Ada`** | Chief Architect | System architecture & 90% readiness gate | Premium |
-| **`@Margaret`** | Strategic Planner | Wave decomposition & context boundaries | Free (Flash) |
-| **`@Grace`** | Lead Engineer / CTO | TypeScript strictness & token shield | Premium |
-| **`@Elena`** | Chief Research Officer | DLD/RERA intelligence & preflight briefs | Free (Flash) |
-| **`@Zoe`** | Chief Operations Officer | 15m P0 SLA & 120-agent business mesh lead | Free (Llama) |
-| **`@Nova`** | Crucible Commander | Protocol: Infinite Crucible & deduplication | Free (Flash) |
-| **`@Aurora`** | Principal Systems CTO | Canonical SRS, SAD, API & Prisma schema | Premium |
+| Agent           | Role                     | Domain                                      | Tier         |
+| :-------------- | :----------------------- | :------------------------------------------ | :----------- |
+| **`@Ada`**      | Chief Architect          | System architecture & 90% readiness gate    | Premium      |
+| **`@Margaret`** | Strategic Planner        | Wave decomposition & context boundaries     | Free (Flash) |
+| **`@Grace`**    | Lead Engineer / CTO      | TypeScript strictness & token shield        | Premium      |
+| **`@Elena`**    | Chief Research Officer   | DLD/RERA intelligence & preflight briefs    | Free (Flash) |
+| **`@Zoe`**      | Chief Operations Officer | 15m P0 SLA & 120-agent business mesh lead   | Free (Llama) |
+| **`@Nova`**     | Crucible Commander       | Protocol: Infinite Crucible & deduplication | Free (Flash) |
+| **`@Aurora`**   | Principal Systems CTO    | Canonical SRS, SAD, API & Prisma schema     | Premium      |
 
 ---
 
