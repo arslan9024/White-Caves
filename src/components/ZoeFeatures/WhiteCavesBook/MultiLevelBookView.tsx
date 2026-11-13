@@ -16,6 +16,7 @@ import {
 
 export const MultiLevelBookView: React.FC = () => {
   const {
+    currentLibrary,
     currentBook,
     currentVolume,
     currentCanto,
@@ -31,6 +32,7 @@ export const MultiLevelBookView: React.FC = () => {
     breadcrumbs,
     searchQuery,
     setSearchQuery,
+    selectBook,
     selectVolume,
     selectCanto,
     selectChapter,
@@ -49,7 +51,7 @@ export const MultiLevelBookView: React.FC = () => {
     <div className="flex flex-col h-full w-full bg-[#030712] text-slate-100 rounded-xl border border-sky-500/20 overflow-hidden shadow-2xl">
       {/* ── Level 0 & 1: Master Header Strip ── */}
       <div className="px-5 py-3 bg-slate-900/90 border-b border-sky-500/20 flex items-center justify-between backdrop-blur-md">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="p-2 rounded-lg bg-sky-500/10 border border-sky-500/30 text-sky-400">
             <BookOpen className="w-5 h-5" />
           </div>
@@ -62,6 +64,33 @@ export const MultiLevelBookView: React.FC = () => {
               <h1 className="font-bold text-sm tracking-wide text-white">{currentBook.title}</h1>
             </div>
             <p className="text-[11px] text-slate-400">{currentBook.subtitle}</p>
+          </div>
+
+          {/* Book Switcher Tabs: 1. White Caves (Project) | 2. Aegis Sterling (Autobiography) */}
+          <div className="hidden lg:flex items-center gap-1.5 p-1 rounded-xl bg-slate-950/80 border border-slate-800 ml-4">
+            {currentLibrary.books.map(b => {
+              const isSelected = b.bookId === currentBook.bookId;
+              return (
+                <button
+                  key={b.bookId}
+                  onClick={() => selectBook(b.bookId)}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/30'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`}
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full ${isSelected ? 'bg-amber-300' : 'bg-slate-600'}`}
+                  ></span>
+                  <span>
+                    {b.bookNumber === 1
+                      ? 'Book 1: White Caves'
+                      : 'Book 2: Aegis Sterling (Autobiography)'}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

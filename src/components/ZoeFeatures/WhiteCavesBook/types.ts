@@ -1,5 +1,4 @@
 // src/components/ZoeFeatures/WhiteCavesBook/types.ts
-import { ReactNode } from 'react';
 
 export type BookCategory =
   | 'Core Architecture'

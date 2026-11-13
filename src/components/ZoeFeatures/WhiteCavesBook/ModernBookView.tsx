@@ -11,8 +11,6 @@ import {
   Code2,
   Sigma,
   ExternalLink,
-  Layers,
-  Sparkles,
 } from 'lucide-react';
 
 export const ModernBookView: React.FC = () => {

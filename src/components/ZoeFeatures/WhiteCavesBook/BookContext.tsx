@@ -1,7 +1,7 @@
 // src/components/ZoeFeatures/WhiteCavesBook/BookContext.tsx
 import React, { createContext, useContext, useState, useMemo, ReactNode } from 'react';
 import { BOOK_CHAPTERS, TOPIC_GLOSSARY } from './bookKnowledgeRegistry';
-import { ChapterDefinition, BookCategory, TopicGlossaryItem } from './types';
+import { ChapterDefinition, TopicGlossaryItem } from './types';
 
 interface BookContextType {
   chapters: ChapterDefinition[];
