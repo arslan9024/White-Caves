@@ -1,0 +1,55 @@
+/** Auto‑generated from vesta.supervisor.json */
+export interface vesta_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'vesta';
+  name: 'Vesta';
+  gender: 'Female';
+  title: 'Unified Contracts Standardization Supervisor';
+  supervisorSlot: 8;
+  department: {
+    code: 'DEPT-10';
+    name: 'Regulatory Affairs & RERA Compliance';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Sofia';
+  };
+  assignedTasks: [
+    'Form A Seller Mandate Validation',
+    'Form B Buyer Representation Check',
+    'Form F Sales Contract Legal Review',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const VESTA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'vesta',
+  name: 'Vesta',
+  gender: 'Female',
+  title: 'Unified Contracts Standardization Supervisor',
+  supervisorSlot: 8,
+  department: {
+    code: 'DEPT-10',
+    name: 'Regulatory Affairs & RERA Compliance',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Sofia',
+  },
+  assignedTasks: [
+    'Form A Seller Mandate Validation',
+    'Form B Buyer Representation Check',
+    'Form F Sales Contract Legal Review',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as vesta_supervisorExport;

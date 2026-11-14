@@ -1,0 +1,55 @@
+/** Auto‑generated from polymnia.supervisor.json */
+export interface polymnia_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'polymnia';
+  name: 'Polymnia';
+  gender: 'Female';
+  title: 'In-Memory Pipeline Health Supervisor';
+  supervisorSlot: 9;
+  department: {
+    code: 'DEPT-12';
+    name: 'Market Intelligence & IoT Data Science';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Elena';
+  };
+  assignedTasks: [
+    'Sub-10ms In-Memory Map Update',
+    'Data Pipeline Latency Monitoring',
+    'Zero-Data-Drift Verification',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const POLYMNIA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'polymnia',
+  name: 'Polymnia',
+  gender: 'Female',
+  title: 'In-Memory Pipeline Health Supervisor',
+  supervisorSlot: 9,
+  department: {
+    code: 'DEPT-12',
+    name: 'Market Intelligence & IoT Data Science',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Elena',
+  },
+  assignedTasks: [
+    'Sub-10ms In-Memory Map Update',
+    'Data Pipeline Latency Monitoring',
+    'Zero-Data-Drift Verification',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as polymnia_supervisorExport;

@@ -1,0 +1,47 @@
+/** Auto‑generated from soraya.supervisor.json */
+export interface soraya_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'soraya';
+  name: 'Soraya';
+  gender: 'Female';
+  title: 'Emaar Launch Allocation Supervisor';
+  supervisorSlot: 1;
+  department: {
+    code: 'DEPT-02';
+    name: 'Strategic Off-Plan Developments';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Zara';
+  };
+  assignedTasks: ['Launch Priority Queue', 'Unit Allocation Matching', 'Payment Plan Verification'];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const SORAYA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'soraya',
+  name: 'Soraya',
+  gender: 'Female',
+  title: 'Emaar Launch Allocation Supervisor',
+  supervisorSlot: 1,
+  department: {
+    code: 'DEPT-02',
+    name: 'Strategic Off-Plan Developments',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Zara',
+  },
+  assignedTasks: ['Launch Priority Queue', 'Unit Allocation Matching', 'Payment Plan Verification'],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as soraya_supervisorExport;

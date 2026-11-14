@@ -1,0 +1,55 @@
+/** Auto‑generated from zeina.supervisor.json */
+export interface zeina_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'zeina';
+  name: 'Zeina';
+  gender: 'Female';
+  title: 'SPV & Corporate Structuring Supervisor';
+  supervisorSlot: 6;
+  department: {
+    code: 'DEPT-03';
+    name: 'Commercial Real Estate & Investment';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Maya';
+  };
+  assignedTasks: [
+    'UBO Documentation Review',
+    'ADGM / DIFC SPV Filing Guidance',
+    'Corporate Resolution Checks',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const ZEINA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'zeina',
+  name: 'Zeina',
+  gender: 'Female',
+  title: 'SPV & Corporate Structuring Supervisor',
+  supervisorSlot: 6,
+  department: {
+    code: 'DEPT-03',
+    name: 'Commercial Real Estate & Investment',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Maya',
+  },
+  assignedTasks: [
+    'UBO Documentation Review',
+    'ADGM / DIFC SPV Filing Guidance',
+    'Corporate Resolution Checks',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as zeina_supervisorExport;

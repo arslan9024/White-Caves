@@ -1,0 +1,55 @@
+/** Auto‑generated from jamila.supervisor.json */
+export interface jamila_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'jamila';
+  name: 'Jamila';
+  gender: 'Female';
+  title: 'Holiday Homes DET Licensing Supervisor';
+  supervisorSlot: 9;
+  department: {
+    code: 'DEPT-04';
+    name: 'Portfolio Management & Residential Leasing';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Nadia';
+  };
+  assignedTasks: [
+    'Tourism Dirham Fee Calculation',
+    'Passport Guest Upload Portal',
+    'Cleaning SLA Scheduling',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const JAMILA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'jamila',
+  name: 'Jamila',
+  gender: 'Female',
+  title: 'Holiday Homes DET Licensing Supervisor',
+  supervisorSlot: 9,
+  department: {
+    code: 'DEPT-04',
+    name: 'Portfolio Management & Residential Leasing',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Nadia',
+  },
+  assignedTasks: [
+    'Tourism Dirham Fee Calculation',
+    'Passport Guest Upload Portal',
+    'Cleaning SLA Scheduling',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as jamila_supervisorExport;

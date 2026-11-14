@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "justitia",
+  "name": "Justitia",
+  "gender": "Female",
+  "title": "Macro Real Estate Threat Assessor",
+  "supervisorSlot": 4,
+  "department": {
+    "code": "DEPT-09",
+    "name": "Executive Office & Corporate Governance"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Aurora"
+  },
+  "assignedTasks": [
+    "UAE Real Estate Cycle Indicators",
+    "Interest Rate Impact Modeling",
+    "Regulatory Policy Shift Alerts"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

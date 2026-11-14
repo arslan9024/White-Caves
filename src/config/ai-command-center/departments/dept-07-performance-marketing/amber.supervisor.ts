@@ -1,0 +1,55 @@
+/** Auto‑generated from amber.supervisor.json */
+export interface amber_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'amber';
+  name: 'Amber';
+  gender: 'Female';
+  title: 'Google Dubai SEO Supervisor';
+  supervisorSlot: 3;
+  department: {
+    code: 'DEPT-07';
+    name: 'Performance Marketing & Lead Acquisition';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Olivia';
+  };
+  assignedTasks: [
+    'Rich Schema JSON-LD Injection',
+    'Long-Tail Dubai Keyword Tracking',
+    'Sub-1.2s LCP Performance Audits',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const AMBER_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'amber',
+  name: 'Amber',
+  gender: 'Female',
+  title: 'Google Dubai SEO Supervisor',
+  supervisorSlot: 3,
+  department: {
+    code: 'DEPT-07',
+    name: 'Performance Marketing & Lead Acquisition',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Olivia',
+  },
+  assignedTasks: [
+    'Rich Schema JSON-LD Injection',
+    'Long-Tail Dubai Keyword Tracking',
+    'Sub-1.2s LCP Performance Audits',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as amber_supervisorExport;

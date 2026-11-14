@@ -1,0 +1,55 @@
+/** Auto‑generated from nina_comm.supervisor.json */
+export interface nina_comm_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'nina_comm';
+  name: 'Nina';
+  gender: 'Female';
+  title: 'Lead Webhook & Social Loops Supervisor';
+  supervisorSlot: 1;
+  department: {
+    code: 'DEPT-08';
+    name: 'Corporate Communications & Client Experience';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Corinne';
+  };
+  assignedTasks: [
+    'Bayut & Property Finder Lead Ingest',
+    'Social Video Loop Formatting',
+    'Omnichannel Message Queuing',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const NINA_COMM_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'nina_comm',
+  name: 'Nina',
+  gender: 'Female',
+  title: 'Lead Webhook & Social Loops Supervisor',
+  supervisorSlot: 1,
+  department: {
+    code: 'DEPT-08',
+    name: 'Corporate Communications & Client Experience',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Corinne',
+  },
+  assignedTasks: [
+    'Bayut & Property Finder Lead Ingest',
+    'Social Video Loop Formatting',
+    'Omnichannel Message Queuing',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as nina_comm_supervisorExport;

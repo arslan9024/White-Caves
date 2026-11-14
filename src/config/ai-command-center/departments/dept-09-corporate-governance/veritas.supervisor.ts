@@ -1,0 +1,55 @@
+/** Auto‑generated from veritas.supervisor.json */
+export interface veritas_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'veritas';
+  name: 'Veritas';
+  gender: 'Female';
+  title: 'Broker RERA Card Onboarding Supervisor';
+  supervisorSlot: 7;
+  department: {
+    code: 'DEPT-09';
+    name: 'Executive Office & Corporate Governance';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Aurora';
+  };
+  assignedTasks: [
+    'RERA Card Verification for New Hires',
+    'Broker Commission Contract Setup',
+    'Sales Training Curriculum Dispatch',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const VERITAS_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'veritas',
+  name: 'Veritas',
+  gender: 'Female',
+  title: 'Broker RERA Card Onboarding Supervisor',
+  supervisorSlot: 7,
+  department: {
+    code: 'DEPT-09',
+    name: 'Executive Office & Corporate Governance',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Aurora',
+  },
+  assignedTasks: [
+    'RERA Card Verification for New Hires',
+    'Broker Commission Contract Setup',
+    'Sales Training Curriculum Dispatch',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as veritas_supervisorExport;

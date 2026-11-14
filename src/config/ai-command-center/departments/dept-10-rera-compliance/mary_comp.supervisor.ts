@@ -1,0 +1,55 @@
+/** Auto‑generated from mary_comp.supervisor.json */
+export interface mary_comp_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'mary_comp';
+  name: 'Mary';
+  gender: 'Female';
+  title: 'Master Inventory & Spreadsheet Validator';
+  supervisorSlot: 1;
+  department: {
+    code: 'DEPT-10';
+    name: 'Regulatory Affairs & RERA Compliance';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Sofia';
+  };
+  assignedTasks: [
+    'Property Matrix Deduplication',
+    'Owner Spreadsheet Sanity Checks',
+    'Title Deed Number Cross-Validation',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const MARY_COMP_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'mary_comp',
+  name: 'Mary',
+  gender: 'Female',
+  title: 'Master Inventory & Spreadsheet Validator',
+  supervisorSlot: 1,
+  department: {
+    code: 'DEPT-10',
+    name: 'Regulatory Affairs & RERA Compliance',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Sofia',
+  },
+  assignedTasks: [
+    'Property Matrix Deduplication',
+    'Owner Spreadsheet Sanity Checks',
+    'Title Deed Number Cross-Validation',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as mary_comp_supervisorExport;

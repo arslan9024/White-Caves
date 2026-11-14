@@ -1,0 +1,55 @@
+/** Auto‑generated from lubna.supervisor.json */
+export interface lubna_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'lubna';
+  name: 'Lubna';
+  gender: 'Female';
+  title: 'Civil Defense & Fire Safety Supervisor';
+  supervisorSlot: 6;
+  department: {
+    code: 'DEPT-05';
+    name: 'Asset Management & Facilities (DH2 Hub)';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Selena';
+  };
+  assignedTasks: [
+    'Smoke Detector Battery Alerts',
+    'Fire Extinguisher Annual Tagging',
+    'Emergency Evacuation Plans',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const LUBNA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'lubna',
+  name: 'Lubna',
+  gender: 'Female',
+  title: 'Civil Defense & Fire Safety Supervisor',
+  supervisorSlot: 6,
+  department: {
+    code: 'DEPT-05',
+    name: 'Asset Management & Facilities (DH2 Hub)',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Selena',
+  },
+  assignedTasks: [
+    'Smoke Detector Battery Alerts',
+    'Fire Extinguisher Annual Tagging',
+    'Emergency Evacuation Plans',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as lubna_supervisorExport;

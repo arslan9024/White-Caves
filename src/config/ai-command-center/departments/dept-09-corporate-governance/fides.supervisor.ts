@@ -1,0 +1,55 @@
+/** Auto‑generated from fides.supervisor.json */
+export interface fides_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'fides';
+  name: 'Fides';
+  gender: 'Female';
+  title: 'Code Deduplication & Law Enforcer';
+  supervisorSlot: 6;
+  department: {
+    code: 'DEPT-09';
+    name: 'Executive Office & Corporate Governance';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Aurora';
+  };
+  assignedTasks: [
+    'Ghost Directory Elimination',
+    'Atomic 4-Folder Law Enforcement',
+    'Adversarial Code Review Runs',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const FIDES_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'fides',
+  name: 'Fides',
+  gender: 'Female',
+  title: 'Code Deduplication & Law Enforcer',
+  supervisorSlot: 6,
+  department: {
+    code: 'DEPT-09',
+    name: 'Executive Office & Corporate Governance',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Aurora',
+  },
+  assignedTasks: [
+    'Ghost Directory Elimination',
+    'Atomic 4-Folder Law Enforcement',
+    'Adversarial Code Review Runs',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as fides_supervisorExport;

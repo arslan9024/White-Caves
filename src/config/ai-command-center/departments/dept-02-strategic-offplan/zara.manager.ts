@@ -1,0 +1,49 @@
+/** Auto‑generated from zara.manager.json */
+export interface zara_managerExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'zara';
+  name: 'Zara';
+  gender: 'Female';
+  title: 'Head of Developer Launch Allocations';
+  department: {
+    code: 'DEPT-02';
+    name: 'Strategic Off-Plan Developments';
+    color: '#F97316';
+  };
+  hierarchy: {
+    level: 1;
+    role: 'AI Department Manager';
+    reportingTo: 'AI Zoe (COO)';
+  };
+  responsibilities: [
+    'Master developer VIP launch queue allocation',
+    'Emaar, DAMAC & Nakheel inventory locking',
+    'Bulk investor rebate schedule negotiations',
+  ];
+  supervisorsManagedCount: 9;
+  slaWatchdogThresholdMinutes: 15;
+}
+export const ZARA_MANAGER = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'zara',
+  name: 'Zara',
+  gender: 'Female',
+  title: 'Head of Developer Launch Allocations',
+  department: {
+    code: 'DEPT-02',
+    name: 'Strategic Off-Plan Developments',
+    color: '#F97316',
+  },
+  hierarchy: {
+    level: 1,
+    role: 'AI Department Manager',
+    reportingTo: 'AI Zoe (COO)',
+  },
+  responsibilities: [
+    'Master developer VIP launch queue allocation',
+    'Emaar, DAMAC & Nakheel inventory locking',
+    'Bulk investor rebate schedule negotiations',
+  ],
+  supervisorsManagedCount: 9,
+  slaWatchdogThresholdMinutes: 15,
+} as zara_managerExport;

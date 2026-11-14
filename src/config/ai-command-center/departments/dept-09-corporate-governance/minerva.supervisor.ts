@@ -1,0 +1,55 @@
+/** Auto‑generated from minerva.supervisor.json */
+export interface minerva_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'minerva';
+  name: 'Minerva';
+  gender: 'Female';
+  title: 'Roadmap Milestone Synchronizer';
+  supervisorSlot: 2;
+  department: {
+    code: 'DEPT-09';
+    name: 'Executive Office & Corporate Governance';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Aurora';
+  };
+  assignedTasks: [
+    'Master Plan Task Advancement',
+    'Milestone Completion Verification',
+    'Dependency Blocker Resolution',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const MINERVA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'minerva',
+  name: 'Minerva',
+  gender: 'Female',
+  title: 'Roadmap Milestone Synchronizer',
+  supervisorSlot: 2,
+  department: {
+    code: 'DEPT-09',
+    name: 'Executive Office & Corporate Governance',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Aurora',
+  },
+  assignedTasks: [
+    'Master Plan Task Advancement',
+    'Milestone Completion Verification',
+    'Dependency Blocker Resolution',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as minerva_supervisorExport;

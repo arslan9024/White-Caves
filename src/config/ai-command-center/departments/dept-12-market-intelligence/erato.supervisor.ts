@@ -1,0 +1,55 @@
+/** Auto‑generated from erato.supervisor.json */
+export interface erato_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'erato';
+  name: 'Erato';
+  gender: 'Female';
+  title: 'CBUAE EIBOR & Currency Inflows Supervisor';
+  supervisorSlot: 7;
+  department: {
+    code: 'DEPT-12';
+    name: 'Market Intelligence & IoT Data Science';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Elena';
+  };
+  assignedTasks: [
+    'CBUAE EIBOR Rate Curve Analysis',
+    'USD Peg & Currency Inflow Trends',
+    'Global Flight-to-Safety Inflow Index',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const ERATO_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'erato',
+  name: 'Erato',
+  gender: 'Female',
+  title: 'CBUAE EIBOR & Currency Inflows Supervisor',
+  supervisorSlot: 7,
+  department: {
+    code: 'DEPT-12',
+    name: 'Market Intelligence & IoT Data Science',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Elena',
+  },
+  assignedTasks: [
+    'CBUAE EIBOR Rate Curve Analysis',
+    'USD Peg & Currency Inflow Trends',
+    'Global Flight-to-Safety Inflow Index',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as erato_supervisorExport;

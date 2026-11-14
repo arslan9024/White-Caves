@@ -1,0 +1,55 @@
+/** Auto‑generated from pax.supervisor.json */
+export interface pax_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'pax';
+  name: 'Pax';
+  gender: 'Female';
+  title: 'MD Sovereign Confidential Vault Supervisor';
+  supervisorSlot: 8;
+  department: {
+    code: 'DEPT-09';
+    name: 'Executive Office & Corporate Governance';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Aurora';
+  };
+  assignedTasks: [
+    'Biometric / Password Vault Access',
+    'Personal Asset Ledger Tracking',
+    'Encrypted Backup Synchronization',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const PAX_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'pax',
+  name: 'Pax',
+  gender: 'Female',
+  title: 'MD Sovereign Confidential Vault Supervisor',
+  supervisorSlot: 8,
+  department: {
+    code: 'DEPT-09',
+    name: 'Executive Office & Corporate Governance',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Aurora',
+  },
+  assignedTasks: [
+    'Biometric / Password Vault Access',
+    'Personal Asset Ledger Tracking',
+    'Encrypted Backup Synchronization',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as pax_supervisorExport;

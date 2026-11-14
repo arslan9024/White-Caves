@@ -1,0 +1,55 @@
+/** Auto‑generated from juno.supervisor.json */
+export interface juno_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'juno';
+  name: 'Juno';
+  gender: 'Female';
+  title: 'Geospatial Search Heatmap Supervisor';
+  supervisorSlot: 2;
+  department: {
+    code: 'DEPT-12';
+    name: 'Market Intelligence & IoT Data Science';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Elena';
+  };
+  assignedTasks: [
+    'Search Volume Heatmap Generation',
+    'Price/Sqft Geographic Map Render',
+    'High-ROI Cluster Highlighting',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const JUNO_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'juno',
+  name: 'Juno',
+  gender: 'Female',
+  title: 'Geospatial Search Heatmap Supervisor',
+  supervisorSlot: 2,
+  department: {
+    code: 'DEPT-12',
+    name: 'Market Intelligence & IoT Data Science',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Elena',
+  },
+  assignedTasks: [
+    'Search Volume Heatmap Generation',
+    'Price/Sqft Geographic Map Render',
+    'High-ROI Cluster Highlighting',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as juno_supervisorExport;

@@ -1,0 +1,55 @@
+/** Auto‑generated from celeste.supervisor.json */
+export interface celeste_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'celeste';
+  name: 'Celeste';
+  gender: 'Female';
+  title: 'Viewing Route & Calendar Supervisor';
+  supervisorSlot: 7;
+  department: {
+    code: 'DEPT-08';
+    name: 'Corporate Communications & Client Experience';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Corinne';
+  };
+  assignedTasks: [
+    'Viewing Time Window Calculation',
+    'Google Calendar / Outlook Sync',
+    'SMS/WhatsApp Direction Dispatch',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const CELESTE_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'celeste',
+  name: 'Celeste',
+  gender: 'Female',
+  title: 'Viewing Route & Calendar Supervisor',
+  supervisorSlot: 7,
+  department: {
+    code: 'DEPT-08',
+    name: 'Corporate Communications & Client Experience',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Corinne',
+  },
+  assignedTasks: [
+    'Viewing Time Window Calculation',
+    'Google Calendar / Outlook Sync',
+    'SMS/WhatsApp Direction Dispatch',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as celeste_supervisorExport;

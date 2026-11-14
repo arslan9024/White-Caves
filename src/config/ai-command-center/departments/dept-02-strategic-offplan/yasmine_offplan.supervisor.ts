@@ -1,0 +1,55 @@
+/** Auto‑generated from yasmine_offplan.supervisor.json */
+export interface yasmine_offplan_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'yasmine_offplan';
+  name: 'Yasmine';
+  gender: 'Female';
+  title: 'Oqood Pre-Handover Supervisor';
+  supervisorSlot: 8;
+  department: {
+    code: 'DEPT-02';
+    name: 'Strategic Off-Plan Developments';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Zara';
+  };
+  assignedTasks: [
+    'Oqood Certificate Verification',
+    'Minimum Paid-Up % Screen',
+    'Developer NOC Application',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const YASMINE_OFFPLAN_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'yasmine_offplan',
+  name: 'Yasmine',
+  gender: 'Female',
+  title: 'Oqood Pre-Handover Supervisor',
+  supervisorSlot: 8,
+  department: {
+    code: 'DEPT-02',
+    name: 'Strategic Off-Plan Developments',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Zara',
+  },
+  assignedTasks: [
+    'Oqood Certificate Verification',
+    'Minimum Paid-Up % Screen',
+    'Developer NOC Application',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as yasmine_offplan_supervisorExport;

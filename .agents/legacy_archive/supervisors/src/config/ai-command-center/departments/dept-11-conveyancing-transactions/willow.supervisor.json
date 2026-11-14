@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "willow",
+  "name": "Willow",
+  "gender": "Female",
+  "title": "DLD Registration Trustee Desk Supervisor",
+  "supervisorSlot": 1,
+  "department": {
+    "code": "DEPT-11",
+    "name": "Conveyancing & Transaction Management"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Evangeline"
+  },
+  "assignedTasks": [
+    "Trustee Office Slot Reservation",
+    "Manager Cheque Amount Verification",
+    "Transfer Fee Breakdown Calculation"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

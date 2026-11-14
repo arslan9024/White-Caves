@@ -1,0 +1,55 @@
+/** Auto‑generated from concordia.supervisor.json */
+export interface concordia_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'concordia';
+  name: 'Concordia';
+  gender: 'Female';
+  title: 'AI Token Guard & Cost Governor';
+  supervisorSlot: 5;
+  department: {
+    code: 'DEPT-09';
+    name: 'Executive Office & Corporate Governance';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Aurora';
+  };
+  assignedTasks: [
+    'Free-First Planning Token Gate',
+    'Sub-10ms Benchmark Enforcement',
+    'Zero-Waste Prompt Architecture',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const CONCORDIA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'concordia',
+  name: 'Concordia',
+  gender: 'Female',
+  title: 'AI Token Guard & Cost Governor',
+  supervisorSlot: 5,
+  department: {
+    code: 'DEPT-09',
+    name: 'Executive Office & Corporate Governance',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Aurora',
+  },
+  assignedTasks: [
+    'Free-First Planning Token Gate',
+    'Sub-10ms Benchmark Enforcement',
+    'Zero-Waste Prompt Architecture',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as concordia_supervisorExport;

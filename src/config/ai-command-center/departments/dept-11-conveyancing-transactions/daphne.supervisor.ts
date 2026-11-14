@@ -1,0 +1,55 @@
+/** Auto‑generated from daphne.supervisor.json */
+export interface daphne_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'daphne';
+  name: 'Daphne';
+  gender: 'Female';
+  title: 'Form F & 10% Deposit Supervisor';
+  supervisorSlot: 3;
+  department: {
+    code: 'DEPT-11';
+    name: 'Conveyancing & Transaction Management';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Evangeline';
+  };
+  assignedTasks: [
+    '10% Security Deposit Verification',
+    'Finance Contingency Period Log',
+    'Handover Penalty Clause Insertion',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const DAPHNE_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'daphne',
+  name: 'Daphne',
+  gender: 'Female',
+  title: 'Form F & 10% Deposit Supervisor',
+  supervisorSlot: 3,
+  department: {
+    code: 'DEPT-11',
+    name: 'Conveyancing & Transaction Management',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Evangeline',
+  },
+  assignedTasks: [
+    '10% Security Deposit Verification',
+    'Finance Contingency Period Log',
+    'Handover Penalty Clause Insertion',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as daphne_supervisorExport;

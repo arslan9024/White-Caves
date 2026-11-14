@@ -1,0 +1,55 @@
+/** Auto‑generated from fiona.supervisor.json */
+export interface fiona_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'fiona';
+  name: 'Fiona';
+  gender: 'Female';
+  title: 'Bank Feeds & DLA Reconciler';
+  supervisorSlot: 5;
+  department: {
+    code: 'DEPT-06';
+    name: 'Revenue, Finance & Treasury';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Theodora';
+  };
+  assignedTasks: [
+    'Bank Statement Transaction Import',
+    'Director Loan Account (DLA) Ledger',
+    'Unmatched Transaction Flagging',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const FIONA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'fiona',
+  name: 'Fiona',
+  gender: 'Female',
+  title: 'Bank Feeds & DLA Reconciler',
+  supervisorSlot: 5,
+  department: {
+    code: 'DEPT-06',
+    name: 'Revenue, Finance & Treasury',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Theodora',
+  },
+  assignedTasks: [
+    'Bank Statement Transaction Import',
+    'Director Loan Account (DLA) Ledger',
+    'Unmatched Transaction Flagging',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as fiona_supervisorExport;

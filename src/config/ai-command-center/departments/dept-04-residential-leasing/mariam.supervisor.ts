@@ -1,0 +1,55 @@
+/** Auto‑generated from mariam.supervisor.json */
+export interface mariam_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'mariam';
+  name: 'Mariam';
+  gender: 'Female';
+  title: 'Ejari API Sync Supervisor';
+  supervisorSlot: 1;
+  department: {
+    code: 'DEPT-04';
+    name: 'Portfolio Management & Residential Leasing';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Nadia';
+  };
+  assignedTasks: [
+    'DLD Ejari System API Sync',
+    'Tenancy Contract Auto-Fill',
+    'Ejari Certificate Dispatch',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const MARIAM_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'mariam',
+  name: 'Mariam',
+  gender: 'Female',
+  title: 'Ejari API Sync Supervisor',
+  supervisorSlot: 1,
+  department: {
+    code: 'DEPT-04',
+    name: 'Portfolio Management & Residential Leasing',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Nadia',
+  },
+  assignedTasks: [
+    'DLD Ejari System API Sync',
+    'Tenancy Contract Auto-Fill',
+    'Ejari Certificate Dispatch',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as mariam_supervisorExport;

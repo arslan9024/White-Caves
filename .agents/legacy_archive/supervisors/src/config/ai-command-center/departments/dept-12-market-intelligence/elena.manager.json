@@ -1,0 +1,24 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "elena",
+  "name": "Elena",
+  "gender": "Female",
+  "title": "Chief Research Officer & Predictive Modeling Lead",
+  "department": {
+    "code": "DEPT-12",
+    "name": "Market Intelligence & IoT Data Science",
+    "color": "#64748B"
+  },
+  "hierarchy": {
+    "level": 1,
+    "role": "AI Department Manager",
+    "reportingTo": "AI Zoe (COO)"
+  },
+  "responsibilities": [
+    "DLD open data transaction trend modeling",
+    "Geospatial buyer demand heatmap renders",
+    "Sub-10ms in-memory MapIndexHash latency optimization"
+  ],
+  "supervisorsManagedCount": 9,
+  "slaWatchdogThresholdMinutes": 15
+}

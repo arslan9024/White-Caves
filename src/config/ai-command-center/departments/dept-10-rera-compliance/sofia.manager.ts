@@ -1,0 +1,49 @@
+/** Auto‑generated from sofia.manager.json */
+export interface sofia_managerExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'sofia';
+  name: 'Sofia';
+  gender: 'Female';
+  title: 'Head of Legal, RERA & Compliance Affairs';
+  department: {
+    code: 'DEPT-10';
+    name: 'Regulatory Affairs & RERA Compliance';
+    color: '#6366F1';
+  };
+  hierarchy: {
+    level: 1;
+    role: 'AI Department Manager';
+    reportingTo: 'AI Zoe (COO)';
+  };
+  responsibilities: [
+    'goAML anti-money laundering compliance (> AED 55k)',
+    'Trakheesi advertising permit audits & auto-takedown',
+    'Unified contracts Form A, B & F legal verification',
+  ];
+  supervisorsManagedCount: 9;
+  slaWatchdogThresholdMinutes: 15;
+}
+export const SOFIA_MANAGER = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'sofia',
+  name: 'Sofia',
+  gender: 'Female',
+  title: 'Head of Legal, RERA & Compliance Affairs',
+  department: {
+    code: 'DEPT-10',
+    name: 'Regulatory Affairs & RERA Compliance',
+    color: '#6366F1',
+  },
+  hierarchy: {
+    level: 1,
+    role: 'AI Department Manager',
+    reportingTo: 'AI Zoe (COO)',
+  },
+  responsibilities: [
+    'goAML anti-money laundering compliance (> AED 55k)',
+    'Trakheesi advertising permit audits & auto-takedown',
+    'Unified contracts Form A, B & F legal verification',
+  ],
+  supervisorsManagedCount: 9,
+  slaWatchdogThresholdMinutes: 15,
+} as sofia_managerExport;

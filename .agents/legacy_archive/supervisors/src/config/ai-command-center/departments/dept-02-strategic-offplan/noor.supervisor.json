@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "noor",
+  "name": "Noor",
+  "gender": "Female",
+  "title": "DLD Milestone Audit Supervisor",
+  "supervisorSlot": 5,
+  "department": {
+    "code": "DEPT-02",
+    "name": "Strategic Off-Plan Developments"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Zara"
+  },
+  "assignedTasks": [
+    "DLD Project Progress Audit",
+    "Bank Guarantee Verification",
+    "Stage Invoicing Schedule"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "ghada",
+  "name": "Ghada",
+  "gender": "Female",
+  "title": "DCF & Financial Modeling Supervisor",
+  "supervisorSlot": 1,
+  "department": {
+    "code": "DEPT-03",
+    "name": "Commercial Real Estate & Investment"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Maya"
+  },
+  "assignedTasks": [
+    "10-Year DCF Simulation",
+    "Internal Rate of Return (IRR)",
+    "Exit Capitalization Pricing"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

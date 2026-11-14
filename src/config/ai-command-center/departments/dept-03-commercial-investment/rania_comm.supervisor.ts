@@ -1,0 +1,55 @@
+/** Auto‑generated from rania_comm.supervisor.json */
+export interface rania_comm_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'rania_comm';
+  name: 'Rania';
+  gender: 'Female';
+  title: 'Bulk Portfolios Acquisition Supervisor';
+  supervisorSlot: 3;
+  department: {
+    code: 'DEPT-03';
+    name: 'Commercial Real Estate & Investment';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Maya';
+  };
+  assignedTasks: [
+    'Gross Operating Income Audit',
+    'Tenancy Schedule Verification',
+    'Institutional CAP Rate Calc',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const RANIA_COMM_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'rania_comm',
+  name: 'Rania',
+  gender: 'Female',
+  title: 'Bulk Portfolios Acquisition Supervisor',
+  supervisorSlot: 3,
+  department: {
+    code: 'DEPT-03',
+    name: 'Commercial Real Estate & Investment',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Maya',
+  },
+  assignedTasks: [
+    'Gross Operating Income Audit',
+    'Tenancy Schedule Verification',
+    'Institutional CAP Rate Calc',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as rania_comm_supervisorExport;

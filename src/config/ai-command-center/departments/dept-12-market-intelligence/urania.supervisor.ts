@@ -1,0 +1,55 @@
+/** Auto‑generated from urania.supervisor.json */
+export interface urania_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'urania';
+  name: 'Urania';
+  gender: 'Female';
+  title: 'Buyer Demographic Profiling Supervisor';
+  supervisorSlot: 5;
+  department: {
+    code: 'DEPT-12';
+    name: 'Market Intelligence & IoT Data Science';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Elena';
+  };
+  assignedTasks: [
+    'Nationality & Budget Trend Modeling',
+    'Family vs Investor Allocation Data',
+    'School Commute Correlation Analysis',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const URANIA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'urania',
+  name: 'Urania',
+  gender: 'Female',
+  title: 'Buyer Demographic Profiling Supervisor',
+  supervisorSlot: 5,
+  department: {
+    code: 'DEPT-12',
+    name: 'Market Intelligence & IoT Data Science',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Elena',
+  },
+  assignedTasks: [
+    'Nationality & Budget Trend Modeling',
+    'Family vs Investor Allocation Data',
+    'School Commute Correlation Analysis',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as urania_supervisorExport;

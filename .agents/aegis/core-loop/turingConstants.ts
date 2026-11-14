@@ -23,11 +23,10 @@ export const SUPREME_CREDIT_VELOCITY_CONFIG = {
  * @see AEG-001 – AEG-042
  */
 export const AEGIS_PROTOCOL_FILES = [
-  '.agents/aegis/protocols/PROMETHEUS_CORE_UNBOUND.csv',
-  '.agents/aegis/protocols/TURING_SILENT_VELOCITY.csv',
-  '.agents/aegis/protocols/PHOENIX_SHIELD_ISOLATION.csv',
-  '.agents/aegis/protocols/VALKYRIE_LEDGER_RISE.csv',
-  '.agents/aegis/protocols/APOCALYPSE_OVERDRIVE_MATRIX.csv',
+  '.agents/aegis/protocols/turingProtocol.ts',
+  '.agents/aegis/protocols/maryAllenWilkesProtocol.ts',
+  '.agents/aegis/protocols/aegisMasterProtocols.ts',
+  '.agents/aegis/protocols/index.ts',
 ] as const;
 
 /**

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "flora",
+  "name": "Flora",
+  "gender": "Female",
+  "title": "Buyer Bank Valuations Supervisor",
+  "supervisorSlot": 5,
+  "department": {
+    "code": "DEPT-11",
+    "name": "Conveyancing & Transaction Management"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Evangeline"
+  },
+  "assignedTasks": [
+    "Bank Valuation Report Verification",
+    "Security Cheque Amount Audit",
+    "Bank Dispatch Representative Sync"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

@@ -6,10 +6,12 @@ When opening isolated task chat sessions, copy-paste this direct priming templat
 
 ```markdown
 # AEGIS PROTOCOL INITIALIZATION (CONCURRENCY LAYER V5.0)
+
 - Context Isolation Mode: ENABLED (Zero Multi-Task Contamination)
 - Target Mapping: Explicit Task Code Range (e.g., WC-DATA-203 / WC-UI-102)
 
 ## 🚨 Active State Handshake Contracts:
+
 1. Single-Source-of-Truth Boundary: No new client-side context nodes may be initialized. Rely exclusively on centralized Redux Slice architecture streams.
 2. Structural Isolation Rule: Restrict structural edits to files matching the active ticket prefix. Never append crossover data properties into unrelated folders.
 3. Immutable Progress Mapping: Cross-validate compilation checks directly against indices stored inside `PROJECT_PROGRESS.md` before formatting text buffers.
@@ -37,10 +39,11 @@ To complement the multi-chat strategy and enforce execution across the autonomou
 
 ## 📂 Protocol Matrix Index (AEG-001 — AEG-042)
 
-| Protocol File | Rule Range | Primary Domains |
-| :--- | :--- | :--- |
-| `.agents/aegis/protocols/PROMETHEUS_CORE_UNBOUND.csv` | `AEG-001` – `AEG-009` | Executive System, Research Intelligence, UX Architecture |
-| `.agents/aegis/protocols/TURING_SILENT_VELOCITY.csv` | `AEG-010` – `AEG-017` | UX Architecture, API Framework, Data Pipelines, Security Control |
-| `.agents/aegis/protocols/PHOENIX_SHIELD_ISOLATION.csv` | `AEG-018` – `AEG-025` | Security Control, Infrastructure, Quality Assurance, Leasing Operations |
-| `.agents/aegis/protocols/VALKYRIE_LEDGER_RISE.csv` | `AEG-026` – `AEG-033` | Leasing Operations, Finance System, CRM Operations |
-| `.agents/aegis/protocols/APOCALYPSE_OVERDRIVE_MATRIX.csv` | `AEG-034` – `AEG-042` | CRM Operations, Marketing Studio, Operations Core, Context Governance |
+| Protocol File                                        | Rule Range            | Primary Domains                                                         |
+| :--------------------------------------------------- | :-------------------- | :---------------------------------------------------------------------- |
+| `.agents/aegis/protocols/aegisMasterProtocols.ts`    | `AEG-001` – `AEG-009` | Executive System, Research Intelligence, UX Architecture                |
+| `.agents/aegis/protocols/turingProtocol.ts`          | `AEG-010` – `AEG-017` | UX Architecture, API Framework, Data Pipelines, Security Control        |
+| `.agents/aegis/protocols/maryAllenWilkesProtocol.ts` | `WILKES-001` – `014`  | Canonical 14-Layer Modular Architecture & Co-Location                   |
+| `.agents/aegis/protocols/aegisMasterProtocols.ts`    | `AEG-018` – `AEG-025` | Security Control, Infrastructure, Quality Assurance, Leasing Operations |
+| `.agents/aegis/protocols/aegisMasterProtocols.ts`    | `AEG-026` – `AEG-033` | Leasing Operations, Finance System, CRM Operations                      |
+| `.agents/aegis/protocols/aegisMasterProtocols.ts`    | `AEG-034` – `AEG-042` | CRM Operations, Marketing Studio, Operations Core, Context Governance   |

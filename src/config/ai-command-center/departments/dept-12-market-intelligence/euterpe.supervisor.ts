@@ -1,0 +1,55 @@
+/** Auto‑generated from euterpe.supervisor.json */
+export interface euterpe_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'euterpe';
+  name: 'Euterpe';
+  gender: 'Female';
+  title: 'Cluster Benchmark Matrix Supervisor';
+  supervisorSlot: 8;
+  department: {
+    code: 'DEPT-12';
+    name: 'Market Intelligence & IoT Data Science';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Elena';
+  };
+  assignedTasks: [
+    'DH2 vs Arabian Ranches Metrics',
+    'Price/Sqft Gap Analysis',
+    'Infrastructure Expansion Impact',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const EUTERPE_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'euterpe',
+  name: 'Euterpe',
+  gender: 'Female',
+  title: 'Cluster Benchmark Matrix Supervisor',
+  supervisorSlot: 8,
+  department: {
+    code: 'DEPT-12',
+    name: 'Market Intelligence & IoT Data Science',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Elena',
+  },
+  assignedTasks: [
+    'DH2 vs Arabian Ranches Metrics',
+    'Price/Sqft Gap Analysis',
+    'Infrastructure Expansion Impact',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as euterpe_supervisorExport;

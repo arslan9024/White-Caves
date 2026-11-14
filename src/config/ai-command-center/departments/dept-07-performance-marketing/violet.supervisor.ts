@@ -1,0 +1,55 @@
+/** Auto‑generated from violet.supervisor.json */
+export interface violet_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'violet';
+  name: 'Violet';
+  gender: 'Female';
+  title: 'Attribution & CPL Score Supervisor';
+  supervisorSlot: 5;
+  department: {
+    code: 'DEPT-07';
+    name: 'Performance Marketing & Lead Acquisition';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Olivia';
+  };
+  assignedTasks: [
+    'UTM Parameter Validation',
+    'Cost-Per-Qualified-Lead Score',
+    'Under-Performing Channel Alerts',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const VIOLET_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'violet',
+  name: 'Violet',
+  gender: 'Female',
+  title: 'Attribution & CPL Score Supervisor',
+  supervisorSlot: 5,
+  department: {
+    code: 'DEPT-07',
+    name: 'Performance Marketing & Lead Acquisition',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Olivia',
+  },
+  assignedTasks: [
+    'UTM Parameter Validation',
+    'Cost-Per-Qualified-Lead Score',
+    'Under-Performing Channel Alerts',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as violet_supervisorExport;

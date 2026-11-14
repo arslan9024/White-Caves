@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "lamees",
+  "name": "Lamees",
+  "gender": "Female",
+  "title": "HVAC & MEP Engineering Supervisor",
+  "supervisorSlot": 2,
+  "department": {
+    "code": "DEPT-05",
+    "name": "Asset Management & Facilities (DH2 Hub)"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Selena"
+  },
+  "assignedTasks": [
+    "Chiller Energy Telemetry",
+    "Emergency Leak Sensor Tripping",
+    "Preventive Maintenance Schedules"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

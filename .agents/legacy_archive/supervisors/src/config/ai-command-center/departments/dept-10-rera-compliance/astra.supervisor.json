@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "astra",
+  "name": "Astra",
+  "gender": "Female",
+  "title": "Trakheesi Permit Expiration Watchdog",
+  "supervisorSlot": 3,
+  "department": {
+    "code": "DEPT-10",
+    "name": "Regulatory Affairs & RERA Compliance"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Sofia"
+  },
+  "assignedTasks": [
+    "Trakheesi Permit Number Verification",
+    "Advertising Expiration Date Watchdog",
+    "Unlicensed Listing Auto-Takedown"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

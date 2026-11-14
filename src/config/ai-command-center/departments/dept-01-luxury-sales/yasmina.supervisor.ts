@@ -1,0 +1,55 @@
+/** Auto‑generated from yasmina.supervisor.json */
+export interface yasmina_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'yasmina';
+  name: 'Yasmina';
+  gender: 'Female';
+  title: 'Lead Re-Engagement Supervisor';
+  supervisorSlot: 8;
+  department: {
+    code: 'DEPT-01';
+    name: 'Luxury Sales & Brokerage';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Clara';
+  };
+  assignedTasks: [
+    'Price-Drop Alerts',
+    'Targeted Re-Scoring Triggers',
+    'Quarterly Portfolio Briefings',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const YASMINA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'yasmina',
+  name: 'Yasmina',
+  gender: 'Female',
+  title: 'Lead Re-Engagement Supervisor',
+  supervisorSlot: 8,
+  department: {
+    code: 'DEPT-01',
+    name: 'Luxury Sales & Brokerage',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Clara',
+  },
+  assignedTasks: [
+    'Price-Drop Alerts',
+    'Targeted Re-Scoring Triggers',
+    'Quarterly Portfolio Briefings',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as yasmina_supervisorExport;

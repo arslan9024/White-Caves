@@ -1,0 +1,55 @@
+/** Auto‑generated from victoria_gov.supervisor.json */
+export interface victoria_gov_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'victoria_gov';
+  name: 'Victoria';
+  gender: 'Female';
+  title: 'Board Resolutions & Minutes Supervisor';
+  supervisorSlot: 3;
+  department: {
+    code: 'DEPT-09';
+    name: 'Executive Office & Corporate Governance';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Aurora';
+  };
+  assignedTasks: [
+    'Board Resolution Drafting',
+    'Annual General Meeting (AGM) Minutes',
+    'Shareholder Register Updates',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const VICTORIA_GOV_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'victoria_gov',
+  name: 'Victoria',
+  gender: 'Female',
+  title: 'Board Resolutions & Minutes Supervisor',
+  supervisorSlot: 3,
+  department: {
+    code: 'DEPT-09',
+    name: 'Executive Office & Corporate Governance',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Aurora',
+  },
+  assignedTasks: [
+    'Board Resolution Drafting',
+    'Annual General Meeting (AGM) Minutes',
+    'Shareholder Register Updates',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as victoria_gov_supervisorExport;

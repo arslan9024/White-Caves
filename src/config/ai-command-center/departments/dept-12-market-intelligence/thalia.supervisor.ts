@@ -1,0 +1,55 @@
+/** Auto‑generated from thalia.supervisor.json */
+export interface thalia_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'thalia';
+  name: 'Thalia';
+  gender: 'Female';
+  title: 'DLD Open Data Live Feed Cruncher';
+  supervisorSlot: 3;
+  department: {
+    code: 'DEPT-12';
+    name: 'Market Intelligence & IoT Data Science';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Elena';
+  };
+  assignedTasks: [
+    'Daily DLD Sales Data Extraction',
+    'Off-Plan vs Ready Volume Ratios',
+    'Average Sqft Price Index Trends',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const THALIA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'thalia',
+  name: 'Thalia',
+  gender: 'Female',
+  title: 'DLD Open Data Live Feed Cruncher',
+  supervisorSlot: 3,
+  department: {
+    code: 'DEPT-12',
+    name: 'Market Intelligence & IoT Data Science',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Elena',
+  },
+  assignedTasks: [
+    'Daily DLD Sales Data Extraction',
+    'Off-Plan vs Ready Volume Ratios',
+    'Average Sqft Price Index Trends',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as thalia_supervisorExport;

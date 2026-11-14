@@ -1,0 +1,55 @@
+/** Auto‑generated from valerie.supervisor.json */
+export interface valerie_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'valerie';
+  name: 'Valerie';
+  gender: 'Female';
+  title: 'FTA VAT 5% Compliance Supervisor';
+  supervisorSlot: 2;
+  department: {
+    code: 'DEPT-06';
+    name: 'Revenue, Finance & Treasury';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Theodora';
+  };
+  assignedTasks: [
+    'Quarterly VAT Return Prep',
+    'Input Tax Credit Validation',
+    'Statutory Tax Invoice Formatting',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const VALERIE_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'valerie',
+  name: 'Valerie',
+  gender: 'Female',
+  title: 'FTA VAT 5% Compliance Supervisor',
+  supervisorSlot: 2,
+  department: {
+    code: 'DEPT-06',
+    name: 'Revenue, Finance & Treasury',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Theodora',
+  },
+  assignedTasks: [
+    'Quarterly VAT Return Prep',
+    'Input Tax Credit Validation',
+    'Statutory Tax Invoice Formatting',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as valerie_supervisorExport;

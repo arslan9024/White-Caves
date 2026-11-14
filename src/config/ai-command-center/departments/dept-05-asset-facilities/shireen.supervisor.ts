@@ -1,0 +1,55 @@
+/** Auto‑generated from shireen.supervisor.json */
+export interface shireen_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'shireen';
+  name: 'Shireen';
+  gender: 'Female';
+  title: 'Mollak Service Charge Supervisor';
+  supervisorSlot: 5;
+  department: {
+    code: 'DEPT-05';
+    name: 'Asset Management & Facilities (DH2 Hub)';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Selena';
+  };
+  assignedTasks: [
+    'Service Charge Invoice Audit',
+    'Common Area Defect Reporting',
+    'OA Meeting Resolution Logs',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const SHIREEN_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'shireen',
+  name: 'Shireen',
+  gender: 'Female',
+  title: 'Mollak Service Charge Supervisor',
+  supervisorSlot: 5,
+  department: {
+    code: 'DEPT-05',
+    name: 'Asset Management & Facilities (DH2 Hub)',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Selena',
+  },
+  assignedTasks: [
+    'Service Charge Invoice Audit',
+    'Common Area Defect Reporting',
+    'OA Meeting Resolution Logs',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as shireen_supervisorExport;

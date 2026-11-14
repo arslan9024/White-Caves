@@ -1,0 +1,55 @@
+/** Auto‑generated from samira.supervisor.json */
+export interface samira_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'samira';
+  name: 'Samira';
+  gender: 'Female';
+  title: 'Distressed Asset Liquidation Supervisor';
+  supervisorSlot: 9;
+  department: {
+    code: 'DEPT-03';
+    name: 'Commercial Real Estate & Investment';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Maya';
+  };
+  assignedTasks: [
+    'Court Execution Order Search',
+    'Debt Clearance Verification',
+    'Fast-Track Liquidation Modeling',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const SAMIRA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'samira',
+  name: 'Samira',
+  gender: 'Female',
+  title: 'Distressed Asset Liquidation Supervisor',
+  supervisorSlot: 9,
+  department: {
+    code: 'DEPT-03',
+    name: 'Commercial Real Estate & Investment',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Maya',
+  },
+  assignedTasks: [
+    'Court Execution Order Search',
+    'Debt Clearance Verification',
+    'Fast-Track Liquidation Modeling',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as samira_supervisorExport;

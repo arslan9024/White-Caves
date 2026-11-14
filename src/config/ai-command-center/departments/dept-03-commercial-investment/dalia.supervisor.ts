@@ -1,0 +1,55 @@
+/** Auto‑generated from dalia.supervisor.json */
+export interface dalia_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'dalia';
+  name: 'Dalia';
+  gender: 'Female';
+  title: 'Commercial Tenancy Law Supervisor';
+  supervisorSlot: 7;
+  department: {
+    code: 'DEPT-03';
+    name: 'Commercial Real Estate & Investment';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Maya';
+  };
+  assignedTasks: [
+    'Commercial Dispute Prevention',
+    'Sub-Leasing Approval Workflow',
+    'Fit-Out Security Deposit Escrow',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const DALIA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'dalia',
+  name: 'Dalia',
+  gender: 'Female',
+  title: 'Commercial Tenancy Law Supervisor',
+  supervisorSlot: 7,
+  department: {
+    code: 'DEPT-03',
+    name: 'Commercial Real Estate & Investment',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Maya',
+  },
+  assignedTasks: [
+    'Commercial Dispute Prevention',
+    'Sub-Leasing Approval Workflow',
+    'Fit-Out Security Deposit Escrow',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as dalia_supervisorExport;

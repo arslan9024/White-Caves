@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "hana",
+  "name": "Hana",
+  "gender": "Female",
+  "title": "Sobha & Meraas Allocation Supervisor",
+  "supervisorSlot": 4,
+  "department": {
+    "code": "DEPT-02",
+    "name": "Strategic Off-Plan Developments"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Zara"
+  },
+  "assignedTasks": [
+    "Canal View Guarantee Checks",
+    "Finishing Spec Audit",
+    "Handover Timeline Monitoring"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

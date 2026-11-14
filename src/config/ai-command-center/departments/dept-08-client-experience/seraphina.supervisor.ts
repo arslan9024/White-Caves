@@ -1,0 +1,55 @@
+/** Auto‑generated from seraphina.supervisor.json */
+export interface seraphina_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'seraphina';
+  name: 'Seraphina';
+  gender: 'Female';
+  title: 'NPS & Feedback Pulse Supervisor';
+  supervisorSlot: 5;
+  department: {
+    code: 'DEPT-08';
+    name: 'Corporate Communications & Client Experience';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Corinne';
+  };
+  assignedTasks: [
+    'Post-Viewing NPS Survey Dispatch',
+    'Negative Review Escalation Flag',
+    '5-Star Review Google Link Send',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const SERAPHINA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'seraphina',
+  name: 'Seraphina',
+  gender: 'Female',
+  title: 'NPS & Feedback Pulse Supervisor',
+  supervisorSlot: 5,
+  department: {
+    code: 'DEPT-08',
+    name: 'Corporate Communications & Client Experience',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Corinne',
+  },
+  assignedTasks: [
+    'Post-Viewing NPS Survey Dispatch',
+    'Negative Review Escalation Flag',
+    '5-Star Review Google Link Send',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as seraphina_supervisorExport;

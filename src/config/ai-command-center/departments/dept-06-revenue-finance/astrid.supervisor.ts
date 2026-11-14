@@ -1,0 +1,55 @@
+/** Auto‑generated from astrid.supervisor.json */
+export interface astrid_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'astrid';
+  name: 'Astrid';
+  gender: 'Female';
+  title: 'Statutory Audit Readiness Supervisor';
+  supervisorSlot: 9;
+  department: {
+    code: 'DEPT-06';
+    name: 'Revenue, Finance & Treasury';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Theodora';
+  };
+  assignedTasks: [
+    'General Ledger Sampling Export',
+    'Substantiating Document Bundling',
+    'Audit Trail Immutability Verification',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const ASTRID_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'astrid',
+  name: 'Astrid',
+  gender: 'Female',
+  title: 'Statutory Audit Readiness Supervisor',
+  supervisorSlot: 9,
+  department: {
+    code: 'DEPT-06',
+    name: 'Revenue, Finance & Treasury',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Theodora',
+  },
+  assignedTasks: [
+    'General Ledger Sampling Export',
+    'Substantiating Document Bundling',
+    'Audit Trail Immutability Verification',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as astrid_supervisorExport;

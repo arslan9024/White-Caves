@@ -1,0 +1,55 @@
+/** Auto‑generated from huda.supervisor.json */
+export interface huda_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'huda';
+  name: 'Huda';
+  gender: 'Female';
+  title: 'Cluster Work Order Supervisor';
+  supervisorSlot: 1;
+  department: {
+    code: 'DEPT-05';
+    name: 'Asset Management & Facilities (DH2 Hub)';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Selena';
+  };
+  assignedTasks: [
+    'Cluster SLA Prioritization',
+    'Contractor Work Order Dispatch',
+    'Tenant Feedback Resolution',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const HUDA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'huda',
+  name: 'Huda',
+  gender: 'Female',
+  title: 'Cluster Work Order Supervisor',
+  supervisorSlot: 1,
+  department: {
+    code: 'DEPT-05',
+    name: 'Asset Management & Facilities (DH2 Hub)',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Selena',
+  },
+  assignedTasks: [
+    'Cluster SLA Prioritization',
+    'Contractor Work Order Dispatch',
+    'Tenant Feedback Resolution',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as huda_supervisorExport;

@@ -1,0 +1,55 @@
+/** Auto‑generated from ruba.supervisor.json */
+export interface ruba_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'ruba';
+  name: 'Ruba';
+  gender: 'Female';
+  title: 'Tenant KYC & Credit Scoring Supervisor';
+  supervisorSlot: 2;
+  department: {
+    code: 'DEPT-04';
+    name: 'Portfolio Management & Residential Leasing';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Nadia';
+  };
+  assignedTasks: [
+    'Emirates ID OCR Validation',
+    'Salary Certificate Verification',
+    'Tenant Risk Index Calculation',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const RUBA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'ruba',
+  name: 'Ruba',
+  gender: 'Female',
+  title: 'Tenant KYC & Credit Scoring Supervisor',
+  supervisorSlot: 2,
+  department: {
+    code: 'DEPT-04',
+    name: 'Portfolio Management & Residential Leasing',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Nadia',
+  },
+  assignedTasks: [
+    'Emirates ID OCR Validation',
+    'Salary Certificate Verification',
+    'Tenant Risk Index Calculation',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as ruba_supervisorExport;

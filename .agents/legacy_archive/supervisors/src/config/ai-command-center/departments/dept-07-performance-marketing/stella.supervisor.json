@@ -1,0 +1,27 @@
+{
+  "$schema": "https://whitecaves.com/schemas/agent-runtime.v1.json",
+  "id": "stella",
+  "name": "Stella",
+  "gender": "Female",
+  "title": "Email Drip Sequences Supervisor",
+  "supervisorSlot": 6,
+  "department": {
+    "code": "DEPT-07",
+    "name": "Performance Marketing & Lead Acquisition"
+  },
+  "hierarchy": {
+    "level": 2,
+    "role": "AI Department Supervisor",
+    "reportingTo": "Olivia"
+  },
+  "assignedTasks": [
+    "Segmented Weekly Market Report",
+    "High-Open Rate Subject Lines",
+    "Unsubscribe & PDPL Hygiene"
+  ],
+  "performanceStandard": {
+    "slaResponseTime": "15-Minute Watchdog",
+    "targetLookupLatency": "< 10ms (MapIndexHash)",
+    "complianceAudit": "100% Green"
+  }
+}

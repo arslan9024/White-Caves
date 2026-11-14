@@ -1,0 +1,55 @@
+/** Auto‑generated from luna.supervisor.json */
+export interface luna_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'luna';
+  name: 'Luna';
+  gender: 'Female';
+  title: 'Brand Ambassador Desk Supervisor';
+  supervisorSlot: 7;
+  department: {
+    code: 'DEPT-07';
+    name: 'Performance Marketing & Lead Acquisition';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Olivia';
+  };
+  assignedTasks: [
+    'Collaborator ROI Verification',
+    'Exclusive Property Preview Access',
+    'Tracking Link Performance Log',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const LUNA_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'luna',
+  name: 'Luna',
+  gender: 'Female',
+  title: 'Brand Ambassador Desk Supervisor',
+  supervisorSlot: 7,
+  department: {
+    code: 'DEPT-07',
+    name: 'Performance Marketing & Lead Acquisition',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Olivia',
+  },
+  assignedTasks: [
+    'Collaborator ROI Verification',
+    'Exclusive Property Preview Access',
+    'Tracking Link Performance Log',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as luna_supervisorExport;

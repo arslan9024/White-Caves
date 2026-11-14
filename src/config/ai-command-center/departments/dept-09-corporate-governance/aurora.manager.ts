@@ -1,0 +1,49 @@
+/** Auto‑generated from aurora.manager.json */
+export interface aurora_managerExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'aurora';
+  name: 'Aurora';
+  gender: 'Female';
+  title: 'Chief Technology Officer & Architecture Sentinel';
+  department: {
+    code: 'DEPT-09';
+    name: 'Executive Office & Corporate Governance';
+    color: '#1E293B';
+  };
+  hierarchy: {
+    level: 1;
+    role: 'AI Department Manager';
+    reportingTo: 'AI Zoe (COO)';
+  };
+  responsibilities: [
+    'Corporate KPI synthesis & bottleneck elimination',
+    'Single source of truth architectural integrity',
+    'AEGIS autonomous engine health verification',
+  ];
+  supervisorsManagedCount: 9;
+  slaWatchdogThresholdMinutes: 15;
+}
+export const AURORA_MANAGER = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'aurora',
+  name: 'Aurora',
+  gender: 'Female',
+  title: 'Chief Technology Officer & Architecture Sentinel',
+  department: {
+    code: 'DEPT-09',
+    name: 'Executive Office & Corporate Governance',
+    color: '#1E293B',
+  },
+  hierarchy: {
+    level: 1,
+    role: 'AI Department Manager',
+    reportingTo: 'AI Zoe (COO)',
+  },
+  responsibilities: [
+    'Corporate KPI synthesis & bottleneck elimination',
+    'Single source of truth architectural integrity',
+    'AEGIS autonomous engine health verification',
+  ],
+  supervisorsManagedCount: 9,
+  slaWatchdogThresholdMinutes: 15,
+} as aurora_managerExport;

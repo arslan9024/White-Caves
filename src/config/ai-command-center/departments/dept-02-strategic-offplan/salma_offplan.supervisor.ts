@@ -1,0 +1,55 @@
+/** Auto‑generated from salma_offplan.supervisor.json */
+export interface salma_offplan_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'salma_offplan';
+  name: 'Salma';
+  gender: 'Female';
+  title: 'Developer Due Diligence Supervisor';
+  supervisorSlot: 9;
+  department: {
+    code: 'DEPT-02';
+    name: 'Strategic Off-Plan Developments';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Zara';
+  };
+  assignedTasks: [
+    'Escrow Law No. 8 Compliance',
+    'Contractor Track Record Check',
+    'Bank Guarantee Confirmation',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const SALMA_OFFPLAN_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'salma_offplan',
+  name: 'Salma',
+  gender: 'Female',
+  title: 'Developer Due Diligence Supervisor',
+  supervisorSlot: 9,
+  department: {
+    code: 'DEPT-02',
+    name: 'Strategic Off-Plan Developments',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Zara',
+  },
+  assignedTasks: [
+    'Escrow Law No. 8 Compliance',
+    'Contractor Track Record Check',
+    'Bank Guarantee Confirmation',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as salma_offplan_supervisorExport;

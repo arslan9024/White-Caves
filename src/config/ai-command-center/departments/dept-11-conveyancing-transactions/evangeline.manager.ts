@@ -1,0 +1,49 @@
+/** Auto‑generated from evangeline.manager.json */
+export interface evangeline_managerExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'evangeline';
+  name: 'Evangeline';
+  gender: 'Female';
+  title: 'Head of Conveyancing & Trustee Transfers';
+  department: {
+    code: 'DEPT-11';
+    name: 'Conveyancing & Transaction Management';
+    color: '#14B8A6';
+  };
+  hierarchy: {
+    level: 1;
+    role: 'AI Department Manager';
+    reportingTo: 'AI Zoe (COO)';
+  };
+  responsibilities: [
+    'DLD Registration Trustee closing coordination',
+    'Developer NOC issuance (Emaar, DAMAC, Nakheel)',
+    'Electronic Title Deed verification & escrow release',
+  ];
+  supervisorsManagedCount: 9;
+  slaWatchdogThresholdMinutes: 15;
+}
+export const EVANGELINE_MANAGER = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'evangeline',
+  name: 'Evangeline',
+  gender: 'Female',
+  title: 'Head of Conveyancing & Trustee Transfers',
+  department: {
+    code: 'DEPT-11',
+    name: 'Conveyancing & Transaction Management',
+    color: '#14B8A6',
+  },
+  hierarchy: {
+    level: 1,
+    role: 'AI Department Manager',
+    reportingTo: 'AI Zoe (COO)',
+  },
+  responsibilities: [
+    'DLD Registration Trustee closing coordination',
+    'Developer NOC issuance (Emaar, DAMAC, Nakheel)',
+    'Electronic Title Deed verification & escrow release',
+  ],
+  supervisorsManagedCount: 9,
+  slaWatchdogThresholdMinutes: 15,
+} as evangeline_managerExport;

@@ -1,0 +1,55 @@
+/** Auto‑generated from hazel.supervisor.json */
+export interface hazel_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'hazel';
+  name: 'Hazel';
+  gender: 'Female';
+  title: 'ROAS & Dynamic Bidding Supervisor';
+  supervisorSlot: 1;
+  department: {
+    code: 'DEPT-07';
+    name: 'Performance Marketing & Lead Acquisition';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Olivia';
+  };
+  assignedTasks: [
+    'Dynamic Budget Re-Allocation',
+    'Lookalike HNW Audience Build',
+    'High-CTR Ad Copy Generation',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const HAZEL_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'hazel',
+  name: 'Hazel',
+  gender: 'Female',
+  title: 'ROAS & Dynamic Bidding Supervisor',
+  supervisorSlot: 1,
+  department: {
+    code: 'DEPT-07',
+    name: 'Performance Marketing & Lead Acquisition',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Olivia',
+  },
+  assignedTasks: [
+    'Dynamic Budget Re-Allocation',
+    'Lookalike HNW Audience Build',
+    'High-CTR Ad Copy Generation',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as hazel_supervisorExport;

@@ -1,0 +1,55 @@
+/** Auto‑generated from daisy_fin.supervisor.json */
+export interface daisy_fin_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'daisy_fin';
+  name: 'Daisy';
+  gender: 'Female';
+  title: '365-Day Treasury Forecast Supervisor';
+  supervisorSlot: 7;
+  department: {
+    code: 'DEPT-06';
+    name: 'Revenue, Finance & Treasury';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Theodora';
+  };
+  assignedTasks: [
+    'Rolling 365-Day Runway Simulator',
+    'Receivables Collection Forecast',
+    'Capex Outflow Scheduling',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const DAISY_FIN_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'daisy_fin',
+  name: 'Daisy',
+  gender: 'Female',
+  title: '365-Day Treasury Forecast Supervisor',
+  supervisorSlot: 7,
+  department: {
+    code: 'DEPT-06',
+    name: 'Revenue, Finance & Treasury',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Theodora',
+  },
+  assignedTasks: [
+    'Rolling 365-Day Runway Simulator',
+    'Receivables Collection Forecast',
+    'Capex Outflow Scheduling',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as daisy_fin_supervisorExport;

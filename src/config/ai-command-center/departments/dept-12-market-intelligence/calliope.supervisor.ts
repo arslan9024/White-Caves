@@ -1,0 +1,55 @@
+/** Auto‑generated from calliope.supervisor.json */
+export interface calliope_supervisorExport {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json';
+  id: 'calliope';
+  name: 'Calliope';
+  gender: 'Female';
+  title: 'Portal Competitor Radar Supervisor';
+  supervisorSlot: 4;
+  department: {
+    code: 'DEPT-12';
+    name: 'Market Intelligence & IoT Data Science';
+  };
+  hierarchy: {
+    level: 2;
+    role: 'AI Department Supervisor';
+    reportingTo: 'Elena';
+  };
+  assignedTasks: [
+    'Competitor Pricing Deviation Alerts',
+    'Market Days-on-Market Index',
+    'New Cluster Launch Benchmarking',
+  ];
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog';
+    targetLookupLatency: '< 10ms (MapIndexHash)';
+    complianceAudit: '100% Green';
+  };
+}
+export const CALLIOPE_SUPERVISOR = {
+  $schema: 'https://whitecaves.com/schemas/agent-runtime.v1.json',
+  id: 'calliope',
+  name: 'Calliope',
+  gender: 'Female',
+  title: 'Portal Competitor Radar Supervisor',
+  supervisorSlot: 4,
+  department: {
+    code: 'DEPT-12',
+    name: 'Market Intelligence & IoT Data Science',
+  },
+  hierarchy: {
+    level: 2,
+    role: 'AI Department Supervisor',
+    reportingTo: 'Elena',
+  },
+  assignedTasks: [
+    'Competitor Pricing Deviation Alerts',
+    'Market Days-on-Market Index',
+    'New Cluster Launch Benchmarking',
+  ],
+  performanceStandard: {
+    slaResponseTime: '15-Minute Watchdog',
+    targetLookupLatency: '< 10ms (MapIndexHash)',
+    complianceAudit: '100% Green',
+  },
+} as calliope_supervisorExport;
