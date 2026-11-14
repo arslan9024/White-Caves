@@ -11,6 +11,14 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
 
+// IntersectionObserver mock for Framer Motion viewport triggers
+class MockIntersectionObserver {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+}
+window.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
+
 // ── Mocks ────────────────────────────────────────────────────────
 
 const MOCK_MARKET_STATS = {
@@ -91,9 +99,6 @@ vi.mock('../components/homepage/FeaturedProperties/FeaturedPropertiesSection', (
 }));
 vi.mock('../components/homepage/ToolsDashboard', () => ({
   ToolsDashboard: () => <div data-testid="tools-dashboard">ToolsDashboard</div>,
-}));
-vi.mock('../components/homepage/TestimonialPodium', () => ({
-  TestimonialPodium: () => <div data-testid="testimonial-podium">TestimonialPodium</div>,
 }));
 vi.mock('../components/homepage/Team', () => ({
   default: () => <div data-testid="team-section">Team</div>,
@@ -276,13 +281,6 @@ describe('HomePage', () => {
       renderPage();
       await waitFor(() => {
         expect(screen.getByTestId('tools-dashboard')).toBeInTheDocument();
-      });
-    });
-
-    it('should render TestimonialPodium section', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('testimonial-podium')).toBeInTheDocument();
       });
     });
 

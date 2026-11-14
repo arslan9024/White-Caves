@@ -28,7 +28,6 @@ import { cleanupHomepageHeroPreload, ensureHomepageHeroPreload } from './homePag
 
 import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
-import { TestimonialPodium } from '../components/homepage/TestimonialPodium';
 import { QuickSearchModal } from '../components/homepage/QuickSearchModal';
 import '../styles/luxuryDesignSystem.css';
 import './HomePage.css';
@@ -303,9 +302,6 @@ const HomePage: FC = () => {
 
         {/* Gamified ROI & Mortgage Tools Dashboard */}
         <ToolsDashboard />
-
-        {/* 5-Star Investor Testimonial Podium */}
-        <TestimonialPodium />
 
         {/* Below the fold companion sections */}
         <Suspense fallback={<SectionLoader />}>
