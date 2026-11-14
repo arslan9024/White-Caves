@@ -97,9 +97,6 @@ vi.mock('../components/homepage/MapContainer', () => ({
 vi.mock('../components/homepage/FeaturedProperties/FeaturedPropertiesSection', () => ({
   default: () => <div data-testid="featured-properties-section">FeaturedProperties</div>,
 }));
-vi.mock('../components/homepage/ToolsDashboard', () => ({
-  ToolsDashboard: () => <div data-testid="tools-dashboard">ToolsDashboard</div>,
-}));
 vi.mock('../components/homepage/Team', () => ({
   default: () => <div data-testid="team-section">Team</div>,
 }));
@@ -274,13 +271,6 @@ describe('HomePage', () => {
       renderPage();
       await waitFor(() => {
         expect(screen.getByTestId('map-container')).toBeInTheDocument();
-      });
-    });
-
-    it('should render ToolsDashboard section', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('tools-dashboard')).toBeInTheDocument();
       });
     });
 

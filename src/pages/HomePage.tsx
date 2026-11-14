@@ -26,7 +26,6 @@ import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { MapContainer } from '../components/homepage/MapContainer';
 import { cleanupHomepageHeroPreload, ensureHomepageHeroPreload } from './homePagePreload';
 
-import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
 import { QuickSearchModal } from '../components/homepage/QuickSearchModal';
 import '../styles/luxuryDesignSystem.css';
@@ -299,9 +298,6 @@ const HomePage: FC = () => {
             <DubaiSunsetGallery />
           </div>
         </Suspense>
-
-        {/* Gamified ROI & Mortgage Tools Dashboard */}
-        <ToolsDashboard />
 
         {/* Below the fold companion sections */}
         <Suspense fallback={<SectionLoader />}>
