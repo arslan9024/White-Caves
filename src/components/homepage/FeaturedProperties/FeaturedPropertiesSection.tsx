@@ -13,7 +13,6 @@ import PropertyComparisonDrawer, {
   ComparableProperty,
 } from '../../properties/PropertyComparisonDrawer';
 import type { HomepageProperty } from '../../../store/slices/homepageSlice';
-import { BayutTruCheckBadge } from './BayutTruCheckBadge';
 import './FeaturedPropertiesSection.css';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -102,7 +101,6 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({
               Featured
             </span>
           )}
-          <BayutTruCheckBadge variant="variant-2" />
           <span className="fp-badge fp-badge--trakheesi">
             <ShieldCheck size={11} />
             DLD Validated
