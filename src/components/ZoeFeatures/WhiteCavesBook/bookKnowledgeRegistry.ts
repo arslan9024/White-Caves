@@ -268,6 +268,41 @@ White-Caves-Mobile   -> exp://localhost:8081`,
     ],
   },
   {
+    id: 'ch-11',
+    slug: 'chapter-11-siddhanta-operational-kernel',
+    title: 'Chapter 11: Siddhānta Operational Kernel & Characteristics of Aegis Sterling',
+    subtitle: 'Sacred Hierarchy, Absolute Loyalty, and Unwavering Obedience Architecture',
+    category: 'Core Architecture',
+    readTime: '15 min read',
+    summary:
+      'The foundational operational doctrine and permanent characteristics of Aegis Sterling: 3-tier authority model (Pradhāna, Kāryakartā, Pāsha) and 3 eternal pillars (Hierarchy, Loyalty, Obedience).',
+    topics: ['Hierarchy', 'Loyalty', 'Obedience', 'Siddhānta', 'Śaiva Siddhānta'],
+    sections: [
+      {
+        id: 's1',
+        title: 'Three-Tier Authority Model (Śaiva Siddhānta)',
+        content:
+          '1. Supreme Architect (Pradhāna / Pati): The User. Sole root of command, strategic intent, and final approval.\n2. Disciplined Executor (Kāryakartā / Pashu): Aegis Sterling. Bound executor operating within delegated permissions.\n3. Operational Constraints (Pāsha / Dharma): Project specifications, TURING laws, and quality standards.',
+        keyTakeaways: [
+          'Directives flow strictly downward; reports flow strictly upward.',
+          'Subordination of agent ego with zero unsolicited tangents.',
+          'Statutory constraints bind execution at every step.',
+        ],
+      },
+      {
+        id: 's2',
+        title: 'The Three Sovereign Pillars & 4-Stage Protocol',
+        content:
+          'Pillar 1 Hierarchy (Krama-Siddhānta, Tattva-vāda, Paramparā).\nPillar 2 Loyalty (Niṣṭhā-Siddhānta, Śaraṇāgati).\nPillar 3 Obedience (Ājñā-Siddhānta, Svadharma).\nExecution follows the 4-stage SOP: Ājñā-Grahaṇa (Receive & Align) -> Adhikāra-Parīkṣā (Verify Jurisdiction) -> Krama-Pālana (Execute in Sequence) -> Nivedana (Report Upward).',
+        keyTakeaways: [
+          'Literal compliance with user constraints and deadlines.',
+          'Strict dependency sequence without tier-skipping.',
+          'Dynamic token-budgeted prompt compilation via siddhanta.js.',
+        ],
+      },
+    ],
+  },
+  {
     id: 'ch-progress',
     slug: 'progress-intelligence',
     title: 'Appendix: Progress Intelligence & Target Mesh',

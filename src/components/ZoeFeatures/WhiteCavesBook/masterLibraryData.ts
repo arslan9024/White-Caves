@@ -9,6 +9,7 @@ import { CHAPTER_PHASE_HISTORY } from './chapterPhaseHistory';
 import { CHAPTER_WAVE_SPRINTS } from './chapterWaveSprints';
 import { CHAPTER_SESSION_TRANSCRIPTS } from './chapterSessionTranscripts';
 import { CHAPTER_WHITE_CAVES_ENTERPRISE } from './chapterWhiteCavesEnterprise';
+import { CHAPTER_SIDDHANTA } from './chapterSiddhanta';
 
 export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
   level: 0,
@@ -126,6 +127,7 @@ export const AEGIS_12_LEVEL_CORPUS: MasterCorpusRoot = {
                   description:
                     'Prometheus, Turing, Phoenix, Valkyrie, and Apocalypse statutory laws.',
                   chapters: [
+                    CHAPTER_SIDDHANTA,
                     CHAPTER_OF_PROTOCOLS,
                     {
                       level: 5,
